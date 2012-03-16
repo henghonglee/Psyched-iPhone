@@ -107,6 +107,10 @@
     emptyView.hidden=YES;
     segmentedControl.hidden = NO;
 }
+-(void)viewWillAppear:(BOOL)animated
+{
+    [self reloadTableViewDataSource];
+}
 
 -(void)viewWillDisappear:(BOOL)animated
 {
