@@ -50,14 +50,17 @@ kAPIGraphUserPhotosPost,
     [self apiGraphFriends];
         
     }];
-    UIBarButtonItem *anotherButton = [[UIBarButtonItem alloc] initWithTitle:@"Follow All" style:UIBarButtonItemStylePlain target:self action:@selector(followAll:)];          
-    self.navigationItem.rightBarButtonItem = anotherButton;
-    [anotherButton release];
+//    UIBarButtonItem *anotherButton = [[UIBarButtonItem alloc] initWithTitle:@"Follow All" style:UIBarButtonItemStylePlain target:self action:@selector(followAll:)];          
+//    self.navigationItem.rightBarButtonItem = anotherButton;
+//    [anotherButton release];
 }
 -(void)apiGraphFriends
 { 
     currentAPIcall = kAPIGetAppUsersFriendsUsing;
     self.myRequest = [[PFFacebookUtils facebook] requestWithGraphPath:@"me/friends?fields=installed" andDelegate:self];
+    PF_MBProgressHUD* hud = [PF_MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    hud.labelText = @"Finding friends on Psyched!...";
+    
 }
 -(void)followAll:(id)sender
 {
@@ -120,12 +123,14 @@ kAPIGraphUserPhotosPost,
                     NSLog(@"%@",objects);
                     [searchArray addObjectsFromArray:objects];  
                     [tempArray addObjectsFromArray:objects];
+                    
                     [searchTable reloadData];
+                     [PF_MBProgressHUD hideHUDForView:self.view animated:YES];
                 }];
     }      
                 //[FBfriendsArray addObject:newFBfriend];
                 
-            
+           
 }
 
 - (void)viewDidUnload
