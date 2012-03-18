@@ -78,11 +78,13 @@ static inline double radians (double degrees) {return degrees * M_PI/180;}
     NSLog(@"take photo method");
 	imagePickerVC.sourceType = UIImagePickerControllerSourceTypeCamera;
 	imagePickerVC.delegate = self;
-    imagePickerVC.cameraOverlayView = [[UIView alloc]initWithFrame:CGRectMake(0, 320, 320, 150)];
+    UIView* overlayView = [[UIView alloc]initWithFrame:CGRectMake(0, 320, 320, 150)];
+    imagePickerVC.cameraOverlayView = overlayView;
     imagePickerVC.cameraOverlayView.backgroundColor = [UIColor blackColor];
     imagePickerVC.cameraOverlayView.alpha = 0.8;    
 	[self presentModalViewController:imagePickerVC animated:YES];
 	[imagePickerVC release];
+        [overlayView release];
 }
 
 #pragma mark UIImagePickerControllerDelegate
@@ -147,7 +149,9 @@ static inline double radians (double degrees) {return degrees * M_PI/180;}
         
         // Get the resized image from the context and a UIImage
         CGImageRef newImageRef = CGBitmapContextCreateImage(bitmap);
+        CGContextRelease(bitmap);
         newcropped = [[UIImage imageWithCGImage:newImageRef]resizedImage:CGSizeMake(1024.0, 1024.0) interpolationQuality:kCGInterpolationHigh];
+        CGImageRelease(newImageRef);
         
     }else{
         newcropped=[mycroppedImage resizedImage:CGSizeMake(720, 720) interpolationQuality:kCGInterpolationHigh];    
@@ -161,6 +165,7 @@ static inline double radians (double degrees) {return degrees * M_PI/180;}
     EditImageVC.imageMetaData = imageMetaData;
     EditImageVC.delegate = self;
     [self presentModalViewController:navCont animated:NO];
+    [navCont release];
 }
 
 
@@ -239,11 +244,6 @@ static inline double radians (double degrees) {return degrees * M_PI/180;}
     
     return newImage; 
 }
-- (void)imageCropperDidCancel:(ImageCropper *)cropper {
-	[self dismissModalViewControllerAnimated:YES];
-	
-	[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault animated:YES];
-}
 - (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker
 {
 	//[picker.view removeFromSuperview];
@@ -280,7 +280,9 @@ static inline double radians (double degrees) {return degrees * M_PI/180;}
               newLocation.coordinate.latitude,
               newLocation.coordinate.longitude);
         if (!currentLocation){
-            self.currentLocation = [[CLLocation alloc]initWithLatitude:newLocation.coordinate.latitude longitude:newLocation.coordinate.longitude];
+           CLLocation* mycurrloc = [[CLLocation alloc]initWithLatitude:newLocation.coordinate.latitude longitude:newLocation.coordinate.longitude];
+            self.currentLocation = mycurrloc;
+            [mycurrloc release];
         }else{
             self.currentLocation = newLocation;
         }

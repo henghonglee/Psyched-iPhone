@@ -25,10 +25,9 @@
 // THE SOFTWARE
 //
 #import "EditImageViewController.h"
-#import "ImageCropper.h"
 #import "AssetsLibrary/ALAssetsLibrary.h"
 #import <CoreLocation/CoreLocation.h>
-@interface BaseViewController : UITabBarController<UIImagePickerControllerDelegate,UIActionSheetDelegate,UINavigationControllerDelegate,ImageCropperDelegate,EditImageDelegate,CLLocationManagerDelegate>
+@interface BaseViewController : UITabBarController<UIImagePickerControllerDelegate,UIActionSheetDelegate,UINavigationControllerDelegate,EditImageDelegate,CLLocationManagerDelegate>
 {
     NSMutableDictionary* imageMetaData;
      CLLocation* myCurrentLocation;

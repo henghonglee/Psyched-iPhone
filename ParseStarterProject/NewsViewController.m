@@ -50,6 +50,7 @@
     [navigationBarItem addTarget:self action:@selector(reloadUserData) forControlEvents:UIControlEventTouchUpInside];
     UIBarButtonItem *barButtonItem = [[UIBarButtonItem alloc] initWithCustomView:navigationBarItem];
     self.navigationItem.rightBarButtonItem = barButtonItem;
+    [barButtonItem release];
     PFQuery* query = [PFQuery queryWithClassName:@"News"];
     [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
         

@@ -16,7 +16,6 @@
 @synthesize baserouteArray;
 @synthesize routeArray;
 @synthesize queryArray;
-@synthesize saveArray;
 @synthesize titleTableView;
 @synthesize currentLocation;
 @synthesize emptyGradeView;
@@ -51,6 +50,7 @@
     UIImageView* headerviewimage = [[UIImageView alloc]initWithFrame:CGRectMake(0, 0, 320, 44 )];
     headerviewimage.image = [UIImage imageNamed:@"headerview2.png"];
     [headerView addSubview:headerviewimage];
+    [headerviewimage release];
     UILabel* headerLabel = [[UILabel alloc]initWithFrame:CGRectMake(60, 0, 200, 44)];
     headerLabel.font = [UIFont boldSystemFontOfSize:23.0f];
     headerLabel.textAlignment = UITextAlignmentCenter;
@@ -62,15 +62,14 @@
     refreshButton.contentMode = UIViewContentModeScaleAspectFit;
     refreshButton.showsTouchWhenHighlighted = YES;
     [headerView addSubview:refreshButton];
+    [refreshButton release];
     [headerView addSubview:headerLabel];
+    [headerLabel release];
     [self.view addSubview:routeTableView];
+    [routeTableView release];
     self.navigationController.navigationBarHidden = YES;
-    self.routeArray = [[NSMutableArray alloc]init];
-    self.queryArray = [[NSMutableArray alloc]init];
-    
-    //    [followedquery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
-//        [self.followedArray addObjectsFromArray:objects];   
-//    }];
+    self.routeArray = [[[NSMutableArray alloc]init]autorelease];
+    self.queryArray = [[[NSMutableArray alloc]init]autorelease];
     [self addStandardTabView];
                
    
@@ -172,8 +171,6 @@
     [super viewDidUnload];
     NSLog(@"view did unload");
     self.routeArray = nil;
-    [self.routeArray release];
-    
     [self setRouteTableView:nil];
 
     // Release any retained subviews of the main view.
@@ -398,10 +395,10 @@
     tabView = [[JMTabView alloc] init];
     [tabView setDelegate:self];
     
-    [tabView addTabItemWithTitle:@"Followed" icon:[UIImage imageNamed:@"icon1.png"]];
+    [tabView addTabItemWithTitle:@"Followed" icon:[UIImage imageNamed:@"followed.png"]];
     [tabView addTabItemWithTitle:@"Popular" icon:[UIImage imageNamed:@"icon2.png"]];
-    [tabView addTabItemWithTitle:@"Nearby" icon:[UIImage imageNamed:@"icon3.png"]];
-    [tabView addTabItemWithTitle:@"Grade" icon:[UIImage imageNamed:@"icon3.png"]];
+    [tabView addTabItemWithTitle:@"Nearby" icon:[UIImage imageNamed:@"nearby.png"]];
+    [tabView addTabItemWithTitle:@"Grade" icon:[UIImage imageNamed:@"grade.png"]];
     
     
     //    You can run blocks by specifiying an executeBlock: paremeter
@@ -461,7 +458,7 @@
         case 0:
             NSLog(@"cancelingqueries");
                
-             NSMutableArray* followedPosters = [[NSMutableArray alloc]init ];
+             NSMutableArray* followedPosters = [[[NSMutableArray alloc]init ]autorelease];
            
             PFQuery* followedquery = [PFQuery queryWithClassName:@"Follow"];
             [followedquery whereKey:@"follower" equalTo:[PFUser currentUser]];
@@ -473,7 +470,6 @@
 
             }
             [recentQuery whereKey:@"username" containedIn:followedPosters];
-            [followedArray release];
             [queryArray addObject:recentQuery];
             
             [recentQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
@@ -488,7 +484,9 @@
                     RouteObject* newRouteObject =  [[RouteObject alloc]init];
                     newRouteObject.pfobj = object;
                     [routeArray addObject:newRouteObject];
+                    [newRouteObject release];
                 }
+                    
                 }
                 [routeTableView reloadData];
                 
@@ -507,6 +505,7 @@
                     RouteObject* newRouteObject =  [[RouteObject alloc]init];
                     newRouteObject.pfobj = object;
                     [routeArray addObject:newRouteObject];
+                    [newRouteObject release];
                 }
                 [routeTableView reloadData];
             }];
@@ -526,6 +525,7 @@
                   RouteObject* newRouteObject =  [[RouteObject alloc]init];
                    newRouteObject.pfobj = object;
                    [routeArray addObject:newRouteObject];
+                   [newRouteObject release];
                }
                [routeTableView reloadData];
            }];
@@ -545,6 +545,7 @@
                     RouteObject* newRouteObject =  [[RouteObject alloc]init];
                     newRouteObject.pfobj = object;
                     [routeArray addObject:newRouteObject];
+                    [newRouteObject release];
                 }
                 }
                 [routeTableView reloadData];
@@ -595,6 +596,7 @@
                         RouteObject* newRouteObject =  [[RouteObject alloc]init];
                         newRouteObject.pfobj = object;
                         [routeArray addObject:newRouteObject];
+                        [newRouteObject release];
                     }
                     [routeTableView reloadData];
                 }];
@@ -611,6 +613,7 @@
                         RouteObject* newRouteObject =  [[RouteObject alloc]init];
                         newRouteObject.pfobj = object;
                         [routeArray addObject:newRouteObject];
+                        [newRouteObject release];
                     }
                     [routeTableView reloadData];
                 }];
@@ -627,6 +630,7 @@
                         RouteObject* newRouteObject =  [[RouteObject alloc]init];
                         newRouteObject.pfobj = object;
                         [routeArray addObject:newRouteObject];
+                        [newRouteObject release];
                     }
                     [routeTableView reloadData];
                 }];
@@ -746,7 +750,9 @@
               newLocation.coordinate.latitude,
               newLocation.coordinate.longitude);
         if (!currentLocation){
-        self.currentLocation = [[CLLocation alloc]initWithLatitude:newLocation.coordinate.latitude longitude:newLocation.coordinate.longitude];
+            CLLocation* mycurrloc = [[CLLocation alloc]initWithLatitude:newLocation.coordinate.latitude longitude:newLocation.coordinate.longitude];
+            self.currentLocation = mycurrloc;
+            [mycurrloc release];
         }else{
             self.currentLocation = newLocation;
         }
@@ -768,10 +774,8 @@
     [currentLocation release];
     [locationManager release];
     [followedArray release];
-    [queryArray release];
-    [baserouteArray release];
-    [routeArray release];
-    [saveArray release];
+
+
     [routeTableView release];
     [emptyGradeView release];
     [super dealloc];

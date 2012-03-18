@@ -51,9 +51,11 @@
     
     NewsViewController* newsVC= [[NewsViewController alloc] initWithNibName:@"NewsViewController" bundle:nil];
     UINavigationController* newsnav = [[UINavigationController alloc]initWithRootViewController:newsVC];
+    [newsVC release];
      newsnav.tabBarItem = [[[UITabBarItem alloc] initWithTitle:@"News" image:[UIImage imageNamed:@"news.png"] tag:0] autorelease];
     ProfileViewController* profileVC = [[ProfileViewController alloc]initWithNibName:@"ProfileViewController" bundle:nil]; 
     UINavigationController* profilenav = [[UINavigationController alloc]initWithRootViewController:profileVC];
+    [profileVC release];
      profilenav.tabBarItem = [[[UITabBarItem alloc] initWithTitle:@"Profile" image:[UIImage imageNamed:@"123-id-card.png"] tag:0] autorelease];
     
     
@@ -67,6 +69,9 @@
    
     
                             [self addCenterButtonWithImage:[UIImage imageNamed:@"cameraTabBarItem.png"] highlightImage:nil];
+    [mainNav release];
+    [newsnav release];
+    [profilenav release];
     [feedsNav release];
 }
 

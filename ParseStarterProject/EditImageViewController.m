@@ -201,7 +201,7 @@
     
    // UIImageWriteToSavedPhotosAlbum(imageToEdit.image, self, 
     //                               @selector(image:didFinishSavingWithError:contextInfo:), nil);
-
+    [library release];
 }
  
 - (void)image:(UIImage *)image didFinishSavingWithError:(NSError *)error 

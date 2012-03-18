@@ -247,12 +247,12 @@ typedef enum apiCall {
             if ([recommendArray count]>0) {
                 NSLog(@"recommend array count = %d", [recommendArray count]);
                 for (FBfriend* user in recommendArray) {
-                    PFObject* recommendObject = [PFObject objectWithClassName:@"Recommend"];
-                    [recommendObject setObject:[PFUser currentUser]  forKey:@"recommender"];
-                    [recommendObject setObject:user.name  forKey:@"recommended"];
-                    [recommendObject setObject:newRoute forKey:@"route"];
-                    [recommendObject saveInBackground];
-                    
+//                    PFObject* recommendObject = [PFObject objectWithClassName:@"Recommend"];
+//                    [recommendObject setObject:[PFUser currentUser]  forKey:@"recommender"];
+//                    [recommendObject setObject:user.name  forKey:@"recommended"];
+//                    [recommendObject setObject:newRoute forKey:@"route"];
+//                    [recommendObject saveInBackground];
+//                    
                     
                     
                     PFObject* feedObject = [PFObject objectWithClassName:@"Feed"];
@@ -410,7 +410,7 @@ typedef enum apiCall {
     // The action links to be shown with the post in the feed
    // NSArray* actionLinks = [NSArray arrayWithObjects:tags, nil];
     NSString *actionLinksStr = [jsonWriter stringWithObject:tags];
-
+    [tags release];
     NSMutableDictionary *params = [NSMutableDictionary dictionaryWithObjectsAndKeys:
                                    resizedimg, @"picture",descriptionTextField.text,@"name",@"720",@"height",@"720",@"width",actionLinksStr,@"tags",
                                    nil];

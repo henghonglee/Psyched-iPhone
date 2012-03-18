@@ -72,7 +72,7 @@
     unavailableLabel.frame = CGRectMake(0, 0, 307,111 );
     [unavailableLabel setFont:[UIFont fontWithName:@"Old Stamper" size:20.0]];
     unavailableLabel.textColor = [UIColor redColor];
-   
+    [likeButton setUserInteractionEnabled:NO];
     difficultyLabel.text = [routeObject.pfobj objectForKey:@"difficultydescription"];
     NSString *foo = [routeObject.pfobj objectForKey:@"description"];
     CGSize size = [foo sizeWithFont:[UIFont fontWithName:@"Helvetica" size:11.0f]
@@ -113,7 +113,7 @@
     //scroll.contentSize = CGSizeMake(320, 566);
     self.navigationController.navigationBarHidden = NO;
     NSLog(@"checking like sendstatus");
-     [self checkLiked];
+
     [self checksendstatus];
     [self checkCommunitySendStatus];
     NSLog(@"done checking sendstatus and likes");
@@ -126,7 +126,7 @@
           NSLog(@"getting fb route detail");
          [self getFacebookRouteDetails];
       }else{
-            
+                 [self checkLikedWithoutFacebook];
           NSLog(@"getting comments");
           PFQuery* query = [PFQuery queryWithClassName:@"Comment"];
                   query.cachePolicy = kPFCachePolicyNetworkElseCache;
@@ -257,24 +257,31 @@
     }];
     
 }
--(void)checkLiked
+-(void)checkLikedWithoutFacebook
 {
     PFQuery* likequery = [PFQuery queryWithClassName:@"Like"];
-    [likequery whereKey:@"owner" equalTo:[[PFUser currentUser] objectForKey:@"name"]];
+   // [likequery whereKey:@"owner" equalTo:[[PFUser currentUser] objectForKey:@"name"]];
     [likequery whereKey:@"linkedroute" equalTo:routeObject.pfobj];
     [likequery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+        BOOL liked=NO;
         if ([objects count]) {
-            likecount = likecount + 1;
-            [routeObject.pfobj setObject:[NSNumber numberWithInt:likecount] forKey:@"likecount"];
-            [routeObject.pfobj saveEventually];
-            likeCountLabel.text = [NSString stringWithFormat:@"%d likes",likecount];
-            [likeButton setImage:[UIImage imageNamed:@"heartcolor.png"] forState:UIControlStateNormal];
-            
-        }else{
-            
-            [likeButton setImage:[UIImage imageNamed:@"popularbutton.png"] forState:UIControlStateNormal];
-            
+            for (PFObject* likeobj in objects) {
+                    
+                
+                if([[likeobj objectForKey:@"owner"] isEqualToString:[[PFUser currentUser]objectForKey:@"name"]]){
+                    liked=YES;
+                    [likeButton setImage:[UIImage imageNamed:@"heartcolor.png"] forState:UIControlStateNormal];
+                }
+                
+                
+            }
+            if (!liked) {
+                [likeButton setImage:[UIImage imageNamed:@"popularbutton.png"] forState:UIControlStateNormal];
+            }
+            likeCountLabel.text = [NSString stringWithFormat:@"%d likes",[objects count]];
+            [likeButton setUserInteractionEnabled:YES];
         }
+        
     }];
 }
 -(void)checksendstatus
@@ -605,15 +612,23 @@
         // Get JSON as a NSString from NSData response
         NSString *json_string = [[NSString alloc] initWithString:[request responseString]];
         NSDictionary *parsedJson = [parser objectWithString:json_string error:nil];
+        [parser release];
+        [json_string release];
         NSDictionary *commentsDict = [parsedJson objectForKey:@"comments"];
         NSDictionary *likesDict =[parsedJson objectForKey:@"likes"];
         NSArray *likedataDict = [likesDict objectForKey:@"data"];
         NSLog(@"%d likers",[likedataDict count]);
-        
-        likecount = likecount + [likedataDict count];
-        [routeObject.pfobj setObject:[NSNumber numberWithInt:likecount] forKey:@"likecount"];
+        for (NSDictionary* liker in likedataDict) {
+            NSLog(@"liker = %@",[liker objectForKey:@"name"]);
+            if ([[liker objectForKey:@"name"]isEqualToString:[[PFUser currentUser]objectForKey:@"name"]]) {
+                //color
+                [likeButton setImage:[UIImage imageNamed:@"heartcolor.png"] forState:UIControlStateNormal];       
+            }
+        }
+        [likeButton setUserInteractionEnabled:YES];
+        [routeObject.pfobj setObject:[NSNumber numberWithInt:[likedataDict count]] forKey:@"likecount"];
         [routeObject.pfobj saveEventually];
-        likeCountLabel.text = [NSString stringWithFormat:@"%d likes",likecount];
+        likeCountLabel.text = [NSString stringWithFormat:@"%d likes",[likedataDict count]];
         NSArray *dataDict = [commentsDict objectForKey:@"data"];
         for (NSDictionary* comment in dataDict) {
             NSLog(@"comment =%@",[comment objectForKey:@"message"]);
@@ -929,8 +944,19 @@ commentTextField.text = @"";
     
 }
 - (void)request:(PF_FBRequest *)request didLoad:(id)result {
+    NSLog(@"request didload with result %@",result); 
+    if([[result objectForKey:@"result"]isEqualToString:@"true"])
+    {
+        if (facebookliked) {
+            //set button color to heartcolor
+            [likeButton setImage:[UIImage imageNamed:@"heartcolor.png"] forState:UIControlStateNormal];       
+        }else{
+            [likeButton setImage:[UIImage imageNamed:@"popularbutton.png"] forState:UIControlStateNormal];       
+        }
     
-          [self getFacebookRouteDetails];
+          [self getFacebookRouteDetails]; 
+    
+    }
          
 }
 - (IBAction)showUsers:(UIButton*)sender {
@@ -957,47 +983,78 @@ commentTextField.text = @"";
 }
 
 - (IBAction)likeButton:(id)sender {
+    [likeButton setUserInteractionEnabled:NO];
+    if ([routeObject.pfobj objectForKey:@"photoid"])
+    {//if uploaded to facebook also upload comment to facebook.. keep everything there
+        
+        if([likeButton imageForState:UIControlStateNormal]==[UIImage imageNamed:@"heartcolor.png"]){
+            facebookliked = NO; //unlike!
+        NSMutableDictionary *params = [NSMutableDictionary dictionaryWithObjectsAndKeys:[[PFUser currentUser]objectForKey:@"name"],[[[PFUser currentUser]objectForKey:@"facebookid"] stringValue],nil];
+        [[PFFacebookUtils facebook] requestWithGraphPath:[NSString stringWithFormat:@"/%@/likes",[routeObject.pfobj objectForKey:@"photoid"]]
+                                               andParams:params
+                                           andHttpMethod:@"DELETE"
+                                             andDelegate:self];
+            
+        }else{
+            facebookliked = YES; //liked
+            NSMutableDictionary *params = [NSMutableDictionary dictionaryWithObjectsAndKeys:[[PFUser currentUser]objectForKey:@"name"],[[[PFUser currentUser]objectForKey:@"facebookid"] stringValue],nil];
+            [[PFFacebookUtils facebook] requestWithGraphPath:[NSString stringWithFormat:@"/%@/likes",[routeObject.pfobj objectForKey:@"photoid"]]
+                                                   andParams:params
+                                               andHttpMethod:@"POST"
+                                                 andDelegate:self]; 
+        }
+        
+    }else{
+    
     PFQuery* likequery = [PFQuery queryWithClassName:@"Like"];
-    [likequery whereKey:@"owner" equalTo:[[PFUser currentUser] objectForKey:@"name"]];
+
     [likequery whereKey:@"linkedroute" equalTo:routeObject.pfobj];
     [queryArray  addObject:likequery];
-    [likeButton setUserInteractionEnabled:NO];
+    
     [likequery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
         [queryArray removeObject:likequery];
             [likeButton setUserInteractionEnabled:YES];
+            BOOL didLike=NO;
         if ([objects count]) {
-            
-                [[objects objectAtIndex:0]deleteInBackgroundWithBlock:^(BOOL succeeded, NSError *error){
-                    likecount = likecount - 1;
-                    [routeObject.pfobj setObject:[NSNumber numberWithInt:likecount] forKey:@"likecount"];
-                    [routeObject.pfobj saveInBackground];
-                    likeCountLabel.text = [NSString stringWithFormat:@"%d likes",likecount];
-                    [likeButton setImage:[UIImage imageNamed:@"popularbutton.png"] forState:UIControlStateNormal];       
-                    
-                PFQuery* feedquery = [PFQuery queryWithClassName:@"Feed"];
-                [feedquery whereKey:@"sender" equalTo:[[PFUser currentUser] objectForKey:@"name"]];
-                [feedquery whereKey:@"linkedroute" equalTo:routeObject.pfobj];
-                [queryArray addObject:feedquery];
-                [feedquery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
-                    [queryArray removeObject:feedquery];
-                    if ([objects count]) {
-                        [((PFObject*)[objects objectAtIndex:0]) delete];
-                       
-                    }
-                }];
-            }];
-        }else{
-            NSInvocationOperation* theOp = [[[NSInvocationOperation alloc] initWithTarget:self
-                                                                                 selector:@selector(LikeOperation) object:nil] autorelease];
-            [theOp start];
-            
 
+            for (PFObject* likeobj in objects) {
+                if ([[likeobj objectForKey:@"owner"]isEqualToString:[[PFUser currentUser]objectForKey:@"name"]]) {
+                    didLike = YES;
+                    [likeobj deleteInBackgroundWithBlock:^(BOOL succeeded, NSError *error){
+                        [routeObject.pfobj setObject:[NSNumber numberWithInt:([objects count]-1)] forKey:@"likecount"];
+                        [routeObject.pfobj saveInBackground];
+                        likeCountLabel.text = [NSString stringWithFormat:@"%d likes",([objects count]-1)];
+                        [likeButton setImage:[UIImage imageNamed:@"popularbutton.png"] forState:UIControlStateNormal];       
+                        PFQuery* feedquery = [PFQuery queryWithClassName:@"Feed"];
+                        [feedquery whereKey:@"sender" equalTo:[[PFUser currentUser] objectForKey:@"name"]];
+                        [feedquery whereKey:@"linkedroute" equalTo:routeObject.pfobj];
+                        [queryArray addObject:feedquery];
+                        [feedquery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+                            [queryArray removeObject:feedquery];
+                            if ([objects count]) {
+                                [((PFObject*)[objects objectAtIndex:0]) delete];
+                                
+                            }
+                        }];
+                    }];
+                }
+            }
         }
+            if (!didLike) {
+                NSInvocationOperation* theOp = [[[NSInvocationOperation alloc] initWithTarget:self
+                                                                                     selector:@selector(LikeOperation:) object:[objects count]] autorelease];
+                [theOp start];
+
+            }
+                        
+
+        
     }];
        
     
     }
--(void)LikeOperation
+    }
+-(void)LikeOperation:(NSInteger)likecounter
 {
     
     PFObject* newLike = [PFObject objectWithClassName:@"Like"];
@@ -1006,7 +1063,7 @@ commentTextField.text = @"";
     [newLike setObject:routeObject.pfobj.objectId forKey:@"linkedrouteID"];
     [newLike saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
         if (succeeded){
-            likecount = likecount + 1;
+            likecount = likecounter + 1;
             [routeObject.pfobj setObject:[NSNumber numberWithInt:likecount] forKey:@"likecount"];
             [routeObject.pfobj saveInBackground];
             likeCountLabel.text = [NSString stringWithFormat:@"%d likes",likecount];
@@ -1111,7 +1168,7 @@ if (cell == nil) {
         date = (((NSDate*)((PFObject*)[commentsArray objectAtIndex:indexPath.row]).createdAt));
     }
     double timesincenow =  [date timeIntervalSinceNow];
-    NSLog(@"timesincenow = %i",((int)timesincenow));
+    //NSLog(@"timesincenow = %i",((int)timesincenow));
 
     int timeint = ((int)timesincenow);
     //if more than 1 day show number of days

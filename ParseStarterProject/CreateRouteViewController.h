@@ -9,7 +9,6 @@
 #import <UIKit/UIKit.h>
 #import "MapKit/MapKit.h"
 #import <Parse/Parse.h>
-#import "ImageCropper.h"
 #import "FBfriend.h"
 #import "MBProgressHUD.h"
 #import "RouteDescriptionViewController.h"
@@ -27,7 +26,7 @@
     CLLocationCoordinate2D routeLoc;
 }
 
--(void)apiGraphFriends;
+
 -(void)tagPhoto:(NSString*)photoid withUser:(NSString*)facebookid;
 @property (retain, nonatomic) NSMutableDictionary* imageMetaData;
 @property (retain, nonatomic) IBOutlet MKMapView* routeLocMapView;

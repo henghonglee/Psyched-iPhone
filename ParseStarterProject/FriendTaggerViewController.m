@@ -109,19 +109,21 @@
     UITableViewCell* cellselected = [tableView cellForRowAtIndexPath:indexPath];
     if(cellselected.accessoryType == UITableViewCellAccessoryCheckmark)
     {
+        FBfriend* friendtoremove= [[[FBfriend alloc]init]autorelease];
         cellselected.accessoryType = UITableViewCellAccessoryNone;
         for (FBfriend* user in FBfriendsArray) {
             if ([user.name isEqualToString:cellselected.textLabel.text]) {
-                FBfriend* friendtoremove= [[FBfriend alloc]init];
+                
                 for (FBfriend* friend in recommendArray) {
                     if ([friend.name isEqualToString:user.name]) {
                         friendtoremove = friend;
                     }
                 }
-        [recommendArray removeObject:friendtoremove];
+                [recommendArray removeObject:friendtoremove];
 
             }
         }
+        
     }else{
         cellselected.accessoryType = UITableViewCellAccessoryCheckmark;
         

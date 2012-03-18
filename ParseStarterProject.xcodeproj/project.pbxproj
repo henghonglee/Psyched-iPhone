@@ -26,7 +26,6 @@
 		EF079E0114E82C3400A0B12D /* profilebg.jpg in Resources */ = {isa = PBXBuildFile; fileRef = EF079E0014E82C3300A0B12D /* profilebg.jpg */; };
 		EF0C4F9414BDC427003F88D4 /* EditImageViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EF0C4F9214BDC427003F88D4 /* EditImageViewController.m */; };
 		EF0C4F9514BDC427003F88D4 /* EditImageViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = EF0C4F9314BDC427003F88D4 /* EditImageViewController.xib */; };
-		EF0C4F9D14BDC7F7003F88D4 /* ImageCropper.m in Sources */ = {isa = PBXBuildFile; fileRef = EF0C4F9C14BDC7F7003F88D4 /* ImageCropper.m */; };
 		EF1B4B4114BEB7450048E8B2 /* RouteObject.m in Sources */ = {isa = PBXBuildFile; fileRef = EF1B4B4014BEB7450048E8B2 /* RouteObject.m */; };
 		EF1C8E0B15067D5900E98454 /* followbuttondown.png in Resources */ = {isa = PBXBuildFile; fileRef = EF1C8E0915067D5900E98454 /* followbuttondown.png */; };
 		EF1C8E0C15067D5900E98454 /* followbuttonup.png in Resources */ = {isa = PBXBuildFile; fileRef = EF1C8E0A15067D5900E98454 /* followbuttonup.png */; };
@@ -93,6 +92,12 @@
 		EF3BC07314D32E3C0027F06F /* arrow4.png in Resources */ = {isa = PBXBuildFile; fileRef = EF3BC06814D32E390027F06F /* arrow4.png */; };
 		EF3BC07414D32E3C0027F06F /* arrow3.png in Resources */ = {isa = PBXBuildFile; fileRef = EF3BC06914D32E390027F06F /* arrow3.png */; };
 		EF3BC07514D32E3C0027F06F /* arrow2.png in Resources */ = {isa = PBXBuildFile; fileRef = EF3BC06A14D32E3A0027F06F /* arrow2.png */; };
+		EF3D7E1C1514947800D5395D /* followed.png in Resources */ = {isa = PBXBuildFile; fileRef = EF3D7E161514947800D5395D /* followed.png */; };
+		EF3D7E1D1514947800D5395D /* nearby@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = EF3D7E171514947800D5395D /* nearby@2x.png */; };
+		EF3D7E1E1514947800D5395D /* nearby.png in Resources */ = {isa = PBXBuildFile; fileRef = EF3D7E181514947800D5395D /* nearby.png */; };
+		EF3D7E1F1514947800D5395D /* grade@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = EF3D7E191514947800D5395D /* grade@2x.png */; };
+		EF3D7E201514947800D5395D /* grade.png in Resources */ = {isa = PBXBuildFile; fileRef = EF3D7E1A1514947800D5395D /* grade.png */; };
+		EF3D7E211514947800D5395D /* followed@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = EF3D7E1B1514947800D5395D /* followed@2x.png */; };
 		EF43AF3114ECDD3F0079DAF2 /* splash.png in Resources */ = {isa = PBXBuildFile; fileRef = EF43AF3014ECDD3F0079DAF2 /* splash.png */; };
 		EF43AF3914ECE2790079DAF2 /* projectoverlay210.png in Resources */ = {isa = PBXBuildFile; fileRef = EF43AF3814ECE2790079DAF2 /* projectoverlay210.png */; };
 		EF43AF3B14ECE3290079DAF2 /* flashoverlay210.png in Resources */ = {isa = PBXBuildFile; fileRef = EF43AF3A14ECE3290079DAF2 /* flashoverlay210.png */; };
@@ -244,8 +249,6 @@
 		EF0C4F9114BDC427003F88D4 /* EditImageViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EditImageViewController.h; sourceTree = "<group>"; };
 		EF0C4F9214BDC427003F88D4 /* EditImageViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EditImageViewController.m; sourceTree = "<group>"; };
 		EF0C4F9314BDC427003F88D4 /* EditImageViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = EditImageViewController.xib; sourceTree = "<group>"; };
-		EF0C4F9B14BDC7F6003F88D4 /* ImageCropper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImageCropper.h; sourceTree = "<group>"; };
-		EF0C4F9C14BDC7F7003F88D4 /* ImageCropper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ImageCropper.m; sourceTree = "<group>"; };
 		EF1B4B3F14BEB7450048E8B2 /* RouteObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RouteObject.h; sourceTree = "<group>"; };
 		EF1B4B4014BEB7450048E8B2 /* RouteObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RouteObject.m; sourceTree = "<group>"; };
 		EF1C8E0915067D5900E98454 /* followbuttondown.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = followbuttondown.png; sourceTree = "<group>"; };
@@ -350,6 +353,12 @@
 		EF3BC06814D32E390027F06F /* arrow4.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = arrow4.png; sourceTree = "<group>"; };
 		EF3BC06914D32E390027F06F /* arrow3.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = arrow3.png; sourceTree = "<group>"; };
 		EF3BC06A14D32E3A0027F06F /* arrow2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = arrow2.png; sourceTree = "<group>"; };
+		EF3D7E161514947800D5395D /* followed.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = followed.png; sourceTree = "<group>"; };
+		EF3D7E171514947800D5395D /* nearby@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "nearby@2x.png"; sourceTree = "<group>"; };
+		EF3D7E181514947800D5395D /* nearby.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = nearby.png; sourceTree = "<group>"; };
+		EF3D7E191514947800D5395D /* grade@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "grade@2x.png"; sourceTree = "<group>"; };
+		EF3D7E1A1514947800D5395D /* grade.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = grade.png; sourceTree = "<group>"; };
+		EF3D7E1B1514947800D5395D /* followed@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "followed@2x.png"; sourceTree = "<group>"; };
 		EF43AF3014ECDD3F0079DAF2 /* splash.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = splash.png; path = ../splash.png; sourceTree = "<group>"; };
 		EF43AF3814ECE2790079DAF2 /* projectoverlay210.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = projectoverlay210.png; sourceTree = "<group>"; };
 		EF43AF3A14ECE3290079DAF2 /* flashoverlay210.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = flashoverlay210.png; sourceTree = "<group>"; };
@@ -929,8 +938,6 @@
 		EFB728A614CD93C400B43FC3 /* Share */ = {
 			isa = PBXGroup;
 			children = (
-				EF0C4F9B14BDC7F6003F88D4 /* ImageCropper.h */,
-				EF0C4F9C14BDC7F7003F88D4 /* ImageCropper.m */,
 				EFD4A2AC14BAA12F008A583F /* CreateRouteViewController.h */,
 				EFD4A2AD14BAA12F008A583F /* CreateRouteViewController.m */,
 				EFD4A2AE14BAA130008A583F /* CreateRouteViewController.xib */,
@@ -996,6 +1003,12 @@
 		EFD4A2A814BA9BC7008A583F /* Images */ = {
 			isa = PBXGroup;
 			children = (
+				EF3D7E161514947800D5395D /* followed.png */,
+				EF3D7E171514947800D5395D /* nearby@2x.png */,
+				EF3D7E181514947800D5395D /* nearby.png */,
+				EF3D7E191514947800D5395D /* grade@2x.png */,
+				EF3D7E1A1514947800D5395D /* grade.png */,
+				EF3D7E1B1514947800D5395D /* followed@2x.png */,
 				EF7DC7A51503A2E000DC0433 /* graybuttondepressed.png */,
 				EF43AF5814ED4E2F0079DAF2 /* popularbutton.png */,
 				EF5BD4BA14C579A000C4FCB3 /* notifbg2.png */,
@@ -1230,6 +1243,12 @@
 				EF1C8E111506863300E98454 /* followbuttonup@2x.png in Resources */,
 				EFC963631507300A005C9558 /* LoadMoreFeedCell.xib in Resources */,
 				EFDF2AB4151242F900891FF5 /* FollowTableCell.xib in Resources */,
+				EF3D7E1C1514947800D5395D /* followed.png in Resources */,
+				EF3D7E1D1514947800D5395D /* nearby@2x.png in Resources */,
+				EF3D7E1E1514947800D5395D /* nearby.png in Resources */,
+				EF3D7E1F1514947800D5395D /* grade@2x.png in Resources */,
+				EF3D7E201514947800D5395D /* grade.png in Resources */,
+				EF3D7E211514947800D5395D /* followed@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1287,7 +1306,6 @@
 				EF399FF614BB31AB00A02516 /* ASIS3ServiceRequest.m in Sources */,
 				EF39A00714BB31AB00A02516 /* Reachability.m in Sources */,
 				EF0C4F9414BDC427003F88D4 /* EditImageViewController.m in Sources */,
-				EF0C4F9D14BDC7F7003F88D4 /* ImageCropper.m in Sources */,
 				EF1B4B4114BEB7450048E8B2 /* RouteObject.m in Sources */,
 				EF5DE5CA14BF0EA300FCAF60 /* CommentsCell.m in Sources */,
 				EFA7E99814C1F32500776236 /* FeedsViewController.m in Sources */,

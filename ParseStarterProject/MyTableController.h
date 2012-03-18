@@ -44,7 +44,7 @@
 @property (retain,nonatomic) NSMutableArray* routeArray;
 @property (retain,nonatomic) NSMutableArray* followedArray;
 @property (retain,nonatomic) NSMutableArray* queryArray;
-@property (retain,nonatomic) NSMutableArray* saveArray;
+
 
 -(void)addStandardTabView;
 - (void)reloadTableViewDataSource;

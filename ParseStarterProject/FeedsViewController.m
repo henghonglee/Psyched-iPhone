@@ -109,7 +109,7 @@
 }
 -(void)viewWillAppear:(BOOL)animated
 {
-    [self reloadTableViewDataSource];
+    [self refreshFollowsArray];
 }
 
 -(void)viewWillDisappear:(BOOL)animated

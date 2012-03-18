@@ -16,6 +16,7 @@
 @interface RouteDetailViewController : UIViewController<UITextFieldDelegate,UITableViewDelegate,UITableViewDataSource,PF_FBRequestDelegate,UIScrollViewDelegate>
 {
     int likecount;
+    BOOL facebookliked;
 }
 -(void)getFacebookRouteDetails;
 -(void)checksendstatus;
@@ -54,5 +55,5 @@
 @property (retain, nonatomic) IBOutlet UILabel *projectCountLabel;
 
 -(void)getImageIfUnavailable;
--(void)checkLiked;
+-(void)LikeOperation:(NSInteger)likecount;
 @end

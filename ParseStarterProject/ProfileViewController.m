@@ -73,7 +73,7 @@
     [navigationBarItem addTarget:self action:@selector(reloadUserData) forControlEvents:UIControlEventTouchUpInside];
     UIBarButtonItem *barButtonItem = [[UIBarButtonItem alloc] initWithCustomView:navigationBarItem];
     self.navigationItem.rightBarButtonItem = barButtonItem;
-    
+    [barButtonItem release];
     
     
     if(!username){
@@ -428,7 +428,7 @@
     if ([userfeeds count]>0) {
         PFObject* selectedFeed = [userfeeds objectAtIndex:indexPath.row];
         double timesincenow =  [((NSDate*)selectedFeed.createdAt) timeIntervalSinceNow];
-        NSLog(@"timesincenow = %i",((int)timesincenow));
+       // NSLog(@"timesincenow = %i",((int)timesincenow));
         int timeint = ((int)timesincenow);
         //if more than 1 day show number of days
         //if more than 60min show number of hrs

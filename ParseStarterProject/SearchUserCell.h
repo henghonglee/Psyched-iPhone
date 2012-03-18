@@ -12,6 +12,7 @@
 {
     PFObject* tobedeleted;
 }
+- (IBAction)setFollow:(id)sender;
 @property (retain, nonatomic) IBOutlet UILabel *nameLabel;
 @property (retain, nonatomic) IBOutlet UIImageView *userImageView;
 

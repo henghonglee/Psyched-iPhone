@@ -12,7 +12,7 @@
 
 @protocol JMTabViewDelegate
 -(void)tabView:(JMTabView *)tabView didSelectTabAtIndex:(NSUInteger)itemIndex;
--(void)invertGradeArray;
+
 @end
 
 #pragma Mark -

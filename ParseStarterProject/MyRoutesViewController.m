@@ -34,6 +34,7 @@
     UIImageView* headerviewimage = [[UIImageView alloc]initWithFrame:CGRectMake(0, 0, 320, 44 )];
     headerviewimage.image = [UIImage imageNamed:@"headerview2.png"];
     [headerView addSubview:headerviewimage];
+    [headerviewimage release];
     UILabel* headerLabel = [[UILabel alloc]initWithFrame:CGRectMake(60, 0, 200, 44)];
     headerLabel.font = [UIFont boldSystemFontOfSize:20.0f];
     headerLabel.textAlignment = UITextAlignmentCenter;
@@ -46,16 +47,17 @@
     refreshButton.showsTouchWhenHighlighted = YES;
     [headerView addSubview:refreshButton];
     [headerView addSubview:headerLabel];  
+    [headerLabel release];
     UIButton* backButton = [[UIButton alloc]initWithFrame:CGRectMake(0, 0, 70, 44)];
     [backButton setTitle:@"Back" forState:UIControlStateNormal];
     [backButton addTarget:self action:@selector(backButtonAction) forControlEvents:UIControlEventTouchUpInside];
     [headerView addSubview:backButton];
     [backButton release];
     
-    self.flashArray = [[NSMutableArray alloc]init];
-    self.sentArray = [[NSMutableArray alloc]init];
-    self.projectArray = [[NSMutableArray alloc]init];
-    self.likedArray = [[NSMutableArray alloc]init];
+    self.flashArray = [[[NSMutableArray alloc]init]autorelease];
+    self.sentArray = [[[NSMutableArray alloc]init]autorelease];
+    self.projectArray = [[[NSMutableArray alloc]init]autorelease];
+    self.likedArray = [[[NSMutableArray alloc]init]autorelease];
 
     [self addStandardTabView];
     tabView.segmentIndex = selectedSegment;
@@ -90,13 +92,13 @@
     [super viewDidUnload];
     NSLog(@"view did unload");
     self.flashArray = nil;
-    [self.flashArray release];
+ //   [self.flashArray release];
     self.sentArray = nil;
-    [self.sentArray release];
+ //   [self.sentArray release];
     self.projectArray=nil;
-    [self.projectArray release];
+//    [self.projectArray release];
     self.likedArray=nil;
-    [self.likedArray release];
+//    [self.likedArray release];
     [self setRouteTableView:nil];
     
     // Release any retained subviews of the main view.
@@ -571,7 +573,7 @@
                     if (!isadded) {
                         [self.flashArray insertObject:newRouteObject atIndex:0]; 
                     }
-                    isadded=NO;
+                [newRouteObject release];
                 }
                 [routeTableView reloadData];
             }];
@@ -594,7 +596,7 @@
                     if (!isadded) {
                         [self.sentArray insertObject:newRouteObject atIndex:0]; 
                     }
-                    isadded=NO;
+                    [newRouteObject release];
                 }
                 [routeTableView reloadData];
             }];
@@ -616,7 +618,7 @@
                     if (!isadded) {
                         [self.projectArray insertObject:newRouteObject atIndex:0]; 
                     }
-                    isadded=NO;
+                    [newRouteObject release];
                 }
                 [routeTableView reloadData];
             }];
@@ -631,6 +633,7 @@
                     RouteObject* newRouteObject = [[RouteObject alloc] init];
                     newRouteObject.pfobj = [Like objectForKey:@"linkedroute"];
                     [self.likedArray insertObject:newRouteObject atIndex:0];
+                    [newRouteObject release];
                 }
                 [routeTableView reloadData];
             }];
@@ -804,10 +807,6 @@
 
 
 - (void)dealloc {
-    [flashArray release];
-    [sentArray release];
-    [projectArray release];
-    
     
     [routeTableView release];
     [super dealloc];
