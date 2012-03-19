@@ -525,10 +525,10 @@
     self.tabBarController.tabBar.layer.shadowOffset = CGSizeMake(0, -4);
     [tabView setDelegate:self];
     
-    [tabView addTabItemWithTitle:@"Flash" icon:[UIImage imageNamed:@"icon1.png"]];
-    [tabView addTabItemWithTitle:@"Sent" icon:[UIImage imageNamed:@"icon2.png"]];
-    [tabView addTabItemWithTitle:@"Project" icon:[UIImage imageNamed:@"icon3.png"]];
-    [tabView addTabItemWithTitle:@"Liked" icon:[UIImage imageNamed:@"icon3.png"]];
+    [tabView addTabItemWithTitle:@"Flash" icon:[UIImage imageNamed:@"flash_white.png"]];
+    [tabView addTabItemWithTitle:@"Sent" icon:[UIImage imageNamed:@"sent_white.png"]];
+    [tabView addTabItemWithTitle:@"Project" icon:[UIImage imageNamed:@"project_white.png"]];
+    [tabView addTabItemWithTitle:@"Liked" icon:[UIImage imageNamed:@"icon2.png"]];
     
     
     

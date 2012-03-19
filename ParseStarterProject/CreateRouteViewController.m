@@ -17,7 +17,7 @@ typedef enum apiCall {
 #import "CreateRouteViewController.h"
 #import "ParseStarterProjectAppDelegate.h"
 #import <QuartzCore/QuartzCore.h>
-
+#import "RouteLocationViewController.h"
 @implementation CreateRouteViewController
 @synthesize routeLocMapView;
 @synthesize recommendTextField;
@@ -60,12 +60,16 @@ typedef enum apiCall {
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
     routeLocMapView.layer.borderColor = [UIColor whiteColor].CGColor;
     routeLocMapView.layer.borderWidth = 3;
     routeLoc = CLLocationCoordinate2DMake([[[imageMetaData objectForKey:@"{GPS}"] objectForKey:@"Latitude"] doubleValue], [[[imageMetaData objectForKey:@"{GPS}"] objectForKey:@"Longitude"] doubleValue]);
-    
+    UIBarButtonItem* rightButton = [[UIBarButtonItem alloc] initWithTitle:@"Upload" style:UIBarButtonSystemItemDone target:self action:@selector(saveAction:)];
+    self.navigationItem.rightBarButtonItem = rightButton;
+    [rightButton release];
     [routeLocMapView setCenterCoordinate:routeLoc zoomLevel:14 animated:NO];
     self.navigationController.navigationBarHidden = NO;
+    self.navigationItem.title = @"Add Route";
     recommendArray = [[NSMutableArray alloc]init];
     friendsArray = [[NSMutableArray alloc]init ];
 
@@ -112,12 +116,26 @@ typedef enum apiCall {
 {
     descriptionTextField.text = text;
 }
+-(void)LocationDidReturnWithText:(NSString *)text
+{
+    locationTextField.text = text;
+}
 
 -(BOOL)textFieldShouldBeginEditing:(UITextField *)textField
 {
     if (textField==descriptionTextField) {
         RouteDescriptionViewController* viewController = [[RouteDescriptionViewController alloc]initWithNibName:@"RouteDescriptionViewController" bundle:nil];
         viewController.descriptionText = descriptionTextField.text;
+        viewController.delegate = self;
+        [self.navigationController pushViewController:viewController animated:YES];
+        [viewController release];
+        return NO;
+    }
+    if (textField==locationTextField) {
+        RouteLocationViewController* viewController = [[RouteLocationViewController alloc]initWithNibName:@"RouteLocationViewController" bundle:nil];
+        PFGeoPoint* gpLoc = [PFGeoPoint geoPointWithLatitude:[[[imageMetaData objectForKey:@"{GPS}"] objectForKey:@"Latitude"] doubleValue] longitude:[[[imageMetaData objectForKey:@"{GPS}"] objectForKey:@"Longitude"] doubleValue]];
+        viewController.gpLoc = gpLoc;
+        viewController.locationText = locationTextField.text;
         viewController.delegate = self;
         [self.navigationController pushViewController:viewController animated:YES];
         [viewController release];

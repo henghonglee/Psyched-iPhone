@@ -98,6 +98,36 @@
 		EF3D7E1F1514947800D5395D /* grade@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = EF3D7E191514947800D5395D /* grade@2x.png */; };
 		EF3D7E201514947800D5395D /* grade.png in Resources */ = {isa = PBXBuildFile; fileRef = EF3D7E1A1514947800D5395D /* grade.png */; };
 		EF3D7E211514947800D5395D /* followed@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = EF3D7E1B1514947800D5395D /* followed@2x.png */; };
+		EF3D7E2615163D8C00D5395D /* comments.png in Resources */ = {isa = PBXBuildFile; fileRef = EF3D7E2215163D8700D5395D /* comments.png */; };
+		EF3D7E2715163D8C00D5395D /* comments@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = EF3D7E2315163D8800D5395D /* comments@2x.png */; };
+		EF3D7E2815163D8C00D5395D /* flash.png in Resources */ = {isa = PBXBuildFile; fileRef = EF3D7E2415163D8900D5395D /* flash.png */; };
+		EF3D7E2915163D8C00D5395D /* flash@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = EF3D7E2515163D8B00D5395D /* flash@2x.png */; };
+		EF3D7E2E15163D9700D5395D /* project.png in Resources */ = {isa = PBXBuildFile; fileRef = EF3D7E2A15163D9200D5395D /* project.png */; };
+		EF3D7E2F15163D9800D5395D /* project@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = EF3D7E2B15163D9300D5395D /* project@2x.png */; };
+		EF3D7E3015163D9800D5395D /* sent.png in Resources */ = {isa = PBXBuildFile; fileRef = EF3D7E2C15163D9500D5395D /* sent.png */; };
+		EF3D7E3115163D9800D5395D /* sent@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = EF3D7E2D15163D9600D5395D /* sent@2x.png */; };
+		EF3D7E3415163D9D00D5395D /* views.png in Resources */ = {isa = PBXBuildFile; fileRef = EF3D7E3215163D9B00D5395D /* views.png */; };
+		EF3D7E3515163D9D00D5395D /* views@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = EF3D7E3315163D9C00D5395D /* views@2x.png */; };
+		EF3D7E3815163DAB00D5395D /* likes.png in Resources */ = {isa = PBXBuildFile; fileRef = EF3D7E3615163DA800D5395D /* likes.png */; };
+		EF3D7E3915163DAB00D5395D /* likes@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = EF3D7E3715163DA900D5395D /* likes@2x.png */; };
+		EF3D7E3C15163DFB00D5395D /* gradeblack@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = EF3D7E3A15163DF800D5395D /* gradeblack@2x.png */; };
+		EF3D7E3D15163DFB00D5395D /* gradeblack.png in Resources */ = {isa = PBXBuildFile; fileRef = EF3D7E3B15163DFA00D5395D /* gradeblack.png */; };
+		EF3D7E4015163F6100D5395D /* locationpin.png in Resources */ = {isa = PBXBuildFile; fileRef = EF3D7E3E15163F5F00D5395D /* locationpin.png */; };
+		EF3D7E4115163F6100D5395D /* locationpin@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = EF3D7E3F15163F6000D5395D /* locationpin@2x.png */; };
+		EF3D7E4315163FB700D5395D /* bluepin.png in Resources */ = {isa = PBXBuildFile; fileRef = EF3D7E4215163FB700D5395D /* bluepin.png */; };
+		EF3D7E461516436000D5395D /* follow_text.png in Resources */ = {isa = PBXBuildFile; fileRef = EF3D7E441516435E00D5395D /* follow_text.png */; };
+		EF3D7E471516436000D5395D /* following_text.png in Resources */ = {isa = PBXBuildFile; fileRef = EF3D7E451516435F00D5395D /* following_text.png */; };
+		EF3D7E4E151644CC00D5395D /* flash_white.png in Resources */ = {isa = PBXBuildFile; fileRef = EF3D7E48151644C000D5395D /* flash_white.png */; };
+		EF3D7E4F151644CC00D5395D /* flash_white@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = EF3D7E49151644C200D5395D /* flash_white@2x.png */; };
+		EF3D7E50151644CC00D5395D /* project_white.png in Resources */ = {isa = PBXBuildFile; fileRef = EF3D7E4A151644C400D5395D /* project_white.png */; };
+		EF3D7E51151644CC00D5395D /* project_white@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = EF3D7E4B151644C500D5395D /* project_white@2x.png */; };
+		EF3D7E52151644CC00D5395D /* sent_white.png in Resources */ = {isa = PBXBuildFile; fileRef = EF3D7E4C151644C700D5395D /* sent_white.png */; };
+		EF3D7E53151644CC00D5395D /* sent_white@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = EF3D7E4D151644C900D5395D /* sent_white@2x.png */; };
+		EF3D7E551517170C00D5395D /* field.png in Resources */ = {isa = PBXBuildFile; fileRef = EF3D7E541517170A00D5395D /* field.png */; };
+		EF3D7E591517213400D5395D /* Facebook-logo-2.png in Resources */ = {isa = PBXBuildFile; fileRef = EF3D7E581517213300D5395D /* Facebook-logo-2.png */; };
+		EF3D7E5D151721F000D5395D /* RouteLocationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EF3D7E5B151721EE00D5395D /* RouteLocationViewController.m */; };
+		EF3D7E5E151721F000D5395D /* RouteLocationViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = EF3D7E5C151721EF00D5395D /* RouteLocationViewController.xib */; };
+		EF3D7E61151726CA00D5395D /* AddNewLocationCell.m in Sources */ = {isa = PBXBuildFile; fileRef = EF3D7E60151726C900D5395D /* AddNewLocationCell.m */; };
 		EF43AF3114ECDD3F0079DAF2 /* splash.png in Resources */ = {isa = PBXBuildFile; fileRef = EF43AF3014ECDD3F0079DAF2 /* splash.png */; };
 		EF43AF3914ECE2790079DAF2 /* projectoverlay210.png in Resources */ = {isa = PBXBuildFile; fileRef = EF43AF3814ECE2790079DAF2 /* projectoverlay210.png */; };
 		EF43AF3B14ECE3290079DAF2 /* flashoverlay210.png in Resources */ = {isa = PBXBuildFile; fileRef = EF43AF3A14ECE3290079DAF2 /* flashoverlay210.png */; };
@@ -209,7 +239,7 @@
 		EFDE197814F3874000B1141B /* RouteDescriptionViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = EFDE197614F3874000B1141B /* RouteDescriptionViewController.xib */; };
 		EFDE197C14F38E5000B1141B /* FriendTaggerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EFDE197A14F38E4F00B1141B /* FriendTaggerViewController.m */; };
 		EFDE197D14F38E5000B1141B /* FriendTaggerViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = EFDE197B14F38E4F00B1141B /* FriendTaggerViewController.xib */; };
-		EFDEA28A14E69FF400896519 /* bluepin.png in Resources */ = {isa = PBXBuildFile; fileRef = EFDEA28914E69FF400896519 /* bluepin.png */; };
+		EFDEA28A14E69FF400896519 /* bluepin@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = EFDEA28914E69FF400896519 /* bluepin@2x.png */; };
 		EFDEA28D14E6A48700896519 /* 1 (3).png in Resources */ = {isa = PBXBuildFile; fileRef = EFDEA28C14E6A48700896519 /* 1 (3).png */; };
 		EFDF2AB4151242F900891FF5 /* FollowTableCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = EFDF2AB3151242F900891FF5 /* FollowTableCell.xib */; };
 		EFDF2AB81512430700891FF5 /* FollowTableCell.m in Sources */ = {isa = PBXBuildFile; fileRef = EFDF2AB71512430700891FF5 /* FollowTableCell.m */; };
@@ -359,6 +389,38 @@
 		EF3D7E191514947800D5395D /* grade@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "grade@2x.png"; sourceTree = "<group>"; };
 		EF3D7E1A1514947800D5395D /* grade.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = grade.png; sourceTree = "<group>"; };
 		EF3D7E1B1514947800D5395D /* followed@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "followed@2x.png"; sourceTree = "<group>"; };
+		EF3D7E2215163D8700D5395D /* comments.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = comments.png; sourceTree = "<group>"; };
+		EF3D7E2315163D8800D5395D /* comments@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "comments@2x.png"; sourceTree = "<group>"; };
+		EF3D7E2415163D8900D5395D /* flash.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = flash.png; sourceTree = "<group>"; };
+		EF3D7E2515163D8B00D5395D /* flash@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "flash@2x.png"; sourceTree = "<group>"; };
+		EF3D7E2A15163D9200D5395D /* project.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = project.png; sourceTree = "<group>"; };
+		EF3D7E2B15163D9300D5395D /* project@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "project@2x.png"; sourceTree = "<group>"; };
+		EF3D7E2C15163D9500D5395D /* sent.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = sent.png; sourceTree = "<group>"; };
+		EF3D7E2D15163D9600D5395D /* sent@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "sent@2x.png"; sourceTree = "<group>"; };
+		EF3D7E3215163D9B00D5395D /* views.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = views.png; sourceTree = "<group>"; };
+		EF3D7E3315163D9C00D5395D /* views@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "views@2x.png"; sourceTree = "<group>"; };
+		EF3D7E3615163DA800D5395D /* likes.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = likes.png; sourceTree = "<group>"; };
+		EF3D7E3715163DA900D5395D /* likes@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "likes@2x.png"; sourceTree = "<group>"; };
+		EF3D7E3A15163DF800D5395D /* gradeblack@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "gradeblack@2x.png"; sourceTree = "<group>"; };
+		EF3D7E3B15163DFA00D5395D /* gradeblack.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = gradeblack.png; sourceTree = "<group>"; };
+		EF3D7E3E15163F5F00D5395D /* locationpin.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = locationpin.png; sourceTree = "<group>"; };
+		EF3D7E3F15163F6000D5395D /* locationpin@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "locationpin@2x.png"; sourceTree = "<group>"; };
+		EF3D7E4215163FB700D5395D /* bluepin.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = bluepin.png; sourceTree = "<group>"; };
+		EF3D7E441516435E00D5395D /* follow_text.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = follow_text.png; sourceTree = "<group>"; };
+		EF3D7E451516435F00D5395D /* following_text.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = following_text.png; sourceTree = "<group>"; };
+		EF3D7E48151644C000D5395D /* flash_white.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = flash_white.png; sourceTree = "<group>"; };
+		EF3D7E49151644C200D5395D /* flash_white@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "flash_white@2x.png"; sourceTree = "<group>"; };
+		EF3D7E4A151644C400D5395D /* project_white.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = project_white.png; sourceTree = "<group>"; };
+		EF3D7E4B151644C500D5395D /* project_white@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "project_white@2x.png"; sourceTree = "<group>"; };
+		EF3D7E4C151644C700D5395D /* sent_white.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = sent_white.png; sourceTree = "<group>"; };
+		EF3D7E4D151644C900D5395D /* sent_white@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "sent_white@2x.png"; sourceTree = "<group>"; };
+		EF3D7E541517170A00D5395D /* field.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = field.png; sourceTree = "<group>"; };
+		EF3D7E581517213300D5395D /* Facebook-logo-2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Facebook-logo-2.png"; sourceTree = "<group>"; };
+		EF3D7E5A151721EE00D5395D /* RouteLocationViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RouteLocationViewController.h; sourceTree = "<group>"; };
+		EF3D7E5B151721EE00D5395D /* RouteLocationViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RouteLocationViewController.m; sourceTree = "<group>"; };
+		EF3D7E5C151721EF00D5395D /* RouteLocationViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = RouteLocationViewController.xib; sourceTree = "<group>"; };
+		EF3D7E5F151726C800D5395D /* AddNewLocationCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AddNewLocationCell.h; sourceTree = "<group>"; };
+		EF3D7E60151726C900D5395D /* AddNewLocationCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AddNewLocationCell.m; sourceTree = "<group>"; };
 		EF43AF3014ECDD3F0079DAF2 /* splash.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = splash.png; path = ../splash.png; sourceTree = "<group>"; };
 		EF43AF3814ECE2790079DAF2 /* projectoverlay210.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = projectoverlay210.png; sourceTree = "<group>"; };
 		EF43AF3A14ECE3290079DAF2 /* flashoverlay210.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = flashoverlay210.png; sourceTree = "<group>"; };
@@ -518,7 +580,7 @@
 		EFDE197914F38E4F00B1141B /* FriendTaggerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FriendTaggerViewController.h; sourceTree = "<group>"; };
 		EFDE197A14F38E4F00B1141B /* FriendTaggerViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FriendTaggerViewController.m; sourceTree = "<group>"; };
 		EFDE197B14F38E4F00B1141B /* FriendTaggerViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = FriendTaggerViewController.xib; sourceTree = "<group>"; };
-		EFDEA28914E69FF400896519 /* bluepin.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = bluepin.png; path = ../bluepin.png; sourceTree = "<group>"; };
+		EFDEA28914E69FF400896519 /* bluepin@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "bluepin@2x.png"; path = "../bluepin@2x.png"; sourceTree = "<group>"; };
 		EFDEA28C14E6A48700896519 /* 1 (3).png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "1 (3).png"; path = "../1 (3).png"; sourceTree = "<group>"; };
 		EFDF2AB3151242F900891FF5 /* FollowTableCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = FollowTableCell.xib; sourceTree = "<group>"; };
 		EFDF2AB61512430700891FF5 /* FollowTableCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FollowTableCell.h; sourceTree = "<group>"; };
@@ -627,6 +689,30 @@
 		09ABC07713A1D52D009C3FCF /* ParseStarterProject */ = {
 			isa = PBXGroup;
 			children = (
+				EF3D7E48151644C000D5395D /* flash_white.png */,
+				EF3D7E49151644C200D5395D /* flash_white@2x.png */,
+				EF3D7E4A151644C400D5395D /* project_white.png */,
+				EF3D7E4B151644C500D5395D /* project_white@2x.png */,
+				EF3D7E4C151644C700D5395D /* sent_white.png */,
+				EF3D7E4D151644C900D5395D /* sent_white@2x.png */,
+				EF3D7E441516435E00D5395D /* follow_text.png */,
+				EF3D7E451516435F00D5395D /* following_text.png */,
+				EF3D7E3615163DA800D5395D /* likes.png */,
+				EF3D7E3715163DA900D5395D /* likes@2x.png */,
+				EF3D7E3215163D9B00D5395D /* views.png */,
+				EF3D7E3315163D9C00D5395D /* views@2x.png */,
+				EF3D7E2A15163D9200D5395D /* project.png */,
+				EF3D7E2B15163D9300D5395D /* project@2x.png */,
+				EF3D7E2C15163D9500D5395D /* sent.png */,
+				EF3D7E2D15163D9600D5395D /* sent@2x.png */,
+				EF3D7E2215163D8700D5395D /* comments.png */,
+				EF3D7E2315163D8800D5395D /* comments@2x.png */,
+				EF3D7E3A15163DF800D5395D /* gradeblack@2x.png */,
+				EF3D7E3B15163DFA00D5395D /* gradeblack.png */,
+				EF3D7E2415163D8900D5395D /* flash.png */,
+				EF3D7E2515163D8B00D5395D /* flash@2x.png */,
+				EF3D7E3E15163F5F00D5395D /* locationpin.png */,
+				EF3D7E3F15163F6000D5395D /* locationpin@2x.png */,
 				09ABC08013A1D52D009C3FCF /* ParseStarterProjectAppDelegate.h */,
 				09ABC08113A1D52D009C3FCF /* ParseStarterProjectAppDelegate.m */,
 				09ABC08313A1D52D009C3FCF /* MainWindow.xib */,
@@ -911,7 +997,9 @@
 				EF5DE5C814BF0EA300FCAF60 /* CommentsCell.h */,
 				EF5DE5C914BF0EA300FCAF60 /* CommentsCell.m */,
 				EF5DE5CB14BF0EC600FCAF60 /* CommentsCell.xib */,
+				EF3D7E581517213300D5395D /* Facebook-logo-2.png */,
 				EF36504114FBAF3D00C0F3DF /* tick.png */,
+				EF3D7E541517170A00D5395D /* field.png */,
 				EF36504414FBB16F00C0F3DF /* heartcolor.png */,
 			);
 			name = Popular;
@@ -946,6 +1034,11 @@
 				EFDE197414F3874000B1141B /* RouteDescriptionViewController.h */,
 				EFDE197514F3874000B1141B /* RouteDescriptionViewController.m */,
 				EFDE197614F3874000B1141B /* RouteDescriptionViewController.xib */,
+				EF3D7E5A151721EE00D5395D /* RouteLocationViewController.h */,
+				EF3D7E5B151721EE00D5395D /* RouteLocationViewController.m */,
+				EF3D7E5C151721EF00D5395D /* RouteLocationViewController.xib */,
+				EF3D7E5F151726C800D5395D /* AddNewLocationCell.h */,
+				EF3D7E60151726C900D5395D /* AddNewLocationCell.m */,
 				EFDE197914F38E4F00B1141B /* FriendTaggerViewController.h */,
 				EFDE197A14F38E4F00B1141B /* FriendTaggerViewController.m */,
 				EFDE197B14F38E4F00B1141B /* FriendTaggerViewController.xib */,
@@ -1013,7 +1106,7 @@
 				EF43AF5814ED4E2F0079DAF2 /* popularbutton.png */,
 				EF5BD4BA14C579A000C4FCB3 /* notifbg2.png */,
 				EF5BD4B814C577E000C4FCB3 /* notifbg.png */,
-				EFDEA28914E69FF400896519 /* bluepin.png */,
+				EFDEA28914E69FF400896519 /* bluepin@2x.png */,
 				EFDEA28C14E6A48700896519 /* 1 (3).png */,
 				EFA7E9A714C2C86900776236 /* fb-connect-large 2.png */,
 				EF2852EA14C50ED100932FC2 /* cellbg2.png */,
@@ -1053,6 +1146,7 @@
 				EFD4A28314BA95B6008A583F /* 112-group@2x.png */,
 				EFD4A28414BA95B6008A583F /* 123-id-card.png */,
 				EFD4A28514BA95B6008A583F /* 123-id-card@2x.png */,
+				EF3D7E4215163FB700D5395D /* bluepin.png */,
 				EFD4A28614BA95B6008A583F /* 29-heart.png */,
 				EFD4A28714BA95B6008A583F /* 29-heart@2x.png */,
 				EFD4A28814BA95B6008A583F /* cameraTabBarItem.png */,
@@ -1199,7 +1293,7 @@
 				EF292F6A14E43AD6006D3D09 /* Icon-Pencil01.png in Resources */,
 				EF292F6C14E4416F006D3D09 /* 37x-Checkmark.png in Resources */,
 				EF292F7614E500F2006D3D09 /* Facebook.png in Resources */,
-				EFDEA28A14E69FF400896519 /* bluepin.png in Resources */,
+				EFDEA28A14E69FF400896519 /* bluepin@2x.png in Resources */,
 				EFDEA28D14E6A48700896519 /* 1 (3).png in Resources */,
 				EF079E0114E82C3400A0B12D /* profilebg.jpg in Resources */,
 				EFFF299014EB88CE00FC92B2 /* reload.png in Resources */,
@@ -1249,6 +1343,34 @@
 				EF3D7E1F1514947800D5395D /* grade@2x.png in Resources */,
 				EF3D7E201514947800D5395D /* grade.png in Resources */,
 				EF3D7E211514947800D5395D /* followed@2x.png in Resources */,
+				EF3D7E2615163D8C00D5395D /* comments.png in Resources */,
+				EF3D7E2715163D8C00D5395D /* comments@2x.png in Resources */,
+				EF3D7E2815163D8C00D5395D /* flash.png in Resources */,
+				EF3D7E2915163D8C00D5395D /* flash@2x.png in Resources */,
+				EF3D7E2E15163D9700D5395D /* project.png in Resources */,
+				EF3D7E2F15163D9800D5395D /* project@2x.png in Resources */,
+				EF3D7E3015163D9800D5395D /* sent.png in Resources */,
+				EF3D7E3115163D9800D5395D /* sent@2x.png in Resources */,
+				EF3D7E3415163D9D00D5395D /* views.png in Resources */,
+				EF3D7E3515163D9D00D5395D /* views@2x.png in Resources */,
+				EF3D7E3815163DAB00D5395D /* likes.png in Resources */,
+				EF3D7E3915163DAB00D5395D /* likes@2x.png in Resources */,
+				EF3D7E3C15163DFB00D5395D /* gradeblack@2x.png in Resources */,
+				EF3D7E3D15163DFB00D5395D /* gradeblack.png in Resources */,
+				EF3D7E4015163F6100D5395D /* locationpin.png in Resources */,
+				EF3D7E4115163F6100D5395D /* locationpin@2x.png in Resources */,
+				EF3D7E4315163FB700D5395D /* bluepin.png in Resources */,
+				EF3D7E461516436000D5395D /* follow_text.png in Resources */,
+				EF3D7E471516436000D5395D /* following_text.png in Resources */,
+				EF3D7E4E151644CC00D5395D /* flash_white.png in Resources */,
+				EF3D7E4F151644CC00D5395D /* flash_white@2x.png in Resources */,
+				EF3D7E50151644CC00D5395D /* project_white.png in Resources */,
+				EF3D7E51151644CC00D5395D /* project_white@2x.png in Resources */,
+				EF3D7E52151644CC00D5395D /* sent_white.png in Resources */,
+				EF3D7E53151644CC00D5395D /* sent_white@2x.png in Resources */,
+				EF3D7E551517170C00D5395D /* field.png in Resources */,
+				EF3D7E591517213400D5395D /* Facebook-logo-2.png in Resources */,
+				EF3D7E5E151721F000D5395D /* RouteLocationViewController.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1343,6 +1465,8 @@
 				EF8BFBB8150149A600146ABD /* FollowingViewController.m in Sources */,
 				EFC9636015072FF9005C9558 /* LoadMoreFeedCell.m in Sources */,
 				EFDF2AB81512430700891FF5 /* FollowTableCell.m in Sources */,
+				EF3D7E5D151721F000D5395D /* RouteLocationViewController.m in Sources */,
+				EF3D7E61151726CA00D5395D /* AddNewLocationCell.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

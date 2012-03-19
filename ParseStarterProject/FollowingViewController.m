@@ -154,11 +154,11 @@
             if ([cell.nameLabel.text isEqualToString:[obj objectForKey:@"followed"]]) {
                 isFollowing = YES;
                 NSLog(@"is a follower");
-                [cell.followButton setBackgroundImage:[UIImage imageNamed:@"followbuttondown.png"] forState:UIControlStateNormal];
+                [cell.followButton setBackgroundImage:[UIImage imageNamed:@"following_text.png"] forState:UIControlStateNormal];
             }
             if (!isFollowing){
                 isFollowing = NO;
-                [cell.followButton setBackgroundImage:[UIImage imageNamed:@"followbuttonup.png"] forState:UIControlStateNormal];
+                [cell.followButton setBackgroundImage:[UIImage imageNamed:@"follow_text.png"] forState:UIControlStateNormal];
             }
         }
         ASIHTTPRequest* request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:urlstring]];

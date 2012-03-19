@@ -67,7 +67,7 @@
             segmentIndex = itemIndex;
         [self.delegate tabView:self didSelectTabAtIndex:itemIndex];
         }else{
-            [self.delegate invertGradeArray];
+            
         }
         
     }

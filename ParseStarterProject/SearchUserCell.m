@@ -24,14 +24,14 @@
     return self;
 }
 - (IBAction)setFollow:(id)sender {
-    if ([followButton backgroundImageForState:UIControlStateNormal]==[UIImage imageNamed:@"followbuttonup.png"]) {
+    if ([followButton backgroundImageForState:UIControlStateNormal]==[UIImage imageNamed:@"follow_text.png"]) {
         
         NSLog(@"now following %@",nameLabel.text);
         PFObject* pfObj = [PFObject objectWithClassName:@"Follow"];
         [pfObj setObject:[PFUser currentUser] forKey:@"follower"];
         [pfObj setObject:nameLabel.text forKey:@"followed"];
         [pfObj saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
-            [followButton setBackgroundImage:[UIImage imageNamed:@"followbuttondown.png"] forState:UIControlStateNormal];
+            [followButton setBackgroundImage:[UIImage imageNamed:@"following_text.png"] forState:UIControlStateNormal];
         }];
         NSLog(@"owner.followed array = %@",owner.followedArray);
         [owner.followedArray addObject:pfObj];
@@ -43,7 +43,7 @@
         [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error){
             for (PFObject* obj in objects) {
                 [obj deleteInBackground];
-          [followButton setBackgroundImage:[UIImage imageNamed:@"followbuttonup.png"] forState:UIControlStateNormal];      
+          [followButton setBackgroundImage:[UIImage imageNamed:@"follow_text.png"] forState:UIControlStateNormal];      
                 
             }
         }];

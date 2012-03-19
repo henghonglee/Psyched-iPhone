@@ -129,11 +129,11 @@ if (cell == nil) {
         for (PFObject* obj in followedArray) {
         if ([cell.nameLabel.text isEqualToString:[obj objectForKey:@"followed"]]) {
             isFollowing = YES;
-                [cell.followButton setBackgroundImage:[UIImage imageNamed:@"followbuttondown.png"] forState:UIControlStateNormal];
+                [cell.followButton setBackgroundImage:[UIImage imageNamed:@"following_text.png"] forState:UIControlStateNormal];
         }
             if (!isFollowing){
                 isFollowing = NO;
-                [cell.followButton setBackgroundImage:[UIImage imageNamed:@"followbuttonup.png"] forState:UIControlStateNormal];
+                [cell.followButton setBackgroundImage:[UIImage imageNamed:@"follow_text.png"] forState:UIControlStateNormal];
             }
         }
         ASIHTTPRequest* request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:urlstring]];
