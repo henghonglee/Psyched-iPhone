@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE
 //
+#import "ParseStarterProjectAppDelegate.h"
 #import "EditImageViewController.h"
 #import "AssetsLibrary/ALAssetsLibrary.h"
 #import <CoreLocation/CoreLocation.h>

@@ -279,9 +279,9 @@
                 [likeButton setImage:[UIImage imageNamed:@"popularbutton.png"] forState:UIControlStateNormal];
             }
             likeCountLabel.text = [NSString stringWithFormat:@"%d likes",[objects count]];
-            [likeButton setUserInteractionEnabled:YES];
+
         }
-        
+                  [likeButton setUserInteractionEnabled:YES];  
     }];
 }
 -(void)checksendstatus
@@ -811,8 +811,6 @@
     [self setPinImageView:nil];
     [self setDifficultyLabel:nil];
     [super viewDidUnload];
-    [commentsArray release];
-    [queryArray release];
     // Release any retained subviews of the main view.
     // e.g. self.myOutlet = nil;
 }

@@ -2,13 +2,15 @@
 
 #import <UIKit/UIKit.h>
 #import "RouteObject.h"
+#import <CoreLocation/CoreLocation.h>
 @class ParseStarterProjectViewController;
 
-@interface ParseStarterProjectAppDelegate : NSObject <UIApplicationDelegate> {
+@interface ParseStarterProjectAppDelegate : NSObject <UIApplicationDelegate,CLLocationManagerDelegate> {
 
 }
 @property (nonatomic,retain) NSMutableArray* pushedNotifications;
-
+@property (retain, nonatomic) CLLocationManager* locationManager;
+@property (retain, nonatomic)  CLLocation* currentLocation;
 @property (nonatomic, retain) IBOutlet UIWindow *window;
 
 @property (nonatomic, retain) IBOutlet ParseStarterProjectViewController *viewController;

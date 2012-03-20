@@ -58,6 +58,11 @@
     [self.delegate LocationDidReturnWithText:locationTextField.text];
     [self.navigationController popViewControllerAnimated:YES];
 }
+-(BOOL)textFieldShouldReturn:(UITextField *)textField
+{
+    [textField resignFirstResponder];
+    return YES;
+}
 - (void)viewDidUnload
 {
     [self setLocationTextField:nil];
@@ -77,7 +82,7 @@
     static NSString *MyIdentifier = @"MyIdentifier";
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:MyIdentifier];
     if (cell == nil) {
-        cell = [[UITableViewCell alloc]initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:@"MyIdentifier"]; 
+        cell = [[[UITableViewCell alloc]initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:@"MyIdentifier"]autorelease]; 
     }
     // Set up the cell
     if ([locationArray count]) {

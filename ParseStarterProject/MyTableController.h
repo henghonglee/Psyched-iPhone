@@ -22,6 +22,7 @@
 #import "DAReloadActivityButton.h"
 #import <CoreLocation/CoreLocation.h>
 #import "FollowTableCell.h"
+#import "ParseStarterProjectAppDelegate.h"
 @interface MyTableController : UIViewController<PF_FBRequestDelegate,JMTabViewDelegate,UITableViewDelegate,UITableViewDataSource,EGORefreshTableHeaderDelegate,UIScrollViewDelegate,CLLocationManagerDelegate>
 {
     

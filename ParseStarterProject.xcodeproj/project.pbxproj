@@ -128,6 +128,7 @@
 		EF3D7E5D151721F000D5395D /* RouteLocationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EF3D7E5B151721EE00D5395D /* RouteLocationViewController.m */; };
 		EF3D7E5E151721F000D5395D /* RouteLocationViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = EF3D7E5C151721EF00D5395D /* RouteLocationViewController.xib */; };
 		EF3D7E61151726CA00D5395D /* AddNewLocationCell.m in Sources */ = {isa = PBXBuildFile; fileRef = EF3D7E60151726C900D5395D /* AddNewLocationCell.m */; };
+		EF3D7E641517696200D5395D /* UIImagePickerController+NoRotate.m in Sources */ = {isa = PBXBuildFile; fileRef = EF3D7E631517695D00D5395D /* UIImagePickerController+NoRotate.m */; };
 		EF43AF3114ECDD3F0079DAF2 /* splash.png in Resources */ = {isa = PBXBuildFile; fileRef = EF43AF3014ECDD3F0079DAF2 /* splash.png */; };
 		EF43AF3914ECE2790079DAF2 /* projectoverlay210.png in Resources */ = {isa = PBXBuildFile; fileRef = EF43AF3814ECE2790079DAF2 /* projectoverlay210.png */; };
 		EF43AF3B14ECE3290079DAF2 /* flashoverlay210.png in Resources */ = {isa = PBXBuildFile; fileRef = EF43AF3A14ECE3290079DAF2 /* flashoverlay210.png */; };
@@ -421,6 +422,8 @@
 		EF3D7E5C151721EF00D5395D /* RouteLocationViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = RouteLocationViewController.xib; sourceTree = "<group>"; };
 		EF3D7E5F151726C800D5395D /* AddNewLocationCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AddNewLocationCell.h; sourceTree = "<group>"; };
 		EF3D7E60151726C900D5395D /* AddNewLocationCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AddNewLocationCell.m; sourceTree = "<group>"; };
+		EF3D7E621517695A00D5395D /* UIImagePickerController+NoRotate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImagePickerController+NoRotate.h"; sourceTree = "<group>"; };
+		EF3D7E631517695D00D5395D /* UIImagePickerController+NoRotate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImagePickerController+NoRotate.m"; sourceTree = "<group>"; };
 		EF43AF3014ECDD3F0079DAF2 /* splash.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = splash.png; path = ../splash.png; sourceTree = "<group>"; };
 		EF43AF3814ECE2790079DAF2 /* projectoverlay210.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = projectoverlay210.png; sourceTree = "<group>"; };
 		EF43AF3A14ECE3290079DAF2 /* flashoverlay210.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = flashoverlay210.png; sourceTree = "<group>"; };
@@ -713,6 +716,8 @@
 				EF3D7E2515163D8B00D5395D /* flash@2x.png */,
 				EF3D7E3E15163F5F00D5395D /* locationpin.png */,
 				EF3D7E3F15163F6000D5395D /* locationpin@2x.png */,
+				EF3D7E621517695A00D5395D /* UIImagePickerController+NoRotate.h */,
+				EF3D7E631517695D00D5395D /* UIImagePickerController+NoRotate.m */,
 				09ABC08013A1D52D009C3FCF /* ParseStarterProjectAppDelegate.h */,
 				09ABC08113A1D52D009C3FCF /* ParseStarterProjectAppDelegate.m */,
 				09ABC08313A1D52D009C3FCF /* MainWindow.xib */,
@@ -1467,6 +1472,7 @@
 				EFDF2AB81512430700891FF5 /* FollowTableCell.m in Sources */,
 				EF3D7E5D151721F000D5395D /* RouteLocationViewController.m in Sources */,
 				EF3D7E61151726CA00D5395D /* AddNewLocationCell.m in Sources */,
+				EF3D7E641517696200D5395D /* UIImagePickerController+NoRotate.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

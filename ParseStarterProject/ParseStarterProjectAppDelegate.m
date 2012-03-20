@@ -11,16 +11,17 @@
 @synthesize window=_window;
 @synthesize pushedNotifications;
 @synthesize viewController=_viewController;
-
+@synthesize currentLocation,locationManager;
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
     NSLog(@"notification payload = %@",launchOptions );
     [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleBlackOpaque animated:YES];
     [[UIApplication sharedApplication]setApplicationIconBadgeNumber:0];
-    NSDictionary *myStuff = [NSDictionary dictionaryWithObjectsAndKeys:@"myObject", @"myKey", nil];
-    [BugSenseCrashController sharedInstanceWithBugSenseAPIKey:@"ade3c7ab" 
-                                               userDictionary:myStuff 
-                                              sendImmediately:NO];
+    //NSDictionary *myStuff = [NSDictionary dictionaryWithObjectsAndKeys:@"myObject", @"myKey", nil];
+    //[BugSenseCrashController sharedInstanceWithBugSenseAPIKey:@"ade3c7ab" 
+    //                                           userDictionary:myStuff 
+    //                                          sendImmediately:NO];
+    [self startStandardUpdates];
     // ****************************************************************************
     // Uncomment and fill in with your Parse credentials:
     
@@ -234,6 +235,44 @@
     } else {
         NSLog(@"ParseStarterProject failed to subscribe to push notifications on the broadcast channel.");
     }
+}
+- (void)startStandardUpdates
+{
+    // Create the location manager if this object does not
+    // already have one.
+    if (nil == locationManager)
+        locationManager = [[CLLocationManager alloc] init];
+    
+    locationManager.delegate = self;
+    locationManager.desiredAccuracy = kCLLocationAccuracyBest;
+    
+    // Set a movement threshold for new events.
+    locationManager.distanceFilter = 500;
+    
+    [locationManager startUpdatingLocation];
+}
+// Delegate method from the CLLocationManagerDelegate protocol.
+- (void)locationManager:(CLLocationManager *)manager
+    didUpdateToLocation:(CLLocation *)newLocation
+           fromLocation:(CLLocation *)oldLocation
+{
+    // If it's a relatively recent event, turn off updates to save power
+    NSDate* eventDate = newLocation.timestamp;
+    NSTimeInterval howRecent = [eventDate timeIntervalSinceNow];
+    if (abs(howRecent) < 15.0)
+    {
+        NSLog(@"latitude %+.6f, longitude %+.6f\n",
+              newLocation.coordinate.latitude,
+              newLocation.coordinate.longitude);
+        if (!currentLocation){
+            CLLocation* mycurrloc = [[CLLocation alloc]initWithLatitude:newLocation.coordinate.latitude longitude:newLocation.coordinate.longitude];
+            self.currentLocation = mycurrloc;
+            [mycurrloc release];
+        }else{
+            self.currentLocation = newLocation;
+        }
+    }
+    // else skip the event and process the next one.
 }
 
 - (void)dealloc

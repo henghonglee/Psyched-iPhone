@@ -66,7 +66,6 @@
     [headerView addSubview:headerLabel];
     [headerLabel release];
     [self.view addSubview:routeTableView];
-    [routeTableView release];
     self.navigationController.navigationBarHidden = YES;
     self.routeArray = [[[NSMutableArray alloc]init]autorelease];
     self.queryArray = [[[NSMutableArray alloc]init]autorelease];
@@ -76,7 +75,7 @@
 }
 -(void)viewWillAppear:(BOOL)animated
 {
-    [self startStandardUpdates];
+   // [self startStandardUpdates];
      [self tabView:tabView didSelectTabAtIndex:tabView.segmentIndex];
         self.navigationController.navigationBarHidden = YES;
 }
@@ -436,7 +435,9 @@
         ((RouteObject*)obj).isLoading = NO;
     }
     PFQuery* locationQuery = [PFQuery queryWithClassName:@"Route"];
-    [locationQuery whereKey:@"routelocation" nearGeoPoint:[PFGeoPoint geoPointWithLatitude:currentLocation.coordinate.latitude longitude:currentLocation.coordinate.longitude]];
+    
+   
+    [locationQuery whereKey:@"routelocation" nearGeoPoint:[PFGeoPoint geoPointWithLatitude:((ParseStarterProjectAppDelegate*)[[UIApplication sharedApplication] delegate]).currentLocation.coordinate.latitude longitude:((ParseStarterProjectAppDelegate*)[[UIApplication sharedApplication] delegate]).currentLocation.coordinate.longitude]];
     [locationQuery setLimit:[NSNumber numberWithInt:20]];
     locationQuery.cachePolicy = kPFCachePolicyNetworkElseCache;
     PFQuery* popularQuery = [PFQuery queryWithClassName:@"Route"];
@@ -448,7 +449,7 @@
     [recentQuery setLimit:[NSNumber numberWithInt:20]];
     recentQuery.cachePolicy = kPFCachePolicyNetworkElseCache;
     PFQuery* gradeQuery = [PFQuery queryWithClassName:@"Route"];
-    [gradeQuery whereKey:@"routelocation" nearGeoPoint:[PFGeoPoint geoPointWithLatitude:currentLocation.coordinate.latitude longitude:currentLocation.coordinate.longitude] withinKilometers:0.5];
+    [gradeQuery whereKey:@"routelocation" nearGeoPoint:[PFGeoPoint geoPointWithLatitude:((ParseStarterProjectAppDelegate*)[[UIApplication sharedApplication] delegate]).currentLocation.coordinate.latitude longitude:((ParseStarterProjectAppDelegate*)[[UIApplication sharedApplication] delegate]).currentLocation.coordinate.longitude] withinKilometers:0.5];
     [gradeQuery orderByDescending:@"difficulty"];
     [gradeQuery setLimit:[NSNumber numberWithInt:20]];
     gradeQuery.cachePolicy = kPFCachePolicyNetworkElseCache;
@@ -565,7 +566,7 @@
     NSLog(@"routearray count = %d, index = %d",[routeArray count],indexPath.row)
     ;
     PFQuery* locationQuery = [PFQuery queryWithClassName:@"Route"];
-    [locationQuery whereKey:@"routelocation" nearGeoPoint:[PFGeoPoint geoPointWithLatitude:currentLocation.coordinate.latitude longitude:currentLocation.coordinate.longitude]];
+    [locationQuery whereKey:@"routelocation" nearGeoPoint:[PFGeoPoint geoPointWithLatitude:((ParseStarterProjectAppDelegate*)[[UIApplication sharedApplication] delegate]).currentLocation.coordinate.latitude longitude:((ParseStarterProjectAppDelegate*)[[UIApplication sharedApplication] delegate]).currentLocation.coordinate.longitude]];
     [locationQuery setLimit:[NSNumber numberWithInt:20]];
     locationQuery.cachePolicy = kPFCachePolicyNetworkElseCache;
     
@@ -721,44 +722,7 @@
 	return [NSDate date]; // should return date data source was last changed
 	
 }
-- (void)startStandardUpdates
-{
-    // Create the location manager if this object does not
-    // already have one.
-    if (nil == locationManager)
-        locationManager = [[CLLocationManager alloc] init];
-    
-    locationManager.delegate = self;
-    locationManager.desiredAccuracy = kCLLocationAccuracyKilometer;
-    
-    // Set a movement threshold for new events.
-    locationManager.distanceFilter = 500;
-    
-    [locationManager startUpdatingLocation];
-}
-// Delegate method from the CLLocationManagerDelegate protocol.
-- (void)locationManager:(CLLocationManager *)manager
-    didUpdateToLocation:(CLLocation *)newLocation
-           fromLocation:(CLLocation *)oldLocation
-{
-    // If it's a relatively recent event, turn off updates to save power
-    NSDate* eventDate = newLocation.timestamp;
-    NSTimeInterval howRecent = [eventDate timeIntervalSinceNow];
-    if (abs(howRecent) < 15.0)
-    {
-        NSLog(@"latitude %+.6f, longitude %+.6f\n",
-              newLocation.coordinate.latitude,
-              newLocation.coordinate.longitude);
-        if (!currentLocation){
-            CLLocation* mycurrloc = [[CLLocation alloc]initWithLatitude:newLocation.coordinate.latitude longitude:newLocation.coordinate.longitude];
-            self.currentLocation = mycurrloc;
-            [mycurrloc release];
-        }else{
-            self.currentLocation = newLocation;
-        }
-    }
-    // else skip the event and process the next one.
-}
+
 - (IBAction)addFollows:(id)sender {
     NSLog(@"adding followers");
     SearchFriendsViewController* viewController = [[SearchFriendsViewController alloc]initWithNibName:@"SearchFriendsViewController" bundle:nil];

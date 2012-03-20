@@ -9,7 +9,7 @@
 #import <UIKit/UIKit.h>
 #import <Parse/Parse.h>
 @protocol RouteLocationDelegate;
-@interface RouteLocationViewController : UIViewController<UITextViewDelegate,UITableViewDelegate,UITableViewDataSource>
+@interface RouteLocationViewController : UIViewController<UITextFieldDelegate,UITableViewDelegate,UITableViewDataSource>
 @property (retain, nonatomic) IBOutlet UITextField *locationTextField;
 @property (retain, nonatomic) IBOutlet UITableView *locationTable;
 @property (retain,nonatomic) PFGeoPoint* gpLoc;

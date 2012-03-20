@@ -4,6 +4,7 @@
 #import "NSMutableDictionary+ImageMetadata.h"
 #import "CreateRouteViewController.h"
 #import "AssetsLibrary/ALAssetsLibrary.h"
+#import "UIImagePickerController+NoRotate.h"
 @implementation BaseViewController
 @synthesize locationManager;
 @synthesize imageMetaData;
@@ -54,7 +55,8 @@ static inline double radians (double degrees) {return degrees * M_PI/180;}
 
 -(void)CreateRoute:(id)sender
 {
- [self startStandardUpdates];
+// [self startStandardUpdates];
+    
     UIActionSheet* PhotoSourceSelector = [[UIActionSheet alloc] initWithTitle:@"" delegate:self cancelButtonTitle:@"Cancel" destructiveButtonTitle:nil otherButtonTitles:@"Take A Photo",@"Choose From Library", nil];
     [PhotoSourceSelector showInView:self.view];
     [PhotoSourceSelector setBounds:CGRectMake(0,0,320, 210)];
@@ -95,7 +97,12 @@ static inline double radians (double degrees) {return degrees * M_PI/180;}
     if (picker.sourceType == UIImagePickerControllerSourceTypeCamera) {
         NSLog(@"picker did finish with camera");
         imageMetaData = [[NSMutableDictionary alloc] init];
-      
+        if (!currentLocation){
+            CLLocation* mycurrloc = [[CLLocation alloc]init];
+            self.currentLocation = mycurrloc;
+            [mycurrloc release];
+        }
+      currentLocation =((ParseStarterProjectAppDelegate*)[[UIApplication sharedApplication] delegate]).currentLocation;
          [imageMetaData setLocation:currentLocation];
         
          [self imageProcessAfterMetaDataWithInfo:info andImagePicker:picker];
