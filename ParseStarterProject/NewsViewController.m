@@ -54,7 +54,7 @@
     PFQuery* query = [PFQuery queryWithClassName:@"News"];
     [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
         
-        
+                if ([objects count]) {
         [newsArray removeAllObjects];
         NSLog(@"objects = %@",objects);
         for (PFObject* object in objects) {
@@ -68,6 +68,7 @@
             
         }
         [newsTable reloadData];
+                }
     }];
 }
 -(void)reloadUserData
@@ -76,8 +77,7 @@
 
     PFQuery* query = [PFQuery queryWithClassName:@"News"];
     [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
-        
-        
+        if ([objects count]) {
         [newsArray removeAllObjects];
         NSLog(@"objects = %@",objects);
         for (PFObject* object in objects) {
@@ -92,6 +92,7 @@
         }
         [navigationBarItem stopAnimating];
         [newsTable reloadData];
+        }
     }];
 }
 - (void)viewDidUnload
@@ -118,7 +119,7 @@
 }
 -(NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    NSLog(@"count = %d",[newsArray count]);
+  
     return [newsArray count];
 }
 -(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath

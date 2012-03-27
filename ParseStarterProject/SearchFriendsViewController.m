@@ -111,11 +111,11 @@ kAPIGraphUserPhotosPost,
             for (NSDictionary* obj in fbfriends) {
                 if ([obj objectForKey:@"installed"]) {
                     [fbidArray addObject:[NSNumber numberWithInt:[[obj objectForKey:@"id"]intValue]]];
-                    
+                
                 }
             }
     if ([fbidArray count]==0) {
-        emptyView.hidden =NO;
+       
     }else{
                 PFQuery* userquery = [PFQuery queryForUser];
                 [userquery whereKey:@"facebookid" containedIn:fbidArray];
@@ -217,7 +217,7 @@ kAPIGraphUserPhotosPost,
     [_searchBar resignFirstResponder];
 }
 
--(void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText
+-(void)searchBar:(UISearchBar *)_searchBar textDidChange:(NSString *)searchText
 {
     [searchArray removeAllObjects];
     NSRange textRange;
@@ -232,7 +232,7 @@ kAPIGraphUserPhotosPost,
     }
     if ([searchText isEqualToString:@""]) {
         [searchArray addObjectsFromArray:tempArray];
-        // [searchBar resignFirstResponder];
+         [_searchBar resignFirstResponder];
     }
     [searchTable reloadData]; 
 }

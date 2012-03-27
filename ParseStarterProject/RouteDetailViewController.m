@@ -79,7 +79,7 @@
                   constrainedToSize:CGSizeMake(229, 2000)
                       lineBreakMode:UILineBreakModeWordWrap];
     NSLog(@"size = %@",NSStringFromCGSize(size));
-    descriptionTextView.frame = CGRectMake(-1, 50, 229, MAX(41,size.height+20));
+    descriptionTextView.frame = CGRectMake(-1, 50, 229, MAX(41,size.height+30));
     descriptionTextView.text = foo;
     commentCountLabel.text = [NSString stringWithFormat:@"%@",[[routeObject.pfobj objectForKey:@"commentcount"]stringValue]];
     likeCountLabel.text = [NSString stringWithFormat:@"%@ likes",[[routeObject.pfobj objectForKey:@"likecount"]stringValue]];
@@ -194,7 +194,7 @@
                   constrainedToSize:CGSizeMake(229, 2000)
                       lineBreakMode:UILineBreakModeWordWrap];
     NSLog(@"size = %@",NSStringFromCGSize(size));
-    topView.frame = CGRectMake(6,330,307,50+MAX(41,size.height+20));
+    topView.frame = CGRectMake(6,330,307,50+MAX(41,size.height+30));
     
     topView.layer.shadowPath = [self renderPaperCurl:topView];
     topView.layer.shadowOpacity = 0.6;
@@ -627,7 +627,7 @@
         }
         [likeButton setUserInteractionEnabled:YES];
         [routeObject.pfobj setObject:[NSNumber numberWithInt:[likedataDict count]] forKey:@"likecount"];
-        [routeObject.pfobj saveEventually];
+
         likeCountLabel.text = [NSString stringWithFormat:@"%d likes",[likedataDict count]];
         NSArray *dataDict = [commentsDict objectForKey:@"data"];
         for (NSDictionary* comment in dataDict) {
@@ -651,10 +651,10 @@
             [self arrangeSubViewsaftercomments];
             
         }
+        if ([commentsArray count]>0) {
         [routeObject.pfobj setObject:[NSNumber numberWithInt:[commentsArray count]] forKey:@"commentcount"];
         [routeObject.pfobj saveEventually];
-        NSLog(@"comments array after adding fb = %@",commentsArray);
-         
+        }
         
     }];
     [request setFailedBlock:^{}];
@@ -881,8 +881,10 @@
             NSLog(@"found some comments = %@",fetchedComments);
             [commentsArray removeAllObjects];
             [commentsArray addObjectsFromArray:fetchedComments];
+            if ([commentsArray count]>0) {
             [routeObject.pfobj setObject:[NSNumber numberWithInt:[commentsArray count]] forKey:@"commentcount"];
             [routeObject.pfobj saveEventually];
+            }
             [commentsTable removeFromSuperview];
             [commentsTable reloadData];
             [commentsTable layoutIfNeeded];

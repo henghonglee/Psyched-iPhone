@@ -439,9 +439,11 @@
    
     [locationQuery whereKey:@"routelocation" nearGeoPoint:[PFGeoPoint geoPointWithLatitude:((ParseStarterProjectAppDelegate*)[[UIApplication sharedApplication] delegate]).currentLocation.coordinate.latitude longitude:((ParseStarterProjectAppDelegate*)[[UIApplication sharedApplication] delegate]).currentLocation.coordinate.longitude]];
     [locationQuery setLimit:[NSNumber numberWithInt:20]];
+    
     locationQuery.cachePolicy = kPFCachePolicyNetworkElseCache;
     PFQuery* popularQuery = [PFQuery queryWithClassName:@"Route"];
     [popularQuery orderByDescending:@"likecount"];
+    [popularQuery addDescendingOrder:@"createdAt"];
     [popularQuery setLimit:[NSNumber numberWithInt:20]];
     popularQuery.cachePolicy = kPFCachePolicyNetworkElseCache;
     PFQuery* recentQuery = [PFQuery queryWithClassName:@"Route"];
@@ -449,8 +451,9 @@
     [recentQuery setLimit:[NSNumber numberWithInt:20]];
     recentQuery.cachePolicy = kPFCachePolicyNetworkElseCache;
     PFQuery* gradeQuery = [PFQuery queryWithClassName:@"Route"];
-    [gradeQuery whereKey:@"routelocation" nearGeoPoint:[PFGeoPoint geoPointWithLatitude:((ParseStarterProjectAppDelegate*)[[UIApplication sharedApplication] delegate]).currentLocation.coordinate.latitude longitude:((ParseStarterProjectAppDelegate*)[[UIApplication sharedApplication] delegate]).currentLocation.coordinate.longitude] withinKilometers:0.5];
+    [gradeQuery whereKey:@"routelocation" nearGeoPoint:[PFGeoPoint geoPointWithLatitude:((ParseStarterProjectAppDelegate*)[[UIApplication sharedApplication] delegate]).currentLocation.coordinate.latitude longitude:((ParseStarterProjectAppDelegate*)[[UIApplication sharedApplication] delegate]).currentLocation.coordinate.longitude] withinKilometers:1];
     [gradeQuery orderByDescending:@"difficulty"];
+    [locationQuery addDescendingOrder:@"createdAt"];
     [gradeQuery setLimit:[NSNumber numberWithInt:20]];
     gradeQuery.cachePolicy = kPFCachePolicyNetworkElseCache;
     shouldDisplayNext=1;

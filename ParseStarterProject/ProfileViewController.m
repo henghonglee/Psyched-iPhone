@@ -99,9 +99,9 @@
         [request setFailedBlock:^{}];
         [request startAsynchronous];
     }
-    PFQuery* likequery = [PFQuery queryWithClassName:@"Like"];
+    PFQuery* likequery = [PFQuery queryWithClassName:@"Route"];
         likequery.cachePolicy= kPFCachePolicyNetworkElseCache; 
-    [likequery whereKey:@"owner" equalTo:username];
+    [likequery whereKey:@"username" equalTo:username];
     [likequery countObjectsInBackgroundWithBlock:^(int number, NSError *error) {
         NSLog(@"%d likes",number);
         likeLabel.text = [NSString stringWithFormat:@"%d",number];

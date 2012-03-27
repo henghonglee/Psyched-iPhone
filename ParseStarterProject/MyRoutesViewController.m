@@ -187,6 +187,7 @@
                 cell.commentcount.text = [NSString stringWithFormat:@"%@",[[object objectForKey:@"commentcount"]stringValue]];
                 cell.likecount.text = [NSString stringWithFormat:@"%@",[[object objectForKey:@"likecount"]stringValue ]];
                 cell.viewcount.text = [NSString stringWithFormat:@"%@",[[object objectForKey:@"viewcount"]stringValue ]];
+                cell.routeLocationLabel.text = [object objectForKey:@"location"];
                 NSString* imagelink = [object objectForKey:@"userimage"];
                 if (((RouteObject*)[self.flashArray objectAtIndex:indexPath.row]).ownerImage) {
                     cell.ownerImage.image = ((RouteObject*)[self.flashArray objectAtIndex:indexPath.row]).ownerImage;
@@ -268,6 +269,7 @@
                 cell.commentcount.text = [NSString stringWithFormat:@"%@",[[object objectForKey:@"commentcount"]stringValue]];
                 cell.likecount.text = [NSString stringWithFormat:@"%@",[[object objectForKey:@"likecount"]stringValue ]];
                 cell.viewcount.text = [NSString stringWithFormat:@"%@",[[object objectForKey:@"viewcount"]stringValue ]];
+                cell.routeLocationLabel.text = [object objectForKey:@"location"];                
                 NSString* imagelink = [object objectForKey:@"userimage"];
                 if (((RouteObject*)[self.sentArray objectAtIndex:indexPath.row]).ownerImage) {
                     cell.ownerImage.image = ((RouteObject*)[self.sentArray objectAtIndex:indexPath.row]).ownerImage;
@@ -342,6 +344,7 @@
                 cell.commentcount.text = [NSString stringWithFormat:@"%@",[[object objectForKey:@"commentcount"]stringValue]];
                 cell.likecount.text = [NSString stringWithFormat:@"%@",[[object objectForKey:@"likecount"]stringValue ]];
                 cell.viewcount.text = [NSString stringWithFormat:@"%@",[[object objectForKey:@"viewcount"]stringValue ]];
+                cell.routeLocationLabel.text = [object objectForKey:@"location"];                
                 NSString* imagelink = [object objectForKey:@"userimage"];
                 if (((RouteObject*)[self.projectArray objectAtIndex:indexPath.row]).ownerImage) {
                     cell.ownerImage.image = ((RouteObject*)[self.projectArray objectAtIndex:indexPath.row]).ownerImage;
@@ -422,6 +425,7 @@
                 cell.commentcount.text = [NSString stringWithFormat:@"%@",[[object objectForKey:@"commentcount"]stringValue]];
                 cell.likecount.text = [NSString stringWithFormat:@"%@",[[object objectForKey:@"likecount"]stringValue ]];
                 cell.viewcount.text = [NSString stringWithFormat:@"%@",[[object objectForKey:@"viewcount"]stringValue ]];
+                cell.routeLocationLabel.text = [object objectForKey:@"location"];                
                 NSString* imagelink = [object objectForKey:@"userimage"];
                 if (((RouteObject*)[self.likedArray objectAtIndex:indexPath.row]).ownerImage) {
                     cell.ownerImage.image = ((RouteObject*)[self.likedArray objectAtIndex:indexPath.row]).ownerImage;
@@ -528,7 +532,7 @@
     [tabView addTabItemWithTitle:@"Flash" icon:[UIImage imageNamed:@"flash_white.png"]];
     [tabView addTabItemWithTitle:@"Sent" icon:[UIImage imageNamed:@"sent_white.png"]];
     [tabView addTabItemWithTitle:@"Project" icon:[UIImage imageNamed:@"project_white.png"]];
-    [tabView addTabItemWithTitle:@"Liked" icon:[UIImage imageNamed:@"icon2.png"]];
+    [tabView addTabItemWithTitle:@"Added" icon:[UIImage imageNamed:@"followed.png"]];
     
     
     
@@ -548,12 +552,16 @@
     [tabView setSelectedIndex:itemIndex];
     PFQuery* query = [PFQuery queryWithClassName:@"Flash"];
     [query whereKey:@"username" equalTo:[selectedUser objectForKey:@"name"]];
+    [query orderByDescending:@"createdAt"];
     PFQuery* query2 = [PFQuery queryWithClassName:@"Sent"];
     [query2 whereKey:@"username" equalTo:[selectedUser objectForKey:@"name"]];
+    [query2 orderByDescending:@"createdAt"];
     PFQuery* query3 = [PFQuery queryWithClassName:@"Project"];
     [query3 whereKey:@"username" equalTo:[selectedUser objectForKey:@"name"]];
-    PFQuery* likeQuery = [PFQuery queryWithClassName:@"Like"];
-    [likeQuery whereKey:@"owner" equalTo:[selectedUser objectForKey:@"name"]];
+    [query3 orderByDescending:@"createdAt"];    
+    PFQuery* addedrouteQuery = [PFQuery queryWithClassName:@"Route"];
+    [addedrouteQuery whereKey:@"username" equalTo:[selectedUser objectForKey:@"name"]];
+    [addedrouteQuery orderByDescending:@"createdAt"];
     switch (itemIndex) {
             
             
@@ -571,7 +579,7 @@
                         }
                     }
                     if (!isadded) {
-                        [self.flashArray insertObject:newRouteObject atIndex:0]; 
+                        [self.flashArray addObject:newRouteObject];
                     }
                 [newRouteObject release];
                 }
@@ -594,7 +602,7 @@
                         }
                     }
                     if (!isadded) {
-                        [self.sentArray insertObject:newRouteObject atIndex:0]; 
+                        [self.sentArray addObject:newRouteObject];
                     }
                     [newRouteObject release];
                 }
@@ -616,7 +624,7 @@
                         }
                     }
                     if (!isadded) {
-                        [self.projectArray insertObject:newRouteObject atIndex:0]; 
+                        [self.projectArray addObject:newRouteObject];
                     }
                     [newRouteObject release];
                 }
@@ -626,13 +634,13 @@
             break;
         case 3:
             if ([self.likedArray count]==0) {
-            [likeQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+            [addedrouteQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
                 [likedArray removeAllObjects];
-                for (PFObject* Like in objects){
+                for (PFObject* route in objects){
                     
                     RouteObject* newRouteObject = [[RouteObject alloc] init];
-                    newRouteObject.pfobj = [Like objectForKey:@"linkedroute"];
-                    [self.likedArray insertObject:newRouteObject atIndex:0];
+                    newRouteObject.pfobj = route;
+                    [self.likedArray addObject:newRouteObject];
                     [newRouteObject release];
                 }
                 [routeTableView reloadData];
@@ -723,12 +731,16 @@
 	
     PFQuery* query = [PFQuery queryWithClassName:@"Flash"];
     [query whereKey:@"username" equalTo:[selectedUser objectForKey:@"name"]];
+    [query orderByDescending:@"createdAt"];
     PFQuery* query2 = [PFQuery queryWithClassName:@"Sent"];
     [query2 whereKey:@"username" equalTo:[selectedUser objectForKey:@"name"]];
+    [query2 orderByDescending:@"createdAt"];
     PFQuery* query3 = [PFQuery queryWithClassName:@"Project"];
     [query3 whereKey:@"username" equalTo:[selectedUser objectForKey:@"name"]];
-    PFQuery* likeQuery = [PFQuery queryWithClassName:@"Like"];
-    [likeQuery whereKey:@"owner" equalTo:[selectedUser objectForKey:@"name"]];
+    [query3 orderByDescending:@"createdAt"];
+    PFQuery* addedrouteQuery = [PFQuery queryWithClassName:@"Route"];
+    [addedrouteQuery whereKey:@"username" equalTo:[selectedUser objectForKey:@"name"]];
+    [addedrouteQuery orderByDescending:@"createdAt"];
     switch (tabView.segmentIndex) {                        
         case 0:
             
@@ -776,11 +788,11 @@
             
             break;
         case 3:
-            [likeQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+            [addedrouteQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
                 [self.likedArray removeAllObjects];
-                for (PFObject* Like in objects){
+                for (PFObject* route in objects){
                     RouteObject* newRouteObject = [[RouteObject alloc] init];
-                    newRouteObject.pfobj = [Like objectForKey:@"linkedroute"];
+                    newRouteObject.pfobj = route;
                     [self.likedArray addObject:newRouteObject];
                      [newRouteObject release];
                      }
