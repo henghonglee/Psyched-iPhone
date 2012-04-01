@@ -13,7 +13,7 @@
 @synthesize routeTableView;
 @synthesize selectedSegment;
 @synthesize selectedUser;
-@synthesize flashArray,sentArray,projectArray,likedArray;
+@synthesize flashArray,sentArray,projectArray,likedArray,queryArray;
 - (id)initWithStyle:(UITableViewStyle)style
 {
     self = [super init];
@@ -58,7 +58,7 @@
     self.sentArray = [[[NSMutableArray alloc]init]autorelease];
     self.projectArray = [[[NSMutableArray alloc]init]autorelease];
     self.likedArray = [[[NSMutableArray alloc]init]autorelease];
-
+    self.queryArray =[[[NSMutableArray alloc]init]autorelease];
     [self addStandardTabView];
     tabView.segmentIndex = selectedSegment;
     [tabView setSelectedIndex:selectedSegment];
@@ -98,6 +98,7 @@
     self.projectArray=nil;
 //    [self.projectArray release];
     self.likedArray=nil;
+    self.queryArray=nil;
 //    [self.likedArray release];
     [self setRouteTableView:nil];
     
@@ -183,7 +184,7 @@
         case 0:
             if ([self.flashArray count]>0) {
                 PFObject* object = ((RouteObject*)[self.flashArray objectAtIndex:indexPath.row]).pfobj;
-                
+                                NSLog(@"showing flash array");
                 cell.commentcount.text = [NSString stringWithFormat:@"%@",[[object objectForKey:@"commentcount"]stringValue]];
                 cell.likecount.text = [NSString stringWithFormat:@"%@",[[object objectForKey:@"likecount"]stringValue ]];
                 cell.viewcount.text = [NSString stringWithFormat:@"%@",[[object objectForKey:@"viewcount"]stringValue ]];
@@ -265,7 +266,7 @@
         case 1:
             if ([self.sentArray count]>0) {
                 PFObject* object = ((RouteObject*)[self.sentArray objectAtIndex:indexPath.row]).pfobj;
-                
+                NSLog(@"showing sent array");
                 cell.commentcount.text = [NSString stringWithFormat:@"%@",[[object objectForKey:@"commentcount"]stringValue]];
                 cell.likecount.text = [NSString stringWithFormat:@"%@",[[object objectForKey:@"likecount"]stringValue ]];
                 cell.viewcount.text = [NSString stringWithFormat:@"%@",[[object objectForKey:@"viewcount"]stringValue ]];
@@ -340,7 +341,7 @@
         case 2:
             if ([self.projectArray count]>0) {
                 PFObject* object = ((RouteObject*)[self.projectArray objectAtIndex:indexPath.row]).pfobj;
-                
+NSLog(@"showing proj array with ob %@",object);
                 cell.commentcount.text = [NSString stringWithFormat:@"%@",[[object objectForKey:@"commentcount"]stringValue]];
                 cell.likecount.text = [NSString stringWithFormat:@"%@",[[object objectForKey:@"likecount"]stringValue ]];
                 cell.viewcount.text = [NSString stringWithFormat:@"%@",[[object objectForKey:@"viewcount"]stringValue ]];
@@ -421,7 +422,7 @@
         case 3:
             if ([self.likedArray count]>0) {
                 PFObject* object = ((RouteObject*)[self.likedArray objectAtIndex:indexPath.row]).pfobj;
-                
+                                NSLog(@"showing like array with ob %@",object);
                 cell.commentcount.text = [NSString stringWithFormat:@"%@",[[object objectForKey:@"commentcount"]stringValue]];
                 cell.likecount.text = [NSString stringWithFormat:@"%@",[[object objectForKey:@"likecount"]stringValue ]];
                 cell.viewcount.text = [NSString stringWithFormat:@"%@",[[object objectForKey:@"viewcount"]stringValue ]];
@@ -567,11 +568,15 @@
             
         case 0:
             if ([self.flashArray count]==0) {
+                [queryArray addObject:query];
             [query findObjectsInBackgroundWithBlock:^(NSArray *retrievedObjs, NSError *error){
+                [queryArray removeObject:query];
                 for (PFObject* flash in retrievedObjs)
                 {
                     RouteObject* newRouteObject = [[RouteObject alloc] init];
+                    [[flash objectForKey:@"route"]fetchIfNeeded];
                     newRouteObject.pfobj = [flash objectForKey:@"route"];
+                    
                     BOOL isadded =NO;
                     for (RouteObject* obj in flashArray){
                         if ([obj.pfobj.objectId isEqualToString:newRouteObject.pfobj.objectId]) {
@@ -590,11 +595,15 @@
             case 1:
             
             if ([self.sentArray count]==0) {
+                [queryArray addObject:query2];
                       [query2 findObjectsInBackgroundWithBlock:^(NSArray *retrievedObjs, NSError *error){
+                          [queryArray removeObject:query2];
                 for (PFObject* sent in retrievedObjs)
                 {
                     RouteObject* newRouteObject = [[RouteObject alloc] init];
+                    [[sent objectForKey:@"route"]fetchIfNeeded];
                     newRouteObject.pfobj = [sent objectForKey:@"route"];
+                    
                     BOOL isadded =NO;
                     for (RouteObject* obj in sentArray){
                         if ([obj.pfobj.objectId isEqualToString:newRouteObject.pfobj.objectId]) {
@@ -612,11 +621,15 @@
             break;
         case 2:
             if ([self.projectArray count]==0) {
+                [queryArray addObject:query3];
             [query3 findObjectsInBackgroundWithBlock:^(NSArray *retrievedObjs, NSError *error){
+                [queryArray removeObject:query3];    
                 for (PFObject* proj in retrievedObjs)
                 {
                     RouteObject* newRouteObject = [[RouteObject alloc] init];
+                    [[proj objectForKey:@"route"]fetchIfNeeded];
                     newRouteObject.pfobj = [proj objectForKey:@"route"];
+                    
                     BOOL isadded =NO;
                     for (RouteObject* obj in projectArray){
                         if ([obj.pfobj.objectId isEqualToString:newRouteObject.pfobj.objectId]) {
@@ -634,7 +647,9 @@
             break;
         case 3:
             if ([self.likedArray count]==0) {
+                [queryArray addObject:addedrouteQuery];
             [addedrouteQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+                [queryArray removeObject:addedrouteQuery];
                 [likedArray removeAllObjects];
                 for (PFObject* route in objects){
                     
@@ -743,12 +758,14 @@
     [addedrouteQuery orderByDescending:@"createdAt"];
     switch (tabView.segmentIndex) {                        
         case 0:
-            
+            [queryArray addObject:query];
             [query findObjectsInBackgroundWithBlock:^(NSArray *retrievedObjs, NSError *error){
+                [queryArray removeObject:query];
                 [self.flashArray removeAllObjects];
                 for (PFObject* flash in retrievedObjs)
                 {
                     RouteObject* newRouteObject = [[RouteObject alloc] init];
+                    [[flash objectForKey:@"route"]fetchIfNeeded];
                     newRouteObject.pfobj = [flash objectForKey:@"route"];
                     [self.flashArray addObject:newRouteObject];
                     [newRouteObject release];
@@ -759,12 +776,14 @@
             
             break;
         case 1:
-            
+            [queryArray addObject:query2];
             [query2 findObjectsInBackgroundWithBlock:^(NSArray *retrievedObjs, NSError *error){
-                    [self.sentArray removeAllObjects];
+                [queryArray removeObject:query2];    
+                [self.sentArray removeAllObjects];
                 for (PFObject* sent in retrievedObjs)
                 {
                     RouteObject* newRouteObject = [[RouteObject alloc] init];
+                    [[sent objectForKey:@"route"]fetchIfNeeded];
                     newRouteObject.pfobj = [sent objectForKey:@"route"];
                     [self.sentArray addObject:newRouteObject];
                     [newRouteObject release];
@@ -774,11 +793,14 @@
             
             break;
         case 2:
-            
-            [query3 findObjectsInBackgroundWithBlock:^(NSArray *retrievedObjs, NSError *error){                                    [self.projectArray removeAllObjects];
+            [queryArray addObject:query3];
+            [query3 findObjectsInBackgroundWithBlock:^(NSArray *retrievedObjs, NSError *error){                                    
+                [queryArray removeObject:query3];
+                [self.projectArray removeAllObjects];
                 for (PFObject* proj in retrievedObjs)
                 {
                     RouteObject* newRouteObject = [[RouteObject alloc] init];
+                    [[proj objectForKey:@"route"]fetchIfNeeded];
                     newRouteObject.pfobj = [proj objectForKey:@"route"];
                     [self.projectArray addObject:newRouteObject];
                     [newRouteObject release];
@@ -788,7 +810,9 @@
             
             break;
         case 3:
+            [queryArray addObject:addedrouteQuery];
             [addedrouteQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+            [queryArray removeObject:addedrouteQuery];                
                 [self.likedArray removeAllObjects];
                 for (PFObject* route in objects){
                     RouteObject* newRouteObject = [[RouteObject alloc] init];

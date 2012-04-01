@@ -57,15 +57,17 @@
             [searchArray addObject:user];
             [tempArray addObject:user];
         }
-            [searchTable reloadData];
+
         }
     }];
     PFQuery* followedquery = [PFQuery queryWithClassName:@"Follow"];
     [followedquery whereKey:@"follower" equalTo:[PFUser currentUser]];
     [queryArray addObject:followedquery];
     [followedquery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+        NSLog(@"user followed = %@",objects);    
             [queryArray removeObject:followedquery];
             [followedArray addObjectsFromArray:objects];
+                    [searchTable reloadData];
     }];
 
 }
@@ -140,7 +142,7 @@
     if ([searchArray count]) {
         cell.owner = self;
         
-        cell.nameLabel.text = [((PFObject*)[searchArray objectAtIndex:indexPath.row]) objectForKey:@"name"];    
+        cell.nameLabel.text = [([(PFObject*)[searchArray objectAtIndex:indexPath.row]fetchIfNeeded]) objectForKey:@"name"];    
         NSString* urlstring = [NSString stringWithFormat:@"%@",[[searchArray objectAtIndex:indexPath.row] objectForKey:@"profilepicture"]];
         if([cell.nameLabel.text isEqualToString:[[PFUser currentUser] objectForKey:@"name"]]){
             cell.followButton.hidden =YES;
@@ -148,18 +150,23 @@
             cell.followButton.hidden =NO;
         }
         BOOL isFollowing=NO;
-        
+        NSLog(@"followed array - %@",followedArray);
         
         for (PFObject* obj in followedArray) {
             if ([cell.nameLabel.text isEqualToString:[obj objectForKey:@"followed"]]) {
                 isFollowing = YES;
-                [cell.followButton setBackgroundImage:[UIImage imageNamed:@"follow_text.png"] forState:UIControlStateNormal];
-            }
-            if (isFollowing){
-                isFollowing = NO;
-                    [cell.followButton setBackgroundImage:[UIImage imageNamed:@"following_text.png"] forState:UIControlStateNormal];
+              
             }
         }
+            if (isFollowing){
+                NSLog(@"isfollowing %@",cell.nameLabel.text);
+                isFollowing = NO;
+                    [cell.followButton setBackgroundImage:[UIImage imageNamed:@"following_text.png"] forState:UIControlStateNormal];
+            }else{
+                NSLog(@"is not following %@",cell.nameLabel.text);
+                [cell.followButton setBackgroundImage:[UIImage imageNamed:@"follow_text.png"] forState:UIControlStateNormal];
+            }
+        
         ASIHTTPRequest* request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:urlstring]];
         [request setCompletionBlock:^{
             
@@ -201,7 +208,7 @@
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     ProfileViewController* viewController = [[ProfileViewController alloc]initWithNibName:@"ProfileViewController" bundle:nil];
-    viewController.username= [((PFObject*)[searchArray objectAtIndex:indexPath.row]) objectForKey:@"name"]; 
+    viewController.username= [([(PFObject*)[searchArray objectAtIndex:indexPath.row]fetchIfNeeded]) objectForKey:@"name"]; 
     [self.navigationController pushViewController:viewController animated:YES];
     [viewController release];
 }

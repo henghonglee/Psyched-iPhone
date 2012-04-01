@@ -55,7 +55,8 @@
     
     PFQuery* followedquery = [PFQuery queryWithClassName:@"Follow"];
     [followedquery whereKey:@"follower" equalTo:[PFUser currentUser]];
-    [followedArray addObjectsFromArray:[followedquery findObjects]];
+    [followedquery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+        [followedArray addObjectsFromArray:objects];
     
     
     PFQuery* query = [PFQuery queryWithClassName:@"Follow"];
@@ -70,15 +71,18 @@
             [userquery getFirstObjectInBackgroundWithBlock:^(PFObject *object, NSError *error) {
                 NSLog(@"object = %@",object );
                 if (object) {
-                    [searchArray addObject:(PFUser*)object];
-                    [tempArray addObject:(PFUser*)object];    
+                    UserObject* userObj = [[UserObject alloc]init];
+                    userObj.user = (PFUser*)object;
+                    [searchArray addObject:userObj];
+                    [tempArray addObject:userObj];    
+                    [userObj release];
                 } 
-                [searchTable reloadData];
+               [searchTable reloadData]; 
             }];
             
         }
     }];
-    
+    }];
     // Do any additional setup after loading the view from its nib.
 }
 -(void)addFollowers{
@@ -140,14 +144,16 @@
     }
     if ([searchArray count]) {
         cell.owner = self;
+        UserObject* userObjForRow = [searchArray objectAtIndex:indexPath.row];
+        PFUser* userForRow = userObjForRow.user;
         
-        cell.nameLabel.text = [((PFObject*)[searchArray objectAtIndex:indexPath.row]) objectForKey:@"name"];
+        cell.nameLabel.text = [userForRow objectForKey:@"name"];
         if([cell.nameLabel.text isEqualToString:[[PFUser currentUser]objectForKey:@"name"]]){
             cell.followButton.hidden=YES;
         }else{
             cell.followButton.hidden=NO;
         }
-        NSString* urlstring = [NSString stringWithFormat:@"%@",[[searchArray objectAtIndex:indexPath.row] objectForKey:@"profilepicture"]];
+        NSString* urlstring = [NSString stringWithFormat:@"%@",[userForRow objectForKey:@"profilepicture"]];
         BOOL isFollowing=NO;
         
         for (PFObject* obj in followedArray) {
@@ -161,14 +167,19 @@
                 [cell.followButton setBackgroundImage:[UIImage imageNamed:@"follow_text.png"] forState:UIControlStateNormal];
             }
         }
+        if (userObjForRow.userImage) {
+            cell.userImageView.image = userObjForRow.userImage;
+        }else{
         ASIHTTPRequest* request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:urlstring]];
         [request setCompletionBlock:^{
             
-            cell.userImageView.image = [UIImage imageWithData:[request responseData]];
+            userObjForRow.userImage = [UIImage imageWithData:[request responseData]];
+            cell.userImageView.image = userObjForRow.userImage;
+
         }];
         [request setFailedBlock:^{}];
         [request startAsynchronous];
-        
+        }
     }
     
     
@@ -183,12 +194,12 @@
 {
     [searchArray removeAllObjects];
     NSRange textRange;
-    for (PFUser* user in tempArray) {
+    for (UserObject* userObj in tempArray) {
         
-        textRange =[[[user objectForKey:@"name"] lowercaseString] rangeOfString:[searchText lowercaseString]];
+        textRange =[[[userObj.user objectForKey:@"name"] lowercaseString] rangeOfString:[searchText lowercaseString]];
         if(textRange.location != NSNotFound)
         {
-            [searchArray addObject:user];
+            [searchArray addObject:userObj];
         }
         
     }
@@ -202,7 +213,7 @@
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     ProfileViewController* viewController = [[ProfileViewController alloc]initWithNibName:@"ProfileViewController" bundle:nil];
-    viewController.username= [((PFObject*)[searchArray objectAtIndex:indexPath.row]) objectForKey:@"name"]; 
+    viewController.username= [((UserObject*)[searchArray objectAtIndex:indexPath.row]).user objectForKey:@"name"]; 
     [self.navigationController pushViewController:viewController animated:YES];
     [viewController release];
 }

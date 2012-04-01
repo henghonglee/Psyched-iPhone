@@ -3,6 +3,7 @@
 #import <UIKit/UIKit.h>
 #import "ProfileViewController.h"
 #import "Parse/Parse.h"
+#import "UserObject.h"
 @interface SearchFriendsViewController : UIViewController<UITableViewDelegate,UITableViewDataSource,UITextFieldDelegate,PF_FBRequestDelegate,UISearchBarDelegate>
 {
     int currentAPIcall;

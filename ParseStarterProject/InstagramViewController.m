@@ -29,6 +29,7 @@
 #import "FeedsViewController.h"
 #import "NewsViewController.h"
 #import "ProfileViewController.h"
+#import "FlurryAnalytics.h"
 @implementation InstagramViewController
 
 - (void)viewDidLoad
@@ -36,28 +37,36 @@
   [super viewDidLoad];
 
     
-   
-    //tableNav.navigationController.navigationItem.title = @"feeds";
-   
-    
+   //feeds navigation controller
     FeedsViewController* feedsViewController = [[[FeedsViewController alloc]initWithNibName:@"FeedsViewController" bundle:nil] autorelease]; 
     UINavigationController* feedsNav = [[UINavigationController alloc] initWithRootViewController:feedsViewController];
+    feedsViewController.tabBarItem = [[[UITabBarItem alloc] initWithTitle:@"Activity" image:[UIImage imageNamed:@"112-group.png"] tag:0] autorelease];
+    [FlurryAnalytics logAllPageViews:feedsNav];
+    
+    
+    
+    //main navigation controller
     MyTableController * demoViewController = [[[MyTableController alloc] initWithNibName:nil bundle:nil] autorelease];
-     UINavigationController* mainNav = [[UINavigationController alloc]initWithRootViewController:demoViewController];
+    UINavigationController* mainNav = [[UINavigationController alloc]initWithRootViewController:demoViewController];
     mainNav.tabBarItem = [[[UITabBarItem alloc] initWithTitle:@"Routes" image:[UIImage imageNamed:@"29-heart.png"] tag:0] autorelease];
         [mainNav.navigationBar setBarStyle:UIBarStyleBlack];
-    feedsViewController.tabBarItem = [[[UITabBarItem alloc] initWithTitle:@"Activity" image:[UIImage imageNamed:@"112-group.png"] tag:0] autorelease];
     demoViewController.navigationController.navigationBarHidden = YES;
+    [FlurryAnalytics logAllPageViews:mainNav];
     
+    
+    //news navigation cotnroller
     NewsViewController* newsVC= [[NewsViewController alloc] initWithNibName:@"NewsViewController" bundle:nil];
     UINavigationController* newsnav = [[UINavigationController alloc]initWithRootViewController:newsVC];
     [newsVC release];
-     newsnav.tabBarItem = [[[UITabBarItem alloc] initWithTitle:@"News" image:[UIImage imageNamed:@"news.png"] tag:0] autorelease];
+    newsnav.tabBarItem = [[[UITabBarItem alloc] initWithTitle:@"News" image:[UIImage imageNamed:@"news.png"] tag:0] autorelease];
+    [FlurryAnalytics logAllPageViews:newsnav];
+    
+    //profile navigation controller
     ProfileViewController* profileVC = [[ProfileViewController alloc]initWithNibName:@"ProfileViewController" bundle:nil]; 
     UINavigationController* profilenav = [[UINavigationController alloc]initWithRootViewController:profileVC];
     [profileVC release];
      profilenav.tabBarItem = [[[UITabBarItem alloc] initWithTitle:@"Profile" image:[UIImage imageNamed:@"123-id-card.png"] tag:0] autorelease];
-    
+    [FlurryAnalytics logAllPageViews:profilenav];
     
     
     

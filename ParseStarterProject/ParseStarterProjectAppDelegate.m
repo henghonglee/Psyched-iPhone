@@ -6,6 +6,7 @@
 #import "LoginViewController.h"
 #import "JHNotificationManager.h"
 #import <BugSense-iOS/BugSenseCrashController.h>
+#import "FlurryAnalytics.h"
 @implementation ParseStarterProjectAppDelegate
 
 @synthesize window=_window;
@@ -17,6 +18,7 @@
     NSLog(@"notification payload = %@",launchOptions );
     [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleBlackOpaque animated:YES];
     [[UIApplication sharedApplication]setApplicationIconBadgeNumber:0];
+    [FlurryAnalytics startSession:@"N66I1CJV446Z75ZV8G8V"];
     //NSDictionary *myStuff = [NSDictionary dictionaryWithObjectsAndKeys:@"myObject", @"myKey", nil];
     //[BugSenseCrashController sharedInstanceWithBugSenseAPIKey:@"ade3c7ab" 
     //                                           userDictionary:myStuff 
@@ -40,13 +42,25 @@
   //  [self presentModalViewController:viewController animated:YES];
     if ([[[UIDevice currentDevice] systemVersion] floatValue] >= 5.0){
         [[UINavigationBar appearance] setBackgroundImage:[UIImage imageNamed:@"headerview.png"] forBarMetrics:UIBarMetricsDefault];}
+    
      if ([PFFacebookUtils facebook].accessToken) {
-            NSLog(@"expiration timer = %@",[[PFUser currentUser] facebookExpirationDate]);
-   
+         NSDictionary *dictionary = 
+         [NSDictionary dictionaryWithObjectsAndKeys:[[PFUser currentUser] objectForKey:@"email"],@"email",[[PFUser currentUser] objectForKey:@"birthday_date"],@"birthday_date",[[PFUser currentUser] objectForKey:@"name"],@"name",[[PFUser currentUser] objectForKey:@"sex"],@"sex",[[PFUser currentUser] objectForKey:@"uid"],@"uid",[[PFUser currentUser] objectForKey:@"about_me"],@"about_me", nil];
+         NSLog(@"birthday = %@",[[PFUser currentUser] objectForKey:@"birthday_date"]);
+         [FlurryAnalytics setUserID:[[PFUser currentUser] objectForKey:@"name"]];
+         [FlurryAnalytics setAge:[[[PFUser currentUser] objectForKey:@"age"]intValue]];
+         if ([[[PFUser currentUser] objectForKey:@"sex"] isEqualToString:@"male"]) {
+             [FlurryAnalytics setGender:@"m"];
+         }else{
+             [FlurryAnalytics setGender:@"f"];
+         }
+         [FlurryAnalytics logEvent:@"USER_LOGIN" withParameters:dictionary timed:YES];
          self.window.rootViewController = viewController;
-
+         
      }else{
+         
          self.window.rootViewController = loginVC;
+         
      }
     
         [viewController release];
@@ -114,8 +128,8 @@
 - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)newDeviceToken
 {
     [PFPush storeDeviceToken:newDeviceToken];
-    [PFPush subscribeToChannelInBackground:@"" withTarget:self selector:@selector(subscribeFinished:error:)];
-        [PFPush subscribeToChannelInBackground:@"channelrecommend" withTarget:self selector:@selector(subscribeFinished:error:)];
+    [PFPush subscribeToChannelInBackground:@"" target:self selector:@selector(subscribeFinished:error:)];
+//        [PFPush subscribeToChannelInBackground:@"channelrecommend" target:self selector:@selector(subscribeFinished:error:)];
 }
 
 - (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error

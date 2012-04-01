@@ -207,6 +207,14 @@
 		EFA7E99C14C1F35B00776236 /* FeedCell.m in Sources */ = {isa = PBXBuildFile; fileRef = EFA7E99B14C1F35A00776236 /* FeedCell.m */; };
 		EFA7E99E14C1F39100776236 /* FeedCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = EFA7E99D14C1F39000776236 /* FeedCell.xib */; };
 		EFA7E9A814C2C86A00776236 /* fb-connect-large 2.png in Resources */ = {isa = PBXBuildFile; fileRef = EFA7E9A714C2C86900776236 /* fb-connect-large 2.png */; };
+		EFB25D4315254EB0002F310B /* Analytics-README.pdf in Resources */ = {isa = PBXBuildFile; fileRef = EFB25D3615254EB0002F310B /* Analytics-README.pdf */; };
+		EFB25D4415254EB0002F310B /* AppCircle-README.pdf in Resources */ = {isa = PBXBuildFile; fileRef = EFB25D3715254EB0002F310B /* AppCircle-README.pdf */; };
+		EFB25D4515254EB0002F310B /* libFlurryAnalytics.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EFB25D3A15254EB0002F310B /* libFlurryAnalytics.a */; };
+		EFB25D4615254EB0002F310B /* libFlurryAppCircle.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EFB25D3F15254EB0002F310B /* libFlurryAppCircle.a */; };
+		EFB25D4715254EB1002F310B /* iOS-2.xSDK-Upgrade-README.pdf in Resources */ = {isa = PBXBuildFile; fileRef = EFB25D4015254EB0002F310B /* iOS-2.xSDK-Upgrade-README.pdf */; };
+		EFB25D4815254EB1002F310B /* ProjectApiKey.txt in Resources */ = {isa = PBXBuildFile; fileRef = EFB25D4115254EB0002F310B /* ProjectApiKey.txt */; };
+		EFB25D4915254EB1002F310B /* RELEASE_NOTES.txt in Resources */ = {isa = PBXBuildFile; fileRef = EFB25D4215254EB0002F310B /* RELEASE_NOTES.txt */; };
+		EFB25D4D15258E69002F310B /* UserObject.m in Sources */ = {isa = PBXBuildFile; fileRef = EFB25D4C15258E68002F310B /* UserObject.m */; };
 		EFC9636015072FF9005C9558 /* LoadMoreFeedCell.m in Sources */ = {isa = PBXBuildFile; fileRef = EFC9635F15072FF9005C9558 /* LoadMoreFeedCell.m */; };
 		EFC963631507300A005C9558 /* LoadMoreFeedCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = EFC963621507300A005C9558 /* LoadMoreFeedCell.xib */; };
 		EFCC2B9A14C99D2400D6C6BA /* NSObject+SBJSON.m in Sources */ = {isa = PBXBuildFile; fileRef = EFCC2B8F14C99D2300D6C6BA /* NSObject+SBJSON.m */; };
@@ -534,6 +542,19 @@
 		EFA7E99B14C1F35A00776236 /* FeedCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FeedCell.m; sourceTree = "<group>"; };
 		EFA7E99D14C1F39000776236 /* FeedCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = FeedCell.xib; sourceTree = "<group>"; };
 		EFA7E9A714C2C86900776236 /* fb-connect-large 2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "fb-connect-large 2.png"; path = "../fb-connect-large 2.png"; sourceTree = "<group>"; };
+		EFB25D3615254EB0002F310B /* Analytics-README.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = "Analytics-README.pdf"; sourceTree = "<group>"; };
+		EFB25D3715254EB0002F310B /* AppCircle-README.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = "AppCircle-README.pdf"; sourceTree = "<group>"; };
+		EFB25D3915254EB0002F310B /* FlurryAnalytics.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FlurryAnalytics.h; sourceTree = "<group>"; };
+		EFB25D3A15254EB0002F310B /* libFlurryAnalytics.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libFlurryAnalytics.a; sourceTree = "<group>"; };
+		EFB25D3C15254EB0002F310B /* FlurryAdDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FlurryAdDelegate.h; sourceTree = "<group>"; };
+		EFB25D3D15254EB0002F310B /* FlurryAppCircle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FlurryAppCircle.h; sourceTree = "<group>"; };
+		EFB25D3E15254EB0002F310B /* FlurryOffer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FlurryOffer.h; sourceTree = "<group>"; };
+		EFB25D3F15254EB0002F310B /* libFlurryAppCircle.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libFlurryAppCircle.a; sourceTree = "<group>"; };
+		EFB25D4015254EB0002F310B /* iOS-2.xSDK-Upgrade-README.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = "iOS-2.xSDK-Upgrade-README.pdf"; sourceTree = "<group>"; };
+		EFB25D4115254EB0002F310B /* ProjectApiKey.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = ProjectApiKey.txt; sourceTree = "<group>"; };
+		EFB25D4215254EB0002F310B /* RELEASE_NOTES.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = RELEASE_NOTES.txt; sourceTree = "<group>"; };
+		EFB25D4B15258E67002F310B /* UserObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UserObject.h; sourceTree = "<group>"; };
+		EFB25D4C15258E68002F310B /* UserObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UserObject.m; sourceTree = "<group>"; };
 		EFC9635E15072FF9005C9558 /* LoadMoreFeedCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LoadMoreFeedCell.h; sourceTree = "<group>"; };
 		EFC9635F15072FF9005C9558 /* LoadMoreFeedCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LoadMoreFeedCell.m; sourceTree = "<group>"; };
 		EFC963621507300A005C9558 /* LoadMoreFeedCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = LoadMoreFeedCell.xib; sourceTree = "<group>"; };
@@ -624,6 +645,8 @@
 				09ABC07613A1D52D009C3FCF /* CoreGraphics.framework in Frameworks */,
 				09ABC07213A1D52D009C3FCF /* UIKit.framework in Frameworks */,
 				09ABC07413A1D52D009C3FCF /* Foundation.framework in Frameworks */,
+				EFB25D4515254EB0002F310B /* libFlurryAnalytics.a in Frameworks */,
+				EFB25D4615254EB0002F310B /* libFlurryAppCircle.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -633,6 +656,7 @@
 		09ABC06213A1D52D009C3FCF = {
 			isa = PBXGroup;
 			children = (
+				EFB25D3515254EB0002F310B /* Flurry iPhone SDK v3.0.9 */,
 				EFFF299314EB88D400FC92B2 /* DAReload */,
 				09ABC07713A1D52D009C3FCF /* ParseStarterProject */,
 				09ABC07013A1D52D009C3FCF /* Frameworks */,
@@ -700,6 +724,8 @@
 				EF5BD4CA14C5DF7D00C4FCB3 /* ProfileViewController.h */,
 				EF5BD4CB14C5DF7F00C4FCB3 /* ProfileViewController.m */,
 				EF5BD4CC14C5DF8000C4FCB3 /* ProfileViewController.xib */,
+				EFB25D4B15258E67002F310B /* UserObject.h */,
+				EFB25D4C15258E68002F310B /* UserObject.m */,
 				EF5BD4CF14C5E46000C4FCB3 /* FollowFriendsViewController.h */,
 				EF5BD4D014C5E46100C4FCB3 /* FollowFriendsViewController.m */,
 				EF5BD4D114C5E46300C4FCB3 /* FollowFriendsViewController.xib */,
@@ -927,6 +953,40 @@
 			);
 			name = SVWebViewController;
 			path = ParseStarterProject/SVWebViewController;
+			sourceTree = "<group>";
+		};
+		EFB25D3515254EB0002F310B /* Flurry iPhone SDK v3.0.9 */ = {
+			isa = PBXGroup;
+			children = (
+				EFB25D3615254EB0002F310B /* Analytics-README.pdf */,
+				EFB25D3715254EB0002F310B /* AppCircle-README.pdf */,
+				EFB25D3815254EB0002F310B /* FlurryAnalytics */,
+				EFB25D3B15254EB0002F310B /* FlurryAppCircle */,
+				EFB25D4015254EB0002F310B /* iOS-2.xSDK-Upgrade-README.pdf */,
+				EFB25D4115254EB0002F310B /* ProjectApiKey.txt */,
+				EFB25D4215254EB0002F310B /* RELEASE_NOTES.txt */,
+			);
+			path = "Flurry iPhone SDK v3.0.9";
+			sourceTree = "<group>";
+		};
+		EFB25D3815254EB0002F310B /* FlurryAnalytics */ = {
+			isa = PBXGroup;
+			children = (
+				EFB25D3915254EB0002F310B /* FlurryAnalytics.h */,
+				EFB25D3A15254EB0002F310B /* libFlurryAnalytics.a */,
+			);
+			path = FlurryAnalytics;
+			sourceTree = "<group>";
+		};
+		EFB25D3B15254EB0002F310B /* FlurryAppCircle */ = {
+			isa = PBXGroup;
+			children = (
+				EFB25D3C15254EB0002F310B /* FlurryAdDelegate.h */,
+				EFB25D3D15254EB0002F310B /* FlurryAppCircle.h */,
+				EFB25D3E15254EB0002F310B /* FlurryOffer.h */,
+				EFB25D3F15254EB0002F310B /* libFlurryAppCircle.a */,
+			);
+			path = FlurryAppCircle;
 			sourceTree = "<group>";
 		};
 		EFB728A214CD937D00B43FC3 /* Login */ = {
@@ -1376,6 +1436,11 @@
 				EF3D7E551517170C00D5395D /* field.png in Resources */,
 				EF3D7E591517213400D5395D /* Facebook-logo-2.png in Resources */,
 				EF3D7E5E151721F000D5395D /* RouteLocationViewController.xib in Resources */,
+				EFB25D4315254EB0002F310B /* Analytics-README.pdf in Resources */,
+				EFB25D4415254EB0002F310B /* AppCircle-README.pdf in Resources */,
+				EFB25D4715254EB1002F310B /* iOS-2.xSDK-Upgrade-README.pdf in Resources */,
+				EFB25D4815254EB1002F310B /* ProjectApiKey.txt in Resources */,
+				EFB25D4915254EB1002F310B /* RELEASE_NOTES.txt in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1473,6 +1538,7 @@
 				EF3D7E5D151721F000D5395D /* RouteLocationViewController.m in Sources */,
 				EF3D7E61151726CA00D5395D /* AddNewLocationCell.m in Sources */,
 				EF3D7E641517696200D5395D /* UIImagePickerController+NoRotate.m in Sources */,
+				EFB25D4D15258E69002F310B /* UserObject.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1552,13 +1618,18 @@
 				HEADER_SEARCH_PATHS = "${SDK_DIR}/usr/include/libxml2";
 				INFOPLIST_FILE = "ParseStarterProject/ParseStarterProject-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/Flurry iPhone SDK v3.0.9/FlurryAnalytics\"",
+					"\"$(SRCROOT)/Flurry iPhone SDK v3.0.9/FlurryAppCircle\"",
+				);
 				OTHER_LDFLAGS = (
 					"-all_load",
 					"-ObjC",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "77537185-34E3-4F11-962B-425E3DEC6F37";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "77537185-34E3-4F11-962B-425E3DEC6F37";
+				PROVISIONING_PROFILE = "B38F4734-CD62-4532-9CFA-1B85180525A9";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "B38F4734-CD62-4532-9CFA-1B85180525A9";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -1582,13 +1653,18 @@
 				HEADER_SEARCH_PATHS = "${SDK_DIR}/usr/include/libxml2";
 				INFOPLIST_FILE = "ParseStarterProject/ParseStarterProject-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/Flurry iPhone SDK v3.0.9/FlurryAnalytics\"",
+					"\"$(SRCROOT)/Flurry iPhone SDK v3.0.9/FlurryAppCircle\"",
+				);
 				OTHER_LDFLAGS = (
 					"-all_load",
 					"-ObjC",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "77537185-34E3-4F11-962B-425E3DEC6F37";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "77537185-34E3-4F11-962B-425E3DEC6F37";
+				PROVISIONING_PROFILE = "B38F4734-CD62-4532-9CFA-1B85180525A9";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "B38F4734-CD62-4532-9CFA-1B85180525A9";
 				VALIDATE_PRODUCT = YES;
 				WRAPPER_EXTENSION = app;
 			};

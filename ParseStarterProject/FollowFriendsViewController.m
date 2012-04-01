@@ -42,26 +42,30 @@
     tempArray = [[NSMutableArray alloc]init];
     searchArray = [[NSMutableArray alloc]init];
     followedArray = [[NSMutableArray alloc]init];
+    PFQuery* followedquery = [PFQuery queryWithClassName:@"Follow"];
+    [followedquery whereKey:@"follower" equalTo:[PFUser currentUser]];
+    
+    [followedquery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+        [followedArray addObjectsFromArray:objects];
+    
     PFQuery* query = [PFQuery queryWithClassName:@"Follow"];
     [query whereKey:@"followed" equalTo:[selectedUser objectForKey:@"name"]];
     [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
         [searchArray removeAllObjects];
         [tempArray removeAllObjects];
         for (PFObject* follower in objects) {
-            PFUser* user = [follower objectForKey:@"follower"];
-            NSLog(@"facebookid = %@",[((PFUser*)user) objectForKey:@"facebookid"]);
-            [searchArray addObject:user];
-            [tempArray addObject:user];
+            UserObject* userObj = [[UserObject alloc]init];
+            userObj.user= [[follower objectForKey:@"follower"]fetchIfNeeded];
+       //     PFUser* user = [[follower objectForKey:@"follower"]fetchIfNeeded];
+            [searchArray addObject:userObj];
+            [tempArray addObject:userObj];
+            [userObj release];
         }
         NSLog(@"fetched =%@",objects);
         NSLog(@"temparray =%@",tempArray);
         [searchTable reloadData];
     }];
-    PFQuery* followedquery = [PFQuery queryWithClassName:@"Follow"];
-    [followedquery whereKey:@"follower" equalTo:[PFUser currentUser]];
-    [followedArray addObjectsFromArray:[followedquery findObjects]];
-    
-
+   }];
     // Do any additional setup after loading the view from its nib.
 }
 -(void)viewWillAppear:(BOOL)animated
@@ -116,14 +120,14 @@ if (cell == nil) {
 }
     if ([searchArray count]) {
         cell.owner = self;
-        
-    cell.nameLabel.text = [((PFObject*)[searchArray objectAtIndex:indexPath.row]) objectForKey:@"name"];  
+        PFUser* userForRow = [((UserObject*)[searchArray objectAtIndex:indexPath.row]).user fetchIfNeeded];
+        cell.nameLabel.text = [userForRow objectForKey:@"name"];  
         if([cell.nameLabel.text isEqualToString:[[PFUser currentUser]objectForKey:@"name"]]){
             cell.followButton.hidden=YES;
         }else{
             cell.followButton.hidden=NO;
         }
-        NSString* urlstring = [NSString stringWithFormat:@"%@",[[searchArray objectAtIndex:indexPath.row] objectForKey:@"profilepicture"]];
+        NSString* urlstring = [NSString stringWithFormat:@"%@",[userForRow objectForKey:@"profilepicture"]];
         BOOL isFollowing=NO;
         
         for (PFObject* obj in followedArray) {
@@ -136,14 +140,18 @@ if (cell == nil) {
                 [cell.followButton setBackgroundImage:[UIImage imageNamed:@"follow_text.png"] forState:UIControlStateNormal];
             }
         }
+        if (((UserObject*)[searchArray objectAtIndex:indexPath.row]).userImage) {
+            cell.userImageView.image =((UserObject*)[searchArray objectAtIndex:indexPath.row]).userImage;
+        }else{
         ASIHTTPRequest* request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:urlstring]];
         [request setCompletionBlock:^{
             
            cell.userImageView.image = [UIImage imageWithData:[request responseData]];
+            ((UserObject*)[searchArray objectAtIndex:indexPath.row]).userImage = [UIImage imageWithData:[request responseData]];
         }];
         [request setFailedBlock:^{}];
         [request startAsynchronous];
-    
+        }
     }
 
     

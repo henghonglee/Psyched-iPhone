@@ -35,6 +35,7 @@
 @property (retain, nonatomic) NSMutableArray* sentArray;
 @property (retain, nonatomic) NSMutableArray* projectArray;
 @property (retain, nonatomic) NSMutableArray* likedArray;
+@property (retain, nonatomic) NSMutableArray* queryArray;
 
 -(void)addStandardTabView;
 - (void)reloadTableViewDataSource;

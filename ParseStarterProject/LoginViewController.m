@@ -11,6 +11,7 @@
 #import "JHNotificationManager.h"
 #import "InstagramViewController.h"
 #import "SBJSON.h"
+#import "FlurryAnalytics.h"
 #import "NSObject+SBJSON.h"
 #import "NSString+SBJSON.h"
 @implementation LoginViewController
@@ -53,7 +54,7 @@
     
     if (![PFFacebookUtils facebook].accessToken) {
 
-        NSArray* permissions = [[NSArray alloc]initWithObjects:@"user_about_me",@"email",@"user_photos",@"publish_stream",@"offline_access",nil];
+        NSArray* permissions = [[NSArray alloc]initWithObjects:@"user_about_me",@"user_videos",@"user_birthday",@"email",@"user_photos",@"publish_stream",@"offline_access",nil];
         [PFFacebookUtils logInWithPermissions:permissions block:^(PFUser *user, NSError *error) {
             if (!user) {
                 NSLog(@"Uh oh. The user cancelled the Facebook login.");
@@ -62,9 +63,7 @@
                 NSLog(@"User with facebook id %@ signed up and logged in!", [PFFacebookUtils facebook].accessToken);
                 [self apiFQLIMe];
             } else {
-                NSLog(@"username = %@",user.username);
-                NSLog(@"%@",[PFUser currentUser]);
-           //     NSLog(@"User with facebook id %@ logged in!", user.facebookId); //call graph "me" for facebook id
+               
                 InstagramViewController* viewController = [[InstagramViewController alloc]initWithNibName:@"InstagramViewController" bundle:nil];
                 viewController.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
                 [self presentModalViewController:viewController animated:YES];
@@ -88,7 +87,7 @@
     // and since the minimum profile picture size is 180 pixels wide we should be able
     // to get a 100 pixel wide version of the profile picture
     NSMutableDictionary *params = [NSMutableDictionary dictionaryWithObjectsAndKeys:
-                                   @"SELECT uid, name, pic , email FROM user WHERE uid=me()", @"query",
+                                   @"SELECT about_me,locale,birthday,birthday_date,sex,uid, name, pic , email FROM user WHERE uid=me()", @"query",
                                    nil];
     [[PFFacebookUtils facebook] requestWithMethodName:@"fql.query"
                                     andParams:params
@@ -129,12 +128,42 @@
         // display this.
         NSLog(@"result = %@",result);
       //  NSLog(@"facebookid = %@",((PFUser*)[PFUser currentUser]).facebookId);
-
+        
         [[PFUser currentUser] setObject:[result objectForKey:@"email"] forKey:@"email"];
         [[PFUser currentUser] setObject:[result objectForKey:@"pic"] forKey:@"profilepicture"]; 
         [[PFUser currentUser] setObject:[result objectForKey:@"name"] forKey:@"name"]; 
         [[PFUser currentUser] setObject:[result objectForKey:@"uid"] forKey:@"facebookid"]; 
+
+        [[PFUser currentUser] setObject:[result objectForKey:@"birthday_date"] forKey:@"birthday_date"];
+        NSString *trimmedString=[((NSString*)[result objectForKey:@"birthday_date"]) substringFromIndex:[((NSString*)[result objectForKey:@"birthday_date"]) length]-4];
+        NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
+        [formatter setDateFormat:@"YYYY"];
+        NSString *yearString = [formatter stringFromDate:[NSDate date]];
+        [formatter release];
+        int age = [yearString intValue]-[trimmedString intValue];
+        [[PFUser currentUser] setObject:[NSNumber numberWithInt:age] forKey:@"age"];         
+
+        [[PFUser currentUser] setObject:[result objectForKey:@"sex"] forKey:@"sex"]; 
+        
+        [[PFUser currentUser] setObject:[result objectForKey:@"locale"] forKey:@"locale"];
+        
+        [[PFUser currentUser] setObject:[result objectForKey:@"about_me"] forKey:@"about_me"];
+                
         [[PFUser currentUser] saveInBackground];
+        
+        
+        [FlurryAnalytics setUserID:[[PFUser currentUser] objectForKey:@"name"]];
+        if ([[[PFUser currentUser] objectForKey:@"sex"] isEqualToString:@"male"]) {
+            [FlurryAnalytics setGender:@"m"];
+        }else{
+            [FlurryAnalytics setGender:@"f"];
+        }
+        [FlurryAnalytics setAge:age];
+        NSDictionary *dictionary = 
+        [NSDictionary dictionaryWithObjectsAndKeys:[result objectForKey:@"email"],@"email",[result objectForKey:@"birthday"],@"birthday",[result objectForKey:@"name"],@"name",[result objectForKey:@"sex"],@"sex",[result objectForKey:@"uid"],@"uid",[result objectForKey:@"about_me"],@"about_me", nil];
+        
+        [FlurryAnalytics logEvent:@"NEW_USER_LOGIN" withParameters:dictionary timed:YES];
+
         [JHNotificationManager notificationWithMessage:[NSString stringWithFormat:@"Logged in as %@",[result objectForKey:@"name"]]];
         
         

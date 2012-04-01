@@ -648,9 +648,10 @@
             if (commentsTable.superview){
                 [commentsTable removeFromSuperview];
             }
-            [self arrangeSubViewsaftercomments];
+            
             
         }
+        [self arrangeSubViewsaftercomments];
         if ([commentsArray count]>0) {
         [routeObject.pfobj setObject:[NSNumber numberWithInt:[commentsArray count]] forKey:@"commentcount"];
         [routeObject.pfobj saveEventually];
@@ -836,7 +837,10 @@
     [self.navigationController pushViewController:viewController animated:YES];
     [viewController release];
 }
-
+- (IBAction)didSelectMap:(id)sender {
+    UIApplication *app = [UIApplication sharedApplication];  
+    [app openURL:[NSURL URLWithString:[NSString stringWithFormat:@"http://maps.google.com/maps?ll=%f,%f",((PFGeoPoint*)[routeObject.pfobj objectForKey:@"routelocation"]).latitude,((PFGeoPoint*)[routeObject.pfobj objectForKey:@"routelocation"]).longitude]]];  
+}
 - (IBAction)PostComment:(id)sender {
     NSError*error=nil;
     [commentTextField becomeFirstResponder];
@@ -852,17 +856,10 @@
                                       andParams:params
                                   andHttpMethod:@"POST"
                                     andDelegate:self];
-        
+       
     
     }else{
-        [PFPush subscribeToChannel:[NSString stringWithFormat:@"channel%@",routeObject.pfobj.objectId] withError:&error];
-        if (!error) {
-            NSLog(@"subscribed to channel %@",routeObject.pfobj.objectId);
-        }else{
-            NSLog(@"error = %@",error);
-        }    
-       
-        [self CommentNotification];
+
         
     PFObject* object = [PFObject objectWithClassName:@"Comment"];
     [object setObject:commentTextField.text forKey:@"text"];
@@ -894,7 +891,17 @@
         }];
         
     }];
-    }
+        
+        
+    }    
+        [PFPush subscribeToChannel:[NSString stringWithFormat:@"channel%@",routeObject.pfobj.objectId] error:&error];
+        if (!error) {
+            NSLog(@"subscribed to channel %@",routeObject.pfobj.objectId);
+        }else{
+            NSLog(@"error = %@",error);
+        }    
+        
+        [self CommentNotification];
     }
 commentTextField.text = @"";
 }
@@ -1076,7 +1083,7 @@ commentTextField.text = @"";
             
             
             // send notification ///
-                        NSMutableDictionary *data = [NSMutableDictionary dictionary];
+                     /*   NSMutableDictionary *data = [NSMutableDictionary dictionary];
                         [data setObject:routeObject.pfobj.objectId forKey:@"linkedroute"];
                         [data setObject:[NSNumber numberWithInt:1] forKey:@"badge"];
                         if ([[[PFUser currentUser] objectForKey:@"name"] isEqualToString:[routeObject.pfobj objectForKey:@"username"]]) {
@@ -1089,7 +1096,7 @@ commentTextField.text = @"";
                         }
                         [data setObject:[NSString stringWithFormat:@"%@",[[PFUser currentUser] objectForKey:@"name"]] forKey:@"sender"];
                         
-                        [PFPush sendPushDataToChannelInBackground:[NSString stringWithFormat:@"channel%@",routeObject.pfobj.objectId] withData:data];
+                        [PFPush sendPushDataToChannelInBackground:[NSString stringWithFormat:@"channel%@",routeObject.pfobj.objectId] withData:data];*/
             //done sending notifications ///////
                         
                         

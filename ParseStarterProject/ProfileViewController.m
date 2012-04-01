@@ -17,6 +17,12 @@
 #import "SearchFriendsViewController.h"
 @implementation ProfileViewController
 @synthesize userimage;
+@synthesize addedButton;
+@synthesize projectsButton;
+@synthesize sendsButton;
+@synthesize flashButton;
+@synthesize followersButton;
+@synthesize followingButton;
 @synthesize followingwho;
 @synthesize selectedUser;
 @synthesize userImageView;
@@ -55,7 +61,6 @@
 {
     [super viewDidLoad];
     self.navigationItem.title = @"Profile";
-    
     userImageView.layer.borderColor = [UIColor whiteColor].CGColor;
     userImageView.layer.borderWidth = 3;
     userImageView.layer.shadowColor = [UIColor blackColor].CGColor;
@@ -105,6 +110,7 @@
     [likequery countObjectsInBackgroundWithBlock:^(int number, NSError *error) {
         NSLog(@"%d likes",number);
         likeLabel.text = [NSString stringWithFormat:@"%d",number];
+        addedButton.userInteractionEnabled = YES;
     }];
     PFQuery* flashquery = [PFQuery queryWithClassName:@"Flash"];
         flashquery.cachePolicy= kPFCachePolicyNetworkElseCache;
@@ -112,6 +118,7 @@
     [flashquery countObjectsInBackgroundWithBlock:^(int number, NSError *error) {
         NSLog(@"%d flashes",number);
         flashLabel.text = [NSString stringWithFormat:@"%d",number];
+       flashButton.userInteractionEnabled = YES;
     }];
     PFQuery* sentquery = [PFQuery queryWithClassName:@"Sent"];
         sentquery.cachePolicy= kPFCachePolicyNetworkElseCache;
@@ -119,6 +126,7 @@
     [sentquery countObjectsInBackgroundWithBlock:^(int number, NSError *error) {
         NSLog(@"%d sends",number); 
         sendLabel.text = [NSString stringWithFormat:@"%d",number];
+        sendsButton.userInteractionEnabled = YES;
     }];
     PFQuery* projquery = [PFQuery queryWithClassName:@"Project"];
         projquery.cachePolicy= kPFCachePolicyNetworkElseCache;
@@ -126,12 +134,14 @@
     [projquery countObjectsInBackgroundWithBlock:^(int number, NSError *error) {
         NSLog(@"%d projs",number);
         projectLabel.text = [NSString stringWithFormat:@"%d",number];
+        projectsButton.userInteractionEnabled = YES;
     }];
     PFQuery* followingwhoquery = [PFQuery queryWithClassName:@"Follow"];
         followingwhoquery.cachePolicy= kPFCachePolicyNetworkElseCache;
         [followingwhoquery whereKey:@"follower" equalTo:selectedUser];
         [followingwhoquery countObjectsInBackgroundWithBlock:^(int number, NSError *error) {
             followingwho.text = [NSString stringWithFormat:@"%d",number];
+            followingButton.userInteractionEnabled = YES;
         }];
         
     PFQuery* followingquery = [PFQuery queryWithClassName:@"Follow"];
@@ -140,6 +150,7 @@
     [followingquery countObjectsInBackgroundWithBlock:^(int number, NSError *error) {
         NSLog(@"%d followers",number);
         followingLabel.text = [NSString stringWithFormat:@"%d",number];
+       followersButton.userInteractionEnabled = YES;
     }];
     
     // grab user feeds
@@ -243,12 +254,13 @@
         [request setFailedBlock:^{}];
         [request startAsynchronous];
     }
-    PFQuery* likequery = [PFQuery queryWithClassName:@"Like"];
+    PFQuery* likequery = [PFQuery queryWithClassName:@"Route"];
         likequery.cachePolicy= kPFCachePolicyNetworkElseCache;         
-    [likequery whereKey:@"owner" equalTo:username];
+    [likequery whereKey:@"username" equalTo:username];
     [likequery countObjectsInBackgroundWithBlock:^(int number, NSError *error) {
         NSLog(@"%d likes",number);
         likeLabel.text = [NSString stringWithFormat:@"%d",number];
+        addedButton.userInteractionEnabled = YES;
     }];
     PFQuery* flashquery = [PFQuery queryWithClassName:@"Flash"];
         flashquery.cachePolicy= kPFCachePolicyNetworkElseCache;         
@@ -256,6 +268,7 @@
     [flashquery countObjectsInBackgroundWithBlock:^(int number, NSError *error) {
         NSLog(@"%d flashes",number);
         flashLabel.text = [NSString stringWithFormat:@"%d",number];
+        flashButton.userInteractionEnabled = YES;
     }];
     PFQuery* sentquery = [PFQuery queryWithClassName:@"Sent"];
         sentquery.cachePolicy= kPFCachePolicyNetworkElseCache;         
@@ -263,12 +276,14 @@
     [sentquery countObjectsInBackgroundWithBlock:^(int number, NSError *error) {
         NSLog(@"%d sends",number); 
         sendLabel.text = [NSString stringWithFormat:@"%d",number];
+       sendsButton.userInteractionEnabled = YES;
     }];
         PFQuery* followingwhoquery = [PFQuery queryWithClassName:@"Follow"];
         followingwhoquery.cachePolicy= kPFCachePolicyNetworkElseCache;
         [followingwhoquery whereKey:@"follower" equalTo:selectedUser];
         [followingwhoquery countObjectsInBackgroundWithBlock:^(int number, NSError *error) {
             followingwho.text = [NSString stringWithFormat:@"%d",number];
+            followingButton.userInteractionEnabled = YES;
         }];
         
     PFQuery* projquery = [PFQuery queryWithClassName:@"Project"];
@@ -277,6 +292,7 @@
     [projquery countObjectsInBackgroundWithBlock:^(int number, NSError *error) {
         NSLog(@"%d projs",number);
         projectLabel.text = [NSString stringWithFormat:@"%d",number];
+        [projectsButton setUserInteractionEnabled:YES];
     }];
     
     PFQuery* followingquery = [PFQuery queryWithClassName:@"Follow"];
@@ -285,6 +301,7 @@
     [followingquery countObjectsInBackgroundWithBlock:^(int number, NSError *error) {
         NSLog(@"%d followers",number);
         followingLabel.text = [NSString stringWithFormat:@"%d",number];
+        followersButton.userInteractionEnabled = YES;
     }];
     
     // grab user feeds
@@ -379,6 +396,12 @@
     [self setLikeLabel:nil];
     [self setFollowingwho:nil];
     [self setAddfriendsbutton:nil];
+    [self setAddedButton:nil];
+    [self setProjectsButton:nil];
+    [self setSendsButton:nil];
+    [self setFlashButton:nil];
+    [self setFollowersButton:nil];
+    [self setFollowingButton:nil];
     [super viewDidUnload];
     // Release any retained subviews of the main view.
     // e.g. self.myOutlet = nil;
@@ -451,7 +474,7 @@
 
     RouteDetailViewController* viewController = [[RouteDetailViewController alloc]initWithNibName:@"RouteDetailViewController" bundle:nil];
     RouteObject* newRouteObject = [[RouteObject alloc]init];
-        newRouteObject.pfobj = [[userfeeds objectAtIndex:indexPath.row] objectForKey:@"linkedroute"];
+        newRouteObject.pfobj = [[[userfeeds objectAtIndex:indexPath.row] objectForKey:@"linkedroute"]fetchIfNeeded];
     viewController.routeObject = newRouteObject;
     
     [self.navigationController pushViewController:viewController animated:YES];
@@ -492,6 +515,12 @@ return [userfeeds count];
     [likeLabel release];
     [followingwho release];
     [addfriendsbutton release];
+    [addedButton release];
+    [projectsButton release];
+    [sendsButton release];
+    [flashButton release];
+    [followersButton release];
+    [followingButton release];
     [super dealloc];
 }
 @end

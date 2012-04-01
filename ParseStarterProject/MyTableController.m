@@ -438,23 +438,23 @@
     
    
     [locationQuery whereKey:@"routelocation" nearGeoPoint:[PFGeoPoint geoPointWithLatitude:((ParseStarterProjectAppDelegate*)[[UIApplication sharedApplication] delegate]).currentLocation.coordinate.latitude longitude:((ParseStarterProjectAppDelegate*)[[UIApplication sharedApplication] delegate]).currentLocation.coordinate.longitude]];
-    [locationQuery setLimit:[NSNumber numberWithInt:20]];
+    [locationQuery setLimit:20];
     
     locationQuery.cachePolicy = kPFCachePolicyNetworkElseCache;
     PFQuery* popularQuery = [PFQuery queryWithClassName:@"Route"];
     [popularQuery orderByDescending:@"likecount"];
     [popularQuery addDescendingOrder:@"createdAt"];
-    [popularQuery setLimit:[NSNumber numberWithInt:20]];
+    [popularQuery setLimit:20];
     popularQuery.cachePolicy = kPFCachePolicyNetworkElseCache;
     PFQuery* recentQuery = [PFQuery queryWithClassName:@"Route"];
     [recentQuery orderByDescending:@"createdAt"];
-    [recentQuery setLimit:[NSNumber numberWithInt:20]];
+    [recentQuery setLimit:20];
     recentQuery.cachePolicy = kPFCachePolicyNetworkElseCache;
     PFQuery* gradeQuery = [PFQuery queryWithClassName:@"Route"];
     [gradeQuery whereKey:@"routelocation" nearGeoPoint:[PFGeoPoint geoPointWithLatitude:((ParseStarterProjectAppDelegate*)[[UIApplication sharedApplication] delegate]).currentLocation.coordinate.latitude longitude:((ParseStarterProjectAppDelegate*)[[UIApplication sharedApplication] delegate]).currentLocation.coordinate.longitude] withinKilometers:1];
     [gradeQuery orderByDescending:@"difficulty"];
-    [locationQuery addDescendingOrder:@"createdAt"];
-    [gradeQuery setLimit:[NSNumber numberWithInt:20]];
+    
+    [gradeQuery setLimit:20];
     gradeQuery.cachePolicy = kPFCachePolicyNetworkElseCache;
     shouldDisplayNext=1;
     
@@ -570,26 +570,26 @@
     ;
     PFQuery* locationQuery = [PFQuery queryWithClassName:@"Route"];
     [locationQuery whereKey:@"routelocation" nearGeoPoint:[PFGeoPoint geoPointWithLatitude:((ParseStarterProjectAppDelegate*)[[UIApplication sharedApplication] delegate]).currentLocation.coordinate.latitude longitude:((ParseStarterProjectAppDelegate*)[[UIApplication sharedApplication] delegate]).currentLocation.coordinate.longitude]];
-    [locationQuery setLimit:[NSNumber numberWithInt:20]];
+    [locationQuery setLimit:20];
     locationQuery.cachePolicy = kPFCachePolicyNetworkElseCache;
     
     
     PFQuery* popularQuery = [PFQuery queryWithClassName:@"Route"];
     [popularQuery orderByDescending:@"likecount"];
-    [popularQuery setLimit:[NSNumber numberWithInt:20]];
+    [popularQuery setLimit:20];
     popularQuery.cachePolicy = kPFCachePolicyNetworkElseCache;
     
     
     PFQuery* recentQuery = [PFQuery queryWithClassName:@"Route"];
     [recentQuery orderByDescending:@"createdAt"];
-    [recentQuery setLimit:[NSNumber numberWithInt:20]];
+    [recentQuery setLimit:20];
     recentQuery.cachePolicy = kPFCachePolicyNetworkElseCache;
     
     if (indexPath.row==([routeArray count])) {
         NSLog(@"will load next 20 for %d",tabView.segmentIndex); 
         switch (tabView.segmentIndex) {
             case 0:
-                [recentQuery setSkip:[NSNumber numberWithInt:[routeArray count]]];
+                [recentQuery setSkip:[routeArray count]];
                 [queryArray addObject:recentQuery];
                 [recentQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
                     if ([objects count]<20) {
@@ -606,7 +606,7 @@
                 }];
                 break;
             case 1:
-                [popularQuery setSkip:[NSNumber numberWithInt:[routeArray count]]];
+                [popularQuery setSkip:[routeArray count]];
                 [queryArray addObject:recentQuery];
                 [popularQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
                     if ([objects count]<20) {
@@ -623,7 +623,7 @@
                 }];
                 break;
             case 2:
-                [locationQuery setSkip:[NSNumber numberWithInt:[routeArray count]]];
+                [locationQuery setSkip:[routeArray count]];
                 [queryArray addObject:recentQuery];
                 [locationQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
                     if ([objects count]<20) {

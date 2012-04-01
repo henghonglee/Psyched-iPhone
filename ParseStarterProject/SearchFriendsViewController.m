@@ -120,9 +120,14 @@ kAPIGraphUserPhotosPost,
                 PFQuery* userquery = [PFQuery queryForUser];
                 [userquery whereKey:@"facebookid" containedIn:fbidArray];
                 [userquery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
-                    NSLog(@"%@",objects);
-                    [searchArray addObjectsFromArray:objects];  
-                    [tempArray addObjectsFromArray:objects];
+                    for (PFUser* user in objects) {
+                        UserObject* userObj = [[UserObject alloc]init];
+                        userObj.user = user;
+                        [searchArray addObject:userObj];  
+                        [tempArray addObject:userObj];
+                        [userObj release];
+                    }
+                    
                     
                     [searchTable reloadData];
                      [PF_MBProgressHUD hideHUDForView:self.view animated:YES];
@@ -184,9 +189,11 @@ kAPIGraphUserPhotosPost,
     }
     if ([searchArray count]) {
         cell.owner = self;
+        UserObject* userObjForRow = [searchArray objectAtIndex:indexPath.row];
+        PFUser* userForRow = [userObjForRow.user fetchIfNeeded];;
         
-        cell.nameLabel.text = [((PFObject*)[searchArray objectAtIndex:indexPath.row]) objectForKey:@"name"];    
-        NSString* urlstring = [NSString stringWithFormat:@"%@",[[searchArray objectAtIndex:indexPath.row] objectForKey:@"profilepicture"]];
+        cell.nameLabel.text = [userForRow objectForKey:@"name"];    
+        NSString* urlstring = [NSString stringWithFormat:@"%@",[userForRow objectForKey:@"profilepicture"]];
         BOOL isFollowing=NO;
         
         for (PFObject* obj in followedArray) {
@@ -199,14 +206,18 @@ kAPIGraphUserPhotosPost,
                     [cell.followButton setBackgroundImage:[UIImage imageNamed:@"follow_text.png"] forState:UIControlStateNormal];
             }
         }
+        if (userObjForRow.userImage) {
+            cell.userImageView.image =userObjForRow.userImage;
+        }else{
         ASIHTTPRequest* request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:urlstring]];
         [request setCompletionBlock:^{
         
-            cell.userImageView.image = [UIImage imageWithData:[request responseData]];
+            userObjForRow.userImage = [UIImage imageWithData:[request responseData]];
+                        cell.userImageView.image =userObjForRow.userImage;
         }];
         [request setFailedBlock:^{}];
         [request startAsynchronous];
-        
+        }
     }
     
     
@@ -221,12 +232,12 @@ kAPIGraphUserPhotosPost,
 {
     [searchArray removeAllObjects];
     NSRange textRange;
-    for (PFUser* user in tempArray) {
+    for (UserObject* userObj in tempArray) {
         
-        textRange =[[[user objectForKey:@"name"] lowercaseString] rangeOfString:[searchText lowercaseString]];
+        textRange =[[[userObj.user objectForKey:@"name"] lowercaseString] rangeOfString:[searchText lowercaseString]];
         if(textRange.location != NSNotFound)
         {
-            [searchArray addObject:user];
+            [searchArray addObject:userObj];
         }
         
     }

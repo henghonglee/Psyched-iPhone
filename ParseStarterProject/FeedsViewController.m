@@ -85,7 +85,7 @@
     feedsArray = [[NSMutableArray alloc]init];
     PFQuery* query = [PFQuery queryWithClassName:@"Feed"];
     [query orderByDescending:@"createdAt"];
-    [query setLimit:[NSNumber numberWithInt:MAX_LINES]];
+    [query setLimit:MAX_LINES];
     [queryArray addObject:query];
     [query findObjectsInBackgroundWithBlock:^(NSArray* fetched,NSError* error){
         [queryArray removeObject:query];
@@ -210,7 +210,7 @@
         }else{
             RouteDetailViewController* viewController = [[RouteDetailViewController alloc]initWithNibName:@"RouteDetailViewController" bundle:nil];
             RouteObject* newRouteObject = [[RouteObject alloc]init];
-                newRouteObject.pfobj = [((FeedObject*)[feedsArray objectAtIndex:indexPath.row]).pfobj objectForKey:@"linkedroute"];
+                newRouteObject.pfobj = [[((FeedObject*)[feedsArray objectAtIndex:indexPath.row]).pfobj objectForKey:@"linkedroute"] fetchIfNeeded];
             viewController.routeObject = newRouteObject;
             [self.navigationController pushViewController:viewController animated:YES];
             [viewController release];
@@ -222,7 +222,7 @@
          }else{
              RouteDetailViewController* viewController = [[RouteDetailViewController alloc]initWithNibName:@"RouteDetailViewController" bundle:nil];
              RouteObject* newRouteObject = [[RouteObject alloc]init];
-             newRouteObject.pfobj = [((FeedObject*)[followsArray objectAtIndex:indexPath.row]).pfobj objectForKey:@"linkedroute"];
+             newRouteObject.pfobj = [[((FeedObject*)[followsArray objectAtIndex:indexPath.row]).pfobj objectForKey:@"linkedroute"]fetchIfNeeded];
              viewController.routeObject = newRouteObject;
              [self.navigationController pushViewController:viewController animated:YES];
              [viewController release];
@@ -390,8 +390,8 @@
 {
     PFQuery* query = [PFQuery queryWithClassName:@"Feed"];
     [query orderByDescending:@"createdAt"];
-    [query setSkip:[NSNumber numberWithInt:skip]];
-    [query setLimit:[NSNumber numberWithInt:MAX_LINES]];
+    [query setSkip:skip];
+    [query setLimit:MAX_LINES];
     [queryArray addObject:query];
     [query findObjectsInBackgroundWithBlock:^(NSArray* fetched,NSError* error){
         [queryArray removeObject:query];     
@@ -426,8 +426,8 @@
         
         [query whereKey:@"sender" containedIn:names];
         [query orderByDescending:@"createdAt"];
-        [query setSkip:[NSNumber numberWithInt:skip]];
-        [query setLimit:[NSNumber numberWithInt:MAX_LINES]];
+        [query setSkip:skip];
+        [query setLimit:MAX_LINES];
        
         [names release];
         [queryArray addObject:query];
@@ -473,7 +473,7 @@
         
         [query whereKey:@"sender" containedIn:names];
         [query orderByDescending:@"createdAt"];
-        [query setLimit:[NSNumber numberWithInt:MAX_LINES]];
+        [query setLimit:MAX_LINES];
         [names release];
         [queryArray addObject:query];
         [query findObjectsInBackgroundWithBlock:^(NSArray* fetched,NSError* error){
@@ -510,7 +510,7 @@
     }else{
 	PFQuery* query = [PFQuery queryWithClassName:@"Feed"];
     [query orderByDescending:@"createdAt"];
-    [query setLimit:[NSNumber numberWithInt:MAX_LINES]];
+    [query setLimit:MAX_LINES];
     [queryArray addObject:query];
     [query findObjectsInBackgroundWithBlock:^(NSArray* fetched,NSError* error){
         [queryArray removeObject:query];

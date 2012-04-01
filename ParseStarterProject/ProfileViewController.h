@@ -16,6 +16,13 @@
     PFUser* selectedUser;
     NSMutableArray* followedArray;
 }
+@property (retain, nonatomic) IBOutlet UIButton *addedButton;
+@property (retain, nonatomic) IBOutlet UIButton *projectsButton;
+@property (retain, nonatomic) IBOutlet UIButton *sendsButton;
+@property (retain, nonatomic) IBOutlet UIButton *flashButton;
+@property (retain, nonatomic) IBOutlet UIButton *followersButton;
+@property (retain, nonatomic) IBOutlet UIButton *followingButton;
+
 @property (retain, nonatomic) IBOutlet UILabel *followingwho;
 @property (retain,nonatomic) PFUser* selectedUser;
 @property (retain, nonatomic) IBOutlet UIImageView *userImageView;

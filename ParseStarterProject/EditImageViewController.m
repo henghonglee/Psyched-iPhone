@@ -9,7 +9,7 @@
 #import "EditImageViewController.h"
 #import "AssetsLibrary/ALAssetsLibrary.h"
 #import "NSMutableDictionary+ImageMetadata.h"
-
+#import "FlurryAnalytics.h"
 @implementation EditImageViewController
 @synthesize draggableImageView;
 @synthesize imageToEdit,imageInView;
@@ -90,6 +90,8 @@
 }
 - (IBAction)cancelButton:(id)sender {
     [self dismissModalViewControllerAnimated:YES];
+    NSLog(@"share action ended");
+    [FlurryAnalytics endTimedEvent:@"SHARE_ACTION" withParameters:nil];
 }
 -(void)handleLongPress:(UILongPressGestureRecognizer*)sender{
    
@@ -184,7 +186,7 @@
     
     // Request to save the image to camera roll
     ALAssetsLibrary* library = [[ALAssetsLibrary alloc] init];
-
+    [FlurryAnalytics logEvent:@"USED_SAVE_BUTTON"];
    
   
     

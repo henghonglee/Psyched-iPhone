@@ -2,6 +2,7 @@
 #import <UIKit/UIKit.h>
 #import "ProfileViewController.h"
 #import "Parse/Parse.h"
+#import "UserObject.h"
 @interface FollowingViewController : UIViewController<UITableViewDelegate,UITableViewDataSource,UITextFieldDelegate,UISearchBarDelegate>
 
 @property (retain,nonatomic)PFUser* selectedUser;

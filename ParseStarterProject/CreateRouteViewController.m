@@ -11,6 +11,7 @@ typedef enum apiCall {
     kAPIGraphUserPhotosPost,
 } apiCall;
 #import "UIImage+Resize.h"
+#import "FlurryAnalytics.h"
 #import "JSON.h"
 #import "JHNotificationManager.h"
 #import "MKMapView+ZoomLevel.h"
@@ -285,13 +286,13 @@ typedef enum apiCall {
                     
                     
                     
-                    NSMutableDictionary *data = [NSMutableDictionary dictionary];
-                    [data setObject:[NSString stringWithFormat:@"%@ tagged you in a route",[[PFUser currentUser] objectForKey:@"name"]] forKey:@"alert"];
-                    
-                    [data setObject:[NSString stringWithFormat:@"%@",[[PFUser currentUser] objectForKey:@"name"]] forKey:@"sender"];
-                    [data setObject:[NSString stringWithFormat:@"%@",user.name] forKey:@"reciever"];
-                    
-                    [PFPush sendPushDataToChannelInBackground:@"channelrecommend" withData:data];
+//                    NSMutableDictionary *data = [NSMutableDictionary dictionary];
+//                    [data setObject:[NSString stringWithFormat:@"%@ tagged you in a route",[[PFUser currentUser] objectForKey:@"name"]] forKey:@"alert"];
+//                    
+//                    [data setObject:[NSString stringWithFormat:@"%@",[[PFUser currentUser] objectForKey:@"name"]] forKey:@"sender"];
+//                    [data setObject:[NSString stringWithFormat:@"%@",user.name] forKey:@"reciever"];
+//                    
+//                    [PFPush sendPushDataToChannelInBackground:@"channelrecommend" withData:data];
                     
                 }
                 
@@ -324,6 +325,9 @@ typedef enum apiCall {
             HUD.labelText = @"Completed!";
             UIApplication *thisApp = [UIApplication sharedApplication];
             thisApp.idleTimerDisabled = NO;
+            [FlurryAnalytics logEvent:@"COMPLETED_SHARE"];
+            NSLog(@"share action ended");
+            [FlurryAnalytics endTimedEvent:@"SHARE_ACTION" withParameters:nil];
         }
         if (percentDone <70 && percentDone>50) {
             HUD.labelText = @"Halfway Done...";
@@ -371,6 +375,8 @@ typedef enum apiCall {
 }
 - (IBAction)closeAction:(id)sender {
     [self dismissModalViewControllerAnimated:YES];
+    NSLog(@"share action ended");
+    [FlurryAnalytics endTimedEvent:@"SHARE_ACTION" withParameters:nil];
 }
 
 

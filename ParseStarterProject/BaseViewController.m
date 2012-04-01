@@ -5,6 +5,7 @@
 #import "CreateRouteViewController.h"
 #import "AssetsLibrary/ALAssetsLibrary.h"
 #import "UIImagePickerController+NoRotate.h"
+#import "FlurryAnalytics.h"
 @implementation BaseViewController
 @synthesize locationManager;
 @synthesize imageMetaData;
@@ -56,7 +57,7 @@ static inline double radians (double degrees) {return degrees * M_PI/180;}
 -(void)CreateRoute:(id)sender
 {
 // [self startStandardUpdates];
-    
+    [FlurryAnalytics logEvent:@"SHARE_ACTION" timed:YES];
     UIActionSheet* PhotoSourceSelector = [[UIActionSheet alloc] initWithTitle:@"" delegate:self cancelButtonTitle:@"Cancel" destructiveButtonTitle:nil otherButtonTitles:@"Take A Photo",@"Choose From Library", nil];
     [PhotoSourceSelector showInView:self.view];
     [PhotoSourceSelector setBounds:CGRectMake(0,0,320, 210)];
@@ -196,7 +197,8 @@ static inline double radians (double degrees) {return degrees * M_PI/180;}
             [self pickPhoto:nil];
             break;
         case 2:
-            
+            NSLog(@"share action ended");
+            [FlurryAnalytics endTimedEvent:@"SHARE_ACTION" withParameters:nil];
             break;
         default:
             break;
@@ -255,6 +257,8 @@ static inline double radians (double degrees) {return degrees * M_PI/180;}
 {
 	//[picker.view removeFromSuperview];
 	[picker dismissModalViewControllerAnimated:YES];
+    NSLog(@"share action ended");
+    [FlurryAnalytics endTimedEvent:@"SHARE_ACTION" withParameters:nil];
 }
 
 - (void)startStandardUpdates
@@ -271,6 +275,11 @@ static inline double radians (double degrees) {return degrees * M_PI/180;}
     locationManager.distanceFilter = 500;
     
     [locationManager startUpdatingLocation];
+    CLLocation *location = locationManager.location;
+    [FlurryAnalytics setLatitude:location.coordinate.latitude
+                       longitude:location.coordinate.longitude
+              horizontalAccuracy:location.horizontalAccuracy
+                verticalAccuracy:location.verticalAccuracy];
 }
 // Delegate method from the CLLocationManagerDelegate protocol.
 - (void)locationManager:(CLLocationManager *)manager
