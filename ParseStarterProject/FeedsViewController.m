@@ -279,8 +279,16 @@
             }
         }   
             if ([feedsArray count]) {
-        cell.feedLabel.text = [[[[((FeedObject*)[feedsArray objectAtIndex:indexPath.row]).pfobj objectForKey:@"message"]stringByReplacingOccurrencesOfString:[NSString stringWithFormat:@"%@'s",[[PFUser currentUser]objectForKey:@"name"]] withString:@"your"] stringByReplacingOccurrencesOfString:[[PFUser currentUser]objectForKey:@"name"] withString:@"You"]stringByReplacingOccurrencesOfString:@"his/her" withString:@"your own"]  ;
-        
+                
+                
+        cell.feedLabel.text = [[[((FeedObject*)[feedsArray objectAtIndex:indexPath.row]).pfobj objectForKey:@"message"]stringByReplacingOccurrencesOfString:[NSString stringWithFormat:@"%@'s",[[PFUser currentUser]objectForKey:@"name"]] withString:@"your"] stringByReplacingOccurrencesOfString:[[PFUser currentUser]objectForKey:@"name"] withString:@"You"]  ;
+                NSString* currentUser = [[PFUser currentUser]objectForKey:@"name"];
+                NSString* sender= [((FeedObject*)[feedsArray objectAtIndex:indexPath.row]).pfobj objectForKey:@"sender"]; 
+                
+                if ([currentUser isEqualToString:sender]) {
+                    cell.feedLabel.text = [[[cell.feedLabel.text stringByReplacingOccurrencesOfString:@" his " withString:@" your "] stringByReplacingOccurrencesOfString:@" her " withString:@" your "]stringByReplacingOccurrencesOfString:@"his/her" withString:@"your"];
+                }
+                
         if (((FeedObject*)[feedsArray objectAtIndex:indexPath.row]).senderImage){
             cell.senderImage.image = ((FeedObject*)[feedsArray objectAtIndex:indexPath.row]).senderImage;
         }else{
@@ -340,8 +348,11 @@
         }   
             if ([followsArray count]) {
                 
-    cell.feedLabel.text = [[[[((FeedObject*)[followsArray objectAtIndex:indexPath.row]).pfobj objectForKey:@"message"]stringByReplacingOccurrencesOfString:[NSString stringWithFormat:@"%@'s",[[PFUser currentUser]objectForKey:@"name"]] withString:@"your"] stringByReplacingOccurrencesOfString:[[PFUser currentUser]objectForKey:@"name"] withString:@"You"]stringByReplacingOccurrencesOfString:@"his/her" withString:@"your own"]  ;
-    
+    cell.feedLabel.text = [[[((FeedObject*)[followsArray objectAtIndex:indexPath.row]).pfobj objectForKey:@"message"]stringByReplacingOccurrencesOfString:[NSString stringWithFormat:@"%@'s",[[PFUser currentUser]objectForKey:@"name"]] withString:@"your"] stringByReplacingOccurrencesOfString:[[PFUser currentUser]objectForKey:@"name"] withString:@"You"];
+                if ([[[PFUser currentUser]objectForKey:@"name"] isEqualToString:[((FeedObject*)[followsArray objectAtIndex:indexPath.row]).pfobj objectForKey:@"sender"]]) {
+
+                    cell.feedLabel.text = [[[cell.feedLabel.text stringByReplacingOccurrencesOfString:@" his " withString:@" your "] stringByReplacingOccurrencesOfString:@" her " withString:@" your "]stringByReplacingOccurrencesOfString:@"his/her" withString:@"your"];
+                }
     if (((FeedObject*)[followsArray objectAtIndex:indexPath.row]).senderImage){
         cell.senderImage.image = ((FeedObject*)[followsArray objectAtIndex:indexPath.row]).senderImage;
     }else{

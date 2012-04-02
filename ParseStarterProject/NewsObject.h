@@ -7,11 +7,12 @@
 //
 
 #import <Foundation/Foundation.h>
-
+#import <Parse/Parse.h>
 @interface NewsObject : NSObject
 @property (retain,nonatomic) NSString* newsTitle;
 @property (retain,nonatomic) NSString* newsText;
 @property (retain,nonatomic) NSString* newsImageURL;
 @property (retain,nonatomic) NSString* newsCallbackURL;
 @property (retain,nonatomic) UIImage* newsImage;
+@property (retain,nonatomic) PFGeoPoint* geoPoint;
 @end

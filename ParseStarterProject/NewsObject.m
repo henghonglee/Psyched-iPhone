@@ -14,4 +14,5 @@
 @synthesize newsImageURL;
 @synthesize newsCallbackURL;
 @synthesize newsImage;
+@synthesize geoPoint;
 @end

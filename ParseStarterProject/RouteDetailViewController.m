@@ -928,7 +928,14 @@ commentTextField.text = @"";
         NSMutableDictionary *data = [NSMutableDictionary dictionary];
         [data setObject:routeObject.pfobj.objectId forKey:@"linkedroute"];
         [data setObject:[NSNumber numberWithInt:1] forKey:@"badge"];
-        [data setObject:[NSString stringWithFormat:@"%@ commented on his/her route",[[PFUser currentUser] objectForKey:@"name"]] forKey:@"alert"];
+        if ([[[PFUser currentUser]objectForKey:@"sex"] isEqualToString:@"female"]) {
+            [data setObject:[NSString stringWithFormat:@"%@ commented on her route",[[PFUser currentUser] objectForKey:@"name"]] forKey:@"alert"];
+            
+        }else if([[[PFUser currentUser]objectForKey:@"sex"] isEqualToString:@"male"]) {
+            [data setObject:[NSString stringWithFormat:@"%@ commented on his route",[[PFUser currentUser] objectForKey:@"name"]] forKey:@"alert"];
+        }else{
+            [data setObject:[NSString stringWithFormat:@"%@ commented on his/her route",[[PFUser currentUser] objectForKey:@"name"]] forKey:@"alert"];
+        }
         [data setObject:[NSString stringWithFormat:@"%@",[[PFUser currentUser] objectForKey:@"name"]] forKey:@"sender"];
         
         [PFPush sendPushDataToChannelInBackground:[NSString stringWithFormat:@"channel%@",routeObject.pfobj.objectId] withData:data];
@@ -937,7 +944,15 @@ commentTextField.text = @"";
         [feedObject setObject:[[PFUser currentUser] objectForKey:@"name"] forKey:@"sender"];
         [feedObject setObject:[[PFUser currentUser] objectForKey:@"profilepicture"] forKey:@"senderimagelink"];
         [feedObject setObject:routeObject.pfobj forKey:@"linkedroute"];
-        [feedObject setObject:[routeObject.pfobj objectForKey:@"imageFile"] forKey:@"imagefile"];                    [feedObject setObject:[NSString stringWithFormat:@"%@ commented on his/her route",[[PFUser currentUser] objectForKey:@"name"]] forKey:@"message"];
+        if ([[[PFUser currentUser]objectForKey:@"sex"] isEqualToString:@"female"]) {
+            [feedObject setObject:[routeObject.pfobj objectForKey:@"imageFile"] forKey:@"imagefile"];                    [feedObject setObject:[NSString stringWithFormat:@"%@ commented on her route",[[PFUser currentUser] objectForKey:@"name"]] forKey:@"message"];
+            
+        }else if([[[PFUser currentUser]objectForKey:@"sex"] isEqualToString:@"male"]) {
+            [feedObject setObject:[routeObject.pfobj objectForKey:@"imageFile"] forKey:@"imagefile"];                    [feedObject setObject:[NSString stringWithFormat:@"%@ commented on his route",[[PFUser currentUser] objectForKey:@"name"]] forKey:@"message"];
+        }else{
+           [feedObject setObject:[routeObject.pfobj objectForKey:@"imageFile"] forKey:@"imagefile"];                    [feedObject setObject:[NSString stringWithFormat:@"%@ commented on his/her route",[[PFUser currentUser] objectForKey:@"name"]] forKey:@"message"];
+        }
+        
         [feedObject saveEventually];
         
         

@@ -190,7 +190,7 @@ kAPIGraphUserPhotosPost,
     if ([searchArray count]) {
         cell.owner = self;
         UserObject* userObjForRow = [searchArray objectAtIndex:indexPath.row];
-        PFUser* userForRow = [userObjForRow.user fetchIfNeeded];;
+        PFUser* userForRow = [userObjForRow.user fetchIfNeeded];
         
         cell.nameLabel.text = [userForRow objectForKey:@"name"];    
         NSString* urlstring = [NSString stringWithFormat:@"%@",[userForRow objectForKey:@"profilepicture"]];

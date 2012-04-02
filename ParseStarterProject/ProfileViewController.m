@@ -445,7 +445,7 @@
             }
         }
     }
-    cell.feedLabel.text = [[[[[userfeeds objectAtIndex:indexPath.row] objectForKey:@"message"]stringByReplacingOccurrencesOfString:[NSString stringWithFormat:@"%@'s",[[PFUser currentUser]objectForKey:@"name"]] withString:@"your"] stringByReplacingOccurrencesOfString:[[PFUser currentUser]objectForKey:@"name"] withString:@"You"]stringByReplacingOccurrencesOfString:@"his/her" withString:@"your own"]  ;
+    cell.feedLabel.text = [[[[[[[userfeeds objectAtIndex:indexPath.row] objectForKey:@"message"]stringByReplacingOccurrencesOfString:[NSString stringWithFormat:@"%@'s",[[PFUser currentUser]objectForKey:@"name"]] withString:@"your"] stringByReplacingOccurrencesOfString:[[PFUser currentUser]objectForKey:@"name"] withString:@"You"]stringByReplacingOccurrencesOfString:@"his/her" withString:@"your"]stringByReplacingOccurrencesOfString:@"her" withString:@"your"]stringByReplacingOccurrencesOfString:@"his" withString:@"your"]  ;
 
     cell.senderImage.image = userimage;
     if ([userfeeds count]>0) {
