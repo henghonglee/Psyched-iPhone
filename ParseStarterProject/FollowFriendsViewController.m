@@ -120,7 +120,8 @@ if (cell == nil) {
 }
     if ([searchArray count]) {
         cell.owner = self;
-        PFUser* userForRow = [((UserObject*)[searchArray objectAtIndex:indexPath.row]).user fetchIfNeeded];
+        UserObject* userObjectForRow = [searchArray objectAtIndex:indexPath.row];
+        PFUser* userForRow = userObjectForRow.user;
         cell.nameLabel.text = [userForRow objectForKey:@"name"];  
         if([cell.nameLabel.text isEqualToString:[[PFUser currentUser]objectForKey:@"name"]]){
             cell.followButton.hidden=YES;
@@ -185,7 +186,7 @@ if (cell == nil) {
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     ProfileViewController* viewController = [[ProfileViewController alloc]initWithNibName:@"ProfileViewController" bundle:nil];
-    viewController.username= [((PFObject*)[searchArray objectAtIndex:indexPath.row]) objectForKey:@"name"]; 
+    viewController.username= [((UserObject*)[searchArray objectAtIndex:indexPath.row]).user objectForKey:@"name"]; 
     [self.navigationController pushViewController:viewController animated:YES];
     [viewController release];
 }
