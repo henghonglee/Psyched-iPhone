@@ -10,6 +10,9 @@
 #import <QuartzCore/QuartzCore.h>
 #import <Parse/Parse.h>
 #import "SVModalWebViewController.h"
+#import "SVWebViewController.h"
+#import "FlurryAnalytics.h"
+#import "ParseStarterProjectAppDelegate.h"
 @implementation NewsViewController
 @synthesize newsTable;
 @synthesize navigationBarItem;
@@ -51,7 +54,10 @@
     UIBarButtonItem *barButtonItem = [[UIBarButtonItem alloc] initWithCustomView:navigationBarItem];
     self.navigationItem.rightBarButtonItem = barButtonItem;
     [barButtonItem release];
+
+    currentGeoPoint = [PFGeoPoint geoPointWithLatitude:((ParseStarterProjectAppDelegate*)[[UIApplication sharedApplication] delegate]).currentLocation.coordinate.latitude longitude:((ParseStarterProjectAppDelegate*)[[UIApplication sharedApplication] delegate]).currentLocation.coordinate.longitude];
     PFQuery* query = [PFQuery queryWithClassName:@"News"];
+    [query whereKey:@"location" nearGeoPoint:currentGeoPoint];
     [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
         
                 if ([objects count]) {
@@ -59,11 +65,15 @@
         NSLog(@"objects = %@",objects);
         for (PFObject* object in objects) {
             NewsObject* newNewsObject = [[NewsObject alloc]init];
-            newNewsObject.newsText = [object objectForKey:@"newsText"];
             newNewsObject.newsTitle =[object objectForKey:@"newsTitle"]; 
             newNewsObject.newsImageURL = [object objectForKey:@"newsImageURL"];
+            newNewsObject.newsId = object.objectId;
             newNewsObject.newsCallbackURL = [object objectForKey:@"newsCallbackURL"];
+            newNewsObject.distanceInKm = [[PFGeoPoint geoPointWithLatitude:((ParseStarterProjectAppDelegate*)[[UIApplication sharedApplication] delegate]).currentLocation.coordinate.latitude longitude:((ParseStarterProjectAppDelegate*)[[UIApplication sharedApplication] delegate]).currentLocation.coordinate.longitude] distanceInKilometersTo:[object objectForKey:@"location"]];
+           newNewsObject.newsText = [[object objectForKey:@"newsText"] stringByReplacingOccurrencesOfString:@"<distance>" withString:[NSString stringWithFormat:@"%.0f",newNewsObject.distanceInKm]];
+            if(newNewsObject.distanceInKm < [[object objectForKey:@"radiusInKm"] doubleValue]){
             [newsArray addObject:newNewsObject];
+            }
             [newNewsObject release];
             
         }
@@ -76,17 +86,26 @@
     [navigationBarItem startAnimating];
 
     PFQuery* query = [PFQuery queryWithClassName:@"News"];
+    [query whereKey:@"location" nearGeoPoint:[PFGeoPoint geoPointWithLatitude:((ParseStarterProjectAppDelegate*)[[UIApplication sharedApplication] delegate]).currentLocation.coordinate.latitude longitude:((ParseStarterProjectAppDelegate*)[[UIApplication sharedApplication] delegate]).currentLocation.coordinate.longitude]];
     [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
         if ([objects count]) {
         [newsArray removeAllObjects];
         NSLog(@"objects = %@",objects);
         for (PFObject* object in objects) {
             NewsObject* newNewsObject = [[NewsObject alloc]init];
-            newNewsObject.newsText = [object objectForKey:@"newsText"];
-            newNewsObject.newsTitle =[object objectForKey:@"newsTitle"]; 
+            newNewsObject.newsTitle =[object objectForKey:@"newsTitle"];
             newNewsObject.newsImageURL = [object objectForKey:@"newsImageURL"];
             newNewsObject.newsCallbackURL = [object objectForKey:@"newsCallbackURL"];
-            [newsArray addObject:newNewsObject];
+            newNewsObject.newsId = object.objectId;
+            newNewsObject.distanceInKm = [[PFGeoPoint geoPointWithLatitude:((ParseStarterProjectAppDelegate*)[[UIApplication sharedApplication] delegate]).currentLocation.coordinate.latitude longitude:((ParseStarterProjectAppDelegate*)[[UIApplication sharedApplication] delegate]).currentLocation.coordinate.longitude] distanceInKilometersTo:[object objectForKey:@"location"]];
+            newNewsObject.newsText = [[object objectForKey:@"newsText"] stringByReplacingOccurrencesOfString:@"<distance>" withString:[NSString stringWithFormat:@"%.0fKm",newNewsObject.distanceInKm]];
+            
+            
+          
+            if(newNewsObject.distanceInKm < [[object objectForKey:@"radiusInKm"] doubleValue]){
+                [newsArray addObject:newNewsObject];
+            }
+            
             [newNewsObject release];
             
         }
@@ -154,9 +173,11 @@ if (cell == nil) {
     NewsObject* selectedNewsObject = [newsArray objectAtIndex:indexPath.row];
         cell.newsTitle.text=selectedNewsObject.newsTitle;
         cell.newsText.text =selectedNewsObject.newsText;
+        
         if (!selectedNewsObject.newsImage) {
     ASIHTTPRequest* imageReq = [ASIHTTPRequest requestWithURL:[NSURL URLWithString: selectedNewsObject.newsImageURL]];
         [imageReq setCompletionBlock:^{
+            [FlurryAnalytics logEvent:[NSString stringWithFormat:@"%@ viewed",selectedNewsObject.newsId]];            
             selectedNewsObject.newsImage = [UIImage imageWithData:[imageReq responseData]];
             cell.newsImage.alpha = 0.0;
             cell.newsImage.image = selectedNewsObject.newsImage;
@@ -175,6 +196,7 @@ if (cell == nil) {
         [imageReq setFailedBlock:^{}];
         [imageReq startAsynchronous];
         }else{
+        [FlurryAnalytics logEvent:[NSString stringWithFormat:@"%@ viewed",selectedNewsObject.newsId]];
          cell.newsImage.image = selectedNewsObject.newsImage;
         }
     
@@ -184,10 +206,22 @@ if (cell == nil) {
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     NewsObject* selectedNewsObject = [newsArray objectAtIndex:indexPath.row];
+    
+    NSString* latlon = [NSString stringWithFormat:@"%f,%f",((ParseStarterProjectAppDelegate*)[[UIApplication sharedApplication] delegate]).currentLocation.coordinate.latitude,((ParseStarterProjectAppDelegate*)[[UIApplication sharedApplication] delegate]).currentLocation.coordinate.longitude];
+    NSLog(@"latlon = %@",latlon);
+     NSDictionary *dictionary = 
+     [NSDictionary dictionaryWithObjectsAndKeys:[[PFUser currentUser] objectForKey:@"sex"],@"sex",[[[PFUser currentUser] objectForKey:@"age"]stringValue],@"age",latlon,@"latlon",nil];
+    
+    [FlurryAnalytics logEvent:[NSString stringWithFormat:@"%@ clicked",selectedNewsObject.newsId] withParameters:dictionary timed:YES];
+    
+    
+    
     NSURL *URL = [NSURL URLWithString:selectedNewsObject.newsCallbackURL];
     SVModalWebViewController *webViewController = [[[SVModalWebViewController alloc] initWithURL:URL] autorelease];
 	webViewController.modalPresentationStyle = UIModalPresentationPageSheet;
-    webViewController.availableActions = SVWebViewControllerAvailableActionsOpenInSafari | SVWebViewControllerAvailableActionsCopyLink | SVWebViewControllerAvailableActionsMailLink;
+    webViewController.newsId = selectedNewsObject.newsId;
+    webViewController.dictionary = dictionary;
+    webViewController.availableActions = SVWebViewControllerAvailableActionsOpenInSafari | SVWebViewControllerAvailableActionsCopyLink | SVWebViewControllerAvailableActionsMailLink; 
 	[self presentModalViewController:webViewController animated:NO];	
 }
 @end

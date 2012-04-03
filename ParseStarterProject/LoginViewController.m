@@ -56,6 +56,8 @@
 
         NSArray* permissions = [[NSArray alloc]initWithObjects:@"user_about_me",@"user_videos",@"user_birthday",@"email",@"user_photos",@"publish_stream",@"offline_access",nil];
         [PFFacebookUtils logInWithPermissions:permissions block:^(PFUser *user, NSError *error) {
+            [[NSUserDefaults standardUserDefaults]setObject:@"updated" forKey:@"updater1.1"];
+            [[NSUserDefaults standardUserDefaults] synchronize];
             if (!user) {
                 NSLog(@"Uh oh. The user cancelled the Facebook login.");
             } else if (user.isNew) {
@@ -63,7 +65,7 @@
                 NSLog(@"User with facebook id %@ signed up and logged in!", [PFFacebookUtils facebook].accessToken);
                 [self apiFQLIMe];
             } else {
-               
+               [self apiFQLIMe];
                 InstagramViewController* viewController = [[InstagramViewController alloc]initWithNibName:@"InstagramViewController" bundle:nil];
                 viewController.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
                 [self presentModalViewController:viewController animated:YES];

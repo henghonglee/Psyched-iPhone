@@ -15,4 +15,6 @@
 @synthesize newsCallbackURL;
 @synthesize newsImage;
 @synthesize geoPoint;
+@synthesize distanceInKm;
+@synthesize newsId;
 @end

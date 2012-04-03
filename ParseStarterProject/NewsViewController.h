@@ -15,6 +15,7 @@
 {
     NSMutableArray* newsArray;
     NSMutableArray* queryArray;
+    PFGeoPoint* currentGeoPoint;
 }
 @property (retain, nonatomic) IBOutlet UITableView *newsTable;
 @property (nonatomic, strong) DAReloadActivityButton *navigationBarItem;

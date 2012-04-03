@@ -971,9 +971,28 @@ commentTextField.text = @"";
     {
         if (facebookliked) {
             //set button color to heartcolor
-            [likeButton setImage:[UIImage imageNamed:@"heartcolor.png"] forState:UIControlStateNormal];       
+            [likeButton setImage:[UIImage imageNamed:@"heartcolor.png"] forState:UIControlStateNormal];
+            PFObject* feedObject = [PFObject objectWithClassName:@"Feed"];
+            [feedObject setObject:[[PFUser currentUser] objectForKey:@"name"] forKey:@"sender"];
+            [feedObject setObject:[[PFUser currentUser] objectForKey:@"profilepicture"] forKey:@"senderimagelink"];
+            [feedObject setObject:routeObject.pfobj forKey:@"linkedroute"];
+            [feedObject setObject:[routeObject.pfobj objectForKey:@"imageFile"] forKey:@"imagefile"];
+            [feedObject  setObject:[NSString stringWithFormat:@"%@ liked %@'s route",[[PFUser currentUser] objectForKey:@"name"],[routeObject.pfobj objectForKey:@"username"]] forKey:@"message"];
+            
+            [feedObject saveEventually];
         }else{
-            [likeButton setImage:[UIImage imageNamed:@"popularbutton.png"] forState:UIControlStateNormal];       
+            [likeButton setImage:[UIImage imageNamed:@"popularbutton.png"] forState:UIControlStateNormal]; 
+            PFQuery* feedquery = [PFQuery queryWithClassName:@"Feed"];
+            [feedquery whereKey:@"sender" equalTo:[[PFUser currentUser] objectForKey:@"name"]];
+            [feedquery whereKey:@"linkedroute" equalTo:routeObject.pfobj];
+            [queryArray addObject:feedquery];
+            [feedquery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+                [queryArray removeObject:feedquery];
+                if ([objects count]) {
+                    [((PFObject*)[objects objectAtIndex:0]) delete];
+                    
+                }
+            }];
         }
     
           [self getFacebookRouteDetails]; 
@@ -1016,7 +1035,7 @@ commentTextField.text = @"";
                                                andParams:params
                                            andHttpMethod:@"DELETE"
                                              andDelegate:self];
-            
+           
         }else{
             facebookliked = YES; //liked
             NSMutableDictionary *params = [NSMutableDictionary dictionaryWithObjectsAndKeys:[[PFUser currentUser]objectForKey:@"name"],[[[PFUser currentUser]objectForKey:@"facebookid"] stringValue],nil];

@@ -18,6 +18,7 @@
 
 @implementation SVModalWebViewController
 
+@synthesize newsId,dictionary;
 @synthesize barsTintColor, availableActions, webViewController;
 
 #pragma mark - Initialization
@@ -33,6 +34,8 @@
 
 - (id)initWithURL:(NSURL *)URL {
     self.webViewController = [[[SVWebViewController alloc] initWithURL:URL] autorelease];
+    self.webViewController.newsId = newsId;
+    self.webViewController.dictionary = dictionary;
     if (self = [super initWithRootViewController:self.webViewController]) {
         self.webViewController.navigationItem.leftBarButtonItem = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:webViewController action:@selector(doneButtonClicked:)] autorelease];
     }

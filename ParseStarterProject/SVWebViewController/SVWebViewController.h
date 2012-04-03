@@ -16,5 +16,7 @@
 - (id)initWithURL:(NSURL*)URL;
 
 @property (nonatomic, assign) SVWebViewControllerAvailableActions availableActions;
+@property (nonatomic,retain) NSString* newsId;
+@property (nonatomic,retain) NSDictionary* dictionary;
 
 @end

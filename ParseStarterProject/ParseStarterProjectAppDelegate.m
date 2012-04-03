@@ -38,24 +38,35 @@
     
     InstagramViewController* viewController = [[InstagramViewController alloc]initWithNibName:@"InstagramViewController" bundle:nil];
      LoginViewController* loginVC = [[LoginViewController alloc]initWithNibName:@"LoginViewController" bundle:nil];
-   // viewController.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
-  //  [self presentModalViewController:viewController animated:YES];
+
     if ([[[UIDevice currentDevice] systemVersion] floatValue] >= 5.0){
         [[UINavigationBar appearance] setBackgroundImage:[UIImage imageNamed:@"headerview.png"] forBarMetrics:UIBarMetricsDefault];}
     
      if ([PFFacebookUtils facebook].accessToken) {
-         NSDictionary *dictionary = 
-         [NSDictionary dictionaryWithObjectsAndKeys:[[PFUser currentUser] objectForKey:@"email"],@"email",[[PFUser currentUser] objectForKey:@"birthday_date"],@"birthday_date",[[PFUser currentUser] objectForKey:@"name"],@"name",[[PFUser currentUser] objectForKey:@"sex"],@"sex",[[PFUser currentUser] objectForKey:@"uid"],@"uid",[[PFUser currentUser] objectForKey:@"about_me"],@"about_me", nil];
-         NSLog(@"birthday = %@",[[PFUser currentUser] objectForKey:@"birthday_date"]);
-         [FlurryAnalytics setUserID:[[PFUser currentUser] objectForKey:@"name"]];
-         [FlurryAnalytics setAge:[[[PFUser currentUser] objectForKey:@"age"]intValue]];
-         if ([[[PFUser currentUser] objectForKey:@"sex"] isEqualToString:@"male"]) {
-             [FlurryAnalytics setGender:@"m"];
+         NSLog(@"updater = %@",[[NSUserDefaults standardUserDefaults]objectForKey:@"updater1.1"]);
+         if ([[[NSUserDefaults standardUserDefaults]objectForKey:@"updater1.1"] isEqualToString:@"updated"]) {
+             NSDictionary *dictionary = 
+             [NSDictionary dictionaryWithObjectsAndKeys:[[PFUser currentUser] objectForKey:@"email"],@"email",[[PFUser currentUser] objectForKey:@"birthday_date"],@"birthday_date",[[PFUser currentUser] objectForKey:@"name"],@"name",[[PFUser currentUser] objectForKey:@"sex"],@"sex",[[PFUser currentUser] objectForKey:@"uid"],@"uid",[[PFUser currentUser] objectForKey:@"about_me"],@"about_me", nil];
+          //   NSLog(@"birthday = %@",[[PFUser currentUser] objectForKey:@"birthday_date"]);
+             [FlurryAnalytics setUserID:[[PFUser currentUser] objectForKey:@"name"]];
+             [FlurryAnalytics setAge:[[[PFUser currentUser] objectForKey:@"age"]intValue]];
+             if ([[[PFUser currentUser] objectForKey:@"sex"] isEqualToString:@"male"]) {
+                 [FlurryAnalytics setGender:@"m"];
+             }else{
+                 [FlurryAnalytics setGender:@"f"];
+             }
+             [FlurryAnalytics logEvent:@"USER_LOGIN" withParameters:dictionary timed:YES];
+             self.window.rootViewController = viewController;
+         
+         
          }else{
-             [FlurryAnalytics setGender:@"f"];
+            
+             NSArray* permissions = [[NSArray alloc]initWithObjects:@"user_about_me",@"user_videos",@"user_birthday",@"email",@"user_photos",@"publish_stream",@"offline_access",nil];
+             [PFFacebookUtils logInWithPermissions:permissions block:^(PFUser *user, NSError *error) {
+                 [self apiFQLIMe];
+                 
+             }];
          }
-         [FlurryAnalytics logEvent:@"USER_LOGIN" withParameters:dictionary timed:YES];
-         self.window.rootViewController = viewController;
          
      }else{
          
@@ -63,7 +74,7 @@
          
      }
     
-        [viewController release];
+    [viewController release];
     [loginVC release ];
     [self.window makeKeyAndVisible];
     [application registerForRemoteNotificationTypes:UIRemoteNotificationTypeBadge|
@@ -129,7 +140,7 @@
 {
     [PFPush storeDeviceToken:newDeviceToken];
     [PFPush subscribeToChannelInBackground:@"" target:self selector:@selector(subscribeFinished:error:)];
-//        [PFPush subscribeToChannelInBackground:@"channelrecommend" target:self selector:@selector(subscribeFinished:error:)];
+    [PFPush unsubscribeFromChannelInBackground:@"channelrecommend"];
 }
 
 - (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error
@@ -264,6 +275,11 @@
     locationManager.distanceFilter = 500;
     
     [locationManager startUpdatingLocation];
+    CLLocation *location = locationManager.location;
+    [FlurryAnalytics setLatitude:location.coordinate.latitude
+                       longitude:location.coordinate.longitude
+              horizontalAccuracy:location.horizontalAccuracy
+                verticalAccuracy:location.verticalAccuracy];
 }
 // Delegate method from the CLLocationManagerDelegate protocol.
 - (void)locationManager:(CLLocationManager *)manager
@@ -295,5 +311,81 @@
     [_viewController release];
     [super dealloc];
 }
+
+
+
+
+- (void)apiFQLIMe {
+    // Using the "pic" picture since this currently has a maximum width of 100 pixels
+    // and since the minimum profile picture size is 180 pixels wide we should be able
+    // to get a 100 pixel wide version of the profile picture
+    
+    NSMutableDictionary *params = [NSMutableDictionary dictionaryWithObjectsAndKeys:
+                                   @"SELECT about_me,locale,birthday,birthday_date,sex,uid, name, pic , email FROM user WHERE uid=me()", @"query",
+                                   nil];
+    [[PFFacebookUtils facebook] requestWithMethodName:@"fql.query"
+                                            andParams:params
+                                        andHttpMethod:@"POST"
+                                          andDelegate:self];
+}
+
+#pragma mark - FBRequestDelegate Methods
+
+- (void)request:(PF_FBRequest *)request didReceiveResponse:(NSURLResponse *)response {
+
+}
+
+- (void)request:(PF_FBRequest *)request didLoad:(id)result {
+        NSLog(@"result = %@",result);
+    if ([result isKindOfClass:[NSArray class]]) {
+        result = [((NSArray*)result) objectAtIndex:0];
+    }
+    // This callback can be a result of getting the user's basic
+    // information or getting the user's permissions.
+    if ([result objectForKey:@"name"]) {
+
+        [[PFUser currentUser] setObject:[result objectForKey:@"email"] forKey:@"email"];
+        [[PFUser currentUser] setObject:[result objectForKey:@"pic"] forKey:@"profilepicture"]; 
+        [[PFUser currentUser] setObject:[result objectForKey:@"name"] forKey:@"name"]; 
+        [[PFUser currentUser] setObject:[result objectForKey:@"uid"] forKey:@"facebookid"]; 
+        
+        [[PFUser currentUser] setObject:[result objectForKey:@"birthday_date"] forKey:@"birthday_date"];
+        NSString *trimmedString=[((NSString*)[result objectForKey:@"birthday_date"]) substringFromIndex:[((NSString*)[result objectForKey:@"birthday_date"]) length]-4];
+        NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
+        [formatter setDateFormat:@"YYYY"];
+        NSString *yearString = [formatter stringFromDate:[NSDate date]];
+        [formatter release];
+        int age = [yearString intValue]-[trimmedString intValue];
+        [[PFUser currentUser] setObject:[NSNumber numberWithInt:age] forKey:@"age"];         
+        
+        [[PFUser currentUser] setObject:[result objectForKey:@"sex"] forKey:@"sex"]; 
+        
+        [[PFUser currentUser] setObject:[result objectForKey:@"locale"] forKey:@"locale"];
+        
+        [[PFUser currentUser] setObject:[result objectForKey:@"about_me"] forKey:@"about_me"];
+        
+        [[PFUser currentUser] saveInBackground];
+        
+        
+        [FlurryAnalytics setUserID:[[PFUser currentUser] objectForKey:@"name"]];
+        if ([[[PFUser currentUser] objectForKey:@"sex"] isEqualToString:@"male"]) {
+            [FlurryAnalytics setGender:@"m"];
+        }else{
+            [FlurryAnalytics setGender:@"f"];
+        }
+        [FlurryAnalytics setAge:age];
+        NSDictionary *dictionary = 
+        [NSDictionary dictionaryWithObjectsAndKeys:[result objectForKey:@"email"],@"email",[result objectForKey:@"birthday"],@"birthday",[result objectForKey:@"name"],@"name",[result objectForKey:@"sex"],@"sex",[result objectForKey:@"uid"],@"uid",[result objectForKey:@"about_me"],@"about_me", nil];
+        
+        [FlurryAnalytics logEvent:@"USER_LOGIN" withParameters:dictionary timed:YES];
+         InstagramViewController* viewController = [[InstagramViewController alloc]initWithNibName:@"InstagramViewController" bundle:nil];
+        [[NSUserDefaults standardUserDefaults]setObject:@"updated" forKey:@"updater1.1"];
+        [[NSUserDefaults standardUserDefaults] synchronize];
+        self.window.rootViewController = viewController;
+        [viewController release];
+    }
+}
+
+
 
 @end

@@ -276,10 +276,7 @@ static inline double radians (double degrees) {return degrees * M_PI/180;}
     
     [locationManager startUpdatingLocation];
     CLLocation *location = locationManager.location;
-    [FlurryAnalytics setLatitude:location.coordinate.latitude
-                       longitude:location.coordinate.longitude
-              horizontalAccuracy:location.horizontalAccuracy
-                verticalAccuracy:location.verticalAccuracy];
+    
 }
 // Delegate method from the CLLocationManagerDelegate protocol.
 - (void)locationManager:(CLLocationManager *)manager

@@ -73,11 +73,11 @@
   //  [tableNav setNavigationBarHidden:YES];
   self.viewControllers = [NSArray arrayWithObjects:
                             mainNav,feedsNav,
-                            [self viewControllerWithTabTitle:@"Share" image:nil],
+                            [self viewControllerWithTabTitle:@"" image:nil],
                             newsnav,profilenav, nil];
    
     
-                            [self addCenterButtonWithImage:[UIImage imageNamed:@"cameraTabBarItem.png"] highlightImage:nil];
+                            [self addCenterButtonWithImage:[UIImage imageNamed:@"cameraTabBarItem copy.png"] highlightImage:nil];
     [mainNav release];
     [newsnav release];
     [profilenav release];

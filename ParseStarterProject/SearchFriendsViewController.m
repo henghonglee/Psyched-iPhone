@@ -190,7 +190,7 @@ kAPIGraphUserPhotosPost,
     if ([searchArray count]) {
         cell.owner = self;
         UserObject* userObjForRow = [searchArray objectAtIndex:indexPath.row];
-        PFUser* userForRow = [userObjForRow.user fetchIfNeeded];
+        PFUser* userForRow = userObjForRow.user;
         
         cell.nameLabel.text = [userForRow objectForKey:@"name"];    
         NSString* urlstring = [NSString stringWithFormat:@"%@",[userForRow objectForKey:@"profilepicture"]];
@@ -251,7 +251,7 @@ kAPIGraphUserPhotosPost,
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     ProfileViewController* viewController = [[ProfileViewController alloc]initWithNibName:@"ProfileViewController" bundle:nil];
-    viewController.username= [((PFObject*)[searchArray objectAtIndex:indexPath.row]) objectForKey:@"name"]; 
+    viewController.username= [((UserObject*)[searchArray objectAtIndex:indexPath.row]).user objectForKey:@"name"]; 
     [self.navigationController pushViewController:viewController animated:YES];
     [viewController release];
 }

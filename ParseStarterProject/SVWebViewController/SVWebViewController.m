@@ -7,7 +7,7 @@
 //  https://github.com/samvermette/SVWebViewController
 
 #import "SVWebViewController.h"
-
+#import "FlurryAnalytics.h"
 @interface SVWebViewController ()
 
 @property (nonatomic, retain, readonly) UIBarButtonItem *backBarButtonItem;
@@ -37,7 +37,7 @@
 @implementation SVWebViewController
 
 @synthesize availableActions;
-
+@synthesize newsId,dictionary;
 @synthesize URL, mainWebView;
 @synthesize backBarButtonItem, forwardBarButtonItem, refreshBarButtonItem, stopBarButtonItem, actionBarButtonItem, pageActionSheet;
 
@@ -338,6 +338,7 @@
 }
 
 - (void)doneButtonClicked:(id)sender {
+    [FlurryAnalytics endTimedEvent:[NSString stringWithFormat:@"%@ clicked",newsId] withParameters:dictionary];
     [self dismissModalViewControllerAnimated:YES];
 }
 

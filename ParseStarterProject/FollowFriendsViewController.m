@@ -55,10 +55,9 @@
         [tempArray removeAllObjects];
         for (PFObject* follower in objects) {
             UserObject* userObj = [[UserObject alloc]init];
-            PFUser* user = [follower objectForKey:@"follower"];
-            NSError* error = nil;
-            [user fetch];
-            userObj.user = user;
+            userObj.user= [follower objectForKey:@"follower"];
+            [userObj.user fetchIfNeeded];
+
             [searchArray addObject:userObj];
             [tempArray addObject:userObj];
             [userObj release];
@@ -123,15 +122,15 @@ if (cell == nil) {
     if ([searchArray count]) {
         cell.owner = self;
         UserObject* userObjectForRow = [searchArray objectAtIndex:indexPath.row] ;
-
-        
-        cell.nameLabel.text = [[((PFObject*)userObjectForRow.user) fetchIfNeeded] objectForKey:@"name"];  
+        PFUser* userForRow = userObjectForRow.user;
+        [userForRow fetchIfNeeded];
+        cell.nameLabel.text = [userForRow objectForKey:@"name"];  
         if([cell.nameLabel.text isEqualToString:[[PFUser currentUser]objectForKey:@"name"]]){
             cell.followButton.hidden=YES;
         }else{
             cell.followButton.hidden=NO;
         }
-        NSString* urlstring = [NSString stringWithFormat:@"%@",[[((PFObject*)userObjectForRow.user) fetchIfNeeded] objectForKey:@"profilepicture"]];
+        NSString* urlstring = [NSString stringWithFormat:@"%@",[userForRow objectForKey:@"profilepicture"]];
         BOOL isFollowing=NO;
         
         for (PFObject* obj in followedArray) {

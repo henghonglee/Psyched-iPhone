@@ -15,4 +15,7 @@
 @property (retain,nonatomic) NSString* newsCallbackURL;
 @property (retain,nonatomic) UIImage* newsImage;
 @property (retain,nonatomic) PFGeoPoint* geoPoint;
+@property (retain,nonatomic) NSString* newsId;
+
+@property (nonatomic) double distanceInKm;
 @end
