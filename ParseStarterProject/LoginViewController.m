@@ -54,7 +54,7 @@
     
     if (![PFFacebookUtils facebook].accessToken) {
 
-        NSArray* permissions = [[NSArray alloc]initWithObjects:@"user_about_me",@"user_videos",@"user_birthday",@"email",@"user_photos",@"publish_stream",@"offline_access",nil];
+        NSArray* permissions = [[NSArray alloc]initWithObjects:@"user_about_me",@"user_videos",@"user_birthday",@"email",@"user_photos",@"publish_stream",@"offline_access",@"manage_pages",nil];
         [PFFacebookUtils logInWithPermissions:permissions block:^(PFUser *user, NSError *error) {
             [[NSUserDefaults standardUserDefaults]setObject:@"updated" forKey:@"updater1.1"];
             [[NSUserDefaults standardUserDefaults] synchronize];

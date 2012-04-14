@@ -6,6 +6,7 @@
 #import "AssetsLibrary/ALAssetsLibrary.h"
 #import "UIImagePickerController+NoRotate.h"
 #import "FlurryAnalytics.h"
+#import "RDActionSheet.h"
 @implementation BaseViewController
 @synthesize locationManager;
 @synthesize imageMetaData;
@@ -22,6 +23,7 @@ static inline double radians (double degrees) {return degrees * M_PI/180;}
 // Create a custom UIButton and add it to the center of our tab bar
 -(void) addCenterButtonWithImage:(UIImage*)buttonImage highlightImage:(UIImage*)highlightImage
 {
+    
   UIButton* button = [UIButton buttonWithType:UIButtonTypeCustom];
   button.autoresizingMask = UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleBottomMargin | UIViewAutoresizingFlexibleTopMargin;
   button.frame = CGRectMake(0.0, 0.0, buttonImage.size.width, buttonImage.size.height);
@@ -62,11 +64,22 @@ static inline double radians (double degrees) {return degrees * M_PI/180;}
     [PhotoSourceSelector showInView:self.view];
     [PhotoSourceSelector setBounds:CGRectMake(0,0,320, 210)];
     [PhotoSourceSelector release];
+//    RDActionSheet *actionSheet = [[RDActionSheet alloc] initWithCancelButtonTitle:@"Cancel" primaryButtonTitle:@"Save" destroyButtonTitle:@"Destroy" otherButtonTitles:@"Tweet", nil];
+//    actionSheet.callbackBlock = ^(RDActionSheetResult result, NSInteger buttonIndex) {
+//        
+//        switch (result) {
+//            case RDActionSheetButtonResultSelected:
+//                NSLog(@"Pressed %i", buttonIndex);
+//                break;
+//            case RDActionSheetResultResultCancelled:
+//                NSLog(@"Sheet cancelled");
+//        }
+//    };
+//    [actionSheet showFrom:self.view];
 }
 
 -(IBAction) pickPhoto:(id)sender
 {
-    
 	UIImagePickerController* imagePickerVC = [[UIImagePickerController alloc] init];
 	imagePickerVC.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
 	imagePickerVC.delegate = self;
@@ -127,7 +140,7 @@ static inline double radians (double degrees) {return degrees * M_PI/180;}
     UIImage *myImage = [info objectForKey:UIImagePickerControllerOriginalImage];
     UIImage *mycroppedImage =[myImage croppedImage:CGRectMake(0, 0, myImage.size.width, myImage.size.width)];
     
-    UIImage* newcropped;
+    
     //here crash
     NSLog(@"picker = %@",picker);
     if(picker.sourceType == UIImagePickerControllerSourceTypeCamera){
@@ -158,12 +171,25 @@ static inline double radians (double degrees) {return degrees * M_PI/180;}
         // Get the resized image from the context and a UIImage
         CGImageRef newImageRef = CGBitmapContextCreateImage(bitmap);
         CGContextRelease(bitmap);
-        newcropped = [[UIImage imageWithCGImage:newImageRef]resizedImage:CGSizeMake(1024.0, 1024.0) interpolationQuality:kCGInterpolationHigh];
+        newcropped = [[[UIImage imageWithCGImage:newImageRef]resizedImage:CGSizeMake(1024.0, 1024.0) interpolationQuality:kCGInterpolationHigh] retain];
         CGImageRelease(newImageRef);
+        imagepicker  =  picker;
+        //prompt here
+        [imagepicker dismissModalViewControllerAnimated:NO];
+        EditImageViewController* EditImageVC = [[EditImageViewController alloc] initWithNibName:@"EditImageViewController" bundle:nil];
+        UINavigationController* navCont = [[UINavigationController alloc]initWithRootViewController:EditImageVC];
+        EditImageVC.imageInView = newcropped;
+        NSLog(@"imageData transfered = %@",imageMetaData);
+        EditImageVC.imageMetaData = imageMetaData;
+        EditImageVC.delegate = self;
+        [self presentModalViewController:navCont animated:NO];
+        [navCont release];
+
+       
         
     }else{
         newcropped=[mycroppedImage resizedImage:CGSizeMake(720, 720) interpolationQuality:kCGInterpolationHigh];    
-    }
+    
     
     [picker dismissModalViewControllerAnimated:NO];
     EditImageViewController* EditImageVC = [[EditImageViewController alloc] initWithNibName:@"EditImageViewController" bundle:nil];
@@ -174,6 +200,7 @@ static inline double radians (double degrees) {return degrees * M_PI/180;}
     EditImageVC.delegate = self;
     [self presentModalViewController:navCont animated:NO];
     [navCont release];
+    }
 }
 
 
@@ -306,6 +333,39 @@ static inline double radians (double degrees) {return degrees * M_PI/180;}
     }
     // else skip the event and process the next one.
 }
+
+-(void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex
+{
+    if (buttonIndex == 0) {
+        // Request to save the image to camera roll
+        ALAssetsLibrary* library = [[ALAssetsLibrary alloc] init];
+        [FlurryAnalytics logEvent:@"USED_SAVE_BUTTON"];
+        
+        [library writeImageToSavedPhotosAlbum:[newcropped CGImage] metadata:imageMetaData completionBlock:^(NSURL *assetURL, NSError *error) {
+            if (error) {
+                NSLog(@"error is %@",error);
+            }
+            
+            [JHNotificationManager notificationWithMessage:@"Photo saved with location to camera roll"];
+        }];
+        
+        [library release];
+        [FlurryAnalytics endTimedEvent:@"SHARE_ACTION" withParameters:nil];
+        [imagepicker dismissModalViewControllerAnimated:YES];
+    }else{
+        [imagepicker dismissModalViewControllerAnimated:NO];
+        EditImageViewController* EditImageVC = [[EditImageViewController alloc] initWithNibName:@"EditImageViewController" bundle:nil];
+        UINavigationController* navCont = [[UINavigationController alloc]initWithRootViewController:EditImageVC];
+        EditImageVC.imageInView = newcropped;
+        NSLog(@"imageData transfered = %@",imageMetaData);
+        EditImageVC.imageMetaData = imageMetaData;
+        EditImageVC.delegate = self;
+        [self presentModalViewController:navCont animated:NO];
+        [navCont release];
+    }
+}
+
+
 -(void)dealloc
 {
     [super dealloc];

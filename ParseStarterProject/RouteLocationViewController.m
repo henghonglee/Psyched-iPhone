@@ -7,15 +7,15 @@
 //
 
 #import "RouteLocationViewController.h"
-
+#import <QuartzCore/QuartzCore.h>
 
 
 @implementation RouteLocationViewController
-
 @synthesize locationText;
 @synthesize locationTextField;
 @synthesize locationTable;
 @synthesize delegate;
+@synthesize routeLocMap;
 @synthesize locationArray;
 @synthesize gpLoc;
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
@@ -36,6 +36,10 @@
     self.navigationItem.rightBarButtonItem = rightButton;
     [rightButton release]; 
     PFQuery* locationQuery = [PFQuery queryWithClassName:@"Route"];
+    routeLocMap.layer.borderColor = [UIColor whiteColor].CGColor;
+    routeLocMap.layer.borderWidth = 3;
+    CLLocationCoordinate2D routeLoc = CLLocationCoordinate2DMake([gpLoc latitude],[gpLoc longitude]);
+    [routeLocMap setCenterCoordinate:routeLoc zoomLevel:14 animated:NO];
     [locationQuery whereKey:@"routelocation" nearGeoPoint:gpLoc withinKilometers:2.0];
     [locationQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
         if (objects) {
@@ -67,6 +71,7 @@
 {
     [self setLocationTextField:nil];
     [self setLocationTable:nil];
+    [self setRouteLocMap:nil];
     [super viewDidUnload];
     // Release any retained subviews of the main view.
     // e.g. self.myOutlet = nil;
@@ -111,6 +116,7 @@
     [locationArray release];
     [locationTextField release];
     [locationTable release];
+    [routeLocMap release];
     [super dealloc];
 }
 @end

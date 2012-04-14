@@ -12,8 +12,8 @@
 #import "ProfileViewController.h"
 #import "SendUserViewController.h"
 #import <MapKit/MapKit.h>
-
-@interface RouteDetailViewController : UIViewController<UITextFieldDelegate,UITableViewDelegate,UITableViewDataSource,PF_FBRequestDelegate,UIScrollViewDelegate>
+#import "MapViewController.h"
+@interface RouteDetailViewController : UIViewController<UITextFieldDelegate,UITableViewDelegate,UITableViewDataSource,PF_FBRequestDelegate,UIScrollViewDelegate,UIAlertViewDelegate>
 {
     int likecount;
     BOOL facebookliked;
@@ -24,7 +24,9 @@
 @property (retain, nonatomic) IBOutlet UIView *topView;
 @property (retain, nonatomic) IBOutlet UIView *btmView;
 @property (retain, nonatomic) IBOutlet UIView *mapContainer;
+@property (retain, nonatomic) IBOutlet UIButton *outdateButton;
 @property (retain, nonatomic) IBOutlet UILabel *difficultyLabel;
+@property (retain, nonatomic) IBOutlet UIButton *unoutdateButton;
 @property (retain, nonatomic) IBOutlet MKMapView *routeMapView;
 @property (retain, nonatomic) IBOutlet UIProgressView *progressBar;
 @property (retain, nonatomic) IBOutlet UILabel *routeLocationLabel;

@@ -25,10 +25,12 @@
     int difficultyint;
     CLLocationManager *locationManager;
     CLLocationCoordinate2D routeLoc;
+    NSString* oldAccessToken;
 }
 
 
 -(void)tagPhoto:(NSString*)photoid withUser:(NSString*)facebookid;
+@property (retain, nonatomic) IBOutlet UIImageView *routeImageView;
 @property (retain, nonatomic) NSMutableDictionary* imageMetaData;
 @property (retain, nonatomic) IBOutlet MKMapView* routeLocMapView;
 @property (nonatomic, retain) CLLocationManager *locationManager;
@@ -50,5 +52,6 @@
 @property (retain, nonatomic) IBOutlet UIImageView *imageView;
 @property (retain, nonatomic) IBOutlet UITextField *recommendTextField;
 @property (retain, nonatomic) IBOutlet UISwitch *fbuploadswitch;
+@property (retain, nonatomic) IBOutlet UISwitch *twuploadswitch;
 
 @end

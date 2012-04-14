@@ -11,11 +11,14 @@
 #import "ASIHTTPRequest.h"
 #import "MKMapView+ZoomLevel.h"
 #import <QuartzCore/QuartzCore.h>
+#import "MapViewController.h"
 @implementation RouteDetailViewController
 @synthesize topView;
 @synthesize btmView;
 @synthesize mapContainer;
+@synthesize outdateButton;
 @synthesize difficultyLabel;
+@synthesize unoutdateButton;
 @synthesize routeMapView;
 @synthesize progressBar;
 @synthesize routeLocationLabel;
@@ -62,7 +65,36 @@
 }
 
 #pragma mark - View lifecycle
+- (IBAction)didFlagAsOutdated:(id)sender {
+    if ([self.routeObject.pfobj objectForKey:@"outdated"]==[NSNumber numberWithBool:true]) {
+        // if user is the owner of the route , show the not outdated button
+        
+    }else{
+    UIAlertView* alert = [[UIAlertView alloc]initWithTitle:@"Flag as outdated" message:@"Are you sure?" delegate:self cancelButtonTitle:@"Yes" otherButtonTitles:@"No",nil];
+    [alert show];
+    [alert release];
+    }
+    
+}
 
+- (IBAction)unoutdate:(id)sender {
+    [self.routeObject.pfobj setObject:[NSNumber numberWithBool:false]forKey:@"outdated"];
+    [self.routeObject.pfobj saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+    outdateButton.hidden = NO;    
+    }];
+    
+
+}
+-(void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex
+{
+    if (buttonIndex==0) {
+        [self.routeObject.pfobj setObject:[NSNumber numberWithBool:true]forKey:@"outdated"];
+        [self.routeObject.pfobj saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+        outdateButton.hidden = YES;    
+        }];
+        
+        }
+    }
 - (void)viewDidLoad
 {
     [super viewDidLoad];
@@ -81,9 +113,14 @@
     NSLog(@"size = %@",NSStringFromCGSize(size));
     descriptionTextView.frame = CGRectMake(-1, 50, 229, MAX(41,size.height+30));
     descriptionTextView.text = foo;
+    
+    
     commentCountLabel.text = [NSString stringWithFormat:@"%@",[[routeObject.pfobj objectForKey:@"commentcount"]stringValue]];
     likeCountLabel.text = [NSString stringWithFormat:@"%@ likes",[[routeObject.pfobj objectForKey:@"likecount"]stringValue]];
     viewCountLabel.text = [NSString stringWithFormat:@"%@ views",[[routeObject.pfobj objectForKey:@"viewcount"]stringValue]];
+    
+    
+    
     NSLog(@"location = %f,%f",((PFGeoPoint*)[routeObject.pfobj objectForKey:@"routelocation"]).latitude,((PFGeoPoint*)[routeObject.pfobj objectForKey:@"routelocation"]).longitude);
     if (!(((PFGeoPoint*)[routeObject.pfobj objectForKey:@"routelocation"]).latitude ==0.0f &&((PFGeoPoint*)[routeObject.pfobj objectForKey:@"routelocation"]).longitude ==0.0f )) {
     CLLocationCoordinate2D routeLoc = CLLocationCoordinate2DMake(((PFGeoPoint*)[routeObject.pfobj objectForKey:@"routelocation"]).latitude, ((PFGeoPoint*)[routeObject.pfobj objectForKey:@"routelocation"]).longitude);
@@ -94,8 +131,23 @@
         unavailableLabel.hidden=NO;
         pinImageView.hidden=YES;
     }
-    UserImageView.layer.shadowPath = [self renderPaperCurlProfileImage:UserImageView];
     
+    
+    //if user is owner and is route is outdated, show unoutdate button
+    //elseif route is outdated ,hide outdatebutton
+
+    if ([routeObject.pfobj objectForKey:@"outdated"]==[NSNumber numberWithBool:true]) {
+        outdateButton.hidden = YES;
+    }else{
+        outdateButton.hidden = NO;
+    }
+    if ([[routeObject.pfobj objectForKey:@"username"] isEqualToString:[[PFUser currentUser]objectForKey:@"name"]]) {
+        if ([routeObject.pfobj objectForKey:@"outdated"]==[NSNumber numberWithBool:true]) {
+            unoutdateButton.hidden = NO;
+        }
+    }
+    
+    UserImageView.layer.shadowPath = [self renderPaperCurlProfileImage:UserImageView];
     UserImageView.layer.borderColor = [UIColor whiteColor].CGColor;
     UserImageView.layer.borderWidth = 2;
     UserImageView.layer.shadowOpacity = 0.5;
@@ -146,17 +198,39 @@
     
     // Do any additional setup after loading the view from its nib.
 }
-- (IBAction)didDoubleTap:(UITapGestureRecognizer*)sender {
-    
-    if(scrollView.zoomScale > 1.0){ 
-    
-        [scrollView setZoomScale:1 animated:YES]; 
-    }else { 
-           
-        [scrollView setZoomScale:scrollView.maximumZoomScale animated:YES]; 
-    }
-}
 
+- (CGRect)zoomRectForScale:(float)scale withCenter:(CGPoint)center {
+    
+    CGRect zoomRect;
+    
+    // the zoom rect is in the content view's coordinates. 
+    //    At a zoom scale of 1.0, it would be the size of the imageScrollView's bounds.
+    //    As the zoom scale decreases, so more content is visible, the size of the rect grows.
+    zoomRect.size.height = [scrollView frame].size.height / scale;
+    zoomRect.size.width  = [scrollView frame].size.width  / scale;
+    
+    // choose an origin so as to get the right center.
+    zoomRect.origin.x    = center.x - (zoomRect.size.width  / 2.0);
+    zoomRect.origin.y    = center.y - (zoomRect.size.height / 2.0);
+    
+    return zoomRect;
+}
+- (IBAction)didDoubleTap:(UITapGestureRecognizer*)sender {
+    if (scrollView.zoomScale == 4.0){
+        float newScale = scrollView.minimumZoomScale;
+        CGRect zoomRect = [self zoomRectForScale:newScale withCenter:[sender locationInView:sender.view]];
+        [scrollView zoomToRect:zoomRect animated:YES];
+        
+        
+    }else{
+        float newScale = scrollView.maximumZoomScale;
+        CGRect zoomRect = [self zoomRectForScale:newScale withCenter:[sender locationInView:sender.view]];
+        [scrollView zoomToRect:zoomRect animated:YES];
+        
+    }
+    
+    
+}
 - (CGPathRef)renderPaperCurl:(UIView*)imgView {
 	CGSize size = imgView.bounds.size;
 	CGFloat curlFactor = 10.0f;
@@ -811,6 +885,8 @@
     [self setUnavailableLabel:nil];
     [self setPinImageView:nil];
     [self setDifficultyLabel:nil];
+    [self setOutdateButton:nil];
+    [self setUnoutdateButton:nil];
     [super viewDidUnload];
     // Release any retained subviews of the main view.
     // e.g. self.myOutlet = nil;
@@ -838,8 +914,15 @@
     [viewController release];
 }
 - (IBAction)didSelectMap:(id)sender {
-    UIApplication *app = [UIApplication sharedApplication];  
-    [app openURL:[NSURL URLWithString:[NSString stringWithFormat:@"http://maps.google.com/maps?ll=%f,%f",((PFGeoPoint*)[routeObject.pfobj objectForKey:@"routelocation"]).latitude,((PFGeoPoint*)[routeObject.pfobj objectForKey:@"routelocation"]).longitude]]];  
+    MapViewController* mapVC = [[MapViewController alloc]initWithNibName:@"MapViewController" bundle:nil];
+    mapVC.geopoint = (PFGeoPoint*)[routeObject.pfobj objectForKey:@"routelocation"];
+    mapVC.gymName = [routeObject.pfobj objectForKey:@"location"];
+    [self.navigationController pushViewController:mapVC animated:YES];
+
+    [mapVC release];
+//    UIApplication *app = [UIApplication sharedApplication];  
+//    [app openURL:[NSURL URLWithString:[NSString stringWithFormat:@"http://maps.google.com/maps?ll=%f,%f",((PFGeoPoint*)[routeObject.pfobj objectForKey:@"routelocation"]).latitude,((PFGeoPoint*)[routeObject.pfobj objectForKey:@"routelocation"]).longitude]]];  
+
 }
 - (IBAction)PostComment:(id)sender {
     NSError*error=nil;
@@ -977,8 +1060,19 @@ commentTextField.text = @"";
             [feedObject setObject:[[PFUser currentUser] objectForKey:@"profilepicture"] forKey:@"senderimagelink"];
             [feedObject setObject:routeObject.pfobj forKey:@"linkedroute"];
             [feedObject setObject:[routeObject.pfobj objectForKey:@"imageFile"] forKey:@"imagefile"];
-            [feedObject  setObject:[NSString stringWithFormat:@"%@ liked %@'s route",[[PFUser currentUser] objectForKey:@"name"],[routeObject.pfobj objectForKey:@"username"]] forKey:@"message"];
-            
+            if (![[[PFUser currentUser] objectForKey:@"name"] isEqualToString:[routeObject.pfobj objectForKey:@"username"]]) {
+                [feedObject  setObject:[NSString stringWithFormat:@"%@ liked %@'s route",[[PFUser currentUser] objectForKey:@"name"],[routeObject.pfobj objectForKey:@"username"]] forKey:@"message"];
+            }else{
+                if ([[[PFUser currentUser]objectForKey:@"sex"] isEqualToString:@"female"]) {
+                    [feedObject setObject:[NSString stringWithFormat:@"%@ liked her route",[[PFUser currentUser] objectForKey:@"name"]] forKey:@"message"];
+                    
+                }else if([[[PFUser currentUser]objectForKey:@"sex"] isEqualToString:@"male"]) {
+                    [feedObject setObject:[NSString stringWithFormat:@"%@ liked his route",[[PFUser currentUser] objectForKey:@"name"]] forKey:@"message"];
+                }else{
+                    [feedObject setObject:[NSString stringWithFormat:@"%@ liked his/her route",[[PFUser currentUser] objectForKey:@"name"]] forKey:@"message"];
+                }
+
+            }
             [feedObject saveEventually];
         }else{
             [likeButton setImage:[UIImage imageNamed:@"popularbutton.png"] forState:UIControlStateNormal]; 
@@ -1102,6 +1196,7 @@ commentTextField.text = @"";
     [newLike setObject:[[PFUser currentUser]objectForKey:@"name"] forKey:@"owner"];
     [newLike setObject:routeObject.pfobj forKey:@"linkedroute"];
     [newLike setObject:routeObject.pfobj.objectId forKey:@"linkedrouteID"];
+    
     [newLike saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
         if (succeeded){
             likecount = likecounter + 1;
@@ -1139,8 +1234,19 @@ commentTextField.text = @"";
             [feedObject setObject:[[PFUser currentUser] objectForKey:@"name"] forKey:@"sender"];
             [feedObject setObject:[[PFUser currentUser] objectForKey:@"profilepicture"] forKey:@"senderimagelink"];
             [feedObject setObject:routeObject.pfobj forKey:@"linkedroute"];
-            [feedObject setObject:[routeObject.pfobj objectForKey:@"imageFile"] forKey:@"imagefile"];
-            [feedObject  setObject:[NSString stringWithFormat:@"%@ liked %@'s route",[[PFUser currentUser] objectForKey:@"name"],[routeObject.pfobj objectForKey:@"username"]] forKey:@"message"];
+                        if (![[[PFUser currentUser] objectForKey:@"name"] isEqualToString:[routeObject.pfobj objectForKey:@"username"]]) {
+                            [feedObject  setObject:[NSString stringWithFormat:@"%@ liked %@'s route",[[PFUser currentUser] objectForKey:@"name"],[routeObject.pfobj objectForKey:@"username"]] forKey:@"message"];
+                        }else{
+                            if ([[[PFUser currentUser]objectForKey:@"sex"] isEqualToString:@"female"]) {
+                                [feedObject setObject:[NSString stringWithFormat:@"%@ liked her route",[[PFUser currentUser] objectForKey:@"name"]] forKey:@"message"];
+                                
+                            }else if([[[PFUser currentUser]objectForKey:@"sex"] isEqualToString:@"male"]) {
+                                [feedObject setObject:[NSString stringWithFormat:@"%@ liked his route",[[PFUser currentUser] objectForKey:@"name"]] forKey:@"message"];
+                            }else{
+                                [feedObject setObject:[NSString stringWithFormat:@"%@ liked his/her route",[[PFUser currentUser] objectForKey:@"name"]] forKey:@"message"];
+                            }
+                            
+                        }
             
             [feedObject saveEventually];
                         
@@ -1280,6 +1386,8 @@ if (cell == nil) {
     [unavailableLabel release];
     [pinImageView release];
     [difficultyLabel release];
+    [outdateButton release];
+    [unoutdateButton release];
     [super dealloc];
 }
 @end

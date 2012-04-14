@@ -7,6 +7,8 @@
 #import "JHNotificationManager.h"
 #import <BugSense-iOS/BugSenseCrashController.h>
 #import "FlurryAnalytics.h"
+
+#define VERSION 1.2
 @implementation ParseStarterProjectAppDelegate
 
 @synthesize window=_window;
@@ -35,6 +37,7 @@
     [PFFacebookUtils initializeWithApplicationId:@"200778040017319"];
     // Override point for customization after application launch.
    
+
     
     InstagramViewController* viewController = [[InstagramViewController alloc]initWithNibName:@"InstagramViewController" bundle:nil];
      LoginViewController* loginVC = [[LoginViewController alloc]initWithNibName:@"LoginViewController" bundle:nil];
@@ -43,11 +46,12 @@
         [[UINavigationBar appearance] setBackgroundImage:[UIImage imageNamed:@"headerview.png"] forBarMetrics:UIBarMetricsDefault];}
     
      if ([PFFacebookUtils facebook].accessToken) {
+
          NSLog(@"updater = %@",[[NSUserDefaults standardUserDefaults]objectForKey:@"updater1.1"]);
-         if ([[[NSUserDefaults standardUserDefaults]objectForKey:@"updater1.1"] isEqualToString:@"updated"]) {
+         
+                  if ([[[NSUserDefaults standardUserDefaults]objectForKey:@"updater1.1"] isEqualToString:@"updated"]) {
              NSDictionary *dictionary = 
              [NSDictionary dictionaryWithObjectsAndKeys:[[PFUser currentUser] objectForKey:@"email"],@"email",[[PFUser currentUser] objectForKey:@"birthday_date"],@"birthday_date",[[PFUser currentUser] objectForKey:@"name"],@"name",[[PFUser currentUser] objectForKey:@"sex"],@"sex",[[PFUser currentUser] objectForKey:@"uid"],@"uid",[[PFUser currentUser] objectForKey:@"about_me"],@"about_me", nil];
-          //   NSLog(@"birthday = %@",[[PFUser currentUser] objectForKey:@"birthday_date"]);
              [FlurryAnalytics setUserID:[[PFUser currentUser] objectForKey:@"name"]];
              [FlurryAnalytics setAge:[[[PFUser currentUser] objectForKey:@"age"]intValue]];
              if ([[[PFUser currentUser] objectForKey:@"sex"] isEqualToString:@"male"]) {
@@ -56,14 +60,39 @@
                  [FlurryAnalytics setGender:@"f"];
              }
              [FlurryAnalytics logEvent:@"USER_LOGIN" withParameters:dictionary timed:YES];
+                      
+                      
+                      
+                      
+                      [[PFUser currentUser] setObject:[NSNumber numberWithDouble:VERSION] forKey:@"version"];
+                      [[PFUser currentUser] saveInBackground];
+                      PFQuery* versionquery = [PFQuery queryWithClassName:@"Version"];
+                      [versionquery getFirstObjectInBackgroundWithBlock:^(PFObject *object, NSError *error) {
+                          if ([[object objectForKey:@"version"] doubleValue] > VERSION) {
+                              UIAlertView* alert = [[UIAlertView alloc]initWithTitle:[object objectForKey:@"updatetitle"] message:[object objectForKey:@"updatetext"] delegate:self cancelButtonTitle:@"Update later" otherButtonTitles:@"Update Now!",nil];
+                              [alert show];
+                              [alert release];
+                          }  
+                      }];                      
+                      
+                      
+                      
+                      
+                      
+                      
+                      
+                      
+                      
              self.window.rootViewController = viewController;
          
          
          }else{
-            
-             NSArray* permissions = [[NSArray alloc]initWithObjects:@"user_about_me",@"user_videos",@"user_birthday",@"email",@"user_photos",@"publish_stream",@"offline_access",nil];
+             NSArray* permissions = [[NSArray alloc]initWithObjects:@"user_about_me",@"user_videos",@"user_birthday",@"email",@"user_photos",@"publish_stream",@"offline_access","manage_pages",nil];
              [PFFacebookUtils logInWithPermissions:permissions block:^(PFUser *user, NSError *error) {
                  [self apiFQLIMe];
+                 
+
+                 
                  
              }];
          }
@@ -117,6 +146,15 @@
   sourceApplication:(NSString *)sourceApplication annotation:(id)annotation {
     return [[PFFacebookUtils facebook] handleOpenURL:url]; 
 }
+-(void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex
+{
+    if (buttonIndex) {
+        [[UIApplication sharedApplication]openURL:[NSURL URLWithString:@"http://itunes.apple.com/app/psyched!/id511887569?mt=8"]];
+    }else{
+        
+    }
+}
+
 /*
  
 ///////////////////////////////////////////////////////////

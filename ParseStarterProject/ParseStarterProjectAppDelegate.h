@@ -5,7 +5,7 @@
 #import <CoreLocation/CoreLocation.h>
 @class ParseStarterProjectViewController;
 
-@interface ParseStarterProjectAppDelegate : NSObject <UIApplicationDelegate,CLLocationManagerDelegate,PF_FBRequestDelegate> {
+@interface ParseStarterProjectAppDelegate : NSObject <UIApplicationDelegate,CLLocationManagerDelegate,PF_FBRequestDelegate,UIAlertViewDelegate> {
 
 }
 @property (nonatomic,retain) NSMutableArray* pushedNotifications;

@@ -157,10 +157,11 @@
     
     userfeeds = [[NSMutableArray alloc]init ];
     PFQuery* query = [PFQuery queryWithClassName:@"Feed"];
-        query.cachePolicy= kPFCachePolicyNetworkElseCache;
+    query.cachePolicy= kPFCachePolicyNetworkElseCache;
     [query whereKey:@"sender" equalTo:username];
     [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
         [userfeeds addObjectsFromArray:objects];
+        NSLog(@"retrieved objects = %@",objects);
         NSArray *sortedArray;
         sortedArray = [userfeeds sortedArrayUsingComparator:^(id a, id b) {
             PFObject* first = a;
@@ -235,6 +236,7 @@
 }
 -(void)reloadUserData
 {
+    userFeedTable.scrollEnabled = NO;
     [navigationBarItem startAnimating];
     PFQuery* userQuery = [PFQuery queryForUser];
     [userQuery whereKey:@"name" equalTo:username];
@@ -323,6 +325,7 @@
         [userfeeds removeAllObjects];
         [userfeeds addObjectsFromArray:sortedArray];
         [userFeedTable reloadData];
+        userFeedTable.scrollEnabled = YES;
     } ];
     
     //grab user followed
@@ -471,6 +474,9 @@
 {
     NSLog(@"didselectrow");
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
+        PFObject* selectedFeed = [userfeeds objectAtIndex:indexPath.row];
+    NSString* messagestring =[selectedFeed objectForKey:@"message"];
+    if([messagestring rangeOfString:@"route"].location!=NSNotFound){
 
     RouteDetailViewController* viewController = [[RouteDetailViewController alloc]initWithNibName:@"RouteDetailViewController" bundle:nil];
     RouteObject* newRouteObject = [[RouteObject alloc]init];
@@ -481,6 +487,7 @@
     [viewController release];
     NSLog(@"will release newrouteobj");
  [newRouteObject release]; 
+    }
 }
 -(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {

@@ -70,13 +70,13 @@
     self.routeArray = [[[NSMutableArray alloc]init]autorelease];
     self.queryArray = [[[NSMutableArray alloc]init]autorelease];
     [self addStandardTabView];
-               
+     [self tabView:tabView didSelectTabAtIndex:tabView.segmentIndex];
    
 }
 -(void)viewWillAppear:(BOOL)animated
 {
    // [self startStandardUpdates];
-     [self tabView:tabView didSelectTabAtIndex:tabView.segmentIndex];
+    //
         self.navigationController.navigationBarHidden = YES;
 }
 - (UIView *)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section {
@@ -115,18 +115,6 @@
 }
 
 
-//
-//- (UIView *)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section {
-//    
-//    if ([self numberOfSectionsInTableView:tableView] == (section+1)){
-//        return [[UIView new] autorelease];
-//    }       
-//    return nil;
-//}
-//-(CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section
-//{
-//    return 1;
-//}
 
 -(void)viewWillDisappear:(BOOL)animated
 {
@@ -423,6 +411,7 @@
 {
     NSLog(@"canceling %d queries",[queryArray count]);
     for (id pfobject in queryArray) {
+        if (pfobject) {
         if ([pfobject isKindOfClass:[PFFile class]]) {
             [((PFFile*)pfobject) cancel];
         }
@@ -430,27 +419,37 @@
             [((PFQuery*)pfobject) cancel];
         }
     }
+    }
     [queryArray removeAllObjects];
     for (PFObject* obj in self.routeArray) {
         ((RouteObject*)obj).isLoading = NO;
     }
+    
+    
     PFQuery* locationQuery = [PFQuery queryWithClassName:@"Route"];
-    
-   
     [locationQuery whereKey:@"routelocation" nearGeoPoint:[PFGeoPoint geoPointWithLatitude:((ParseStarterProjectAppDelegate*)[[UIApplication sharedApplication] delegate]).currentLocation.coordinate.latitude longitude:((ParseStarterProjectAppDelegate*)[[UIApplication sharedApplication] delegate]).currentLocation.coordinate.longitude]];
+    [locationQuery whereKey:@"outdated" notEqualTo:[NSNumber numberWithBool:true]];
     [locationQuery setLimit:20];
-    
     locationQuery.cachePolicy = kPFCachePolicyNetworkElseCache;
+    
+    
     PFQuery* popularQuery = [PFQuery queryWithClassName:@"Route"];
+    [popularQuery whereKey:@"outdated" notEqualTo:[NSNumber numberWithBool:true]];
     [popularQuery orderByDescending:@"likecount"];
     [popularQuery addDescendingOrder:@"createdAt"];
     [popularQuery setLimit:20];
     popularQuery.cachePolicy = kPFCachePolicyNetworkElseCache;
+    
+    
     PFQuery* recentQuery = [PFQuery queryWithClassName:@"Route"];
+    [recentQuery whereKey:@"outdated" notEqualTo:[NSNumber numberWithBool:true]];
     [recentQuery orderByDescending:@"createdAt"];
     [recentQuery setLimit:20];
     recentQuery.cachePolicy = kPFCachePolicyNetworkElseCache;
+    
+    
     PFQuery* gradeQuery = [PFQuery queryWithClassName:@"Route"];
+    [gradeQuery whereKey:@"outdated" notEqualTo:[NSNumber numberWithBool:true]];
     [gradeQuery whereKey:@"routelocation" nearGeoPoint:[PFGeoPoint geoPointWithLatitude:((ParseStarterProjectAppDelegate*)[[UIApplication sharedApplication] delegate]).currentLocation.coordinate.latitude longitude:((ParseStarterProjectAppDelegate*)[[UIApplication sharedApplication] delegate]).currentLocation.coordinate.longitude] withinKilometers:1];
     [gradeQuery orderByDescending:@"difficulty"];
     
@@ -568,19 +567,24 @@
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
     NSLog(@"routearray count = %d, index = %d",[routeArray count],indexPath.row)
     ;
+    
+    
     PFQuery* locationQuery = [PFQuery queryWithClassName:@"Route"];
+    [locationQuery whereKey:@"outdated" notEqualTo:[NSNumber numberWithBool:true]];
     [locationQuery whereKey:@"routelocation" nearGeoPoint:[PFGeoPoint geoPointWithLatitude:((ParseStarterProjectAppDelegate*)[[UIApplication sharedApplication] delegate]).currentLocation.coordinate.latitude longitude:((ParseStarterProjectAppDelegate*)[[UIApplication sharedApplication] delegate]).currentLocation.coordinate.longitude]];
     [locationQuery setLimit:20];
     locationQuery.cachePolicy = kPFCachePolicyNetworkElseCache;
     
     
     PFQuery* popularQuery = [PFQuery queryWithClassName:@"Route"];
+    [popularQuery whereKey:@"outdated" notEqualTo:[NSNumber numberWithBool:true]];
     [popularQuery orderByDescending:@"likecount"];
     [popularQuery setLimit:20];
     popularQuery.cachePolicy = kPFCachePolicyNetworkElseCache;
     
     
     PFQuery* recentQuery = [PFQuery queryWithClassName:@"Route"];
+    [recentQuery whereKey:@"outdated" notEqualTo:[NSNumber numberWithBool:true]];
     [recentQuery orderByDescending:@"createdAt"];
     [recentQuery setLimit:20];
     recentQuery.cachePolicy = kPFCachePolicyNetworkElseCache;

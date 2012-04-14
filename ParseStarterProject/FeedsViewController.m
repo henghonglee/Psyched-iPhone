@@ -84,6 +84,8 @@
     queryArray = [[NSMutableArray alloc]init];
     feedsArray = [[NSMutableArray alloc]init];
     PFQuery* query = [PFQuery queryWithClassName:@"Feed"];
+    
+    [query whereKey:@"message" containsString:@"route"];
     [query orderByDescending:@"createdAt"];
     [query setLimit:MAX_LINES];
     [queryArray addObject:query];
@@ -204,22 +206,32 @@
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
      [tableView deselectRowAtIndexPath:indexPath animated:YES];
+    
     if (segmentedControl.selectedSegmentIndex==0) {
         if (indexPath.row == [feedsArray count]) {
             [self refreshFeedsWithSkip:[feedsArray count]];
         }else{
-            RouteDetailViewController* viewController = [[RouteDetailViewController alloc]initWithNibName:@"RouteDetailViewController" bundle:nil];
-            RouteObject* newRouteObject = [[RouteObject alloc]init];
+            PFObject* feedobj = ((FeedObject*)[feedsArray objectAtIndex:indexPath.row]).pfobj;
+            NSString* messagestring =[feedobj objectForKey:@"message"];
+            if([messagestring rangeOfString:@"route"].location!=NSNotFound){
+                RouteDetailViewController* viewController = [[RouteDetailViewController alloc]initWithNibName:@"RouteDetailViewController" bundle:nil];
+                RouteObject* newRouteObject = [[RouteObject alloc]init];
                 newRouteObject.pfobj = [[((FeedObject*)[feedsArray objectAtIndex:indexPath.row]).pfobj objectForKey:@"linkedroute"] fetchIfNeeded];
-            viewController.routeObject = newRouteObject;
-            [self.navigationController pushViewController:viewController animated:YES];
-            [viewController release];
-            [newRouteObject release];
+                viewController.routeObject = newRouteObject;
+                [self.navigationController pushViewController:viewController animated:YES];
+                [viewController release];
+                [newRouteObject release];
+            }
+            
         }
     }else{
+        
          if (indexPath.row == [followsArray count]) {
              [self refreshFollowsWithSkip:[followsArray count]];
          }else{
+             PFObject* followfeedobj = ((FeedObject*)[followsArray objectAtIndex:indexPath.row]).pfobj;
+             NSString* followmessagestring =[followfeedobj objectForKey:@"message"];
+              if([followmessagestring rangeOfString:@"route"].location!=NSNotFound){
              RouteDetailViewController* viewController = [[RouteDetailViewController alloc]initWithNibName:@"RouteDetailViewController" bundle:nil];
              RouteObject* newRouteObject = [[RouteObject alloc]init];
              newRouteObject.pfobj = [[((FeedObject*)[followsArray objectAtIndex:indexPath.row]).pfobj objectForKey:@"linkedroute"]fetchIfNeeded];
@@ -227,6 +239,12 @@
              [self.navigationController pushViewController:viewController animated:YES];
              [viewController release];
              [newRouteObject release];
+              }else{
+                  ProfileViewController* viewController = [[ProfileViewController alloc]initWithNibName:@"ProfileViewController" bundle:nil];
+                  viewController.username= [followfeedobj objectForKey:@"sender"]; 
+                  [self.navigationController pushViewController:viewController animated:YES];
+                  [viewController release];
+              }
          }
     }
             
@@ -400,6 +418,7 @@
 -(void)refreshFeedsWithSkip:(int)skip
 {
     PFQuery* query = [PFQuery queryWithClassName:@"Feed"];
+    [query whereKey:@"message" containsString:@"route"];
     [query orderByDescending:@"createdAt"];
     [query setSkip:skip];
     [query setLimit:MAX_LINES];
@@ -447,7 +466,11 @@
             for (PFObject*newobj in fetched){
                 FeedObject* feedObject = [[FeedObject alloc]init];
                 feedObject.pfobj = newobj;
+                if ([[newobj objectForKey:@"message"] rangeOfString:@"following"].location!=NSNotFound && [[newobj objectForKey:@"message"] rangeOfString:[[PFUser currentUser]objectForKey:@"name"]].location==NSNotFound) {
+                    
+                }else{
                 [followsArray addObject:feedObject];
+                }
                 [feedObject release];
             }
             if ([fetched count]<MAX_LINES) {
@@ -493,7 +516,11 @@
             for (PFObject*newobj in fetched){
                 FeedObject* feedObject = [[FeedObject alloc]init];
                 feedObject.pfobj = newobj;
+                if ([[newobj objectForKey:@"message"] rangeOfString:@"following"].location!=NSNotFound && [[newobj objectForKey:@"message"] rangeOfString:[[PFUser currentUser]objectForKey:@"name"]].location==NSNotFound) {
+                    
+                }else{
                 [followsArray addObject:feedObject];
+                }
                 [feedObject release];
             }
             if ([fetched count]<MAX_LINES) {
@@ -520,6 +547,7 @@
          [self refreshFollowsArray];
     }else{
 	PFQuery* query = [PFQuery queryWithClassName:@"Feed"];
+        [query whereKey:@"message" containsString:@"route"];
     [query orderByDescending:@"createdAt"];
     [query setLimit:MAX_LINES];
     [queryArray addObject:query];

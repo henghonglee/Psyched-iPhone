@@ -5,11 +5,14 @@
 //  Created by Shaun Tan on 9/1/12.
 //  Copyright (c) 2012 __MyCompanyName__. All rights reserved.
 //
+
 typedef enum apiCall {
     kAPIGetAppUsersFriendsUsing,
     kAPIGraphUserFriends,
     kAPIGraphUserPhotosPost,
+    kAPIGraphPagePhotosPost,
 } apiCall;
+#import "ASIHTTPRequest.h"
 #import "UIImage+Resize.h"
 #import "FlurryAnalytics.h"
 #import "JSON.h"
@@ -19,13 +22,16 @@ typedef enum apiCall {
 #import "ParseStarterProjectAppDelegate.h"
 #import <QuartzCore/QuartzCore.h>
 #import "RouteLocationViewController.h"
+#import <Twitter/Twitter.h>
 @implementation CreateRouteViewController
 @synthesize routeLocMapView;
 @synthesize recommendTextField;
+@synthesize routeImageView;
 @synthesize imageMetaData;
 @synthesize locationManager;
 @synthesize myRequest;
 @synthesize fbuploadswitch;
+@synthesize twuploadswitch;
 @synthesize imageView,imageTaken;
 @synthesize segControl;
 @synthesize locationTextField;
@@ -62,6 +68,10 @@ typedef enum apiCall {
 {
     [super viewDidLoad];
     
+    routeImageView.image = imageTaken;
+    routeImageView.layer.borderColor = [UIColor whiteColor].CGColor;    
+    routeImageView.layer.borderWidth = 3;
+
     routeLocMapView.layer.borderColor = [UIColor whiteColor].CGColor;
     routeLocMapView.layer.borderWidth = 3;
     routeLoc = CLLocationCoordinate2DMake([[[imageMetaData objectForKey:@"{GPS}"] objectForKey:@"Latitude"] doubleValue], [[[imageMetaData objectForKey:@"{GPS}"] objectForKey:@"Longitude"] doubleValue]);
@@ -86,7 +96,7 @@ typedef enum apiCall {
     //[tempArray addObjectsFromArray:friendsArray];
   
     imageView.image = imageTaken;
-    scroll.contentSize = CGSizeMake(320,620);
+//    scroll.contentSize = CGSizeMake(320,620);
     gymlist = [[NSArray alloc]initWithObjects:@"------",@"V0-V2", @"V3-V5",@"V6-V8",@"V9-V11",@"V12",@"V13",@"V14",@"V15",@"V16",@"V16+", nil];
   
   
@@ -105,6 +115,8 @@ typedef enum apiCall {
     [self setRecommendTextView:nil];
     [self setRouteLocMapView:nil];
     [self setDifficultyTextField:nil];
+    [self setTwuploadswitch:nil];
+    [self setRouteImageView:nil];
     [self setFbuploadswitch:nil];    [super viewDidUnload];
     // Release any retained subviews of the main view.
     // e.g. self.myOutlet = nil;
@@ -234,6 +246,8 @@ typedef enum apiCall {
     [newRoute setObject:[NSNumber numberWithInt:0] forKey:@"commentcount"];
     [newRoute setObject:[NSNumber numberWithInt:0] forKey:@"likecount"];
     [newRoute setObject:[NSNumber numberWithInt:0] forKey:@"viewcount"];
+    [newRoute setObject:[NSNumber numberWithBool:false] forKey:@"outdated"];
+    
     UIImage* thumbnailImage = [imageTaken thumbnailImage:200 transparentBorder:0 cornerRadius:0 interpolationQuality:kCGInterpolationHigh];
     NSData *thumbImageData = UIImageJPEGRepresentation(thumbnailImage, 1.0);
     PFFile *thumbImageFile = [PFFile fileWithName:@"thumbImage.jpeg" data:thumbImageData];
@@ -244,6 +258,7 @@ typedef enum apiCall {
     NSData *imageData = UIImageJPEGRepresentation(imageTaken, 1.0);
     PFFile *imageFile = [PFFile fileWithName:@"image.jpeg" data:imageData];
     NSLog(@"saving...");
+
     //   [PF_MBProgressHUD showHUDAddedTo:self.view animated:YES];
     [imageFile saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
             
@@ -323,11 +338,13 @@ typedef enum apiCall {
             HUD.customView = [[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"37x-Checkmark.png"]] autorelease];
             HUD.mode = MBProgressHUDModeCustomView;
             HUD.labelText = @"Completed!";
+
             UIApplication *thisApp = [UIApplication sharedApplication];
             thisApp.idleTimerDisabled = NO;
             [FlurryAnalytics logEvent:@"COMPLETED_SHARE"];
             NSLog(@"share action ended");
             [FlurryAnalytics endTimedEvent:@"SHARE_ACTION" withParameters:nil];
+            
         }
         if (percentDone <70 && percentDone>50) {
             HUD.labelText = @"Halfway Done...";
@@ -357,21 +374,70 @@ typedef enum apiCall {
         [alert release];
         return;
     }
-    ((UIButton*)sender).enabled =NO;
-    UIApplication *thisApp = [UIApplication sharedApplication];
-    thisApp.idleTimerDisabled = YES;
-    HUD = [[MBProgressHUD showHUDAddedTo:self.view animated:YES]retain];
-    
-    if (fbuploadswitch.on) {
-        [self performSelector:@selector(apiGraphUserPhotosPost:) withObject:imageTaken afterDelay:0.0];
-        HUD.labelText = @"Uploading...";
-    } else{
-        [self performSelector:@selector(saveRoute) withObject:nil afterDelay:0.0];
-        HUD.labelText = @"Preparing...";
-    }
-    //[PF_MBProgressHUD showHUDAddedTo:self.view animated:YES];
-    
+    if (twuploadswitch.on) {
         
+        if ([TWTweetComposeViewController canSendTweet])
+        {
+            TWTweetComposeViewController *tweetSheet = 
+            [[TWTweetComposeViewController alloc] init];
+            if([tweetSheet setInitialText:[NSString stringWithFormat:@"%@ #Psyched",descriptionTextField.text]]){
+                [tweetSheet setInitialText:[NSString stringWithFormat:@"%@ #Psyched",descriptionTextField.text]];
+            }else{
+                UIAlertView* alert = [[UIAlertView alloc]initWithTitle:@"Too Long For Tweet" message:@"" delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil];
+    [alert show];
+    [alert release];
+                return;
+            }
+            [tweetSheet addImage:imageTaken];
+            [tweetSheet addURL:[NSURL URLWithString:@"http://bit.ly/HSTcNw"]];
+            [tweetSheet setCompletionHandler: 
+             ^(TWTweetComposeViewControllerResult result) {
+                 if (result==TWTweetComposeViewControllerResultDone) {
+                     [self dismissModalViewControllerAnimated:YES];
+                     ((UIButton*)sender).enabled =NO;
+                     UIApplication *thisApp = [UIApplication sharedApplication];
+                     thisApp.idleTimerDisabled = YES;
+                     HUD = [[MBProgressHUD showHUDAddedTo:self.view animated:YES]retain];
+                     
+                     if (fbuploadswitch.on) {
+                         [self performSelector:@selector(apiGraphPagePhotosPost:) withObject:imageTaken afterDelay:0.0];
+                         HUD.labelText = @"Uploading...";
+                     } else{
+                         [self performSelector:@selector(saveRoute) withObject:nil afterDelay:0.0];
+                         HUD.labelText = @"Preparing...";
+                     }
+                     
+                     
+                     
+                 }else{
+                     
+                 }
+             }];
+            [self presentModalViewController:tweetSheet animated:YES];
+             
+        }else{
+            UIAlertView* alert = [[UIAlertView alloc]initWithTitle:@"Error" message:@"Couldn't send Tweet" delegate:self cancelButtonTitle:@"OK" otherButtonTitles:@"Settings",nil];
+            [alert show];
+            [alert release];
+        }
+    }else{
+        ((UIButton*)sender).enabled =NO;
+        UIApplication *thisApp = [UIApplication sharedApplication];
+        thisApp.idleTimerDisabled = YES;
+        HUD = [[MBProgressHUD showHUDAddedTo:self.view animated:YES]retain];
+        
+        if (fbuploadswitch.on) {
+            [self performSelector:@selector(apiGraphPagePhotosPost:) withObject:imageTaken afterDelay:0.0];
+            HUD.labelText = @"Uploading...";
+        } else{
+            [self performSelector:@selector(saveRoute) withObject:nil afterDelay:0.0];
+            HUD.labelText = @"Preparing...";
+        }
+        //[PF_MBProgressHUD showHUDAddedTo:self.view animated:YES];
+        
+        
+    }
+     
 }
 - (IBAction)closeAction:(id)sender {
     [self dismissModalViewControllerAnimated:YES];
@@ -399,6 +465,8 @@ typedef enum apiCall {
     [fbuploadswitch release];
     [routeLocMapView release];
     [difficultyTextField release];
+    [twuploadswitch release];
+    [routeImageView release];
     [super dealloc];
 }
 
@@ -444,6 +512,71 @@ typedef enum apiCall {
                                 andHttpMethod:@"POST"
                                   andDelegate:self];
 }
+
+- (void)apiGraphPagePhotosPost:(UIImage*)img {
+    currentAPIcall = kAPIGraphPagePhotosPost;
+    oldAccessToken = [PFFacebookUtils facebook].accessToken;
+    UIImage* resizedimg = [img resizedImage:CGSizeMake(960, 960) interpolationQuality:kCGInterpolationHigh];
+    
+    UIGraphicsEndImageContext();
+   
+    
+    ASIHTTPRequest* accountRequest = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"https://graph.facebook.com/me/accounts&access_token=%@",[PFFacebookUtils facebook].accessToken]]];
+    [accountRequest setCompletionBlock:^{
+        NSDictionary *contentOfDictionary = [[accountRequest responseString]JSONValue];
+        NSArray* accounts = [contentOfDictionary objectForKey:@"data"];
+        NSMutableArray* arrayOfAccounts = [[[NSMutableArray alloc]init ]autorelease];
+        for (NSDictionary* obj in accounts) {
+            ASIHTTPRequest* request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"https://graph.facebook.com/%@&access_token=%@",[NSString stringWithFormat:@"%@",[obj objectForKey:@"id"],[obj objectForKey:@"access_token"]]]]];
+            [request setCompletionBlock:^{
+                NSDictionary *contentDictionary = [[request responseString]JSONValue];
+                BOOL hasAtLeastOnePage=NO;
+                if ([contentDictionary objectForKey:@"can_post"]&&[[contentDictionary objectForKey:@"name"] isEqualToString:@"Psyched!"]) {
+                NSLog(@"canpost = %@",[contentDictionary objectForKey:@"can_post"]);   
+                    [arrayOfAccounts addObject:obj];
+                    hasAtLeastOnePage=YES;
+                }
+                
+                if (hasAtLeastOnePage) {
+                    for (NSDictionary* object in arrayOfAccounts) {
+                        [[PFFacebookUtils facebook]setAccessToken:[NSString stringWithFormat:@"%@",[object objectForKey:@"access_token"]]];
+                        NSMutableDictionary *params = [NSMutableDictionary dictionaryWithObjectsAndKeys:
+                                                       resizedimg, @"source",descriptionTextField.text,@"message",
+                                                       nil];
+                        
+                        [[PFFacebookUtils facebook] requestWithGraphPath:[NSString stringWithFormat:@"%@/photos",[obj objectForKey:@"id"]]
+                                                               andParams:params
+                                                           andHttpMethod:@"POST"
+                                                             andDelegate:self];
+
+                    }
+                }
+            }];
+            [request setFailedBlock:^{}];
+            [request startAsynchronous];   
+            
+        }
+        
+    
+        
+        
+
+    
+    
+    
+    
+    }];
+    [accountRequest setFailedBlock:^{}];
+    [accountRequest startAsynchronous];
+    
+    
+                                      
+    // The action links to be shown with the post in the feed
+    // NSArray* actionLinks = [NSArray arrayWithObjects:tags, nil];
+
+
+        
+}
 -(void)request:(PF_FBRequest *)request didReceiveResponse:(NSURLResponse *)response
 {
     NSLog(@"%@",response);
@@ -453,6 +586,8 @@ typedef enum apiCall {
     
             break;
         case kAPIGraphUserPhotosPost:
+            break;
+        case kAPIGraphPagePhotosPost:
             break;
         default:
             break;
@@ -475,7 +610,7 @@ typedef enum apiCall {
                 [FBfriendsArray addObject:newFBfriend];
                    [newFBfriend release];
             }
-          //  NSLog(@"fbfriends array = %@",FBfriendsArray);
+         
             [friendsArray addObjectsFromArray:FBfriendsArray];
             [PF_MBProgressHUD hideHUDForView:self.view animated:YES];
             
@@ -487,6 +622,15 @@ typedef enum apiCall {
             NSLog(@"facebook photoid = %@",fbphotoid);
             [self performSelector:@selector(saveRoute) withObject:nil afterDelay:0.0];
               [JHNotificationManager notificationWithMessage:@"Photo uploaded successfully to Facebook!"];  
+            break;
+        case kAPIGraphPagePhotosPost:
+            
+            fbphotoid  =   [result objectForKey:@"id"]; 
+            [fbphotoid retain];
+            NSLog(@"facebook photoid = %@",fbphotoid);
+            [self performSelector:@selector(saveRoute) withObject:nil afterDelay:0.0];
+            [JHNotificationManager notificationWithMessage:@"Photo uploaded successfully to Facebook Page!"];  
+            [[PFFacebookUtils facebook]setAccessToken:[NSString stringWithFormat:@"%@",oldAccessToken]];
             break;
         default:
             break;

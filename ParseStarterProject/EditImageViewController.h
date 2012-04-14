@@ -13,7 +13,7 @@
 
 @protocol EditImageDelegate;
 
-@interface EditImageViewController : UIViewController<UIScrollViewDelegate,UIGestureRecognizerDelegate>
+@interface EditImageViewController : UIViewController<UIScrollViewDelegate,UIGestureRecognizerDelegate,UITableViewDataSource,UITableViewDelegate,UIAlertViewDelegate>
 {
     id <EditImageDelegate> delegate;
     CGRect originalArrowFrame;
@@ -21,6 +21,12 @@
     CGPoint locationinscroll;
     NSMutableDictionary* imageMetaData;
 }
+
+@property (retain, nonatomic) IBOutlet UIView *moreArrowsView;
+@property (retain, nonatomic) IBOutlet UIImageView *arrowImageView;
+@property (retain, nonatomic) IBOutlet UIImageView *startImageView;
+@property (retain, nonatomic) IBOutlet UIImageView *endImageView;
+@property (retain, nonatomic) IBOutlet UITableView *arrowTable;
 @property (retain, nonatomic) IBOutlet UIButton *button1;
 @property (retain, nonatomic) IBOutlet UIButton *button2;
 @property (retain, nonatomic) IBOutlet UIButton *button3;

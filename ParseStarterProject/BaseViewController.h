@@ -28,12 +28,13 @@
 #import "EditImageViewController.h"
 #import "AssetsLibrary/ALAssetsLibrary.h"
 #import <CoreLocation/CoreLocation.h>
-@interface BaseViewController : UITabBarController<UIImagePickerControllerDelegate,UIActionSheetDelegate,UINavigationControllerDelegate,EditImageDelegate,CLLocationManagerDelegate>
+@interface BaseViewController : UITabBarController<UIImagePickerControllerDelegate,UIActionSheetDelegate,UINavigationControllerDelegate,EditImageDelegate,UIAlertViewDelegate,CLLocationManagerDelegate>
 {
     NSMutableDictionary* imageMetaData;
      CLLocation* myCurrentLocation;
     NSDictionary* cameraImageDictionary;
     UIImagePickerController* imagepicker;
+    UIImage* newcropped;
 }
 @property (retain, nonatomic) NSMutableDictionary* imageMetaData;
 @property (retain, nonatomic) CLLocationManager* locationManager;
