@@ -60,6 +60,7 @@
     self.likedArray = [[[NSMutableArray alloc]init]autorelease];
     self.queryArray =[[[NSMutableArray alloc]init]autorelease];
     [self addStandardTabView];
+    [tabView centraliseSubviews];
     tabView.segmentIndex = selectedSegment;
     [tabView setSelectedIndex:selectedSegment];
     [self tabView:tabView didSelectTabAtIndex:selectedSegment];
@@ -189,7 +190,14 @@
                 cell.likecount.text = [NSString stringWithFormat:@"%@",[[object objectForKey:@"likecount"]stringValue ]];
                 cell.viewcount.text = [NSString stringWithFormat:@"%@",[[object objectForKey:@"viewcount"]stringValue ]];
                 cell.routeLocationLabel.text = [object objectForKey:@"location"];
-                NSString* imagelink = [object objectForKey:@"userimage"];
+                
+                NSString* imagelink;
+                if ([object objectForKey:@"isPage"]==[NSNumber numberWithBool:YES]) {
+                    imagelink=[[[object objectForKey:@"Gym"]fetchIfNeeded] objectForKey:@"imagelink"];
+                }else{
+                    imagelink = [object objectForKey:@"userimage"];
+                }
+                
                 if (((RouteObject*)[self.flashArray objectAtIndex:indexPath.row]).ownerImage) {
                     cell.ownerImage.image = ((RouteObject*)[self.flashArray objectAtIndex:indexPath.row]).ownerImage;
                 }else{
@@ -258,7 +266,11 @@
                 cell.todoTextLabel.text = [object objectForKey:@"description"];
                 cell.difficultyLabel.text = [object objectForKey:@"difficultydescription"];
                 // cell.routeImageView.image = [UIImage imageWithData:[NSData dataWithContentsOfURL:[NSURL URLWithString:imagelink]]];
-                cell.ownerNameLabel.text = [object objectForKey:@"username"];
+                if ([object objectForKey:@"isPage"]==[NSNumber numberWithBool:YES]) {
+                    cell.ownerNameLabel.text = [[[object objectForKey:@"Gym"]fetchIfNeeded] objectForKey:@"name"];
+                }else{
+                    cell.ownerNameLabel.text = [object objectForKey:@"username"];
+                }
                 
                 //  cell.priorityLabel.text = [NSString stringWithFormat:@"%@", [object objectForKey:@"priority"]];
             }
@@ -271,7 +283,13 @@
                 cell.likecount.text = [NSString stringWithFormat:@"%@",[[object objectForKey:@"likecount"]stringValue ]];
                 cell.viewcount.text = [NSString stringWithFormat:@"%@",[[object objectForKey:@"viewcount"]stringValue ]];
                 cell.routeLocationLabel.text = [object objectForKey:@"location"];                
-                NSString* imagelink = [object objectForKey:@"userimage"];
+                NSString* imagelink;
+                if ([object objectForKey:@"isPage"]==[NSNumber numberWithBool:YES]) {
+                    imagelink=[[[object objectForKey:@"Gym"]fetchIfNeeded] objectForKey:@"imagelink"];
+                }else{
+                    imagelink = [object objectForKey:@"userimage"];
+                }
+
                 if (((RouteObject*)[self.sentArray objectAtIndex:indexPath.row]).ownerImage) {
                     cell.ownerImage.image = ((RouteObject*)[self.sentArray objectAtIndex:indexPath.row]).ownerImage;
                 }else{
@@ -335,7 +353,12 @@
                 }
                 cell.difficultyLabel.text = [object objectForKey:@"difficultydescription"];
                 cell.todoTextLabel.text = [object objectForKey:@"description"];
-                cell.ownerNameLabel.text = [object objectForKey:@"username"];
+                if ([object objectForKey:@"isPage"]==[NSNumber numberWithBool:YES]) {
+                    cell.ownerNameLabel.text = [[[object objectForKey:@"Gym"]fetchIfNeeded] objectForKey:@"name"];
+                }else{
+                    cell.ownerNameLabel.text = [object objectForKey:@"username"];
+                }
+                
             }
             break;
         case 2:
@@ -346,7 +369,13 @@ NSLog(@"showing proj array with ob %@",object);
                 cell.likecount.text = [NSString stringWithFormat:@"%@",[[object objectForKey:@"likecount"]stringValue ]];
                 cell.viewcount.text = [NSString stringWithFormat:@"%@",[[object objectForKey:@"viewcount"]stringValue ]];
                 cell.routeLocationLabel.text = [object objectForKey:@"location"];                
-                NSString* imagelink = [object objectForKey:@"userimage"];
+                NSString* imagelink;
+                if ([object objectForKey:@"isPage"]==[NSNumber numberWithBool:YES]) {
+                    imagelink=[[[object objectForKey:@"Gym"]fetchIfNeeded] objectForKey:@"imagelink"];
+                }else{
+                    imagelink = [object objectForKey:@"userimage"];
+                }
+
                 if (((RouteObject*)[self.projectArray objectAtIndex:indexPath.row]).ownerImage) {
                     cell.ownerImage.image = ((RouteObject*)[self.projectArray objectAtIndex:indexPath.row]).ownerImage;
                 }else{
@@ -415,7 +444,12 @@ NSLog(@"showing proj array with ob %@",object);
                 cell.todoTextLabel.text = [object objectForKey:@"description"];
                 cell.difficultyLabel.text = [object objectForKey:@"difficultydescription"];
                 // cell.routeImageView.image = [UIImage imageWithData:[NSData dataWithContentsOfURL:[NSURL URLWithString:imagelink]]];
-                cell.ownerNameLabel.text = [object objectForKey:@"username"];
+                if ([object objectForKey:@"isPage"]==[NSNumber numberWithBool:YES]) {
+                    cell.ownerNameLabel.text = [[[object objectForKey:@"Gym"]fetchIfNeeded] objectForKey:@"name"];
+                }else{
+                    cell.ownerNameLabel.text = [object objectForKey:@"username"];
+                }
+                
                 
             }
             break;
@@ -426,8 +460,17 @@ NSLog(@"showing proj array with ob %@",object);
                 cell.commentcount.text = [NSString stringWithFormat:@"%@",[[object objectForKey:@"commentcount"]stringValue]];
                 cell.likecount.text = [NSString stringWithFormat:@"%@",[[object objectForKey:@"likecount"]stringValue ]];
                 cell.viewcount.text = [NSString stringWithFormat:@"%@",[[object objectForKey:@"viewcount"]stringValue ]];
-                cell.routeLocationLabel.text = [object objectForKey:@"location"];                
-                NSString* imagelink = [object objectForKey:@"userimage"];
+                cell.routeLocationLabel.text = [object objectForKey:@"location"];  
+                
+                
+                
+                NSString* imagelink;
+                if ([object objectForKey:@"isPage"]==[NSNumber numberWithBool:YES]) {
+                    imagelink=[[[object objectForKey:@"Gym"]fetchIfNeeded] objectForKey:@"imagelink"];
+                }else{
+                    imagelink = [object objectForKey:@"userimage"];
+                }
+
                 if (((RouteObject*)[self.likedArray objectAtIndex:indexPath.row]).ownerImage) {
                     cell.ownerImage.image = ((RouteObject*)[self.likedArray objectAtIndex:indexPath.row]).ownerImage;
                 }else{
@@ -496,7 +539,11 @@ NSLog(@"showing proj array with ob %@",object);
                 cell.todoTextLabel.text = [object objectForKey:@"description"];
                 
                 // cell.routeImageView.image = [UIImage imageWithData:[NSData dataWithContentsOfURL:[NSURL URLWithString:imagelink]]];
-                cell.ownerNameLabel.text = [object objectForKey:@"username"];
+                if ([object objectForKey:@"isPage"]==[NSNumber numberWithBool:YES]) {
+                    cell.ownerNameLabel.text = [[[object objectForKey:@"Gym"]fetchIfNeeded] objectForKey:@"name"];
+                }else{
+                    cell.ownerNameLabel.text = [object objectForKey:@"username"];
+                }
                 
                 //  cell.priorityLabel.text = [NSString stringWithFormat:@"%@", [object objectForKey:@"priority"]];
             }

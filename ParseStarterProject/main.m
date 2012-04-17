@@ -1,4 +1,4 @@
-// Copyright 2011 Ping Labs, Inc. All rights reserved.
+    // Copyright 2011 Ping Labs, Inc. All rights reserved.
 
 #import <UIKit/UIKit.h>
 

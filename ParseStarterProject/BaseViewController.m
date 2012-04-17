@@ -288,23 +288,6 @@ static inline double radians (double degrees) {return degrees * M_PI/180;}
     [FlurryAnalytics endTimedEvent:@"SHARE_ACTION" withParameters:nil];
 }
 
-- (void)startStandardUpdates
-{
-    // Create the location manager if this object does not
-    // already have one.
-    if (nil == locationManager)
-        locationManager = [[CLLocationManager alloc] init];
-    
-    locationManager.delegate = self;
-    locationManager.desiredAccuracy = kCLLocationAccuracyBest;
-    
-    // Set a movement threshold for new events.
-    locationManager.distanceFilter = 500;
-    
-    [locationManager startUpdatingLocation];
-    CLLocation *location = locationManager.location;
-    
-}
 // Delegate method from the CLLocationManagerDelegate protocol.
 - (void)locationManager:(CLLocationManager *)manager
     didUpdateToLocation:(CLLocation *)newLocation

@@ -16,7 +16,7 @@
         UIColor * endColor = [UIColor colorWithHex:0x4a4b4a];
         gradientLayer.frame = CGRectMake(0, 8., 1024, 60);
         gradientLayer.colors = [NSArray arrayWithObjects:(id)[startColor CGColor], (id)[midColor CGColor], (id)[endColor CGColor], nil];
-        [self insertSublayer:gradientLayer atIndex:0];
+       // [self insertSublayer:gradientLayer atIndex:0];
     }
     return self;
 }

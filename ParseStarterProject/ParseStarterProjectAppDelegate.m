@@ -21,10 +21,10 @@
     [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleBlackOpaque animated:YES];
     [[UIApplication sharedApplication]setApplicationIconBadgeNumber:0];
     [FlurryAnalytics startSession:@"N66I1CJV446Z75ZV8G8V"];
-    //NSDictionary *myStuff = [NSDictionary dictionaryWithObjectsAndKeys:@"myObject", @"myKey", nil];
-    //[BugSenseCrashController sharedInstanceWithBugSenseAPIKey:@"ade3c7ab" 
-    //                                           userDictionary:myStuff 
-    //                                          sendImmediately:NO];
+   // NSDictionary *myStuff = [NSDictionary dictionaryWithObjectsAndKeys:@"myObject", @"myKey", nil];
+   // [BugSenseCrashController sharedInstanceWithBugSenseAPIKey:@"ade3c7ab" 
+   //                                            userDictionary:myStuff 
+   //                                           sendImmediately:YES];
     [self startStandardUpdates];
     // ****************************************************************************
     // Uncomment and fill in with your Parse credentials:

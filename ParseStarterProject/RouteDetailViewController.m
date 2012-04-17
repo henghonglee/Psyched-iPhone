@@ -105,6 +105,8 @@
     [unavailableLabel setFont:[UIFont fontWithName:@"Old Stamper" size:20.0]];
     unavailableLabel.textColor = [UIColor redColor];
     [likeButton setUserInteractionEnabled:NO];
+    
+    
     difficultyLabel.text = [routeObject.pfobj objectForKey:@"difficultydescription"];
     NSString *foo = [routeObject.pfobj objectForKey:@"description"];
     CGSize size = [foo sizeWithFont:[UIFont fontWithName:@"Helvetica" size:11.0f]
@@ -157,8 +159,11 @@
     viewCountLabel.text = [NSString stringWithFormat:@"%d views",[[routeObject.pfobj objectForKey:@"viewcount"] intValue]+1];
     [routeObject.pfobj setObject:[NSNumber numberWithInt:[viewCountLabel.text intValue]] forKey:@"viewcount"];
     [routeObject.pfobj saveEventually];
+    
+    
     routeImageView.image = routeObject.retrievedImage;
     routeLocationLabel.text = [routeObject.pfobj objectForKey:@"location"]; 
+    
     NSLog(@"getting image if available..");
     [self getImageIfUnavailable];
     NSLog(@"done getting image");
@@ -169,9 +174,15 @@
     [self checksendstatus];
     [self checkCommunitySendStatus];
     NSLog(@"done checking sendstatus and likes");
+
+    if ([routeObject.pfobj objectForKey:@"isPage"]==[NSNumber numberWithBool:YES]) {
+        usernameLabel.text = [[[routeObject.pfobj objectForKey:@"Gym"]fetchIfNeeded] objectForKey:@"name"];
+    }else{
     usernameLabel.text= [routeObject.pfobj objectForKey:@"username"];
-  
+    }
+    
     UserImageView.image = routeObject.ownerImage;
+    
     [self arrangeSubViewsaftercomments];
    
       if ([routeObject.pfobj objectForKey:@"photoid"]) {   
@@ -740,8 +751,13 @@
 -(void)getImageIfUnavailable
 {
     if (!routeObject.ownerImage){
-        NSString* urlstring = [routeObject.pfobj objectForKey:@"userimage"];
-        NSLog(@"urlstring =%@,%@",urlstring, [routeObject.pfobj objectForKey:@"userimage"]);
+        NSString* urlstring;
+        if ([routeObject.pfobj objectForKey:@"isPage"]==[NSNumber numberWithBool:YES]) {
+            urlstring=[[[routeObject.pfobj objectForKey:@"Gym"]fetchIfNeeded] objectForKey:@"imagelink"];
+        }else{
+        urlstring = [routeObject.pfobj objectForKey:@"userimage"];
+        
+        }
         ASIHTTPRequest* request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:urlstring]];
         [request setCompletionBlock:^{
             UIImage* ownerimage = [UIImage imageWithData:[request responseData]];
@@ -909,7 +925,8 @@
 }
 - (IBAction)viewUser:(id)sender {
     ProfileViewController* viewController = [[ProfileViewController alloc]initWithNibName:@"ProfileViewController" bundle:nil];
-    viewController.username= usernameLabel.text;
+
+    viewController.username= [routeObject.pfobj objectForKey:@"username"];
     [self.navigationController pushViewController:viewController animated:YES];
     [viewController release];
 }
@@ -951,7 +968,6 @@
     
     [object setObject:routeObject.pfobj forKey:@"route"];
     [object saveInBackgroundWithBlock:^(BOOL succeeded,NSError*error){
-        NSLog(@"saved comment");
         
         PFQuery* query = [PFQuery queryWithClassName:@"Comment"];
         query.cachePolicy = kPFCachePolicyNetworkElseCache;
@@ -1089,10 +1105,10 @@ commentTextField.text = @"";
             }];
         }
     
-          [self getFacebookRouteDetails]; 
+
     
     }
-         
+          [self getFacebookRouteDetails];          
 }
 - (IBAction)showUsers:(UIButton*)sender {
     SendUserViewController*viewController = [[SendUserViewController alloc]initWithNibName:@"SendUserViewController" bundle:nil];

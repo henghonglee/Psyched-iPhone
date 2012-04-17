@@ -52,9 +52,12 @@
 
 - (void)layoutSubviews;
 {
+ //   [self.tabContainer centerInSuperView];
+}
+- (void)centraliseSubviews;
+{
     [self.tabContainer centerInSuperView];
 }
-
 #pragma Mark -
 #pragma Mark Notifying Delegates
 

@@ -23,6 +23,7 @@
 #import <CoreLocation/CoreLocation.h>
 #import "FollowTableCell.h"
 #import "ParseStarterProjectAppDelegate.h"
+#import "LoginViewController.h"
 @interface MyTableController : UIViewController<PF_FBRequestDelegate,JMTabViewDelegate,UITableViewDelegate,UITableViewDataSource,EGORefreshTableHeaderDelegate,UIScrollViewDelegate,CLLocationManagerDelegate>
 {
     
@@ -34,7 +35,9 @@
     JMTabView * tabView;
     UIView* headerView;
     UIButton* refreshButton;
+     NSMutableArray* followedPosters;
 }
+@property (retain, nonatomic) NSMutableArray* followedPosters;
 @property (retain, nonatomic) IBOutlet UIView *emptyGradeView;
 @property (retain, nonatomic) IBOutlet UIView *emptyView;
 @property (retain, nonatomic) CLLocationManager* locationManager;

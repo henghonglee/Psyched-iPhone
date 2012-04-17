@@ -13,12 +13,13 @@
 @protocol JMTabViewDelegate
 -(void)tabView:(JMTabView *)tabView didSelectTabAtIndex:(NSUInteger)itemIndex;
 
+
 @end
 
 #pragma Mark -
 #pragma Mark - JMTabView
 
-@interface JMTabView : UIView 
+@interface JMTabView : UIScrollView 
 
 - (void)setMomentary:(BOOL)momentary;
 - (void)didSelectItemAtIndex:(NSUInteger)itemIndex;

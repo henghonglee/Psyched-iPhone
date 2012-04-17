@@ -40,8 +40,9 @@
 
 - (void)layoutSubviews;
 {
-    CGFloat xOffset = 0.;
-    CGFloat yOffset = 0.;
+    NSLog(@"layingout subviews");
+    CGFloat xOffset = 5.;
+    CGFloat yOffset = 3.;
     CGFloat itemHeight = 0.;
     
     for (JMTabItem * item in self.tabItems)
@@ -63,7 +64,7 @@
     containerSize_.height = itemHeight;
     
     [self sizeToFit];
-    [self centerInSuperView];
+  //  [self centerInSuperView];
 }
 
 - (CGSize)sizeThatFits:(CGSize)size;

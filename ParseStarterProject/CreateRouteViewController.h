@@ -16,9 +16,17 @@
 #import "FriendTaggerViewController.h"
 @interface CreateRouteViewController : UIViewController<UITextFieldDelegate,UIAlertViewDelegate,UIActionSheetDelegate,UIPickerViewDelegate,UIPickerViewDataSource,PF_FBRequestDelegate,MBProgressHUDDelegate,RouteDescriptionDelegate,TaggerDelegate,RouteLocationDelegate,CLLocationManagerDelegate>
 {
+    BOOL isPage;
     MBProgressHUD* HUD;
-    UIPickerView* pickerView;
+    MBProgressHUD* pagesHUD;
+    int arrIndex;
+    
+    UIPickerView* gympickerView;
     UIActionSheet*gymActionSheet;
+
+    UIPickerView* fbAccountPickerView;
+    UIActionSheet* accountActionSheet;
+
     UITableView* searchTable;
     int currentAPIcall;
     NSString* fbphotoid;
@@ -30,6 +38,10 @@
 
 
 -(void)tagPhoto:(NSString*)photoid withUser:(NSString*)facebookid;
+@property (retain,nonatomic) NSArray* accounts;
+@property (retain,nonatomic) NSMutableArray* arrayOfAccounts;
+@property (retain,nonatomic) UIPickerView* fbAccountPickerView;
+@property (retain,nonatomic) UIActionSheet* accountActionSheet;
 @property (retain, nonatomic) IBOutlet UIImageView *routeImageView;
 @property (retain, nonatomic) NSMutableDictionary* imageMetaData;
 @property (retain, nonatomic) IBOutlet MKMapView* routeLocMapView;

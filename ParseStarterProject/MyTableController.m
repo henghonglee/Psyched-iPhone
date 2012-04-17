@@ -11,9 +11,11 @@
 #import "SearchFriendsViewController.h"
 #import "ASIHTTPRequest.h"
 #import "LoadMoreCell.h"
+#import "UIColor+Hex.h"
 @implementation MyTableController
 @synthesize routeTableView;
 @synthesize baserouteArray;
+@synthesize followedPosters;
 @synthesize routeArray;
 @synthesize queryArray;
 @synthesize titleTableView;
@@ -39,10 +41,12 @@
     loadcount = 1;
     shouldDisplayNext = 1;
     // [self startStandardUpdates];
+    
+    
     routeTableView = [[UITableView alloc]initWithFrame:CGRectMake(0,0 , 320, 411)];
     routeTableView.delegate = self;
     routeTableView.dataSource = self;
-    routeTableView.backgroundColor = [UIColor darkGrayColor];
+    routeTableView.backgroundColor = [UIColor colorWithHex:0x282928];
     routeTableView.showsVerticalScrollIndicator = NO;
     routeTableView.bounces = YES;
     headerView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, 320, 44)];
@@ -57,6 +61,15 @@
     headerLabel.textColor = [UIColor whiteColor];
     headerLabel.text = @"Psyched!";
     headerLabel.backgroundColor = [UIColor clearColor];
+
+ //   UIBarButtonItem* leftButton = [[UIBarButtonItem alloc] initWithTitle:@"Logout" style:UIBarButtonSystemItemDone target:self action:@selector(LogOut:)];
+    UIButton* leftButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
+    leftButton.frame = CGRectMake(7, 7, 70, 30);
+     [leftButton addTarget:self action:@selector(LogOut:) forControlEvents:UIControlEventTouchUpInside];
+    [leftButton setTitle:@"Logout" forState:UIControlStateNormal];
+    [headerView addSubview:leftButton];
+    
+    
     refreshButton = [[DAReloadActivityButton alloc]initWithFrame:CGRectMake(276, 0, 44, 44)];
      [refreshButton addTarget:self action:@selector(animate:) forControlEvents:UIControlEventTouchUpInside];
     refreshButton.contentMode = UIViewContentModeScaleAspectFit;
@@ -66,12 +79,25 @@
     [headerView addSubview:headerLabel];
     [headerLabel release];
     [self.view addSubview:routeTableView];
+        [self addStandardTabView];
     self.navigationController.navigationBarHidden = YES;
     self.routeArray = [[[NSMutableArray alloc]init]autorelease];
     self.queryArray = [[[NSMutableArray alloc]init]autorelease];
-    [self addStandardTabView];
+    followedPosters = [[NSMutableArray alloc]init ];
+    
+    PFQuery* followedquery = [PFQuery queryWithClassName:@"Follow"];
+    [followedquery whereKey:@"follower" equalTo:[PFUser currentUser]];
+    [followedquery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+        for (PFObject* follow in objects) {
+            NSLog(@"showing routes of %@",[follow objectForKey:@"followed"]);
+            
+            [followedPosters addObject:[follow objectForKey:@"followed"]];
+            
+        }
+
      [self tabView:tabView didSelectTabAtIndex:tabView.segmentIndex];
-   
+    
+    }];
 }
 -(void)viewWillAppear:(BOOL)animated
 {
@@ -118,7 +144,7 @@
 
 -(void)viewWillDisappear:(BOOL)animated
 {
-       [locationManager stopUpdatingLocation];
+ 
     NSLog(@"canceling %d queries",[queryArray count]);
     for (id pfobject in queryArray) {
         if ([pfobject isKindOfClass:[PFFile class]]) {
@@ -134,6 +160,22 @@
     }
    
     NSLog(@"done canceling queries");
+}
+-(void)LogOut:(id)sender
+{
+    [PFUser logOut];
+    [[PFFacebookUtils facebook] logout];
+    [[PFFacebookUtils facebook] setAccessToken:nil];
+    ParseStarterProjectAppDelegate* applicationDelegate = ((ParseStarterProjectAppDelegate*)[[UIApplication sharedApplication]delegate]);
+    if([applicationDelegate.window.rootViewController isKindOfClass:[LoginViewController class]])
+    {
+        [self dismissModalViewControllerAnimated:YES];
+    }else{
+        LoginViewController* viewController = [[LoginViewController alloc]initWithNibName:@"LoginViewController" bundle:nil];
+        applicationDelegate.window.rootViewController = viewController;
+        [viewController release];
+        
+    }
 }
 -(void)loadcounter
 {
@@ -225,6 +267,7 @@
     } 
        
             if ([self.routeArray count]>0) {
+                
                 PFObject* object = ((RouteObject*)[self.routeArray objectAtIndex:indexPath.row]).pfobj;
                
                 
@@ -240,9 +283,13 @@
                 cell.commentcount.text = [NSString stringWithFormat:@"%@",[[object objectForKey:@"commentcount"]stringValue]];
                 cell.likecount.text = [NSString stringWithFormat:@"%@",[[object objectForKey:@"likecount"]stringValue ]];
                 cell.viewcount.text = [NSString stringWithFormat:@"%@",[[object objectForKey:@"viewcount"]stringValue ]];
-                
-                
-                NSString* imagelink = [object objectForKey:@"userimage"];
+                NSString* imagelink;
+      
+                if ([object objectForKey:@"isPage"]==[NSNumber numberWithBool:YES]) {
+                    imagelink=[[[object objectForKey:@"Gym"]fetchIfNeeded] objectForKey:@"imagelink"];
+                }else{
+                imagelink = [object objectForKey:@"userimage"];
+                }
                 if (((RouteObject*)[self.routeArray objectAtIndex:indexPath.row]).ownerImage) {
                     cell.ownerImage.image = ((RouteObject*)[self.routeArray objectAtIndex:indexPath.row]).ownerImage;
                 }else{
@@ -265,6 +312,8 @@
                     [request setFailedBlock:^{}];
                     [request startAsynchronous];
                 }
+                
+                ///loading route thumbnail image
                 if (!((RouteObject*)[self.routeArray objectAtIndex:indexPath.row]).retrievedImage && !((RouteObject*)[self.routeArray objectAtIndex:indexPath.row]).isLoading) {
                     ((RouteObject*)[self.routeArray objectAtIndex:indexPath.row]).isLoading = YES;
                     PFFile *imagefile = [object objectForKey:@"thumbImageFile"];
@@ -310,6 +359,9 @@
                     cell.timeLabel.text = [NSString stringWithFormat:@"%im",timeint/-60];
                 }
                 //    [request2 release];
+                
+                
+                //loading stamp image
                 if (((RouteObject*)[self.routeArray objectAtIndex:indexPath.row]).stampImage) {
                     [cell.stampImageView setImage:((RouteObject*)[self.routeArray objectAtIndex:indexPath.row]).stampImage];
                 }else{
@@ -335,6 +387,7 @@
                         ((RouteObject*)[self.routeArray objectAtIndex:indexPath.row]).stampImage = [UIImage imageNamed:@"sentoverlay210.png"];
                     }
                 }];
+                    
                 PFQuery* projquery = [PFQuery queryWithClassName:@"Project"];
                 [projquery whereKey:@"username" equalTo:[[PFUser currentUser]objectForKey:@"name"]];
                 [projquery whereKey:@"route" equalTo:((RouteObject*)[self.routeArray objectAtIndex:indexPath.row]).pfobj];
@@ -352,7 +405,13 @@
                 }
 
                 cell.todoTextLabel.text = [object objectForKey:@"description"];
+   
+                if ([object objectForKey:@"isPage"]==[NSNumber numberWithBool:YES]) {
+                cell.ownerNameLabel.text = [[[object objectForKey:@"Gym"]fetchIfNeeded] objectForKey:@"name"];
+                }else{
                 cell.ownerNameLabel.text = [object objectForKey:@"username"];
+                }
+                
                 cell.backgroundColor = [UIColor whiteColor];
             }
     // Configure the cell
@@ -380,12 +439,22 @@
 -(void)addStandardTabView
 {
     tabView = [[JMTabView alloc] init];
+    tabView.contentSize = CGSizeMake(800, 44);
+    tabView.showsHorizontalScrollIndicator = NO;
     [tabView setDelegate:self];
     
     [tabView addTabItemWithTitle:@"Followed" icon:[UIImage imageNamed:@"followed.png"]];
     [tabView addTabItemWithTitle:@"Popular" icon:[UIImage imageNamed:@"icon2.png"]];
+    [tabView addTabItemWithTitle:@"Recent" icon:[UIImage imageNamed:@"icon1.png"]];
     [tabView addTabItemWithTitle:@"Nearby" icon:[UIImage imageNamed:@"nearby.png"]];
-    [tabView addTabItemWithTitle:@"Grade" icon:[UIImage imageNamed:@"grade.png"]];
+    [tabView addTabItemWithTitle:@"Grades Near Me" icon:[UIImage imageNamed:@"grade.png"]];
+    [tabView addTabItemWithTitle:@"Projects Near Me" icon:[UIImage imageNamed:@"project_white.png"]];
+    [tabView addTabItemWithTitle:@"Gym Routes Near Me" icon:[UIImage imageNamed:@"nearby.png"]];
+    [tabView addTabItemWithTitle:@"Recommended" icon:[UIImage imageNamed:@"grade.png"]];
+//    [tabView addTabItemWithTitle:@"Followed" icon:[UIImage imageNamed:@"followed.png"]];
+//    [tabView addTabItemWithTitle:@"Popular" icon:[UIImage imageNamed:@"icon2.png"]];
+//    [tabView addTabItemWithTitle:@"Nearby" icon:[UIImage imageNamed:@"nearby.png"]];
+//    [tabView addTabItemWithTitle:@"Grade" icon:[UIImage imageNamed:@"grade.png"]];
     
     
     //    You can run blocks by specifiying an executeBlock: paremeter
@@ -450,28 +519,48 @@
     
     PFQuery* gradeQuery = [PFQuery queryWithClassName:@"Route"];
     [gradeQuery whereKey:@"outdated" notEqualTo:[NSNumber numberWithBool:true]];
-    [gradeQuery whereKey:@"routelocation" nearGeoPoint:[PFGeoPoint geoPointWithLatitude:((ParseStarterProjectAppDelegate*)[[UIApplication sharedApplication] delegate]).currentLocation.coordinate.latitude longitude:((ParseStarterProjectAppDelegate*)[[UIApplication sharedApplication] delegate]).currentLocation.coordinate.longitude] withinKilometers:1];
+    [gradeQuery whereKey:@"routelocation" nearGeoPoint:[PFGeoPoint geoPointWithLatitude:((ParseStarterProjectAppDelegate*)[[UIApplication sharedApplication] delegate]).currentLocation.coordinate.latitude longitude:((ParseStarterProjectAppDelegate*)[[UIApplication sharedApplication] delegate]).currentLocation.coordinate.longitude] withinKilometers:5.];
     [gradeQuery orderByDescending:@"difficulty"];
-    
     [gradeQuery setLimit:20];
     gradeQuery.cachePolicy = kPFCachePolicyNetworkElseCache;
-    shouldDisplayNext=1;
     
+    
+    PFQuery* projectsQuery = [PFQuery queryWithClassName:@"Route"];
+    [projectsQuery whereKey:@"outdated" notEqualTo:[NSNumber numberWithBool:true]];
+    [projectsQuery whereKey:@"routelocation" nearGeoPoint:[PFGeoPoint geoPointWithLatitude:((ParseStarterProjectAppDelegate*)[[UIApplication sharedApplication] delegate]).currentLocation.coordinate.latitude longitude:((ParseStarterProjectAppDelegate*)[[UIApplication sharedApplication] delegate]).currentLocation.coordinate.longitude] withinKilometers:5.];
+    PFQuery* projquery = [PFQuery queryWithClassName:@"Project"];
+    [projquery whereKey:@"user" equalTo:[PFUser  currentUser]];
+    [projquery whereKey:@"route" matchesQuery:projectsQuery];
+    [projquery setLimit:20];
+    projquery.cachePolicy = kPFCachePolicyNetworkElseCache;
+    
+    PFQuery* gymQuery = [PFQuery queryWithClassName:@"Route"];
+    [gymQuery whereKey:@"outdated" notEqualTo:[NSNumber numberWithBool:true]];
+    [gymQuery whereKey:@"routelocation" nearGeoPoint:[PFGeoPoint geoPointWithLatitude:((ParseStarterProjectAppDelegate*)[[UIApplication sharedApplication] delegate]).currentLocation.coordinate.latitude longitude:((ParseStarterProjectAppDelegate*)[[UIApplication sharedApplication] delegate]).currentLocation.coordinate.longitude]];
+    [gymQuery whereKey:@"isPage" equalTo:[NSNumber numberWithBool:YES]];
+    [gymQuery orderByDescending:@"createdAt"];
+    [gymQuery addDescendingOrder:@"commentcount"];
+    [gymQuery addDescendingOrder:@"likecount"];
+    [gymQuery setLimit:20];
+    gymQuery.cachePolicy = kPFCachePolicyNetworkElseCache;
+    
+    
+    PFQuery* recommendQuery = [PFQuery queryWithClassName:@"Route"];
+    [recommendQuery whereKey:@"outdated" notEqualTo:[NSNumber numberWithBool:true]];
+    [recommendQuery whereKey:@"usersrecommended" equalTo:[[PFUser currentUser]objectForKey:@"name"]];
+     [recommendQuery orderByDescending:@"createdAt"];
+    [recommendQuery setLimit:20];
+    recommendQuery.cachePolicy = kPFCachePolicyNetworkElseCache;
+    
+    
+    
+    
+    shouldDisplayNext=1;
     switch (itemIndex) {
         case 0:
             NSLog(@"cancelingqueries");
                
-             NSMutableArray* followedPosters = [[[NSMutableArray alloc]init ]autorelease];
-           
-            PFQuery* followedquery = [PFQuery queryWithClassName:@"Follow"];
-            [followedquery whereKey:@"follower" equalTo:[PFUser currentUser]];
-            [followedquery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
-                for (PFObject* follow in objects) {
-                NSLog(@"showing routes of %@",[follow objectForKey:@"followed"]);
-               
-                [followedPosters addObject:[follow objectForKey:@"followed"]];
-
-            }
+            
             [recentQuery whereKey:@"username" containedIn:followedPosters];
             [queryArray addObject:recentQuery];
             
@@ -493,7 +582,7 @@
                 }
                 [routeTableView reloadData];
                 
-            }];
+        
             }];
             break;
         case 1:
@@ -515,45 +604,131 @@
           
             break;
         case 2:
-           
-            [queryArray addObject:locationQuery];
-           [locationQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
-               [queryArray removeObject:locationQuery];
-               [routeArray removeAllObjects];
-               if ([objects count]<20) {
-                   shouldDisplayNext =0;
-               }
-               
-               for (PFObject* object in objects) {
-                  RouteObject* newRouteObject =  [[RouteObject alloc]init];
-                   newRouteObject.pfobj = object;
-                   [routeArray addObject:newRouteObject];
-                   [newRouteObject release];
-               }
-               [routeTableView reloadData];
-           }];
-            break;
-        case 3:
-           
-            [queryArray addObject:gradeQuery];
-            [gradeQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
-                [queryArray removeObject:gradeQuery];
+            [queryArray addObject:recentQuery];
+            [recentQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+                [queryArray removeObject:recentQuery];
                 [routeArray removeAllObjects] ;
                 if ([objects count]>0) {
+                    if ([objects count]<20) {
+                        shouldDisplayNext =0;
+                    }
+                    
+                    for (PFObject* object in objects) {
+                        RouteObject* newRouteObject =  [[RouteObject alloc]init];
+                        newRouteObject.pfobj = object;
+                        [routeArray addObject:newRouteObject];
+                        [newRouteObject release];
+                    }
+                }
+                [routeTableView reloadData];
+            }];
+
+            break;
+        case 3:
+            
+            [queryArray addObject:locationQuery];
+            [locationQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+                [queryArray removeObject:locationQuery];
+                [routeArray removeAllObjects];
                 if ([objects count]<20) {
                     shouldDisplayNext =0;
                 }
-
+                
                 for (PFObject* object in objects) {
                     RouteObject* newRouteObject =  [[RouteObject alloc]init];
                     newRouteObject.pfobj = object;
                     [routeArray addObject:newRouteObject];
                     [newRouteObject release];
                 }
+                [routeTableView reloadData];
+            }];
+            break;
+        case 4:
+            
+            [queryArray addObject:gradeQuery];
+            [gradeQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+                [queryArray removeObject:gradeQuery];
+                [routeArray removeAllObjects] ;
+                if ([objects count]>0) {
+                    if ([objects count]<20) {
+                        shouldDisplayNext =0;
+                    }
+                    
+                    for (PFObject* object in objects) {
+                        RouteObject* newRouteObject =  [[RouteObject alloc]init];
+                        newRouteObject.pfobj = object;
+                        [routeArray addObject:newRouteObject];
+                        [newRouteObject release];
+                    }
+                }
+                [routeTableView reloadData];
+            }];
+
+                break;
+        case 5:
+            
+            [queryArray addObject:projquery];
+            [projquery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+                [queryArray removeObject:projquery];
+                [routeArray removeAllObjects] ;
+                if ([objects count]>0) {
+                    if ([objects count]<20) {
+                        shouldDisplayNext =0;
+                    }
+                    
+                    for (PFObject* proj in objects) {
+                        RouteObject* newRouteObject =  [[RouteObject alloc]init];
+                        newRouteObject.pfobj = [[proj objectForKey:@"route"]fetchIfNeeded];
+                        newRouteObject.stampImage = [UIImage imageNamed:@"projectoverlay210.png"];
+                        [routeArray addObject:newRouteObject];
+                        [newRouteObject release];
+                    }
                 }
                 [routeTableView reloadData];
             }];
             break;
+        case 6:
+            
+            [queryArray addObject:gymQuery];
+            [gymQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+                [queryArray removeObject:gymQuery];
+                [routeArray removeAllObjects] ;
+                if ([objects count]>0) {
+                    if ([objects count]<20) {
+                        shouldDisplayNext =0;
+                    }
+                    
+                    for (PFObject* object in objects) {
+                        RouteObject* newRouteObject =  [[RouteObject alloc]init];
+                        newRouteObject.pfobj = object;
+                        [routeArray addObject:newRouteObject];
+                        [newRouteObject release];
+                    }
+                }
+                [routeTableView reloadData];
+            }];
+            break;
+        case 7:
+            
+            [queryArray addObject:recommendQuery];
+            [recommendQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+                [queryArray removeObject:recommendQuery];
+                [routeArray removeAllObjects] ;
+                if ([objects count]>0) {
+                    if ([objects count]<20) {
+                        shouldDisplayNext =0;
+                    }
+                    
+                    for (PFObject* object in objects) {
+                        RouteObject* newRouteObject =  [[RouteObject alloc]init];
+                        newRouteObject.pfobj = object;
+                        [routeArray addObject:newRouteObject];
+                        [newRouteObject release];
+                    }
+                }
+                [routeTableView reloadData];
+            }];    
+        
         default:
             break;
     }
@@ -565,10 +740,6 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
-    NSLog(@"routearray count = %d, index = %d",[routeArray count],indexPath.row)
-    ;
-    
-    
     PFQuery* locationQuery = [PFQuery queryWithClassName:@"Route"];
     [locationQuery whereKey:@"outdated" notEqualTo:[NSNumber numberWithBool:true]];
     [locationQuery whereKey:@"routelocation" nearGeoPoint:[PFGeoPoint geoPointWithLatitude:((ParseStarterProjectAppDelegate*)[[UIApplication sharedApplication] delegate]).currentLocation.coordinate.latitude longitude:((ParseStarterProjectAppDelegate*)[[UIApplication sharedApplication] delegate]).currentLocation.coordinate.longitude]];
@@ -589,24 +760,69 @@
     [recentQuery setLimit:20];
     recentQuery.cachePolicy = kPFCachePolicyNetworkElseCache;
     
+    PFQuery* gradeQuery = [PFQuery queryWithClassName:@"Route"];
+    [gradeQuery whereKey:@"outdated" notEqualTo:[NSNumber numberWithBool:true]];
+    [gradeQuery whereKey:@"routelocation" nearGeoPoint:[PFGeoPoint geoPointWithLatitude:((ParseStarterProjectAppDelegate*)[[UIApplication sharedApplication] delegate]).currentLocation.coordinate.latitude longitude:((ParseStarterProjectAppDelegate*)[[UIApplication sharedApplication] delegate]).currentLocation.coordinate.longitude] withinKilometers:5.];
+    [gradeQuery orderByDescending:@"difficulty"];
+    [gradeQuery setLimit:20];
+    gradeQuery.cachePolicy = kPFCachePolicyNetworkElseCache;
+    
+    
+    PFQuery* projectsQuery = [PFQuery queryWithClassName:@"Route"];
+    [projectsQuery whereKey:@"outdated" notEqualTo:[NSNumber numberWithBool:true]];
+    [projectsQuery whereKey:@"routelocation" nearGeoPoint:[PFGeoPoint geoPointWithLatitude:((ParseStarterProjectAppDelegate*)[[UIApplication sharedApplication] delegate]).currentLocation.coordinate.latitude longitude:((ParseStarterProjectAppDelegate*)[[UIApplication sharedApplication] delegate]).currentLocation.coordinate.longitude] withinKilometers:5.];
+    PFQuery* projquery = [PFQuery queryWithClassName:@"Project"];
+    [projquery whereKey:@"user" equalTo:[PFUser  currentUser]];
+    [projquery whereKey:@"route" matchesQuery:projectsQuery];
+    [projquery setLimit:20];
+    projquery.cachePolicy = kPFCachePolicyNetworkElseCache;
+
+    
+    PFQuery* gymQuery = [PFQuery queryWithClassName:@"Route"];
+    [gymQuery whereKey:@"outdated" notEqualTo:[NSNumber numberWithBool:true]];
+    [gymQuery whereKey:@"routelocation" nearGeoPoint:[PFGeoPoint geoPointWithLatitude:((ParseStarterProjectAppDelegate*)[[UIApplication sharedApplication] delegate]).currentLocation.coordinate.latitude longitude:((ParseStarterProjectAppDelegate*)[[UIApplication sharedApplication] delegate]).currentLocation.coordinate.longitude]];
+    [gymQuery whereKey:@"isPage" equalTo:[NSNumber numberWithBool:YES]];
+    [gymQuery orderByDescending:@"createdAt"];
+    [gymQuery addDescendingOrder:@"commentcount"];
+    [gymQuery addDescendingOrder:@"likecount"];
+    [gymQuery setLimit:20];
+    gymQuery.cachePolicy = kPFCachePolicyNetworkElseCache;
+    
+    
+    PFQuery* recommendQuery = [PFQuery queryWithClassName:@"Route"];
+    [recommendQuery whereKey:@"outdated" notEqualTo:[NSNumber numberWithBool:true]];
+    [recommendQuery whereKey:@"usersrecommended" equalTo:[[PFUser currentUser]objectForKey:@"name"]];
+     [recommendQuery orderByDescending:@"createdAt"];
+    [recommendQuery setLimit:20];
+    recommendQuery.cachePolicy = kPFCachePolicyNetworkElseCache;
+    
+    
     if (indexPath.row==([routeArray count])) {
         NSLog(@"will load next 20 for %d",tabView.segmentIndex); 
         switch (tabView.segmentIndex) {
             case 0:
+                [recentQuery whereKey:@"username" containedIn:followedPosters];
                 [recentQuery setSkip:[routeArray count]];
                 [queryArray addObject:recentQuery];
                 [recentQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
-                    if ([objects count]<20) {
-                        shouldDisplayNext = 0;
-                    }
+                    
                     [queryArray removeObject:recentQuery];
-                    for (PFObject* object in objects) {
-                        RouteObject* newRouteObject =  [[RouteObject alloc]init];
-                        newRouteObject.pfobj = object;
-                        [routeArray addObject:newRouteObject];
-                        [newRouteObject release];
+                    [routeArray removeAllObjects];
+                    if ([objects count]<20) {
+                        shouldDisplayNext =0;
+                    }
+                    if ([objects count]>0) {
+                        for (PFObject* object in objects) {
+                            RouteObject* newRouteObject =  [[RouteObject alloc]init];
+                            newRouteObject.pfobj = object;
+                            [routeArray addObject:newRouteObject];
+                            [newRouteObject release];
+                        }
+                        
                     }
                     [routeTableView reloadData];
+                    
+                    
                 }];
                 break;
             case 1:
@@ -627,6 +843,24 @@
                 }];
                 break;
             case 2:
+                
+                [recentQuery setSkip:[routeArray count]];
+                [queryArray addObject:recentQuery];
+                [recentQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+                    if ([objects count]<20) {
+                        shouldDisplayNext = 0;
+                    }
+                    [queryArray removeObject:recentQuery];
+                    for (PFObject* object in objects) {
+                        RouteObject* newRouteObject =  [[RouteObject alloc]init];
+                        newRouteObject.pfobj = object;
+                        [routeArray addObject:newRouteObject];
+                        [newRouteObject release];
+                    }
+                    [routeTableView reloadData];
+                }];
+                break;
+            case 3:
                 [locationQuery setSkip:[routeArray count]];
                 [queryArray addObject:recentQuery];
                 [locationQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
@@ -643,14 +877,104 @@
                     [routeTableView reloadData];
                 }];
                 break;
+            case 4:
+                [projquery setSkip:[routeArray count]];
+                [queryArray addObject:projquery];
                 
+                [projquery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+                    [queryArray removeObject:projquery];
+                    [routeArray removeAllObjects] ;
+                    if ([objects count]>0) {
+                        if ([objects count]<20) {
+                            shouldDisplayNext =0;
+                        }
+                        
+                        for (PFObject* proj in objects) {
+                            RouteObject* newRouteObject =  [[RouteObject alloc]init];
+                            newRouteObject.pfobj = [[proj objectForKey:@"route"]fetchIfNeeded];
+                            [routeArray addObject:newRouteObject];
+                            [newRouteObject release];
+                        }
+                    }
+                    [routeTableView reloadData];
+                }];
+                break;
+            case 5:
+                [projquery setSkip:[routeArray count]];
+                [queryArray addObject:projquery];
+                
+                [projquery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+                    [queryArray removeObject:projquery];
+                    [routeArray removeAllObjects] ;
+                    if ([objects count]>0) {
+                        if ([objects count]<20) {
+                            shouldDisplayNext =0;
+                        }
+                        
+                        for (PFObject* proj in objects) {
+                            RouteObject* newRouteObject =  [[RouteObject alloc]init];
+                            newRouteObject.pfobj = [[proj objectForKey:@"route"]fetchIfNeeded];
+                            [routeArray addObject:newRouteObject];
+                            [newRouteObject release];
+                        }
+                    }
+                    [routeTableView reloadData];
+                }];
+
+                break;
+            case 6:
+                [gymQuery setSkip:[routeArray count]];
+                [queryArray addObject:gymQuery];
+                
+                [gymQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+                    [queryArray removeObject:gymQuery];
+                    [routeArray removeAllObjects] ;
+                    if ([objects count]>0) {
+                        if ([objects count]<20) {
+                            shouldDisplayNext =0;
+                        }
+                        
+                        for (PFObject* object in objects) {
+                            RouteObject* newRouteObject =  [[RouteObject alloc]init];
+                            newRouteObject.pfobj = object;
+                            [routeArray addObject:newRouteObject];
+                            [newRouteObject release];
+                        }
+                    }
+                    [routeTableView reloadData];
+                }];
+                
+                break;
+            case 7:
+                [recommendQuery setSkip:[routeArray count]];
+                [queryArray addObject:recommendQuery];
+                
+                [recommendQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+                    [queryArray removeObject:recommendQuery];
+                    [routeArray removeAllObjects] ;
+                    if ([objects count]>0) {
+                        if ([objects count]<20) {
+                            shouldDisplayNext =0;
+                        }
+                        
+                        for (PFObject* object in objects) {
+                            RouteObject* newRouteObject =  [[RouteObject alloc]init];
+                            newRouteObject.pfobj = object;
+                            [routeArray addObject:newRouteObject];
+                            [newRouteObject release];
+                        }
+                    }
+                    [routeTableView reloadData];
+                }];
+                
+                break;
             default:
                 break;
         }
         
         
     }else{
-
+    
     RouteDetailViewController* viewController = [[RouteDetailViewController alloc]initWithNibName:@"RouteDetailViewController" bundle:nil];
    
     viewController.routeObject = [routeArray objectAtIndex:indexPath.row];
