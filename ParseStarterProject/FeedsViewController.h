@@ -18,7 +18,9 @@
     NSInteger shouldDisplayNextForFollows;
     PF_EGORefreshTableHeaderView*_refreshHeaderView; 
     BOOL _reloading;
+    NSMutableArray* unreadArray;
 }
+@property (retain,nonatomic) NSMutableArray* unreadArray;
 @property (retain, nonatomic) IBOutlet UIView *emptyView;
 @property (retain, nonatomic) IBOutlet UISegmentedControl *segmentedControl;
 @property (retain,nonatomic) NSMutableArray* feedsArray;

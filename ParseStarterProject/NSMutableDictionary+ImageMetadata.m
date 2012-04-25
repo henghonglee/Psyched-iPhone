@@ -96,18 +96,20 @@
         
         CLLocationDegrees exifLatitude  = location.coordinate.latitude;
         CLLocationDegrees exifLongitude = location.coordinate.longitude;
-        
+#warning changed here
         NSString *latRef;
         NSString *lngRef;
         if (exifLatitude < 0.0) {
-            exifLatitude = exifLatitude * -1.0f;
+//            exifLatitude = exifLatitude * -1.0f;
+            exifLatitude = exifLatitude * 1.0f;
             latRef = @"S";
         } else {
             latRef = @"N";
         }
         
         if (exifLongitude < 0.0) {
-            exifLongitude = exifLongitude * -1.0f;
+//          exifLongitude = exifLongitude * -1.0f;
+            exifLongitude = exifLongitude * 1.0f;
             lngRef = @"W";
         } else {
             lngRef = @"E";

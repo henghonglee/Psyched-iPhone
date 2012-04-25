@@ -3,6 +3,7 @@
 #import <UIKit/UIKit.h>
 #import "RouteObject.h"
 #import <CoreLocation/CoreLocation.h>
+#import "LKBadgeView.h"
 @class ParseStarterProjectViewController;
 
 @interface ParseStarterProjectAppDelegate : NSObject <UIApplicationDelegate,CLLocationManagerDelegate,PF_FBRequestDelegate,UIAlertViewDelegate> {
@@ -12,7 +13,7 @@
 @property (retain, nonatomic) CLLocationManager* locationManager;
 @property (retain, nonatomic)  CLLocation* currentLocation;
 @property (nonatomic, retain) IBOutlet UIWindow *window;
-
+@property (nonatomic,retain) LKBadgeView* badgeView;
 @property (nonatomic, retain) IBOutlet ParseStarterProjectViewController *viewController;
 
 - (void)subscribeFinished:(NSNumber *)result error:(NSError *)error;

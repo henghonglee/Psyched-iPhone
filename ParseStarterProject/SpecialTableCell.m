@@ -24,7 +24,9 @@
 @synthesize timeLabel;
 @synthesize stampImageView;
 @synthesize difficultyLabel;
-
+@synthesize approvalView;
+@synthesize routePFObject;
+@synthesize isFetchingGym;
 - (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
 {
     self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
@@ -41,8 +43,23 @@
 
     // Configure the view for the selected state
 }
+- (IBAction)approveOutdate:(id)sender {
+    [routePFObject setObject:@"approved" forKey:@"approvalstatus"];
+    [routePFObject setObject:[NSNumber numberWithBool:YES] forKey:@"outdated"];
+    [routePFObject saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+        approvalView.hidden =YES;
+    }];
+}
+- (IBAction)disapproveOutdate:(id)sender {
+    [routePFObject setObject:@"disapproved" forKey:@"approvalstatus"];
+    [routePFObject setObject:[NSNumber numberWithBool:NO] forKey:@"outdated"];
+    [routePFObject saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+           approvalView.hidden =YES;
+    }];
+}
 
 - (void)dealloc {
+    [routePFObject release];
     [priorityLabel release];
     [todoTextLabel release];
     [routeImageView release];
@@ -58,6 +75,7 @@
     [timeLabel release];
     [stampImageView release];
     [difficultyLabel release];
+    [approvalView release];
     [super dealloc];
 }
 @end

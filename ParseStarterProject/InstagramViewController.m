@@ -30,20 +30,29 @@
 #import "NewsViewController.h"
 #import "ProfileViewController.h"
 #import "FlurryAnalytics.h"
+#import "KKGridView.h"
+#import <Parse/Parse.h>
 @implementation InstagramViewController
-
+@synthesize KKviewController;
+@synthesize popularRouteArray;
 - (void)viewDidLoad
 {
   [super viewDidLoad];
-
+    
     
    //feeds navigation controller
-    FeedsViewController* feedsViewController = [[[FeedsViewController alloc]initWithNibName:@"FeedsViewController" bundle:nil] autorelease]; 
+   // KKGridViewController* feedsViewController =KKviewController;
+  
+    
+    KKGridViewController* feedsViewController = [[KKGridViewController alloc]init];
+    feedsViewController.gridView.delegate = self;
+    feedsViewController.gridView.dataSource = self;
     UINavigationController* feedsNav = [[UINavigationController alloc] initWithRootViewController:feedsViewController];
-    feedsViewController.tabBarItem = [[[UITabBarItem alloc] initWithTitle:@"Activity" image:[UIImage imageNamed:@"112-group.png"] tag:0] autorelease];
+    feedsViewController.tabBarItem = [[[UITabBarItem alloc] initWithTitle:@"Popular" image:[UIImage imageNamed:@"star.png"] tag:0] autorelease];
     [FlurryAnalytics logAllPageViews:feedsNav];
     
-    
+    // get all popular routes
+ 
     
     //main navigation controller
     MyTableController * demoViewController = [[[MyTableController alloc] initWithNibName:nil bundle:nil] autorelease];
@@ -87,6 +96,9 @@
 -(void)willAppearIn:(UINavigationController *)navigationController
 {
     
+  
 }
+
+
 
 @end

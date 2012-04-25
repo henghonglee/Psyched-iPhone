@@ -4,7 +4,7 @@
 #import "JMTabConstants.h"
 #import "JMTabItem.h"
 #import "JMSelectionView.h"
-
+#import "LKBadgeView.h"
 @class JMTabView;
 
 #pragma Mark -
@@ -25,6 +25,7 @@
 - (void)didSelectItemAtIndex:(NSUInteger)itemIndex;
 - (void)addTabItem:(JMTabItem *)tabItem;
 - (void)addTabItemWithTitle:(NSString *)title icon:(UIImage *)icon;
+- (void)addTabItemWithTitle:(NSString *)title icon:(UIImage *)icon badge:(LKBadgeView*)badge;
 - (void)setSelectedIndex:(NSUInteger)itemIndex;
 @property (nonatomic,assign) id<JMTabViewDelegate> delegate;
 @property (nonatomic,assign) NSInteger segmentIndex;

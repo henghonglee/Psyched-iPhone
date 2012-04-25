@@ -18,6 +18,7 @@
 @synthesize segmentedControl;
 @synthesize feedsArray;
 @synthesize queryArray;
+@synthesize unreadArray;
 @synthesize followsArray;
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -83,6 +84,7 @@
    followsArray = [[NSMutableArray alloc]init];
     queryArray = [[NSMutableArray alloc]init];
     feedsArray = [[NSMutableArray alloc]init];
+    unreadArray = [[NSMutableArray alloc]init];
     PFQuery* query = [PFQuery queryWithClassName:@"Feed"];
     
     [query whereKey:@"message" containsString:@"route"];
@@ -117,6 +119,14 @@
 -(void)viewWillDisappear:(BOOL)animated
 {
 
+    for (PFObject* unread in unreadArray) {
+        NSMutableArray* _unreadArray = [[NSMutableArray alloc]initWithArray:[unread objectForKey:@"viewed"]];
+        [_unreadArray addObject:[[PFUser currentUser]objectForKey:@"name"]];
+        [unread setObject:_unreadArray forKey:@"viewed"];    
+        [unread saveInBackground];
+        [_unreadArray release];
+    }
+    [unreadArray removeAllObjects];
     NSLog(@"canceling %d queries",[queryArray count]);
     for (id pfobject in queryArray) {
         if ([pfobject isKindOfClass:[PFFile class]]) {
@@ -297,34 +307,42 @@
             }
         }   
             if ([feedsArray count]) {
+                FeedObject* selectedFeedObj = ((FeedObject*)[feedsArray objectAtIndex:indexPath.row]);
+                PFObject* selectedPFObj = selectedFeedObj.pfobj;
                 
-                
-        cell.feedLabel.text = [[[((FeedObject*)[feedsArray objectAtIndex:indexPath.row]).pfobj objectForKey:@"message"]stringByReplacingOccurrencesOfString:[NSString stringWithFormat:@"%@'s",[[PFUser currentUser]objectForKey:@"name"]] withString:@"your"] stringByReplacingOccurrencesOfString:[[PFUser currentUser]objectForKey:@"name"] withString:@"You"]  ;
+        cell.feedLabel.text = [[[selectedPFObj objectForKey:@"message"]stringByReplacingOccurrencesOfString:[NSString stringWithFormat:@"%@'s",[[PFUser currentUser]objectForKey:@"name"]] withString:@"your"] stringByReplacingOccurrencesOfString:[[PFUser currentUser]objectForKey:@"name"] withString:@"you"]  ;
                 NSString* currentUser = [[PFUser currentUser]objectForKey:@"name"];
-                NSString* sender= [((FeedObject*)[feedsArray objectAtIndex:indexPath.row]).pfobj objectForKey:@"sender"]; 
+                NSString* sender= [selectedPFObj objectForKey:@"sender"]; 
                 
                 if ([currentUser isEqualToString:sender]) {
                     cell.feedLabel.text = [[[cell.feedLabel.text stringByReplacingOccurrencesOfString:@" his " withString:@" your "] stringByReplacingOccurrencesOfString:@" her " withString:@" your "]stringByReplacingOccurrencesOfString:@"his/her" withString:@"your"];
                 }
                 
-        if (((FeedObject*)[feedsArray objectAtIndex:indexPath.row]).senderImage){
-            cell.senderImage.image = ((FeedObject*)[feedsArray objectAtIndex:indexPath.row]).senderImage;
+        if (selectedFeedObj.senderImage){
+            cell.senderImage.image = selectedFeedObj.senderImage;
         }else{
-            NSString* urlstring = [NSString stringWithFormat:@"%@",[((FeedObject*)[feedsArray objectAtIndex:indexPath.row]).pfobj objectForKey:@"senderimagelink"]];
+            NSString* urlstring = [NSString stringWithFormat:@"%@",[selectedPFObj objectForKey:@"senderimagelink"]];
             NSLog(@"urlstring = %@",urlstring);
             
             ASIHTTPRequest* request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:urlstring]];
             [request setCompletionBlock:^{
                 
-                ((FeedObject*)[feedsArray objectAtIndex:indexPath.row]).senderImage = [UIImage imageWithData:[request responseData]];
-                cell.senderImage.image = ((FeedObject*)[feedsArray objectAtIndex:indexPath.row]).senderImage;
+                selectedFeedObj.senderImage = [UIImage imageWithData:[request responseData]];
+                cell.senderImage.image = selectedFeedObj.senderImage;
             }];
             [request setFailedBlock:^{}];
             [request startAsynchronous];
         }
-            FeedObject* selectedFeed = [feedsArray objectAtIndex:indexPath.row];
-            PFObject* selectedpfobj = selectedFeed.pfobj;
-            double timesincenow =  [((NSDate*)selectedpfobj.createdAt) timeIntervalSinceNow];
+                if (![[selectedPFObj objectForKey:@"viewed"] containsObject:[[PFUser currentUser]objectForKey:@"name"]] && ![[selectedPFObj objectForKey:@"sender"] isEqualToString:[[PFUser currentUser] objectForKey:@"name"]] && ([cell.feedLabel.text rangeOfString:@"you"].location != NSNotFound || [cell.feedLabel.text rangeOfString:@"your"].location != NSNotFound)) {
+                    cell.readSphereView.image = [UIImage imageNamed:@"bluesphere.png"];
+                    if (![unreadArray containsObject:selectedPFObj]) {
+                        [unreadArray addObject:selectedPFObj]; }
+                        
+                }else{
+                    cell.readSphereView.image = nil;
+                }
+            
+            double timesincenow =  [((NSDate*)selectedPFObj.createdAt) timeIntervalSinceNow];
            
             int timeint = ((int)timesincenow);
             if (timeint < -86400) {
@@ -364,15 +382,17 @@
                 }
             }
         }   
-            if ([followsArray count]) {
-                
-    cell.feedLabel.text = [[[((FeedObject*)[followsArray objectAtIndex:indexPath.row]).pfobj objectForKey:@"message"]stringByReplacingOccurrencesOfString:[NSString stringWithFormat:@"%@'s",[[PFUser currentUser]objectForKey:@"name"]] withString:@"your"] stringByReplacingOccurrencesOfString:[[PFUser currentUser]objectForKey:@"name"] withString:@"You"];
-                if ([[[PFUser currentUser]objectForKey:@"name"] isEqualToString:[((FeedObject*)[followsArray objectAtIndex:indexPath.row]).pfobj objectForKey:@"sender"]]) {
+            
+    if ([followsArray count]) {
+            FeedObject* selectedFeedObj = ((FeedObject*)[followsArray objectAtIndex:indexPath.row]);
+            PFObject* selectedPFObj = selectedFeedObj.pfobj;
+            cell.feedLabel.text = [[[selectedPFObj objectForKey:@"message"]stringByReplacingOccurrencesOfString:[NSString stringWithFormat:@"%@'s",[[PFUser currentUser]objectForKey:@"name"]] withString:@"your"] stringByReplacingOccurrencesOfString:[[PFUser currentUser]objectForKey:@"name"] withString:@"you"];
+            if ([[[PFUser currentUser]objectForKey:@"name"] isEqualToString:[selectedPFObj objectForKey:@"sender"]]) {
 
                     cell.feedLabel.text = [[[cell.feedLabel.text stringByReplacingOccurrencesOfString:@" his " withString:@" your "] stringByReplacingOccurrencesOfString:@" her " withString:@" your "]stringByReplacingOccurrencesOfString:@"his/her" withString:@"your"];
                 }
-    if (((FeedObject*)[followsArray objectAtIndex:indexPath.row]).senderImage){
-        cell.senderImage.image = ((FeedObject*)[followsArray objectAtIndex:indexPath.row]).senderImage;
+            if (selectedFeedObj.senderImage){
+        cell.senderImage.image = selectedFeedObj.senderImage;
     }else{
     NSString* urlstring = [NSString stringWithFormat:@"%@",[((FeedObject*)[followsArray objectAtIndex:indexPath.row]).pfobj objectForKey:@"senderimagelink"]];
     NSLog(@"urlstring = %@",urlstring);
@@ -386,15 +406,21 @@
     [request setFailedBlock:^{}];
     [request startAsynchronous];
     }
-            FeedObject* selectedFeed = [followsArray objectAtIndex:indexPath.row];
-            PFObject* selectedpfobj = selectedFeed.pfobj;
-            double timesincenow =  [((NSDate*)selectedpfobj.createdAt) timeIntervalSinceNow];
-            
+       
+        if (![[selectedPFObj objectForKey:@"viewed"] containsObject:[[PFUser currentUser]objectForKey:@"name"]] && ![[selectedPFObj objectForKey:@"sender"] isEqualToString:[[PFUser currentUser] objectForKey:@"name"]] && ([cell.feedLabel.text rangeOfString:@"you"].location != NSNotFound || [cell.feedLabel.text rangeOfString:@"your"].location != NSNotFound)) {
+  cell.readSphereView.image = [UIImage imageNamed:@"bluesphere.png"];
+            if (![unreadArray containsObject:selectedPFObj]) {
+                [unreadArray addObject:selectedPFObj]; }
+        }else{
+  cell.readSphereView.image = nil;
+        }
+       
+        
+//        cell.accessoryView.backgroundColor =([selectedPFObj objectForKey:@"viewed"] != [NSNumber numberWithBool:YES])?[UIColor orangeColor]:[UIColor whiteColor];
+        
+        
+            double timesincenow =  [((NSDate*)selectedPFObj.createdAt) timeIntervalSinceNow];
             int timeint = ((int)timesincenow);
-            //if more than 1 day show number of days
-            //if more than 60min show number of hrs
-            //if more than 24hrs show days
-            
             if (timeint < -86400) {
                 cell.timeLabel.text = [NSString stringWithFormat:@"%id ago",timeint/-86400];
             }else if(timeint < -3600){

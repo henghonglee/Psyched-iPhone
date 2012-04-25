@@ -10,7 +10,7 @@
 #import "FBfriend.h"
 #import <Parse/Parse.h>
 @protocol TaggerDelegate;
-@interface FriendTaggerViewController : UIViewController <UITextFieldDelegate,UITableViewDelegate,UITableViewDataSource,PF_FBRequestDelegate>
+@interface FriendTaggerViewController : UIViewController <UITextFieldDelegate,UITableViewDelegate,UIAlertViewDelegate,UITableViewDataSource,PF_FBRequestDelegate>
 @property (nonatomic, retain) PF_FBRequest *myRequest;
 @property (retain,nonatomic) NSMutableArray* friendsArray;
 @property (retain,nonatomic) NSMutableArray* FBfriendsArray;

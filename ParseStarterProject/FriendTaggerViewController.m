@@ -8,6 +8,8 @@
 
 #import "FriendTaggerViewController.h"
 #import <Parse/Parse.h>
+#import "RouteDetailViewController.h"
+#import "CreateRouteViewController.h"
 @implementation FriendTaggerViewController
 @synthesize taggerTextField;
 @synthesize taggerTable;
@@ -40,16 +42,50 @@
         [self apiGraphFriends];
     // Do any additional setup after loading the view from its nib.
 }
+-(void)viewWillAppear:(BOOL)animated
+{
+    taggerTable.frame = CGRectMake(0, 50, 320, 149);
+}
 -(void)viewWillDisappear:(BOOL)animated
 {
     [PF_FBRequest cancelPreviousPerformRequestsWithTarget:self];
 }
 -(void)dismissView:(id)sender
 {
+    
+
+    if([self.delegate isKindOfClass:[RouteDetailViewController class]]){
+        if ([recommendArray count]){
+            if ([recommendArray count]>1) {
+                FBfriend* friendname = [recommendArray objectAtIndex:0];
+                NSString* str = [NSString stringWithFormat:@"Recommend %@ and %d other friends?",friendname.name,([recommendArray count]-1)];
+                UIAlertView* alert = [[UIAlertView alloc]initWithTitle:@"Recommend Friends" message:str delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:@"OK",nil];
+                [alert show];
+                [alert release];
+            }else{
+                FBfriend* friendname = [recommendArray objectAtIndex:0];
+                NSString* str = [NSString stringWithFormat:@"Recommend route to %@?",friendname.name];
+                UIAlertView* alert = [[UIAlertView alloc]initWithTitle:@"Recommend Friends" message:str delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:@"OK",nil];
+                [alert show];
+                [alert release];
+            }
+        }else{
+             [self.navigationController popViewControllerAnimated:YES]; 
+        }
+    }else{
     [self.delegate TaggerDidReturnWithRecommendedArray:recommendArray];
     [self.navigationController popViewControllerAnimated:YES];
+    }
     
-    
+}
+-(void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex
+{
+    if(buttonIndex==1){
+        [self.delegate TaggerDidReturnWithRecommendedArray:recommendArray];
+        [self.navigationController popViewControllerAnimated:YES];
+    }else{
+        
+    }
 }
 -(void)apiGraphFriends
 { 

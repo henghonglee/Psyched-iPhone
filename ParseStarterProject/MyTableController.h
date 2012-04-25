@@ -24,6 +24,10 @@
 #import "FollowTableCell.h"
 #import "ParseStarterProjectAppDelegate.h"
 #import "LoginViewController.h"
+#import "FeedCell.h"
+#import "FeedObject.h"
+#import "GymObject.h"
+#import "GymCell.h"
 @interface MyTableController : UIViewController<PF_FBRequestDelegate,JMTabViewDelegate,UITableViewDelegate,UITableViewDataSource,EGORefreshTableHeaderDelegate,UIScrollViewDelegate,CLLocationManagerDelegate>
 {
     
@@ -36,7 +40,11 @@
     UIView* headerView;
     UIButton* refreshButton;
      NSMutableArray* followedPosters;
+        NSMutableArray* unreadArray;
 }
+@property (retain, nonatomic) IBOutlet UIButton *settingsButton;
+@property (retain,nonatomic)LKBadgeView* newbadge;
+@property (retain,nonatomic) NSMutableArray* unreadArray;
 @property (retain, nonatomic) NSMutableArray* followedPosters;
 @property (retain, nonatomic) IBOutlet UIView *emptyGradeView;
 @property (retain, nonatomic) IBOutlet UIView *emptyView;

@@ -1,0 +1,849 @@
+//
+//  GymViewController.m
+//  ParseStarterProject
+//
+//  Created by Shaun Tan on 19/4/12.
+//  Copyright (c) 2012 __MyCompanyName__. All rights reserved.
+//
+#import "JMTabView.h"
+#import "GymViewController.h"
+#import "ASIHTTPRequest.h"
+#import <QuartzCore/QuartzCore.h>
+#import "SpecialTableCell.h"
+#import <Parse/Parse.h>
+#import "RouteObject.h"
+#import "RouteDetailViewController.h"
+@interface GymViewController ()
+
+@end
+
+@implementation GymViewController
+@synthesize gymName,gymURL,gymObject;
+@synthesize gymProfileImageView;
+@synthesize routeCountButton;
+@synthesize followingCountButton;
+@synthesize gymNameLabel;
+@synthesize gymCoverImageView;
+@synthesize gymTable;
+@synthesize headerView;
+@synthesize gymMapViewController;
+@synthesize gymMapView;
+@synthesize routeArray;
+@synthesize gymGradeDown;
+@synthesize gymGradeUp;
+@synthesize gymReccomended;
+@synthesize gymLiked;
+@synthesize gymCommented;
+
+- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
+{
+    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
+    if (self) {
+        // Custom initialization
+    }
+    return self;
+}
+- (IBAction)FollowUs:(id)sender {
+}
+- (IBAction)LikeOurPage:(id)sender {
+
+    [[UIApplication sharedApplication]openURL:[NSURL URLWithString:[NSString stringWithFormat:@"fb://page/%@",[gymObject objectForKey:@"facebookid"]]]];    
+
+    
+}
+- (IBAction)routeNumber:(id)sender {
+}
+- (IBAction)peopleFollowing:(id)sender {
+}
+-(void)viewWillAppear:(BOOL)animated
+{
+        self.navigationController.navigationBarHidden = NO;
+}
+- (void)viewDidLoad
+{
+    [super viewDidLoad];
+    if (gymObject) {
+        [self furthurinit];               
+    }else{
+    PFQuery* gymQuery = [PFQuery queryWithClassName:@"Gym"];
+    [gymQuery whereKey:@"name" equalTo:gymName];
+    [gymQuery getFirstObjectInBackgroundWithBlock:^(PFObject *object, NSError *error) {
+        gymObject = object;
+        
+        [self furthurinit];
+    
+    
+    
+    
+    
+    }];
+    }
+    
+    
+    
+    // Do any additional setup after loading the view from its nib.
+}
+- (CGPathRef)renderPaperCurl:(UIView*)imgView {
+	CGSize size = imgView.bounds.size;
+	CGFloat curlFactor = 10.0f;
+	CGFloat shadowDepth = 5.0f;
+    
+	UIBezierPath *path = [UIBezierPath bezierPath];
+	[path moveToPoint:CGPointMake(0.0f, 0.0f)];
+	[path addLineToPoint:CGPointMake(size.width, 0.0f)];
+	[path addLineToPoint:CGPointMake(size.width, size.height + shadowDepth)];
+	[path addCurveToPoint:CGPointMake(0.0f, size.height + shadowDepth)
+			controlPoint1:CGPointMake(size.width - curlFactor, size.height + shadowDepth - curlFactor)
+			controlPoint2:CGPointMake(curlFactor, size.height + shadowDepth - curlFactor)];
+    
+	return path.CGPath;
+}
+-(void)furthurinit
+{
+    
+    gymProfileImageView.layer.borderColor = [UIColor whiteColor].CGColor;    
+    gymProfileImageView.layer.borderWidth = 3;
+    gymProfileImageView.layer.shadowRadius=2;
+    gymProfileImageView.layer.shadowOpacity = 0.3;
+    gymProfileImageView.layer.shadowColor = [UIColor blackColor].CGColor;
+    gymProfileImageView.layer.shadowOffset = CGSizeMake(0, 2);
+    
+    gymProfileImageView.layer.shadowPath = [self renderPaperCurl:gymProfileImageView];
+   
+    
+    gymNameLabel.text = [NSString stringWithFormat:@"%@",[gymObject objectForKey:@"name"]];
+    gymMapView.layer.borderColor = [UIColor whiteColor].CGColor;
+    gymMapView.layer.borderWidth = 3;
+    PFGeoPoint* gymgeopoint = [gymObject objectForKey:@"gymlocation"];
+    
+    CLLocationCoordinate2D gymLoc = CLLocationCoordinate2DMake(gymgeopoint.latitude,gymgeopoint.longitude);
+    [gymMapView setCenterCoordinate:gymLoc zoomLevel:14 animated:NO];
+    
+    
+    self.navigationItem.title = [NSString stringWithFormat:@"%@",[gymObject objectForKey:@"name"]];
+    
+    
+    ASIHTTPRequest* coverrequest = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:[gymObject objectForKey:@"coverimagelink"]] ];
+    [coverrequest setCompletionBlock:^{
+        gymCoverImageView.image = [UIImage imageWithData:[coverrequest responseData]];
+        [gymTable reloadData];
+    }];
+    [coverrequest setFailedBlock:^{}];
+    [coverrequest startAsynchronous];
+    
+    ASIHTTPRequest* request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:[gymObject objectForKey:@"imagelink"]] ];
+    [request setCompletionBlock:^{
+        gymProfileImageView.image = [UIImage imageWithData:[request responseData]];
+        [gymTable reloadData];
+    }];
+    [request setFailedBlock:^{}];
+    [request startAsynchronous];
+    [self addStandardTabView];
+    tabView.contentSize = CGSizeMake(600, 44);
+    tabView.showsHorizontalScrollIndicator = NO;
+
+    gymGradeDown = [[NSMutableArray alloc]init];
+    gymGradeUp = [[NSMutableArray alloc]init];
+    gymReccomended = [[NSMutableArray alloc]init];
+    gymLiked = [[NSMutableArray alloc]init];
+        routeArray = [[NSMutableArray alloc]init];
+    gymCommented = [[NSMutableArray alloc]init];
+}
+
+
+
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
+    
+    return 2;
+}
+-(CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
+{
+   // NSLog(@"size = %f",(gymCoverImageView.image.size.height/(gymCoverImageView.image.size.width/320.0)));
+   // return (gymCoverImageView.image.size.height/(gymCoverImageView.image.size.width/320.0));
+        
+    if(section==0)
+        return 184;
+//    if(section==1)
+//        return 109;
+    return 44;
+}
+-(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    if(indexPath.section==0){
+        return 84;
+    }
+//    if(indexPath.section==1){
+//        return 0;
+//    }
+        return 120;        
+    
+
+}
+-(NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
+{
+    if (section==0) {
+        return 1;
+    }
+//    if (section==1) {
+//        return 1;
+//    }
+    switch (tabView.segmentIndex) {
+        case 0:
+            return [routeArray count];
+            break;
+        case 1:
+              return [gymGradeUp count];
+            break;
+        case 2:
+            return [gymGradeDown count];
+            break;    
+        case 3:
+            return [gymReccomended count];
+            break;    
+        case 4:
+            return [gymLiked count];
+            break;   
+        case 5:
+            return [gymCommented count];
+            break;   
+        default:
+            return 0;
+            break;
+    }
+  
+}
+- (UIView *)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section {
+    
+    if (section==1){
+        return [[UIView new] autorelease];
+    }       
+    return nil;
+}
+-(CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section
+{
+    if(section==1){
+    switch (tabView.segmentIndex) {
+        case 0:
+             if([routeArray count]==0)
+                return 323;
+            break;
+        case 1:
+            if([gymGradeUp count]==0)
+                return 323;
+            break;
+        case 2:
+            if([gymGradeDown count]==0)
+                return 323;
+            break;    
+        case 3:
+            if([gymReccomended count]==0)
+                return 323;
+            break;    
+        case 4:
+            if([gymLiked count]==0)
+                return 323;
+            break;   
+        case 5:
+            if([gymCommented count]==0)
+                return 323;
+            break;   
+        default:
+            return 0;
+            break;
+    }
+    }
+    return 0;
+}
+-(UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
+{
+
+
+    if (section==0) {
+    return headerView;        
+    }
+//    if (section==1) {
+//        return gymMapViewController;
+//    }
+    if (section==1) {
+        return tabView;
+    }
+    return nil;
+}
+-(UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    if (indexPath.section==0) {
+        static NSString *FromCellIdentifier = @"DetailCell";
+        GymDetailCell* cell = (GymDetailCell*) [tableView dequeueReusableCellWithIdentifier:FromCellIdentifier]; 
+        if (cell == nil) {
+            NSArray *topLevelObjects = [[NSBundle mainBundle] loadNibNamed:@"GymDetailCell" owner:nil options:nil];
+            for(id currentObject in topLevelObjects){
+                if([currentObject isKindOfClass:[UITableViewCell class]]){
+                    cell = (GymDetailCell*)currentObject;
+                    cell.selectionStyle = UITableViewCellSelectionStyleNone;
+                }
+            }
+        }
+        cell.pfObject = gymObject;
+        
+        PFGeoPoint* geopoint = [gymObject objectForKey:@"gymlocation"];
+        CLLocationCoordinate2D gymloc = CLLocationCoordinate2DMake(geopoint.latitude, geopoint.longitude);
+        [cell.gymMapView setCenterCoordinate:gymloc zoomLevel:14 animated:NO];
+        cell.gymMapView.layer.borderColor = [UIColor lightGrayColor].CGColor;    
+        cell.gymMapView.layer.borderWidth = 3;
+        
+        
+        return  cell;    
+    }else{
+        
+    static NSString *FromCellIdentifier = @"FromCell";
+    SpecialTableCell* cell = (SpecialTableCell*) [tableView dequeueReusableCellWithIdentifier:FromCellIdentifier]; 
+    if (cell == nil) {
+        NSArray *topLevelObjects = [[NSBundle mainBundle] loadNibNamed:@"SpecialTableCell" owner:nil options:nil];
+        for(id currentObject in topLevelObjects){
+            if([currentObject isKindOfClass:[UITableViewCell class]]){
+                cell = (SpecialTableCell*)currentObject;
+                cell.selectionStyle = UITableViewCellSelectionStyleNone;
+            }
+        }
+    }
+        
+        switch (tabView.segmentIndex) {
+            case 0:
+                if ([self.routeArray count]>0) {
+                    PFObject* object = ((RouteObject*)[self.routeArray objectAtIndex:indexPath.row]).pfobj;
+                    NSLog(@"showing flash array");
+                    cell.commentcount.text = [NSString stringWithFormat:@"%@",[[object objectForKey:@"commentcount"]stringValue]];
+                    cell.likecount.text = [NSString stringWithFormat:@"%@",[[object objectForKey:@"likecount"]stringValue ]];
+                    cell.viewcount.text = [NSString stringWithFormat:@"%@",[[object objectForKey:@"viewcount"]stringValue ]];
+                    cell.routeLocationLabel.text = [object objectForKey:@"location"];
+                    
+                    __block NSString* imagelink;
+                    
+                    if ([object objectForKey:@"isPage"]==[NSNumber numberWithBool:YES]) {
+                        
+                        [[object objectForKey:@"Gym"]fetchIfNeededInBackgroundWithBlock:^(PFObject *object, NSError *error) {
+                            imagelink=[object objectForKey:@"imagelink"];  
+                            cell.ownerNameLabel.text = [object objectForKey:@"name"]; 
+                            if (((RouteObject*)[self.routeArray objectAtIndex:indexPath.row]).ownerImage) {
+                                cell.ownerImage.image = ((RouteObject*)[self.routeArray objectAtIndex:indexPath.row]).ownerImage;
+                            }else{
+                                ASIHTTPRequest* request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:imagelink]];
+                                [request setCompletionBlock:^{
+                                    UIImage* ownerImage = [UIImage imageWithData:[request responseData]];
+                                    
+                                    cell.ownerImage.image = ownerImage;
+                                    ((RouteObject*)[self.routeArray objectAtIndex:indexPath.row]).ownerImage= ownerImage;
+                                    cell.ownerImage.alpha =0.0;
+                                    [UIView animateWithDuration:0.3
+                                                          delay:0.0
+                                                        options: UIViewAnimationCurveEaseOut
+                                                     animations:^{
+                                                         cell.ownerImage.alpha = 1.0;
+                                                     } 
+                                                     completion:^(BOOL finished){
+                                                         // NSLog(@"Done!");
+                                                     }];
+                                }];
+                                [request setFailedBlock:^{}];
+                                [request startAsynchronous];
+                            }
+                        }];
+                        
+                    }else{
+                        imagelink = [object objectForKey:@"userimage"];
+                        cell.ownerNameLabel.text = [object objectForKey:@"username"];
+                    
+                    if (((RouteObject*)[self.routeArray objectAtIndex:indexPath.row]).ownerImage) {
+                        cell.ownerImage.image = ((RouteObject*)[self.routeArray objectAtIndex:indexPath.row]).ownerImage;
+                    }else{
+                        ASIHTTPRequest* request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:imagelink]];
+                        [request setCompletionBlock:^{
+                            UIImage* ownerImage = [UIImage imageWithData:[request responseData]];
+                            
+                            cell.ownerImage.image = ownerImage;
+                            ((RouteObject*)[self.routeArray objectAtIndex:indexPath.row]).ownerImage= ownerImage;
+                            cell.ownerImage.alpha =0.0;
+                            [UIView animateWithDuration:0.3
+                                                  delay:0.0
+                                                options: UIViewAnimationCurveEaseOut
+                                             animations:^{
+                                                 cell.ownerImage.alpha = 1.0;
+                                             } 
+                                             completion:^(BOOL finished){
+                                                 // NSLog(@"Done!");
+                                             }];
+                        }];
+                        [request setFailedBlock:^{}];
+                        [request startAsynchronous];
+                    }
+                    }
+                    if (!((RouteObject*)[self.routeArray objectAtIndex:indexPath.row]).retrievedImage) {
+                        
+                        PFFile *imagefile = [object objectForKey:@"thumbImageFile"];
+                        [imagefile getDataInBackgroundWithBlock:^(NSData* imageData,NSError *error){
+                            UIImage* retrievedImage = [UIImage imageWithData:imageData];
+                            
+                            ((RouteObject*)[self.routeArray objectAtIndex:indexPath.row]).retrievedImage = retrievedImage;
+                            cell.routeImageView.image = retrievedImage;
+                            cell.routeImageView.alpha =0.0;
+                            [UIView animateWithDuration:0.3
+                                                  delay:0.0
+                                                options: UIViewAnimationCurveEaseOut
+                                             animations:^{
+                                                 cell.routeImageView.alpha = 1.0;
+                                             } 
+                                             completion:^(BOOL finished){
+                                                 // NSLog(@"Done!");
+                                             }];
+                        }];
+                        
+                        
+                    }else{
+                        cell.routeImageView.image = ((RouteObject*)[self.routeArray objectAtIndex:indexPath.row]).retrievedImage;
+                    }
+                    double timesincenow =  [((NSDate*)object.createdAt) timeIntervalSinceNow];
+                    //NSLog(@"timesincenow = %i",((int)timesincenow));
+                    int timeint = ((int)timesincenow);
+                    //if more than 1 day show number of days
+                    //if more than 60min show number of hrs
+                    //if more than 24hrs show days
+                    
+                    if (timeint < -86400) {
+                        cell.timeLabel.text = [NSString stringWithFormat:@"%id",timeint/-86400];
+                    }else if(timeint < -3600){
+                        cell.timeLabel.text = [NSString stringWithFormat:@"%ih",timeint/-3600];
+                    }else{
+                        cell.timeLabel.text = [NSString stringWithFormat:@"%im",timeint/-60];
+                    }
+                    
+                    
+                    //    [request2 release];
+                    
+                    cell.todoTextLabel.text = [object objectForKey:@"description"];
+                    cell.difficultyLabel.text = [object objectForKey:@"difficultydescription"];
+                    
+                }
+                break;
+            case 1:
+                if ([self.gymGradeUp count]>0) {
+                PFObject* object = ((RouteObject*)[self.gymGradeUp objectAtIndex:indexPath.row]).pfobj;
+                NSLog(@"showing flash array");
+                cell.commentcount.text = [NSString stringWithFormat:@"%@",[[object objectForKey:@"commentcount"]stringValue]];
+                cell.likecount.text = [NSString stringWithFormat:@"%@",[[object objectForKey:@"likecount"]stringValue ]];
+                cell.viewcount.text = [NSString stringWithFormat:@"%@",[[object objectForKey:@"viewcount"]stringValue ]];
+                cell.routeLocationLabel.text = [object objectForKey:@"location"];
+                
+                    __block NSString* imagelink;
+                    
+                    if ([object objectForKey:@"isPage"]==[NSNumber numberWithBool:YES]) {
+                        
+                        [[object objectForKey:@"Gym"]fetchIfNeededInBackgroundWithBlock:^(PFObject *object, NSError *error) {
+                            imagelink=[object objectForKey:@"imagelink"];  
+                            cell.ownerNameLabel.text = [object objectForKey:@"name"];
+                            if (((RouteObject*)[self.gymGradeUp objectAtIndex:indexPath.row]).ownerImage) {
+                                cell.ownerImage.image = ((RouteObject*)[self.gymGradeUp objectAtIndex:indexPath.row]).ownerImage;
+                            }else{
+                                ASIHTTPRequest* request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:imagelink]];
+                                [request setCompletionBlock:^{
+                                    UIImage* ownerImage = [UIImage imageWithData:[request responseData]];
+                                    
+                                    cell.ownerImage.image = ownerImage;
+                                    ((RouteObject*)[self.gymGradeUp objectAtIndex:indexPath.row]).ownerImage= ownerImage;
+                                    cell.ownerImage.alpha =0.0;
+                                    [UIView animateWithDuration:0.3
+                                                          delay:0.0
+                                                        options: UIViewAnimationCurveEaseOut
+                                                     animations:^{
+                                                         cell.ownerImage.alpha = 1.0;
+                                                     } 
+                                                     completion:^(BOOL finished){
+                                                         // NSLog(@"Done!");
+                                                     }];
+                                }];
+                                [request setFailedBlock:^{}];
+                                [request startAsynchronous];
+                            }
+                        }];
+                        
+                    }else{
+                        imagelink = [object objectForKey:@"userimage"];
+                        cell.ownerNameLabel.text = [object objectForKey:@"username"];
+                    
+                
+                if (((RouteObject*)[self.gymGradeUp objectAtIndex:indexPath.row]).ownerImage) {
+                    cell.ownerImage.image = ((RouteObject*)[self.gymGradeUp objectAtIndex:indexPath.row]).ownerImage;
+                }else{
+                    ASIHTTPRequest* request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:imagelink]];
+                    [request setCompletionBlock:^{
+                        UIImage* ownerImage = [UIImage imageWithData:[request responseData]];
+                        
+                        cell.ownerImage.image = ownerImage;
+                        ((RouteObject*)[self.gymGradeUp objectAtIndex:indexPath.row]).ownerImage= ownerImage;
+                        cell.ownerImage.alpha =0.0;
+                        [UIView animateWithDuration:0.3
+                                              delay:0.0
+                                            options: UIViewAnimationCurveEaseOut
+                                         animations:^{
+                                             cell.ownerImage.alpha = 1.0;
+                                         } 
+                                         completion:^(BOOL finished){
+                                             // NSLog(@"Done!");
+                                         }];
+                    }];
+                    [request setFailedBlock:^{}];
+                    [request startAsynchronous];
+                }
+                    }
+                if (!((RouteObject*)[self.gymGradeUp objectAtIndex:indexPath.row]).retrievedImage) {
+                    
+                    PFFile *imagefile = [object objectForKey:@"thumbImageFile"];
+                    [imagefile getDataInBackgroundWithBlock:^(NSData* imageData,NSError *error){
+                        UIImage* retrievedImage = [UIImage imageWithData:imageData];
+                        
+                        ((RouteObject*)[self.gymGradeUp objectAtIndex:indexPath.row]).retrievedImage = retrievedImage;
+                        cell.routeImageView.image = retrievedImage;
+                        cell.routeImageView.alpha =0.0;
+                        [UIView animateWithDuration:0.3
+                                              delay:0.0
+                                            options: UIViewAnimationCurveEaseOut
+                                         animations:^{
+                                             cell.routeImageView.alpha = 1.0;
+                                         } 
+                                         completion:^(BOOL finished){
+                                             // NSLog(@"Done!");
+                                         }];
+                    }];
+                    
+                    
+                }else{
+                    cell.routeImageView.image = ((RouteObject*)[self.gymGradeUp objectAtIndex:indexPath.row]).retrievedImage;
+                }
+                double timesincenow =  [((NSDate*)object.createdAt) timeIntervalSinceNow];
+                //NSLog(@"timesincenow = %i",((int)timesincenow));
+                int timeint = ((int)timesincenow);
+                //if more than 1 day show number of days
+                //if more than 60min show number of hrs
+                //if more than 24hrs show days
+                
+                if (timeint < -86400) {
+                    cell.timeLabel.text = [NSString stringWithFormat:@"%id",timeint/-86400];
+                }else if(timeint < -3600){
+                    cell.timeLabel.text = [NSString stringWithFormat:@"%ih",timeint/-3600];
+                }else{
+                    cell.timeLabel.text = [NSString stringWithFormat:@"%im",timeint/-60];
+                }
+                
+                
+                //    [request2 release];
+                
+                cell.todoTextLabel.text = [object objectForKey:@"description"];
+                cell.difficultyLabel.text = [object objectForKey:@"difficultydescription"];
+                
+        }
+                break;
+            case 2:
+                if ([self.gymGradeDown count]>0) {
+                    PFObject* object = ((RouteObject*)[self.gymGradeDown objectAtIndex:indexPath.row]).pfobj;
+                    NSLog(@"showing flash array");
+                    cell.commentcount.text = [NSString stringWithFormat:@"%@",[[object objectForKey:@"commentcount"]stringValue]];
+                    cell.likecount.text = [NSString stringWithFormat:@"%@",[[object objectForKey:@"likecount"]stringValue ]];
+                    cell.viewcount.text = [NSString stringWithFormat:@"%@",[[object objectForKey:@"viewcount"]stringValue ]];
+                    cell.routeLocationLabel.text = [object objectForKey:@"location"];
+                    
+                    __block NSString* imagelink;
+                    
+                    if ([object objectForKey:@"isPage"]==[NSNumber numberWithBool:YES]) {
+                        
+                        [[object objectForKey:@"Gym"]fetchIfNeededInBackgroundWithBlock:^(PFObject *object, NSError *error) {
+                            imagelink=[object objectForKey:@"imagelink"];  
+                            cell.ownerNameLabel.text = [object objectForKey:@"name"]; 
+                            if (((RouteObject*)[self.gymGradeDown objectAtIndex:indexPath.row]).ownerImage) {
+                                cell.ownerImage.image = ((RouteObject*)[self.gymGradeDown objectAtIndex:indexPath.row]).ownerImage;
+                            }else{
+                                ASIHTTPRequest* request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:imagelink]];
+                                [request setCompletionBlock:^{
+                                    UIImage* ownerImage = [UIImage imageWithData:[request responseData]];
+                                    
+                                    cell.ownerImage.image = ownerImage;
+                                    ((RouteObject*)[self.gymGradeDown objectAtIndex:indexPath.row]).ownerImage= ownerImage;
+                                    cell.ownerImage.alpha =0.0;
+                                    [UIView animateWithDuration:0.3
+                                                          delay:0.0
+                                                        options: UIViewAnimationCurveEaseOut
+                                                     animations:^{
+                                                         cell.ownerImage.alpha = 1.0;
+                                                     } 
+                                                     completion:^(BOOL finished){
+                                                         // NSLog(@"Done!");
+                                                     }];
+                                }];
+                                [request setFailedBlock:^{}];
+                                [request startAsynchronous];
+                            }
+                            
+                        }];
+                        
+                    }else{
+                        imagelink = [object objectForKey:@"userimage"];
+                        cell.ownerNameLabel.text = [object objectForKey:@"username"];
+                    
+                    
+                    if (((RouteObject*)[self.gymGradeDown objectAtIndex:indexPath.row]).ownerImage) {
+                        cell.ownerImage.image = ((RouteObject*)[self.gymGradeDown objectAtIndex:indexPath.row]).ownerImage;
+                    }else{
+                        ASIHTTPRequest* request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:imagelink]];
+                        [request setCompletionBlock:^{
+                            UIImage* ownerImage = [UIImage imageWithData:[request responseData]];
+                            
+                            cell.ownerImage.image = ownerImage;
+                            ((RouteObject*)[self.gymGradeDown objectAtIndex:indexPath.row]).ownerImage= ownerImage;
+                            cell.ownerImage.alpha =0.0;
+                            [UIView animateWithDuration:0.3
+                                                  delay:0.0
+                                                options: UIViewAnimationCurveEaseOut
+                                             animations:^{
+                                                 cell.ownerImage.alpha = 1.0;
+                                             } 
+                                             completion:^(BOOL finished){
+                                                 // NSLog(@"Done!");
+                                             }];
+                        }];
+                        [request setFailedBlock:^{}];
+                        [request startAsynchronous];
+                    }
+                    }
+                    if (!((RouteObject*)[self.gymGradeDown objectAtIndex:indexPath.row]).retrievedImage) {
+                        
+                        PFFile *imagefile = [object objectForKey:@"thumbImageFile"];
+                        [imagefile getDataInBackgroundWithBlock:^(NSData* imageData,NSError *error){
+                            UIImage* retrievedImage = [UIImage imageWithData:imageData];
+                            
+                            ((RouteObject*)[self.gymGradeDown objectAtIndex:indexPath.row]).retrievedImage = retrievedImage;
+                            cell.routeImageView.image = retrievedImage;
+                            cell.routeImageView.alpha =0.0;
+                            [UIView animateWithDuration:0.3
+                                                  delay:0.0
+                                                options: UIViewAnimationCurveEaseOut
+                                             animations:^{
+                                                 cell.routeImageView.alpha = 1.0;
+                                             } 
+                                             completion:^(BOOL finished){
+                                                 // NSLog(@"Done!");
+                                             }];
+                        }];
+                        
+                        
+                    }else{
+                        cell.routeImageView.image = ((RouteObject*)[self.gymGradeDown objectAtIndex:indexPath.row]).retrievedImage;
+                    }
+                    double timesincenow =  [((NSDate*)object.createdAt) timeIntervalSinceNow];
+                    //NSLog(@"timesincenow = %i",((int)timesincenow));
+                    int timeint = ((int)timesincenow);
+                    //if more than 1 day show number of days
+                    //if more than 60min show number of hrs
+                    //if more than 24hrs show days
+                    
+                    if (timeint < -86400) {
+                        cell.timeLabel.text = [NSString stringWithFormat:@"%id",timeint/-86400];
+                    }else if(timeint < -3600){
+                        cell.timeLabel.text = [NSString stringWithFormat:@"%ih",timeint/-3600];
+                    }else{
+                        cell.timeLabel.text = [NSString stringWithFormat:@"%im",timeint/-60];
+                    }
+                    
+                    
+                    //    [request2 release];
+                    
+                    cell.todoTextLabel.text = [object objectForKey:@"description"];
+                    cell.difficultyLabel.text = [object objectForKey:@"difficultydescription"];
+                   
+                }
+                break;
+            default:
+                break;
+        }
+    
+    return  cell;   
+    }
+}
+-(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    [tableView deselectRowAtIndexPath:indexPath animated:YES];
+    
+    RouteDetailViewController* viewController = [[RouteDetailViewController alloc]initWithNibName:@"RouteDetailViewController" bundle:nil];
+  
+    switch (tabView.segmentIndex) {
+        case 0:
+            viewController.routeObject = [self.routeArray objectAtIndex:indexPath.row];
+            
+            break;
+        case 1:
+            viewController.routeObject = [self.gymGradeUp objectAtIndex:indexPath.row];
+            break;
+        case 2:
+            viewController.routeObject = [self.gymGradeDown objectAtIndex:indexPath.row];
+            break;
+        case 3:
+            viewController.routeObject = [self.gymReccomended objectAtIndex:indexPath.row];
+            break;
+        case 4:
+            viewController.routeObject = [self.gymLiked objectAtIndex:indexPath.row];
+            break;
+        case 5:
+            viewController.routeObject = [self.gymCommented objectAtIndex:indexPath.row];
+            break;
+        default:
+            
+            break;
+            
+    }
+    [self.navigationController pushViewController:viewController animated:YES];
+    [viewController release];
+}
+
+-(void)addStandardTabView
+{
+    tabView = [[JMTabView alloc] initWithFrame:CGRectMake(0, 0, 320, 44.)] ;
+    
+//    tabView.layer.shadowColor = [UIColor blackColor].CGColor;
+//    tabView.layer.shadowOpacity = 0.4;
+//    tabView.layer.shadowOffset = CGSizeMake(0, 2);
+//    self.tabBarController.tabBar.layer.shadowColor= [UIColor blackColor].CGColor;
+//    self.tabBarController.tabBar.layer.shadowOpacity = 0.4;
+//    self.tabBarController.tabBar.layer.shadowOffset = CGSizeMake(0, -4);
+    [tabView setDelegate:self];
+    [tabView addTabItemWithTitle:@"Newest!" icon:[UIImage imageNamed:@"icon1.png"]];
+    [tabView addTabItemWithTitle:@"Hardest" icon:[UIImage imageNamed:@"project_white.png"]];
+    [tabView addTabItemWithTitle:@"Easiest" icon:[UIImage imageNamed:@"flash_white.png"]];
+//    [tabView addTabItemWithTitle:@"Most Recommended" icon:[UIImage imageNamed:@"project_white.png"]];
+//    [tabView addTabItemWithTitle:@"Most Liked" icon:[UIImage imageNamed:@"followed.png"]];
+//    [tabView addTabItemWithTitle:@"Most Commented" icon:[UIImage imageNamed:@"followed.png"]];
+//    
+    [tabView setSelectedIndex:0];
+    [self tabView:tabView didSelectTabAtIndex:0];
+    
+    
+}
+-(void)tabView:(JMTabView *)tabView didSelectTabAtIndex:(NSUInteger)itemIndex
+{
+    [gymTable reloadData];
+    PFQuery* queryRoute = [PFQuery queryWithClassName:@"Route"];
+    switch (itemIndex) {
+        case 0:
+            [queryRoute whereKey:@"outdated" notEqualTo:[NSNumber numberWithBool:true]];
+            [queryRoute whereKey:@"routelocation" nearGeoPoint:[gymObject objectForKey:@"gymlocation"] withinKilometers:1.];
+            [queryRoute orderByDescending:@"createdAt"];
+            [queryRoute findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+                NSLog(@"objects = %@",objects);
+                for (PFObject* object in objects) {
+                    RouteObject* route = [[RouteObject alloc]init];
+                    route.pfobj = object;
+                    BOOL isadded =NO;
+                    for (RouteObject* obj in routeArray){
+                        if ([obj.pfobj.objectId isEqualToString:route.pfobj.objectId]) {
+                            isadded = YES;
+                        }
+                    }
+                    if (!isadded) {
+                        [self.routeArray addObject:route];
+                    }
+                    [route release];
+                }
+                
+                [gymTable reloadData];
+            }];
+
+            break;
+            
+        case 1:
+            [queryRoute whereKey:@"outdated" notEqualTo:[NSNumber numberWithBool:true]];
+            [queryRoute whereKey:@"routelocation" nearGeoPoint:[gymObject objectForKey:@"gymlocation"] withinKilometers:1.];
+            [queryRoute orderByDescending:@"difficulty"];
+            [queryRoute findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+                NSLog(@"objects = %@",objects);
+                for (PFObject* object in objects) {
+                    RouteObject* route = [[RouteObject alloc]init];
+                    route.pfobj = object;
+                    BOOL isadded =NO;
+                    for (RouteObject* obj in gymGradeUp){
+                        if ([obj.pfobj.objectId isEqualToString:route.pfobj.objectId]) {
+                            isadded = YES;
+                        }
+                    }
+                    if (!isadded) {
+                        [self.gymGradeUp addObject:route];
+                    }
+                    [route release];
+                }
+                
+                [gymTable reloadData];
+            }];
+
+            break;
+        case 2:
+            [queryRoute whereKey:@"outdated" notEqualTo:[NSNumber numberWithBool:true]];
+            [queryRoute whereKey:@"routelocation" nearGeoPoint:[gymObject objectForKey:@"gymlocation"] withinKilometers:1.];
+            [queryRoute orderByAscending:@"difficulty"];
+            [queryRoute findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+                NSLog(@"objects = %@",objects);
+                for (PFObject* object in objects) {
+                    RouteObject* route = [[RouteObject alloc]init];
+                    route.pfobj = object;
+                    BOOL isadded =NO;
+                    for (RouteObject* obj in gymGradeDown){
+                        if ([obj.pfobj.objectId isEqualToString:route.pfobj.objectId]) {
+                            isadded = YES;
+                        }
+                    }
+                    if (!isadded) {
+                        [self.gymGradeDown addObject:route];
+                    }
+                    [route release];
+                }
+                
+                [gymTable reloadData];
+            }];
+
+            break;
+        case 3:
+            
+            break;
+        default:
+            break;
+    }
+    }
+
+- (void)viewDidUnload
+{
+    [self setGymProfileImageView:nil];
+    [self setRouteCountButton:nil];
+    [self setFollowingCountButton:nil];
+    [self setGymNameLabel:nil];
+    [self setGymCoverImageView:nil];
+    [self setGymTable:nil];
+    [self setHeaderView:nil];
+    [self setGymMapViewController:nil];
+    [self setGymMapView:nil];
+    [super viewDidUnload];
+    // Release any retained subviews of the main view.
+    // e.g. self.myOutlet = nil;
+}
+
+- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
+{
+    return (interfaceOrientation == UIInterfaceOrientationPortrait);
+}
+
+- (void)dealloc {
+    [gymProfileImageView release];
+    [routeCountButton release];
+    [followingCountButton release];
+    [gymNameLabel release];
+    [gymCoverImageView release];
+    [gymTable release];
+    [headerView release];
+    [gymMapViewController release];
+    [gymMapView release];
+    [super dealloc];
+}
+@end

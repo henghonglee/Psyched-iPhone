@@ -7,6 +7,7 @@
 #import "UIImagePickerController+NoRotate.h"
 #import "FlurryAnalytics.h"
 #import "RDActionSheet.h"
+#import "LKBadgeView.h"
 @implementation BaseViewController
 @synthesize locationManager;
 @synthesize imageMetaData;
@@ -33,6 +34,8 @@ static inline double radians (double degrees) {return degrees * M_PI/180;}
 //    button.layer.shadowColor = [UIColor blackColor].CGColor;
 //    button.layer.shadowOpacity = 0.4;
 //    button.layer.shadowOffset = CGSizeMake(0, -4);
+   
+    
     
   CGFloat heightDifference = buttonImage.size.height - self.tabBar.frame.size.height;
   if (heightDifference < 0)
@@ -43,7 +46,18 @@ static inline double radians (double degrees) {return degrees * M_PI/180;}
     center.y = center.y - heightDifference/2.0;
     button.center = center;
   }
-  
+    ParseStarterProjectAppDelegate* appDel = (ParseStarterProjectAppDelegate* )[[UIApplication sharedApplication]delegate];
+    appDel.badgeView =
+    [[[LKBadgeView alloc] initWithFrame:CGRectMake(100, 200, 50, 30)] autorelease];
+    appDel.badgeView.widthMode = LKBadgeViewWidthModeSmall;
+    appDel.badgeView.center = CGPointMake(self.tabBar.center.x+145, self.tabBar.center.y-20);
+    [appDel.badgeView addObserver:appDel.badgeView forKeyPath:@"text" options:NSKeyValueObservingOptionNew context:nil];
+    [self.view addSubview:appDel.badgeView];
+    appDel.badgeView.text = @"0";
+    appDel.badgeView.shadowOfText = YES;
+    appDel.badgeView.shadow=YES;
+    appDel.badgeView.badgeColor = [UIColor redColor];
+    appDel.badgeView.outline = YES;
   [self.view addSubview:button];
 }
 
@@ -188,7 +202,7 @@ static inline double radians (double degrees) {return degrees * M_PI/180;}
        
         
     }else{
-        newcropped=[mycroppedImage resizedImage:CGSizeMake(720, 720) interpolationQuality:kCGInterpolationHigh];    
+        newcropped=[mycroppedImage resizedImage:CGSizeMake(960, 960) interpolationQuality:kCGInterpolationHigh];    
     
     
     [picker dismissModalViewControllerAnimated:NO];
@@ -305,9 +319,11 @@ static inline double radians (double degrees) {return degrees * M_PI/180;}
         if (!currentLocation){
            CLLocation* mycurrloc = [[CLLocation alloc]initWithLatitude:newLocation.coordinate.latitude longitude:newLocation.coordinate.longitude];
             self.currentLocation = mycurrloc;
+           
             [mycurrloc release];
         }else{
             self.currentLocation = newLocation;
+            NSLog(@"currentLocation = %@",self.currentLocation);
         }
 
       

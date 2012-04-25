@@ -250,11 +250,16 @@ typedef enum apiCall {
 -(void)saveRouteInGym{
     
     NSDictionary* gymSelected = [arrayOfAccounts objectAtIndex:arrIndex];
+  
     //find out if the gym object exists , if not create it with the obj dictionary in arrayOfAccounts
     PFQuery* gymQuery = [PFQuery queryWithClassName:@"Gym"];
     [gymQuery whereKey:@"facebookid" equalTo:[NSString stringWithFormat:@"%@",[gymSelected objectForKey:@"id"]]];
     [gymQuery getFirstObjectInBackgroundWithBlock:^(PFObject *object, NSError *error) {
         if (object) {
+            NSMutableArray* adminarray = [[NSMutableArray alloc]initWithArray:((NSArray*)[object objectForKey:@"admin"])];
+            [adminarray addObject:[PFUser currentUser].objectId];
+            [object setObject:adminarray forKey:@"admin"];
+            [adminarray release];
             [self performSelector:@selector(saveRouteInGymSelector:) withObject:object];
         }else{
             PFObject* newGym = [PFObject objectWithClassName:@"Gym"];
@@ -262,6 +267,12 @@ typedef enum apiCall {
             [newGym setObject:[NSNumber numberWithInt:[[gymSelected objectForKey:@"likes"]intValue]] forKey:@"likes"];
             [newGym setObject:[gymSelected objectForKey:@"name"] forKey:@"name"];
             [newGym setObject:[gymSelected objectForKey:@"picture"] forKey:@"imagelink"];
+            [newGym setObject:[gymSelected objectForKey:@"coverimagelink"] forKey:@"coverimagelink"];
+            [newGym setObject:[gymSelected objectForKey:@"about"] forKey:@"about"];
+            [newGym setObject:[PFGeoPoint geoPointWithLatitude:routeLoc.latitude longitude:routeLoc.longitude] forKey:@"gymlocation"];
+            NSArray* adminArray = [NSArray arrayWithObjects:[[PFUser currentUser]objectForKey:@"name"], nil];
+            
+            [newGym setObject:adminArray forKey:@"admin"];
             [newGym saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
                [self performSelector:@selector(saveRouteInGymSelector:) withObject:newGym]; 
             }];
@@ -330,7 +341,7 @@ typedef enum apiCall {
             [feedObject setObject:[GymObject objectForKey:@"imagelink"] forKey:@"senderimagelink"];
             [feedObject setObject:newRoute forKey:@"linkedroute"];
             [feedObject setObject:[NSString stringWithFormat:@"%@ added a new route",[GymObject objectForKey:@"name"]] forKey:@"message"];
-            
+            [feedObject setObject:@"added" forKey:@"action"];
             
             [feedObject saveInBackground];
             
@@ -339,23 +350,56 @@ typedef enum apiCall {
             if ([recommendArray count]>0) {
                 NSLog(@"recommend array count = %d", [recommendArray count]);
                 for (FBfriend* user in recommendArray) {
+                    NSMutableDictionary *data = [NSMutableDictionary dictionary];
+                    [data setObject:newRoute.objectId forKey:@"linkedroute"];
+                    [data setObject:[NSNumber numberWithInt:1] forKey:@"badge"];
+                    [data setObject:[NSString stringWithFormat:@"%@ tagged you in a route",[[PFUser currentUser] objectForKey:@"name"],[newRoute objectForKey:@"username"]] forKey:@"alert"];
+                    [data setObject:[NSString stringWithFormat:@"%@",[[PFUser currentUser] objectForKey:@"name"]] forKey:@"sender"];
+                    [data setObject:[NSString stringWithFormat:@"%@",user.name] forKey:@"reciever"];
+                    
+                    [PFPush sendPushDataToChannelInBackground:[NSString stringWithFormat:@"channel%@",user.uid] withData:data];
+                    
+                                        
                     
                     
+                    
+                }
+
+                if ([recommendArray count]==1) {
+                FBfriend*user = [recommendArray objectAtIndex:0];                
+                PFObject* feedObject = [PFObject objectWithClassName:@"Feed"];
+                [feedObject setObject:[[PFUser currentUser] objectForKey:@"name"] forKey:@"sender"];
+                [feedObject setObject:[[PFUser currentUser] objectForKey:@"profilepicture"] forKey:@"senderimagelink"];
+                [feedObject setObject:newRoute forKey:@"linkedroute"];
+                [feedObject setObject:imageFile forKey:@"imagefile"];
+                [feedObject setObject:@"tag" forKey:@"action"];
+                [feedObject setObject:[NSString stringWithFormat:@"%@ tagged %@ in a route",[[PFUser currentUser] objectForKey:@"name"],user.name] forKey:@"message"];
+                
+                [feedObject saveInBackground];
+
+                }else if ([recommendArray count]==2){
+                    FBfriend*user = [recommendArray objectAtIndex:0];
                     PFObject* feedObject = [PFObject objectWithClassName:@"Feed"];
                     [feedObject setObject:[[PFUser currentUser] objectForKey:@"name"] forKey:@"sender"];
                     [feedObject setObject:[[PFUser currentUser] objectForKey:@"profilepicture"] forKey:@"senderimagelink"];
                     [feedObject setObject:newRoute forKey:@"linkedroute"];
                     [feedObject setObject:imageFile forKey:@"imagefile"];
-                    [feedObject setObject:[NSString stringWithFormat:@"%@ tagged %@ in a route",[[PFUser currentUser] objectForKey:@"name"],user.name] forKey:@"message"];
+                    [feedObject setObject:@"tag" forKey:@"action"];
+                    [feedObject setObject:[NSString stringWithFormat:@"%@ tagged %@ and %d other in a route",[[PFUser currentUser] objectForKey:@"name"],user.name,1] forKey:@"message"];
+                    
+                    [feedObject saveInBackground];   
+                }else{
+                    FBfriend*user = [recommendArray objectAtIndex:0];
+                    PFObject* feedObject = [PFObject objectWithClassName:@"Feed"];
+                    [feedObject setObject:[[PFUser currentUser] objectForKey:@"name"] forKey:@"sender"];
+                    [feedObject setObject:[[PFUser currentUser] objectForKey:@"profilepicture"] forKey:@"senderimagelink"];
+                    [feedObject setObject:newRoute forKey:@"linkedroute"];
+                    [feedObject setObject:imageFile forKey:@"imagefile"];
+                    [feedObject setObject:@"tag" forKey:@"action"];
+                    [feedObject setObject:[NSString stringWithFormat:@"%@ tagged %@ and %d others in a route",[[PFUser currentUser] objectForKey:@"name"],user.name,[recommendArray count]-1] forKey:@"message"];
                     
                     [feedObject saveInBackground];
-                    
-                    
-                    
-                    
                 }
-                
-                
                 
                 
                 
@@ -459,6 +503,7 @@ typedef enum apiCall {
             [feedObject setObject:[[PFUser currentUser] objectForKey:@"profilepicture"] forKey:@"senderimagelink"];
             [feedObject setObject:newRoute forKey:@"linkedroute"];
             [feedObject setObject:imageFile forKey:@"imagefile"];
+            [feedObject setObject:@"added" forKey:@"action"];
             if (![[newRoute objectForKey:@"location"] isEqualToString:@""]) {
                 [feedObject setObject:[NSString stringWithFormat:@"%@ added a new route at %@",[[PFUser currentUser] objectForKey:@"name"],[newRoute objectForKey:@"location"]] forKey:@"message"];
             }else{
@@ -469,13 +514,21 @@ typedef enum apiCall {
             if ([recommendArray count]>0) {
                 NSLog(@"recommend array count = %d", [recommendArray count]);
                 for (FBfriend* user in recommendArray) {
+                    NSMutableDictionary *data = [NSMutableDictionary dictionary];
+                    [data setObject:newRoute.objectId forKey:@"linkedroute"];
+                    [data setObject:[NSNumber numberWithInt:1] forKey:@"badge"];
+                    [data setObject:[NSString stringWithFormat:@"%@ tagged you in a route",[[PFUser currentUser] objectForKey:@"name"],[newRoute objectForKey:@"username"]] forKey:@"alert"];
+                    [data setObject:[NSString stringWithFormat:@"%@",[[PFUser currentUser] objectForKey:@"name"]] forKey:@"sender"];
+                    [data setObject:[NSString stringWithFormat:@"%@",user.name] forKey:@"reciever"];
                     
+                    [PFPush sendPushDataToChannelInBackground:[NSString stringWithFormat:@"channel%@",user.uid] withData:data];
                     
                     PFObject* feedObject = [PFObject objectWithClassName:@"Feed"];
                     [feedObject setObject:[[PFUser currentUser] objectForKey:@"name"] forKey:@"sender"];
                     [feedObject setObject:[[PFUser currentUser] objectForKey:@"profilepicture"] forKey:@"senderimagelink"];
                     [feedObject setObject:newRoute forKey:@"linkedroute"];
                     [feedObject setObject:imageFile forKey:@"imagefile"];
+                    [feedObject setObject:@"tag" forKey:@"action"];
                     [feedObject setObject:[NSString stringWithFormat:@"%@ tagged %@ in a route",[[PFUser currentUser] objectForKey:@"name"],user.name] forKey:@"message"];
                     
                     [feedObject saveInBackground];
@@ -554,8 +607,8 @@ typedef enum apiCall {
         {
             TWTweetComposeViewController *tweetSheet = 
             [[TWTweetComposeViewController alloc] init];
-            if([tweetSheet setInitialText:[NSString stringWithFormat:@"%@ #Psyched",descriptionTextField.text]]){
-                [tweetSheet setInitialText:[NSString stringWithFormat:@"%@ #Psyched",descriptionTextField.text]];
+            if([tweetSheet setInitialText:[NSString stringWithFormat:@"%@",descriptionTextField.text]]){
+                [tweetSheet setInitialText:[NSString stringWithFormat:@"%@",descriptionTextField.text]];
             }else{
                 UIAlertView* alert = [[UIAlertView alloc]initWithTitle:@"Too Long For Tweet" message:@"" delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil];
     [alert show];
@@ -691,7 +744,7 @@ typedef enum apiCall {
     NSString *actionLinksStr = [jsonWriter stringWithObject:tags];
     [tags release];
     NSMutableDictionary *params = [NSMutableDictionary dictionaryWithObjectsAndKeys:
-                                   resizedimg, @"picture",descriptionTextField.text,@"name",@"720",@"height",@"720",@"width",actionLinksStr,@"tags",
+                                   resizedimg, @"picture",descriptionTextField.text,@"name",@"960",@"height",@"960",@"width",actionLinksStr,@"tags",
                                    nil];
 
     [[PFFacebookUtils facebook] requestWithGraphPath:@"me/photos"
@@ -734,7 +787,8 @@ typedef enum apiCall {
         [obj setValue:[contentDictionary objectForKey:@"likes"] forKey:@"likes"];
         [obj setValue:[contentDictionary objectForKey:@"picture"] forKey:@"picture"];
         [obj setValue:[contentDictionary objectForKey:@"id"] forKey:@"id"];
-        
+        [obj setValue:[[contentDictionary objectForKey:@"cover"]objectForKey:@"source"] forKey:@"coverimagelink"];
+        [obj setValue:[contentDictionary objectForKey:@"about"] forKey:@"about"];
         if ([contentDictionary objectForKey:@"can_post"]) {
             
             [arrayOfAccounts addObject:obj];

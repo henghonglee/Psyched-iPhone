@@ -156,24 +156,16 @@
     // grab user feeds
     
     userfeeds = [[NSMutableArray alloc]init ];
-    PFQuery* query = [PFQuery queryWithClassName:@"Feed"];
-    query.cachePolicy= kPFCachePolicyNetworkElseCache;
-    [query whereKey:@"sender" equalTo:username];
-    [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
-        [userfeeds addObjectsFromArray:objects];
-        NSLog(@"retrieved objects = %@",objects);
-        NSArray *sortedArray;
-        sortedArray = [userfeeds sortedArrayUsingComparator:^(id a, id b) {
-            PFObject* first = a;
-            PFObject* second = b;
+        PFQuery* queryForNotification = [PFQuery queryWithClassName:@"Feed"];
+        [queryForNotification  whereKey:@"sender" notEqualTo:username];
+        [queryForNotification whereKey:@"message" containsString:username];
+        [queryForNotification orderByDescending:@"createdAt"];
+        [queryForNotification findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
             
-            return [((NSDate*)second.createdAt) compare:((NSDate*)first.createdAt)];
-            
+                    [userfeeds addObjectsFromArray:objects];
+                    [userFeedTable reloadData];
         }];
-        [userfeeds removeAllObjects];
-        [userfeeds addObjectsFromArray:sortedArray];
-        [userFeedTable reloadData];
-    } ];
+        
     
     //grab user followed
     
@@ -450,9 +442,25 @@
             }
         }
     }
-    cell.feedLabel.text = [[[[[[[userfeeds objectAtIndex:indexPath.row] objectForKey:@"message"]stringByReplacingOccurrencesOfString:[NSString stringWithFormat:@"%@'s",[[PFUser currentUser]objectForKey:@"name"]] withString:@"your"] stringByReplacingOccurrencesOfString:[[PFUser currentUser]objectForKey:@"name"] withString:@"You"]stringByReplacingOccurrencesOfString:@"his/her" withString:@"your"]stringByReplacingOccurrencesOfString:@"her" withString:@"your"]stringByReplacingOccurrencesOfString:@"his" withString:@"your"]  ;
+    
+    
+    
+    cell.feedLabel.text = [[[[[[[userfeeds objectAtIndex:indexPath.row] objectForKey:@"message"]stringByReplacingOccurrencesOfString:[NSString stringWithFormat:@"%@'s",[[PFUser currentUser]objectForKey:@"name"]] withString:@"your"] stringByReplacingOccurrencesOfString:[[PFUser currentUser]objectForKey:@"name"] withString:@"you"]stringByReplacingOccurrencesOfString:@"his/her" withString:@"your"]stringByReplacingOccurrencesOfString:@"her" withString:@"your"]stringByReplacingOccurrencesOfString:@"his" withString:@"your"]  ;
+    
+        PFObject* selectedFeedObj = [userfeeds objectAtIndex:indexPath.row];
+        NSString* urlstring = [NSString stringWithFormat:@"%@",[selectedFeedObj objectForKey:@"senderimagelink"]];
+        NSLog(@"urlstring = %@",urlstring);
+        
+        ASIHTTPRequest* request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:urlstring]];
+        [request setCompletionBlock:^{
+            
+            cell.senderImage.image= [UIImage imageWithData:[request responseData]];
+             
+        }];
+        [request setFailedBlock:^{}];
+        [request startAsynchronous];
+    
 
-    cell.senderImage.image = userimage;
     if ([userfeeds count]>0) {
         PFObject* selectedFeed = [userfeeds objectAtIndex:indexPath.row];
         double timesincenow =  [((NSDate*)selectedFeed.createdAt) timeIntervalSinceNow];
@@ -469,7 +477,63 @@
         }else{
             cell.timeLabel.text = [NSString stringWithFormat:@"%im ago",timeint/-60];
         }
+        if (![[selectedFeed objectForKey:@"viewed"] containsObject:[[PFUser currentUser]objectForKey:@"name"]] && ![[selectedFeed objectForKey:@"sender"] isEqualToString:[[PFUser currentUser] objectForKey:@"name"]] && ([cell.feedLabel.text rangeOfString:@"you"].location != NSNotFound || [cell.feedLabel.text rangeOfString:@"your"].location != NSNotFound)) {
+            
+            cell.readSphereView.image = [UIImage imageNamed:@"bluesphere.png"];
+            [UIView animateWithDuration:0.4
+                                  delay:2.0
+                                options: UIViewAnimationCurveEaseOut
+                             animations:^{
+                                 cell.readSphereView.alpha = 0.0;
+                             } 
+                             completion:^(BOOL finished){
+                                 cell.readSphereView.image = [UIImage imageNamed:@"tick.png"];
+                                 [UIView animateWithDuration:0.4
+                                                       delay:0.0
+                                                     options: UIViewAnimationCurveEaseOut
+                                                  animations:^{
+                                                      cell.readSphereView.alpha = 1.0;
+                                                  } 
+                                                  completion:^(BOOL finished){
+                                                      if (finished) {
+                                                          
+                                                          
+                                                          NSMutableArray* _unreadArray = [[NSMutableArray alloc]initWithArray:[selectedFeed objectForKey:@"viewed"]];
+                                                          [_unreadArray addObject:[[PFUser currentUser]objectForKey:@"name"]];
+                                                          [selectedFeed setObject:_unreadArray forKey:@"viewed"];    
+                                                          [selectedFeed saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+                                                              PFQuery* queryForNotification = [PFQuery queryWithClassName:@"Feed"];
+                                                              [queryForNotification whereKey:@"viewed" notEqualTo:[[PFUser currentUser]objectForKey:@"name"]];
+                                                              [queryForNotification  whereKey:@"sender" notEqualTo:[[PFUser currentUser]objectForKey:@"name"]];
+                                                              [queryForNotification whereKey:@"message" containsString:[[PFUser currentUser]objectForKey:@"name"]];
+                                                              [queryForNotification countObjectsInBackgroundWithBlock:^(int number, NSError *error) {
+                                                                  ParseStarterProjectAppDelegate* appDel = (ParseStarterProjectAppDelegate* )[[UIApplication sharedApplication]delegate];
+                                                                  appDel.badgeView.text = [NSString stringWithFormat:@"%d",number];
+                                                                  NSLog(@"number = %d",number);
+                                                              }];
+                                                              
+                                                          }];
+                                                          [_unreadArray release];
+                                                      }
+                                                      
+                                                  }];
+                                 
+                                 
+                             }];
+            
+            
+        }else{
+            cell.readSphereView.image = nil;
+            
+            
+        }
+        
     }
+    
+    
+    
+    
+    
     return cell;
 }
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath

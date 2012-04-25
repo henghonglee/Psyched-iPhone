@@ -26,8 +26,11 @@
 //
 
 #import "BaseViewController.h"
-@interface InstagramViewController : BaseViewController 
+#import "KKGridViewController.h"
+#import "RouteObject.h"
+@interface InstagramViewController : BaseViewController <KKGridViewDelegate,KKGridViewDataSource>
 {
 }
-
+@property (nonatomic,retain) KKGridViewController* KKviewController;
+@property (nonatomic,retain) NSMutableArray* popularRouteArray;
 @end

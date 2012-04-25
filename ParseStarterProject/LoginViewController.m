@@ -151,7 +151,11 @@
         
         [[PFUser currentUser] setObject:[result objectForKey:@"about_me"] forKey:@"about_me"];
                 
-        [[PFUser currentUser] saveInBackground];
+        [[PFUser currentUser] saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+            [PFPush subscribeToChannelInBackground:[NSString stringWithFormat:@"channel%@",[[PFUser currentUser] objectForKey:@"facebookid"]] target:self selector:@selector(subscribeFinished:error:)];
+            NSLog(@"subscribed to channeluser %@",[NSString stringWithFormat:@"channel%@",[[PFUser currentUser] objectForKey:@"facebookid"]]);
+            
+        }];
         
         
         [FlurryAnalytics setUserID:[[PFUser currentUser] objectForKey:@"name"]];

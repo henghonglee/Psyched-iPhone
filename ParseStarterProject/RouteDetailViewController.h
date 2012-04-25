@@ -13,10 +13,17 @@
 #import "SendUserViewController.h"
 #import <MapKit/MapKit.h>
 #import "MapViewController.h"
-@interface RouteDetailViewController : UIViewController<UITextFieldDelegate,UITableViewDelegate,UITableViewDataSource,PF_FBRequestDelegate,UIScrollViewDelegate,UIAlertViewDelegate>
+#import "FriendTaggerViewController.h"
+#import "GymViewController.h"
+#import "GradientButton.h"
+@interface RouteDetailViewController : UIViewController<UITextFieldDelegate,UITableViewDelegate,UITableViewDataSource,PF_FBRequestDelegate,UIScrollViewDelegate,UIAlertViewDelegate,TaggerDelegate>
 {
     int likecount;
     BOOL facebookliked;
+    UIAlertView* dislikealert; 
+    UIAlertView* facebookalert;
+    UIAlertView* flagalert;
+    int currentAPICall;
 }
 -(void)getFacebookRouteDetails;
 -(void)checksendstatus;
@@ -24,9 +31,11 @@
 @property (retain, nonatomic) IBOutlet UIView *topView;
 @property (retain, nonatomic) IBOutlet UIView *btmView;
 @property (retain, nonatomic) IBOutlet UIView *mapContainer;
+@property (retain, nonatomic) IBOutlet UIView *approvalView;
 @property (retain, nonatomic) IBOutlet UIButton *outdateButton;
 @property (retain, nonatomic) IBOutlet UILabel *difficultyLabel;
 @property (retain, nonatomic) IBOutlet UIButton *unoutdateButton;
+@property (retain, nonatomic) IBOutlet UIButton *postButton;
 @property (retain, nonatomic) IBOutlet MKMapView *routeMapView;
 @property (retain, nonatomic) IBOutlet UIProgressView *progressBar;
 @property (retain, nonatomic) IBOutlet UILabel *routeLocationLabel;
@@ -55,6 +64,8 @@
 @property (retain, nonatomic) IBOutlet UILabel *flashCountLabel;
 @property (retain, nonatomic) IBOutlet UILabel *sendCountLabel;
 @property (retain, nonatomic) IBOutlet UILabel *projectCountLabel;
+@property (retain, nonatomic) GradientButton *approveButton;
+@property (retain, nonatomic) GradientButton *disapproveButton;
 
 -(void)getImageIfUnavailable;
 -(void)LikeOperation:(NSInteger)likecount;

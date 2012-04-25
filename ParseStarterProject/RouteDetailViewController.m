@@ -5,6 +5,7 @@
 //  Created by Shaun Tan on 9/1/12.
 //  Copyright (c) 2012 __MyCompanyName__. All rights reserved.
 //
+#import "JHNotificationManager.h"
 #import "ProfileViewController.h"
 #import "RouteDetailViewController.h"
 #import "CommentsCell.h"
@@ -16,9 +17,11 @@
 @synthesize topView;
 @synthesize btmView;
 @synthesize mapContainer;
+@synthesize approvalView;
 @synthesize outdateButton;
 @synthesize difficultyLabel;
 @synthesize unoutdateButton;
+@synthesize postButton;
 @synthesize routeMapView;
 @synthesize progressBar;
 @synthesize routeLocationLabel;
@@ -40,6 +43,8 @@
 @synthesize flashCountLabel;
 @synthesize sendCountLabel;
 @synthesize projectCountLabel;
+@synthesize approveButton;
+@synthesize disapproveButton;
 @synthesize likeCountLabel;
 @synthesize queryArray;
 @synthesize savedArray;
@@ -47,6 +52,14 @@
 @synthesize viewCountLabel;
 @synthesize scroll;
 @synthesize commentCountLabel;
+
+typedef enum apiCall {
+kAPICheckLikedComment,
+kAPICheckLikedPage,
+kAPIGraphLikePhoto,
+kAPIGraphCommentPhoto,
+} apiCall;
+
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
@@ -70,9 +83,9 @@
         // if user is the owner of the route , show the not outdated button
         
     }else{
-    UIAlertView* alert = [[UIAlertView alloc]initWithTitle:@"Flag as outdated" message:@"Are you sure?" delegate:self cancelButtonTitle:@"Yes" otherButtonTitles:@"No",nil];
-    [alert show];
-    [alert release];
+        flagalert = [[UIAlertView alloc]initWithTitle:@"Flag as outdated" message:@"Are you sure?" delegate:self cancelButtonTitle:@"Yes" otherButtonTitles:@"No",nil];
+    [flagalert show];
+    [flagalert release];
     }
     
 }
@@ -85,19 +98,66 @@
     
 
 }
+- (IBAction)approveOutdate:(id)sender {
+    [approveButton setUserInteractionEnabled:NO];
+    [self.routeObject.pfobj setObject:@"approved" forKey:@"approvalstatus"];
+    [self.routeObject.pfobj setObject:[NSNumber numberWithBool:YES] forKey:@"outdated"];
+    [self.routeObject.pfobj saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+            approvalView.hidden = YES;
+         [approveButton setUserInteractionEnabled:YES];
+    }];
+
+}
+- (IBAction)disapproveOutdate:(id)sender {
+    [disapproveButton setUserInteractionEnabled:NO];
+    [self.routeObject.pfobj setObject:@"disapproved" forKey:@"approvalstatus"];
+    [self.routeObject.pfobj setObject:[NSNumber numberWithBool:NO] forKey:@"outdated"];
+    [self.routeObject.pfobj saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+    approvalView.hidden = YES;    
+        [disapproveButton setUserInteractionEnabled:YES];
+    }];
+
+}
 -(void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex
 {
+    if (flagalert) {
     if (buttonIndex==0) {
-        [self.routeObject.pfobj setObject:[NSNumber numberWithBool:true]forKey:@"outdated"];
+        //set approval status to "pending"
+        //[self.routeObject.pfobj setObject:[NSNumber numberWithBool:true]forKey:@"outdated"];
+        [self.routeObject.pfobj setObject:@"pending" forKey:@"approvalstatus"];
         [self.routeObject.pfobj saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
         outdateButton.hidden = YES;    
+            PFQuery* userQuery = [PFQuery queryForUser];
+            [userQuery whereKey:@"name" equalTo:[self.routeObject.pfobj objectForKey:@"username"]];
+            [userQuery getFirstObjectInBackgroundWithBlock:^(PFObject *object, NSError *error) {
+                NSMutableDictionary *data = [NSMutableDictionary dictionary];
+                [data setObject:self.routeObject.pfobj.objectId forKey:@"linkedroute"];
+                [data setObject:[NSNumber numberWithInt:1] forKey:@"badge"];
+                [data setObject:[NSString stringWithFormat:@"%@ marked your route as outdated",[[PFUser currentUser] objectForKey:@"name"]] forKey:@"alert"];
+                [data setObject:[NSString stringWithFormat:@"%@",[[PFUser currentUser] objectForKey:@"name"]] forKey:@"sender"];
+                [data setObject:[NSString stringWithFormat:@"%@",[object objectForKey:@"name"]] forKey:@"reciever"];
+                [PFPush sendPushDataToChannelInBackground:[NSString stringWithFormat:@"channel%@",[object objectForKey:@"facebookid"]] withData:data];
+//                PFObject* newFeedObject = [PFObject objectWithClassName:@"Feed"];
+//                [newFeedObject setObject:@"action" forKey:@"approval"];
+//                [newFeedObject setObject:[[PFUser currentUser]objectForKey:@"name"] forKey:@"sender"];
+//                [newFeedObject setObject:self.routeObject.pfobj forKey:@"linkedroute"];
+//                [newFeedObject setObject:[NSString stringWithFormat:@"%@ marked %@'s route as outdated",] forKey:@"message"]
+                
+            }];
         }];
         
         }
+    }else if(dislikealert){
+        if (buttonIndex) {
+            
+        }
     }
+}
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
     commentsArray = [[NSMutableArray alloc]init];
     queryArray = [[NSMutableArray alloc]init];
     savedArray = [[NSMutableArray alloc]init];
@@ -105,7 +165,19 @@
     [unavailableLabel setFont:[UIFont fontWithName:@"Old Stamper" size:20.0]];
     unavailableLabel.textColor = [UIColor redColor];
     [likeButton setUserInteractionEnabled:NO];
+    approveButton = [[GradientButton alloc]initWithFrame:CGRectMake(195, 6, 100, 40)];
+    [approveButton setTitle:@"Approve" forState:UIControlStateNormal];
+    [approveButton useGreenConfirmStyle];
+    [approveButton addTarget:self action:@selector(approveOutdate:) forControlEvents:UIControlEventTouchUpInside];
+    [approvalView addSubview:approveButton];
+    [approveButton release];
     
+    disapproveButton = [[GradientButton alloc]initWithFrame:CGRectMake(195, 51, 100, 40)];
+    [disapproveButton setTitle:@"Disapprove" forState:UIControlStateNormal];
+    [disapproveButton addTarget:self action:@selector(disapproveOutdate:) forControlEvents:UIControlEventTouchUpInside];
+    [disapproveButton useRedDeleteStyle];
+    [approvalView addSubview:disapproveButton];
+    [disapproveButton release];
     
     difficultyLabel.text = [routeObject.pfobj objectForKey:@"difficultydescription"];
     NSString *foo = [routeObject.pfobj objectForKey:@"description"];
@@ -148,6 +220,15 @@
             unoutdateButton.hidden = NO;
         }
     }
+    if ([[self.routeObject.pfobj objectForKey:@"approvalstatus"]isEqualToString:@"pending"] && [[self.routeObject.pfobj objectForKey:@"username"]isEqualToString:[[PFUser currentUser]objectForKey:@"name"]]) {
+        approvalView.hidden=NO;
+        
+        
+    }else{
+        approvalView.hidden=YES;
+    }
+    
+    
     
     UserImageView.layer.shadowPath = [self renderPaperCurlProfileImage:UserImageView];
     UserImageView.layer.borderColor = [UIColor whiteColor].CGColor;
@@ -428,7 +509,54 @@
     [sentbutton setUserInteractionEnabled:NO];
     [projbutton setUserInteractionEnabled:NO];
     if (sender.tag==0) {
+        //clear all flashes
+        NSArray* tempFlashArray = [routeObject.pfobj objectForKey:@"usersflashed"];
+        NSMutableArray* routeFlashArray = [[NSMutableArray alloc]init ];
+        [routeFlashArray addObjectsFromArray:tempFlashArray];
+        if ([routeFlashArray containsObject:[[PFUser currentUser] objectForKey:@"name"]]) {
+            while ([routeFlashArray containsObject:[[PFUser currentUser] objectForKey:@"name"]]) {
+                [routeFlashArray removeObject:[[PFUser currentUser] objectForKey:@"name"]];      
+            }
+            [routeObject.pfobj setObject:routeFlashArray forKey:@"usersflashed"];
+            [routeObject.pfobj saveEventually];
+        }else{
+           [routeFlashArray addObject:[[PFUser currentUser] objectForKey:@"name"]]; 
+            [routeObject.pfobj setObject:routeFlashArray forKey:@"usersflashed"];
+            [routeObject.pfobj saveEventually];
+        }
+         [routeFlashArray release]; 
+      
+        //clear sends
+        NSArray* tempSentArray = [routeObject.pfobj objectForKey:@"userssent"];
+        NSMutableArray* routeSentArray = [[NSMutableArray alloc]init ];
+        [routeSentArray addObjectsFromArray:tempSentArray];
+        if ([routeSentArray containsObject:[[PFUser currentUser] objectForKey:@"name"]]) {
+            while ([routeSentArray containsObject:[[PFUser currentUser] objectForKey:@"name"]]) {
+                [routeSentArray removeObject:[[PFUser currentUser] objectForKey:@"name"]];      
+            }
+            [routeObject.pfobj setObject:routeSentArray forKey:@"userssent"];
+            [routeObject.pfobj saveEventually];
+            
+        }
+        [routeSentArray release];
         
+        //clear projects
+        NSArray* tempProjArray = [routeObject.pfobj objectForKey:@"usersproj"];
+        NSMutableArray* routeProjArray = [[NSMutableArray alloc]init ];
+        [routeProjArray addObjectsFromArray:tempProjArray];
+        if ([routeProjArray containsObject:[[PFUser currentUser] objectForKey:@"name"]]) {
+            while ([routeProjArray containsObject:[[PFUser currentUser] objectForKey:@"name"]]) {
+                [routeProjArray removeObject:[[PFUser currentUser] objectForKey:@"name"]];      
+            }
+            [routeObject.pfobj setObject:routeProjArray forKey:@"usersproj"];
+            [routeObject.pfobj saveEventually];
+            
+        }
+        [routeProjArray release];
+        
+        
+        
+        //clear flashes deprecated
         PFQuery* query1 = [PFQuery queryWithClassName:@"Flash"];
                 query1.cachePolicy = kPFCachePolicyNetworkElseCache;
         [query1 whereKey:@"username" equalTo:[[PFUser currentUser]objectForKey:@"name"]];
@@ -440,6 +568,14 @@
             if ([fetchedFlash count]>0){
                 [((PFObject*)[fetchedFlash objectAtIndex:0]) deleteInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
                     if (succeeded) {
+                        //should clear flash feed also
+                        PFQuery* flashFeedQuery = [PFQuery queryWithClassName:@"Feed"];
+                        [flashFeedQuery whereKey:@"message" equalTo:[NSString stringWithFormat:@"%@ flashed %@'s route",[[PFUser currentUser]objectForKey:@"name"],[routeObject.pfobj objectForKey:@"username"]]];
+                        [flashFeedQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+                            for (PFObject* feed in objects) {
+                                [feed deleteInBackground];
+                            }
+                        }];
                         [flashbutton setImage:nil forState:UIControlStateNormal];
                         flashCountLabel.text = [NSString stringWithFormat:@"%d",[flashCountLabel.text intValue]-1];
                         [flashbutton setUserInteractionEnabled:YES];
@@ -449,6 +585,8 @@
                    
                 }];
             }else{
+               
+                
                 PFObject* newFlash = [PFObject objectWithClassName:@"Flash"];
                 [newFlash setObject:[[PFUser currentUser] objectForKey:@"name"] forKey:@"username"];
                 [newFlash setObject:[[PFUser currentUser] objectForKey:@"profilepicture"] forKey:@"userimage"];
@@ -458,6 +596,15 @@
                 
                 [newFlash saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
                     if (succeeded) {
+                        //add flash feed here
+                        PFObject* flashFeed = [PFObject objectWithClassName:@"Feed"];
+                        [flashFeed setObject:routeObject.pfobj forKey:@"linkedroute"];
+                        [flashFeed setObject:[NSString stringWithFormat:@"%@ flashed %@'s route",[[PFUser currentUser]objectForKey:@"name"],[routeObject.pfobj objectForKey:@"username"]] forKey:@"message"];
+                        [flashFeed setObject:[[PFUser currentUser]objectForKey:@"name"] forKey:@"sender"];
+                        [flashFeed setObject:[[PFUser currentUser]objectForKey:@"profilepicture"] forKey:@"senderimagelink"];
+                        [flashFeed setObject:@"flash" forKey:@"action"];
+                        [flashFeed saveInBackground];
+                        
                     [flashbutton setImage:[UIImage imageNamed:@"tick.png"] forState:UIControlStateNormal];
                     flashCountLabel.text = [NSString stringWithFormat:@"%d",[flashCountLabel.text intValue]+1];
                         [flashbutton setUserInteractionEnabled:YES];
@@ -480,6 +627,13 @@
             if ([fetchedSent count]>0){
                 [((PFObject*)[fetchedSent objectAtIndex:0]) deleteInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
                     if (succeeded) {
+                        PFQuery* sendFeedQuery = [PFQuery queryWithClassName:@"Feed"];
+                        [sendFeedQuery whereKey:@"message" equalTo:[NSString stringWithFormat:@"%@ sent %@'s route",[[PFUser currentUser]objectForKey:@"name"],[routeObject.pfobj objectForKey:@"username"]]];
+                        [sendFeedQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+                            for (PFObject* feed in objects) {
+                                [feed deleteInBackground];
+                            }
+                        }];
                     [sentbutton setImage:nil forState:UIControlStateNormal];
                     sendCountLabel.text = [NSString stringWithFormat:@"%d",[sendCountLabel.text intValue]-1];
                         [flashbutton setUserInteractionEnabled:YES];
@@ -501,6 +655,13 @@
                 if ([fetchedProject count]>0){
                     [((PFObject*)[fetchedProject objectAtIndex:0]) deleteInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
                         if (succeeded) {
+                            PFQuery* projFeedQuery = [PFQuery queryWithClassName:@"Feed"];
+                            [projFeedQuery whereKey:@"message" equalTo:[NSString stringWithFormat:@"%@ started projecting %@'s route",[[PFUser currentUser]objectForKey:@"name"],[routeObject.pfobj objectForKey:@"username"]]];
+                            [projFeedQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+                                for (PFObject* feed in objects) {
+                                    [feed deleteInBackground];
+                                }
+                            }];
                         [projbutton setImage:nil forState:UIControlStateNormal];
                         projectCountLabel.text = [NSString stringWithFormat:@"%d",[projectCountLabel.text intValue]-1];
                             [flashbutton setUserInteractionEnabled:YES];
@@ -512,6 +673,58 @@
          }];
         
     }else if(sender.tag==1){
+        //clear all flashes
+        NSArray* tempFlashArray = [routeObject.pfobj objectForKey:@"usersflashed"];
+        NSMutableArray* routeFlashArray = [[NSMutableArray alloc]init ];
+        [routeFlashArray addObjectsFromArray:tempFlashArray];
+        if ([routeFlashArray containsObject:[[PFUser currentUser] objectForKey:@"name"]]) {
+            while ([routeFlashArray containsObject:[[PFUser currentUser] objectForKey:@"name"]]) {
+                [routeFlashArray removeObject:[[PFUser currentUser] objectForKey:@"name"]];      
+            }
+            [routeObject.pfobj setObject:routeFlashArray forKey:@"usersflashed"];
+            [routeObject.pfobj saveEventually];
+        }
+        [routeFlashArray release]; 
+        
+        //clear sends
+        NSArray* tempSentArray = [routeObject.pfobj objectForKey:@"userssent"];
+        NSMutableArray* routeSentArray = [[NSMutableArray alloc]init ];
+        [routeSentArray addObjectsFromArray:tempSentArray];
+        if ([routeSentArray containsObject:[[PFUser currentUser] objectForKey:@"name"]]) {
+            while ([routeSentArray containsObject:[[PFUser currentUser] objectForKey:@"name"]]) {
+                [routeSentArray removeObject:[[PFUser currentUser] objectForKey:@"name"]];      
+            }
+            [routeObject.pfobj setObject:routeSentArray forKey:@"userssent"];
+            [routeObject.pfobj saveEventually];
+            
+        }else{
+            [routeSentArray addObject:[[PFUser currentUser] objectForKey:@"name"]]; 
+            [routeObject.pfobj setObject:routeSentArray forKey:@"userssent"];
+            [routeObject.pfobj saveEventually];
+        }
+        [routeSentArray release];
+        
+        //clear projects
+        NSArray* tempProjArray = [routeObject.pfobj objectForKey:@"usersproj"];
+        NSMutableArray* routeProjArray = [[NSMutableArray alloc]init ];
+        [routeProjArray addObjectsFromArray:tempProjArray];
+        if ([routeProjArray containsObject:[[PFUser currentUser] objectForKey:@"name"]]) {
+            while ([routeProjArray containsObject:[[PFUser currentUser] objectForKey:@"name"]]) {
+                [routeProjArray removeObject:[[PFUser currentUser] objectForKey:@"name"]];      
+            }
+            [routeObject.pfobj setObject:routeProjArray forKey:@"usersproj"];
+            [routeObject.pfobj saveEventually];
+            
+        }
+        [routeProjArray release];
+        
+
+        
+        
+        
+        
+        
+        
         
         PFQuery* query1 = [PFQuery queryWithClassName:@"Flash"];
                 query1.cachePolicy = kPFCachePolicyNetworkElseCache;
@@ -524,6 +737,13 @@
             if ([fetchedFlash count]>0){
                 [((PFObject*)[fetchedFlash objectAtIndex:0]) deleteInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
                     if (succeeded) {
+                        PFQuery* flashFeedQuery = [PFQuery queryWithClassName:@"Feed"];
+                        [flashFeedQuery whereKey:@"message" equalTo:[NSString stringWithFormat:@"%@ flashed %@'s route",[[PFUser currentUser]objectForKey:@"name"],[routeObject.pfobj objectForKey:@"username"]]];
+                        [flashFeedQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+                            for (PFObject* feed in objects) {
+                                [feed deleteInBackground];
+                            }
+                        }];
                    [flashbutton setImage:nil forState:UIControlStateNormal];
                     flashCountLabel.text = [NSString stringWithFormat:@"%d",[flashCountLabel.text intValue]-1];
                         [flashbutton setUserInteractionEnabled:YES];
@@ -545,6 +765,13 @@
         if ([fetchedSent count]>0){
             [((PFObject*)[fetchedSent objectAtIndex:0]) deleteInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
                 if (succeeded) {
+                    PFQuery* sendFeedQuery = [PFQuery queryWithClassName:@"Feed"];
+                    [sendFeedQuery whereKey:@"message" equalTo:[NSString stringWithFormat:@"%@ sent %@'s route",[[PFUser currentUser]objectForKey:@"name"],[routeObject.pfobj objectForKey:@"username"]]];
+                    [sendFeedQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+                        for (PFObject* feed in objects) {
+                            [feed deleteInBackground];
+                        }
+                    }];
                [sentbutton setImage:nil forState:UIControlStateNormal];
                 sendCountLabel.text = [NSString stringWithFormat:@"%d",[sendCountLabel.text intValue]-1];
                     [flashbutton setUserInteractionEnabled:YES];
@@ -562,6 +789,13 @@
 
             [newSent saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
                 if (succeeded) {
+                    PFObject* sendFeed = [PFObject objectWithClassName:@"Feed"];
+                    [sendFeed setObject:routeObject.pfobj forKey:@"linkedroute"];
+                    [sendFeed setObject:[NSString stringWithFormat:@"%@ sent %@'s route",[[PFUser currentUser]objectForKey:@"name"],[routeObject.pfobj objectForKey:@"username"]] forKey:@"message"];
+                    [sendFeed setObject:[[PFUser currentUser]objectForKey:@"name"] forKey:@"sender"];
+                    [sendFeed setObject:[[PFUser currentUser]objectForKey:@"profilepicture"] forKey:@"senderimagelink"];
+                    [sendFeed setObject:@"send" forKey:@"action"];
+                    [sendFeed saveInBackground];
                 [sentbutton setImage:[UIImage imageNamed:@"tick.png"] forState:UIControlStateNormal];
                 sendCountLabel.text = [NSString stringWithFormat:@"%d",[sendCountLabel.text intValue]+1];
                     [flashbutton setUserInteractionEnabled:YES];
@@ -585,6 +819,13 @@
         if ([fetchedProject count]>0){
             [((PFObject*)[fetchedProject objectAtIndex:0]) deleteInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
                 if (succeeded) {
+                    PFQuery* projFeedQuery = [PFQuery queryWithClassName:@"Feed"];
+                    [projFeedQuery whereKey:@"message" equalTo:[NSString stringWithFormat:@"%@ started projecting %@'s route",[[PFUser currentUser]objectForKey:@"name"],[routeObject.pfobj objectForKey:@"username"]]];
+                    [projFeedQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+                        for (PFObject* feed in objects) {
+                            [feed deleteInBackground];
+                        }
+                    }];
                 [projbutton setImage:nil forState:UIControlStateNormal];
                 projectCountLabel.text = [NSString stringWithFormat:@"%d",[projectCountLabel.text intValue]-1];
                     [flashbutton setUserInteractionEnabled:YES];
@@ -596,6 +837,54 @@
         }];
        
     }else if(sender.tag == 2){
+        
+        //clear all flashes
+        NSArray* tempFlashArray = [routeObject.pfobj objectForKey:@"usersflashed"];
+        NSMutableArray* routeFlashArray = [[NSMutableArray alloc]init ];
+        [routeFlashArray addObjectsFromArray:tempFlashArray];
+        if ([routeFlashArray containsObject:[[PFUser currentUser] objectForKey:@"name"]]) {
+            while ([routeFlashArray containsObject:[[PFUser currentUser] objectForKey:@"name"]]) {
+                [routeFlashArray removeObject:[[PFUser currentUser] objectForKey:@"name"]];      
+            }
+            [routeObject.pfobj setObject:routeFlashArray forKey:@"usersflashed"];
+            [routeObject.pfobj saveEventually];
+        }
+        [routeFlashArray release]; 
+        
+        //clear sends
+        NSArray* tempSentArray = [routeObject.pfobj objectForKey:@"userssent"];
+        NSMutableArray* routeSentArray = [[NSMutableArray alloc]init ];
+        [routeSentArray addObjectsFromArray:tempSentArray];
+        if ([routeSentArray containsObject:[[PFUser currentUser] objectForKey:@"name"]]) {
+            while ([routeSentArray containsObject:[[PFUser currentUser] objectForKey:@"name"]]) {
+                [routeSentArray removeObject:[[PFUser currentUser] objectForKey:@"name"]];      
+            }
+            [routeObject.pfobj setObject:routeSentArray forKey:@"userssent"];
+            [routeObject.pfobj saveEventually];
+            
+        }
+        [routeSentArray release];
+        
+        //clear projects
+        NSArray* tempProjArray = [routeObject.pfobj objectForKey:@"usersproj"];
+        NSMutableArray* routeProjArray = [[NSMutableArray alloc]init ];
+        [routeProjArray addObjectsFromArray:tempProjArray];
+        if ([routeProjArray containsObject:[[PFUser currentUser] objectForKey:@"name"]]) {
+            while ([routeProjArray containsObject:[[PFUser currentUser] objectForKey:@"name"]]) {
+                [routeProjArray removeObject:[[PFUser currentUser] objectForKey:@"name"]];      
+            }
+            [routeObject.pfobj setObject:routeProjArray forKey:@"usersproj"];
+            [routeObject.pfobj saveEventually];
+            
+        }else{
+            [routeProjArray addObject:[[PFUser currentUser] objectForKey:@"name"]]; 
+            [routeObject.pfobj setObject:routeProjArray forKey:@"usersproj"];
+            [routeObject.pfobj saveEventually];
+        }
+        [routeProjArray release];
+        
+        
+        
         PFQuery* query1 = [PFQuery queryWithClassName:@"Flash"];
         query1.cachePolicy = kPFCachePolicyNetworkElseCache;
         [query1 whereKey:@"username" equalTo:[[PFUser currentUser]objectForKey:@"name"]];
@@ -607,6 +896,13 @@
             if ([fetchedFlash count]>0){
                 [((PFObject*)[fetchedFlash objectAtIndex:0]) deleteInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
                     if (succeeded) {
+                        PFQuery* flashFeedQuery = [PFQuery queryWithClassName:@"Feed"];
+                        [flashFeedQuery whereKey:@"message" equalTo:[NSString stringWithFormat:@"%@ flashed %@'s route",[[PFUser currentUser]objectForKey:@"name"],[routeObject.pfobj objectForKey:@"username"]]];
+                        [flashFeedQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+                            for (PFObject* feed in objects) {
+                                [feed deleteInBackground];
+                            }
+                        }];
                     [flashbutton setImage:nil forState:UIControlStateNormal];
                     flashCountLabel.text = [NSString stringWithFormat:@"%d",[flashCountLabel.text intValue]-1];
                         [flashbutton setUserInteractionEnabled:YES];
@@ -628,6 +924,13 @@
             if ([fetchedSent count]>0){
                 [((PFObject*)[fetchedSent objectAtIndex:0]) deleteInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
                     if (succeeded) {
+                        PFQuery* sendFeedQuery = [PFQuery queryWithClassName:@"Feed"];
+                        [sendFeedQuery whereKey:@"message" equalTo:[NSString stringWithFormat:@"%@ sent %@'s route",[[PFUser currentUser]objectForKey:@"name"],[routeObject.pfobj objectForKey:@"username"]]];
+                        [sendFeedQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+                            for (PFObject* feed in objects) {
+                                [feed deleteInBackground];
+                            }
+                        }];
                     [sentbutton setImage:nil forState:UIControlStateNormal];
                     sendCountLabel.text = [NSString stringWithFormat:@"%d",[sendCountLabel.text intValue]-1];
                         [flashbutton setUserInteractionEnabled:YES];
@@ -649,6 +952,13 @@
             if ([fetchedProject count]>0){
                 [((PFObject*)[fetchedProject objectAtIndex:0]) deleteInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
                     if (succeeded) {
+                        PFQuery* projFeedQuery = [PFQuery queryWithClassName:@"Feed"];
+                        [projFeedQuery whereKey:@"message" equalTo:[NSString stringWithFormat:@"%@ started projecting %@'s route",[[PFUser currentUser]objectForKey:@"name"],[routeObject.pfobj objectForKey:@"username"]]];
+                        [projFeedQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+                            for (PFObject* feed in objects) {
+                                [feed deleteInBackground];
+                            }
+                        }];
                     [projbutton setImage:nil forState:UIControlStateNormal];
                     projectCountLabel.text = [NSString stringWithFormat:@"%d",[projectCountLabel.text intValue]-1];
                         [flashbutton setUserInteractionEnabled:YES];
@@ -664,6 +974,13 @@
                 [newProj setObject:routeObject.pfobj forKey:@"route"];
                 [newProj setObject:[PFUser currentUser] forKey:@"user"];
                 [newProj saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+                    PFObject* projFeed = [PFObject objectWithClassName:@"Feed"];
+                    [projFeed setObject:routeObject.pfobj forKey:@"linkedroute"];
+                    [projFeed setObject:[NSString stringWithFormat:@"%@ started projecting %@'s route",[[PFUser currentUser]objectForKey:@"name"],[routeObject.pfobj objectForKey:@"username"]] forKey:@"message"];
+                    [projFeed setObject:[[PFUser currentUser]objectForKey:@"name"] forKey:@"sender"];
+                    [projFeed setObject:[[PFUser currentUser]objectForKey:@"profilepicture"] forKey:@"senderimagelink"];
+                    [projFeed setObject:@"project" forKey:@"action"];
+                    [projFeed saveInBackground];
                     if (succeeded) {
                     [projbutton setImage:[UIImage imageNamed:@"tick.png"] forState:UIControlStateNormal];
                     projectCountLabel.text = [NSString stringWithFormat:@"%d",[projectCountLabel.text intValue]+1];
@@ -689,8 +1006,10 @@
     ASIHTTPRequest* request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"https://graph.facebook.com/%@?access_token=%@",fbphotoid,[PFFacebookUtils facebook].accessToken]]];
     NSLog(@"url = %@",[request url]);
     [request setCompletionBlock:^{
-        NSLog(@"request response =%@",[request responseString]);
+            NSLog(@"request response = %@",[request responseString]);       
+        if(![[request responseString] isEqualToString:@"false"]){
         SBJSON *parser = [[SBJSON alloc] init];
+
         [commentsArray removeAllObjects];
         // Prepare URL request to download statuses from Twitter
         
@@ -741,9 +1060,13 @@
         [routeObject.pfobj setObject:[NSNumber numberWithInt:[commentsArray count]] forKey:@"commentcount"];
         [routeObject.pfobj saveEventually];
         }
-        
+        }else if([[request responseString]isEqualToString:@"false"]){
+            
+            [JHNotificationManager notificationWithMessage:[NSString stringWithFormat:@"Sorry! Only friends of %@ can like and post/view comments",usernameLabel.text]];
+        }
+     [postButton setUserInteractionEnabled:YES];
     }];
-    [request setFailedBlock:^{}];
+    [request setFailedBlock:^{NSLog(@"failed with error =%@",[request error]);}];
     [request startAsynchronous];
     
 }
@@ -903,6 +1226,10 @@
     [self setDifficultyLabel:nil];
     [self setOutdateButton:nil];
     [self setUnoutdateButton:nil];
+    [self setApprovalView:nil];
+    [self setApproveButton:nil];
+    [self setDisapproveButton:nil];
+    [self setPostButton:nil];
     [super viewDidUnload];
     // Release any retained subviews of the main view.
     // e.g. self.myOutlet = nil;
@@ -924,11 +1251,20 @@
     scroll.scrollEnabled = YES;
 }
 - (IBAction)viewUser:(id)sender {
+            if ([routeObject.pfobj objectForKey:@"isPage"]==[NSNumber numberWithBool:YES]) {
+                GymViewController* viewController = [[GymViewController alloc]initWithNibName:@"GymViewController" bundle:nil];
+                [[routeObject.pfobj objectForKey:@"Gym"]fetchIfNeededInBackgroundWithBlock:^(PFObject *object, NSError *error) {
+                    viewController.gymObject = object;
+                    [self.navigationController pushViewController:viewController animated:YES];
+                    [viewController release];
+                }];
+            }else{
     ProfileViewController* viewController = [[ProfileViewController alloc]initWithNibName:@"ProfileViewController" bundle:nil];
 
     viewController.username= [routeObject.pfobj objectForKey:@"username"];
     [self.navigationController pushViewController:viewController animated:YES];
     [viewController release];
+            }
 }
 - (IBAction)didSelectMap:(id)sender {
     MapViewController* mapVC = [[MapViewController alloc]initWithNibName:@"MapViewController" bundle:nil];
@@ -941,15 +1277,38 @@
 //    [app openURL:[NSURL URLWithString:[NSString stringWithFormat:@"http://maps.google.com/maps?ll=%f,%f",((PFGeoPoint*)[routeObject.pfobj objectForKey:@"routelocation"]).latitude,((PFGeoPoint*)[routeObject.pfobj objectForKey:@"routelocation"]).longitude]]];  
 
 }
-- (IBAction)PostComment:(id)sender {
-    NSError*error=nil;
+- (IBAction)tryPostComment:(id)sender {
+
     [commentTextField becomeFirstResponder];
     [commentTextField resignFirstResponder];
     if ([[commentTextField.text stringByReplacingOccurrencesOfString:@" " withString:@""] isEqualToString:@""]) {
         //do nothing
     }else{
+        [postButton setUserInteractionEnabled:NO];
+    if ([routeObject.pfobj objectForKey:@"isPage"]==[NSNumber numberWithBool:YES]) {
+
+        [[self.routeObject.pfobj objectForKey:@"Gym"]fetchIfNeededInBackgroundWithBlock:^(PFObject *object, NSError *error) {
+        currentAPICall = kAPICheckLikedComment;            
+            NSMutableDictionary *params = [NSMutableDictionary dictionaryWithObjectsAndKeys:
+                                           [NSString stringWithFormat:@"select uid from page_fan where uid=me() and page_id=%@",[[[self.routeObject.pfobj objectForKey:@"Gym"]fetchIfNeeded] objectForKey:@"facebookid"]], @"query",
+                                           nil];
+            [[PFFacebookUtils facebook] requestWithMethodName:@"fql.query"
+                                                    andParams:params
+                                                andHttpMethod:@"POST"
+                                                  andDelegate:self];
+        }];
+        
+        
+    }else{
+        [self PostComment:nil];   
+    }
+    }
+}
+- (IBAction)PostComment:(id)sender {
+        NSError*error=nil;
     if ([routeObject.pfobj objectForKey:@"photoid"])
     {//if uploaded to facebook also upload comment to facebook.. keep everything there
+        currentAPICall = kAPIGraphCommentPhoto;
         NSMutableDictionary *params = [NSMutableDictionary dictionaryWithObjectsAndKeys:
                                        commentTextField.text, @"message",nil];
         [[PFFacebookUtils facebook] requestWithGraphPath:[NSString stringWithFormat:@"/%@/comments",[routeObject.pfobj objectForKey:@"photoid"]]
@@ -1001,7 +1360,7 @@
         }    
         
         [self CommentNotification];
-    }
+    
 commentTextField.text = @"";
 }
 -(void)CommentNotification{
@@ -1020,7 +1379,7 @@ commentTextField.text = @"";
         [feedObject setObject:routeObject.pfobj forKey:@"linkedroute"];
         [feedObject setObject:[routeObject.pfobj objectForKey:@"imageFile"] forKey:@"imagefile"];
         [feedObject setObject:[NSString stringWithFormat:@"%@ commented on %@'s route",[[PFUser currentUser] objectForKey:@"name"],[routeObject.pfobj objectForKey:@"username"]] forKey:@"message"];
-        [feedObject saveEventually];
+        [feedObject saveInBackground];
         
         
     }else{
@@ -1052,7 +1411,7 @@ commentTextField.text = @"";
            [feedObject setObject:[routeObject.pfobj objectForKey:@"imageFile"] forKey:@"imagefile"];                    [feedObject setObject:[NSString stringWithFormat:@"%@ commented on his/her route",[[PFUser currentUser] objectForKey:@"name"]] forKey:@"message"];
         }
         
-        [feedObject saveEventually];
+        [feedObject saveInBackground];
         
         
     }
@@ -1066,49 +1425,91 @@ commentTextField.text = @"";
 }
 - (void)request:(PF_FBRequest *)request didLoad:(id)result {
     NSLog(@"request didload with result %@",result); 
-    if([[result objectForKey:@"result"]isEqualToString:@"true"])
-    {
-        if (facebookliked) {
-            //set button color to heartcolor
-            [likeButton setImage:[UIImage imageNamed:@"heartcolor.png"] forState:UIControlStateNormal];
-            PFObject* feedObject = [PFObject objectWithClassName:@"Feed"];
-            [feedObject setObject:[[PFUser currentUser] objectForKey:@"name"] forKey:@"sender"];
-            [feedObject setObject:[[PFUser currentUser] objectForKey:@"profilepicture"] forKey:@"senderimagelink"];
-            [feedObject setObject:routeObject.pfobj forKey:@"linkedroute"];
-            [feedObject setObject:[routeObject.pfobj objectForKey:@"imageFile"] forKey:@"imagefile"];
-            if (![[[PFUser currentUser] objectForKey:@"name"] isEqualToString:[routeObject.pfobj objectForKey:@"username"]]) {
-                [feedObject  setObject:[NSString stringWithFormat:@"%@ liked %@'s route",[[PFUser currentUser] objectForKey:@"name"],[routeObject.pfobj objectForKey:@"username"]] forKey:@"message"];
+    switch (currentAPICall) {
+        case kAPIGraphCommentPhoto:    
+            [self getFacebookRouteDetails];
+            break;
+        case kAPICheckLikedComment:
+            
+            if ([(NSArray*)result count]) {
+                if([[[[(NSArray*)result objectAtIndex:0] objectForKey:@"uid"]stringValue] isEqualToString:[[[PFUser currentUser]objectForKey:@"facebookid"]stringValue]])
+                {
+                    [self PostComment:nil];
+                }
             }else{
-                if ([[[PFUser currentUser]objectForKey:@"sex"] isEqualToString:@"female"]) {
-                    [feedObject setObject:[NSString stringWithFormat:@"%@ liked her route",[[PFUser currentUser] objectForKey:@"name"]] forKey:@"message"];
-                    
-                }else if([[[PFUser currentUser]objectForKey:@"sex"] isEqualToString:@"male"]) {
-                    [feedObject setObject:[NSString stringWithFormat:@"%@ liked his route",[[PFUser currentUser] objectForKey:@"name"]] forKey:@"message"];
-                }else{
-                    [feedObject setObject:[NSString stringWithFormat:@"%@ liked his/her route",[[PFUser currentUser] objectForKey:@"name"]] forKey:@"message"];
-                }
-
+                [likeButton setUserInteractionEnabled:YES];
+                dislikealert = [[UIAlertView alloc]initWithTitle:@"Sorry!" message:@"Like our page to comment/like our routes!" delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:@"Show Me",nil];
+                [dislikealert show];
+                [dislikealert release];
             }
-            [feedObject saveEventually];
-        }else{
-            [likeButton setImage:[UIImage imageNamed:@"popularbutton.png"] forState:UIControlStateNormal]; 
-            PFQuery* feedquery = [PFQuery queryWithClassName:@"Feed"];
-            [feedquery whereKey:@"sender" equalTo:[[PFUser currentUser] objectForKey:@"name"]];
-            [feedquery whereKey:@"linkedroute" equalTo:routeObject.pfobj];
-            [queryArray addObject:feedquery];
-            [feedquery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
-                [queryArray removeObject:feedquery];
-                if ([objects count]) {
-                    [((PFObject*)[objects objectAtIndex:0]) delete];
-                    
-                }
-            }];
-        }
-    
+            break;
 
-    
+        case kAPICheckLikedPage:
+
+            if ([(NSArray*)result count]) {
+            if([[[[(NSArray*)result objectAtIndex:0] objectForKey:@"uid"]stringValue] isEqualToString:[[[PFUser currentUser]objectForKey:@"facebookid"]stringValue]])
+            {
+                NSLog(@"already liked");
+                [self LikeButton];
+            }
+            }else{
+                    [likeButton setUserInteractionEnabled:YES];
+                dislikealert = [[UIAlertView alloc]initWithTitle:@"Sorry!" message:@"Like our page to comment/like our routes!" delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:@"Show Me",nil];
+                [dislikealert show];
+                [dislikealert release];
+            }
+            break;
+        case kAPIGraphLikePhoto:
+            if([[result objectForKey:@"result"]isEqualToString:@"true"])
+            {
+                if (facebookliked) {
+                    //set button color to heartcolor
+                    [likeButton setImage:[UIImage imageNamed:@"heartcolor.png"] forState:UIControlStateNormal];
+                    PFObject* feedObject = [PFObject objectWithClassName:@"Feed"];
+                    [feedObject setObject:[[PFUser currentUser] objectForKey:@"name"] forKey:@"sender"];
+                    [feedObject setObject:[[PFUser currentUser] objectForKey:@"profilepicture"] forKey:@"senderimagelink"];
+                    [feedObject setObject:routeObject.pfobj forKey:@"linkedroute"];
+                    [feedObject setObject:[routeObject.pfobj objectForKey:@"imageFile"] forKey:@"imagefile"];
+                    [feedObject setObject:@"like" forKey:@"action"];
+                    if (![[[PFUser currentUser] objectForKey:@"name"] isEqualToString:[routeObject.pfobj objectForKey:@"username"]]) {
+                        [feedObject  setObject:[NSString stringWithFormat:@"%@ liked %@'s route",[[PFUser currentUser] objectForKey:@"name"],[routeObject.pfobj objectForKey:@"username"]] forKey:@"message"];
+                    }else{
+                        if ([[[PFUser currentUser]objectForKey:@"sex"] isEqualToString:@"female"]) {
+                            [feedObject setObject:[NSString stringWithFormat:@"%@ liked her route",[[PFUser currentUser] objectForKey:@"name"]] forKey:@"message"];
+                            
+                        }else if([[[PFUser currentUser]objectForKey:@"sex"] isEqualToString:@"male"]) {
+                            [feedObject setObject:[NSString stringWithFormat:@"%@ liked his route",[[PFUser currentUser] objectForKey:@"name"]] forKey:@"message"];
+                        }else{
+                            [feedObject setObject:[NSString stringWithFormat:@"%@ liked his/her route",[[PFUser currentUser] objectForKey:@"name"]] forKey:@"message"];
+                        }
+                        
+                    }
+                    [feedObject saveInBackground];
+                }else{
+                    [likeButton setImage:[UIImage imageNamed:@"popularbutton.png"] forState:UIControlStateNormal]; 
+                    PFQuery* feedquery = [PFQuery queryWithClassName:@"Feed"];
+                    [feedquery whereKey:@"sender" equalTo:[[PFUser currentUser] objectForKey:@"name"]];
+                    [feedquery whereKey:@"linkedroute" equalTo:routeObject.pfobj];
+                    [queryArray addObject:feedquery];
+                    [feedquery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+                        [queryArray removeObject:feedquery];
+                        if ([objects count]) {
+                            [((PFObject*)[objects objectAtIndex:0]) delete];
+                            
+                        }
+                    }];
+                }
+                
+                
+                
+            }
+              [self getFacebookRouteDetails];   
+            break;
+        default:
+            break;
     }
-          [self getFacebookRouteDetails];          
+    
+         
 }
 - (IBAction)showUsers:(UIButton*)sender {
     SendUserViewController*viewController = [[SendUserViewController alloc]initWithNibName:@"SendUserViewController" bundle:nil];
@@ -1133,13 +1534,36 @@ commentTextField.text = @"";
     [viewController release];
 }
 
-- (IBAction)likeButton:(id)sender {
+-(IBAction)LikeButtonPressed:(id)sender{
     [likeButton setUserInteractionEnabled:NO];
+if ([routeObject.pfobj objectForKey:@"isPage"]==[NSNumber numberWithBool:YES]) {
+    currentAPICall = kAPICheckLikedPage;
+    [[self.routeObject.pfobj objectForKey:@"Gym"]fetchIfNeededInBackgroundWithBlock:^(PFObject *object, NSError *error) {
+        
+        NSMutableDictionary *params = [NSMutableDictionary dictionaryWithObjectsAndKeys:
+                                   [NSString stringWithFormat:@"select uid from page_fan where uid=me() and page_id=%@",[[[self.routeObject.pfobj objectForKey:@"Gym"]fetchIfNeeded] objectForKey:@"facebookid"]], @"query",
+                                   nil];
+    [[PFFacebookUtils facebook] requestWithMethodName:@"fql.query"
+                                            andParams:params
+                                        andHttpMethod:@"POST"
+                                          andDelegate:self];
+    }];
+
+    
+}else{
+    [self LikeButton];   
+}
+}
+- (void)LikeButton {
+    [likeButton setUserInteractionEnabled:NO];
+    NSLog(@"likebutton function");
     if ([routeObject.pfobj objectForKey:@"photoid"])
     {//if uploaded to facebook also upload comment to facebook.. keep everything there
         
         if([likeButton imageForState:UIControlStateNormal]==[UIImage imageNamed:@"heartcolor.png"]){
             facebookliked = NO; //unlike!
+            NSLog(@"unlike");
+            currentAPICall= kAPIGraphLikePhoto;
         NSMutableDictionary *params = [NSMutableDictionary dictionaryWithObjectsAndKeys:[[PFUser currentUser]objectForKey:@"name"],[[[PFUser currentUser]objectForKey:@"facebookid"] stringValue],nil];
         [[PFFacebookUtils facebook] requestWithGraphPath:[NSString stringWithFormat:@"/%@/likes",[routeObject.pfobj objectForKey:@"photoid"]]
                                                andParams:params
@@ -1148,6 +1572,8 @@ commentTextField.text = @"";
            
         }else{
             facebookliked = YES; //liked
+            currentAPICall= kAPIGraphLikePhoto;     
+            NSLog(@"likeed");
             NSMutableDictionary *params = [NSMutableDictionary dictionaryWithObjectsAndKeys:[[PFUser currentUser]objectForKey:@"name"],[[[PFUser currentUser]objectForKey:@"facebookid"] stringValue],nil];
             [[PFFacebookUtils facebook] requestWithGraphPath:[NSString stringWithFormat:@"/%@/likes",[routeObject.pfobj objectForKey:@"photoid"]]
                                                    andParams:params
@@ -1156,7 +1582,7 @@ commentTextField.text = @"";
         }
         
     }else{
-    
+        NSLog(@"no photoid");
     PFQuery* likequery = [PFQuery queryWithClassName:@"Like"];
 
     [likequery whereKey:@"linkedroute" equalTo:routeObject.pfobj];
@@ -1204,7 +1630,9 @@ commentTextField.text = @"";
        
     
     }
-    }
+    
+}
+
 -(void)LikeOperation:(NSInteger)likecounter
 {
     
@@ -1250,6 +1678,7 @@ commentTextField.text = @"";
             [feedObject setObject:[[PFUser currentUser] objectForKey:@"name"] forKey:@"sender"];
             [feedObject setObject:[[PFUser currentUser] objectForKey:@"profilepicture"] forKey:@"senderimagelink"];
             [feedObject setObject:routeObject.pfobj forKey:@"linkedroute"];
+                         [feedObject setObject:@"like" forKey:@"action"];
                         if (![[[PFUser currentUser] objectForKey:@"name"] isEqualToString:[routeObject.pfobj objectForKey:@"username"]]) {
                             [feedObject  setObject:[NSString stringWithFormat:@"%@ liked %@'s route",[[PFUser currentUser] objectForKey:@"name"],[routeObject.pfobj objectForKey:@"username"]] forKey:@"message"];
                         }else{
@@ -1264,12 +1693,12 @@ commentTextField.text = @"";
                             
                         }
             
-            [feedObject saveEventually];
+            [feedObject saveInBackground];
                         
                     }];
         }else{
             NSLog(@"failed with error = %@",error);
-            [newLike saveEventually];
+            [newLike saveInBackground];
         }
     }];
     
@@ -1357,8 +1786,46 @@ if (cell == nil) {
 
     return cell;  
 }
+- (IBAction)recommendButton:(id)sender {
+    
+    FriendTaggerViewController* viewController = [[FriendTaggerViewController alloc]initWithNibName:@"FriendTaggerViewController" bundle:nil];
+        viewController.delegate = self;
+    [self.navigationController pushViewController:viewController animated:YES];
+    [viewController release];
+    
+}
+-(void)TaggerDidReturnWithRecommendedArray:(NSMutableArray *)recommendedArray
+{
 
+    for (FBfriend* friend in recommendedArray) {
+        NSMutableDictionary *data = [NSMutableDictionary dictionary];
+        [data setObject:routeObject.pfobj.objectId forKey:@"linkedroute"];
+        [data setObject:[NSNumber numberWithInt:1] forKey:@"badge"];
+        [data setObject:[NSString stringWithFormat:@"%@ recommended you a route",[[PFUser currentUser] objectForKey:@"name"],[routeObject.pfobj objectForKey:@"username"]] forKey:@"alert"];
+        [data setObject:[NSString stringWithFormat:@"%@",[[PFUser currentUser] objectForKey:@"name"]] forKey:@"sender"];
+        [data setObject:[NSString stringWithFormat:@"%@",friend.name] forKey:@"reciever"];
+        
+        [PFPush sendPushDataToChannelInBackground:[NSString stringWithFormat:@"channel%@",friend.uid] withData:data];
+        
+        PFObject* feedObject = [PFObject objectWithClassName:@"Feed"];
+        [feedObject setObject:[[PFUser currentUser] objectForKey:@"name"] forKey:@"sender"];
+        [feedObject setObject:[[PFUser currentUser] objectForKey:@"profilepicture"] forKey:@"senderimagelink"];
+        [feedObject setObject:routeObject.pfobj forKey:@"linkedroute"];
+        [feedObject setObject:@"tag" forKey:@"action"];
+        [feedObject setObject:[NSString stringWithFormat:@"%@ recommended %@ a route",[[PFUser currentUser] objectForKey:@"name"],friend.name] forKey:@"message"];
+        
+        [feedObject saveInBackground];
+        NSMutableArray* recommendedUsersArray = [[NSMutableArray alloc]initWithArray:[routeObject.pfobj objectForKey:@"usersrecommended"]];
+        if (![recommendedUsersArray containsObject:friend.name]) {
+            [recommendedUsersArray addObject:friend.name];
+            [routeObject.pfobj setObject:recommendedUsersArray forKey:@"usersrecommended"];
 
+        }
+            [routeObject.pfobj saveEventually];        
+        
+        
+    }
+}
 
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
@@ -1404,6 +1871,9 @@ if (cell == nil) {
     [difficultyLabel release];
     [outdateButton release];
     [unoutdateButton release];
+    [approvalView release];
+
+    [postButton release];
     [super dealloc];
 }
 @end

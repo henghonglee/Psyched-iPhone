@@ -12,6 +12,8 @@
 @synthesize feedLabel;
 @synthesize senderImage;
 @synthesize timeLabel;
+@synthesize backgroundViewObj;
+@synthesize readSphereView;
 
 - (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
 {
@@ -33,6 +35,8 @@
     [feedLabel release];
     [senderImage release];
     [timeLabel release];
+    [backgroundViewObj release];
+    [readSphereView release];
     [super dealloc];
 }
 @end

@@ -7,7 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
-
+#import <Parse/Parse.h>
 @interface SpecialTableCell : UITableViewCell
 @property (retain, nonatomic) IBOutlet UILabel *priorityLabel;
 @property (retain, nonatomic) IBOutlet UILabel *todoTextLabel;
@@ -24,5 +24,7 @@
 @property (retain, nonatomic) IBOutlet UILabel *timeLabel;
 @property (retain, nonatomic) IBOutlet UIImageView *stampImageView;
 @property (retain, nonatomic) IBOutlet UILabel *difficultyLabel;
-
+@property (nonatomic) BOOL isFetchingGym;
+@property (retain, nonatomic) IBOutlet UIView *approvalView;
+@property (retain,nonatomic) PFObject* routePFObject;
 @end

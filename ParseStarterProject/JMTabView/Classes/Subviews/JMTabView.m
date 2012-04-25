@@ -1,5 +1,5 @@
 //  Created by Jason Morrissey
-
+#import "LKBadgeView.h"
 #import "JMTabView.h"
 #import "JMTabContainer.h"
 #import "BarBackgroundLayer.h"
@@ -92,9 +92,15 @@
 - (void)addTabItemWithTitle:(NSString *)title icon:(UIImage *)icon;
 {
     JMTabItem * tabItem = [JMTabItem tabItemWithTitle:title icon:icon];
+    
     [self addTabItem:tabItem];
 }
-
+- (void)addTabItemWithTitle:(NSString *)title icon:(UIImage *)icon badge:(LKBadgeView*)badge
+{
+    JMTabItem * tabItem = [JMTabItem tabItemWithTitle:title icon:icon];
+    [tabItem addSubview:badge];
+    [self addTabItem:tabItem];
+}
 #if NS_BLOCKS_AVAILABLE
 - (void)addTabItemWithTitle:(NSString *)title icon:(UIImage *)icon executeBlock:(JMTabExecutionBlock)executeBlock;
 {

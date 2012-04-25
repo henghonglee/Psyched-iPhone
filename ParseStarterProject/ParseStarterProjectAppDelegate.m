@@ -8,9 +8,9 @@
 #import <BugSense-iOS/BugSenseCrashController.h>
 #import "FlurryAnalytics.h"
 
-#define VERSION 1.2
+#define VERSION 1.3
 @implementation ParseStarterProjectAppDelegate
-
+@synthesize badgeView;
 @synthesize window=_window;
 @synthesize pushedNotifications;
 @synthesize viewController=_viewController;
@@ -38,7 +38,7 @@
     // Override point for customization after application launch.
    
 
-    
+   
     InstagramViewController* viewController = [[InstagramViewController alloc]initWithNibName:@"InstagramViewController" bundle:nil];
      LoginViewController* loginVC = [[LoginViewController alloc]initWithNibName:@"LoginViewController" bundle:nil];
 
@@ -65,7 +65,10 @@
                       
                       
                       [[PFUser currentUser] setObject:[NSNumber numberWithDouble:VERSION] forKey:@"version"];
-                      [[PFUser currentUser] saveInBackground];
+                      [[PFUser currentUser] saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+                          [PFPush subscribeToChannelInBackground:[NSString stringWithFormat:@"channel%@",[[PFUser currentUser] objectForKey:@"facebookid"]] target:self selector:@selector(subscribeFinished:error:)];
+                          NSLog(@"subscribed to channeluser %@",[NSString stringWithFormat:@"channel%@",[[PFUser currentUser] objectForKey:@"facebookid"]]);
+                      }];
                       PFQuery* versionquery = [PFQuery queryWithClassName:@"Version"];
                       [versionquery getFirstObjectInBackgroundWithBlock:^(PFObject *object, NSError *error) {
                           if ([[object objectForKey:@"version"] doubleValue] > VERSION) {
@@ -178,6 +181,7 @@
 {
     [PFPush storeDeviceToken:newDeviceToken];
     [PFPush subscribeToChannelInBackground:@"" target:self selector:@selector(subscribeFinished:error:)];
+    
     [PFPush unsubscribeFromChannelInBackground:@"channelrecommend"];
 }
 
@@ -193,41 +197,24 @@
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo {
     
     NSLog(@"userInfo = %@",userInfo);
-   
     
+   if (![[userInfo objectForKey:@"sender"] isEqualToString:[[PFUser currentUser]objectForKey:@"name"]]) {
     if ([[userInfo objectForKey:@"reciever"] isEqualToString:[[PFUser currentUser]objectForKey:@"name"]]) {
       
-        
+     
         [JHNotificationManager notificationWithMessage:
          [NSString stringWithFormat:@"%@",[[userInfo objectForKey:@"aps"] objectForKey:@"alert"]]];
-        if (![[NSUserDefaults standardUserDefaults] objectForKey:@"savedArray"]) {
-            pushedNotifications = [[NSMutableArray alloc]init ];
-        }else{
-            pushedNotifications = [[NSUserDefaults standardUserDefaults] objectForKey:@"savedArray"];
-            [pushedNotifications addObject:[NSString stringWithFormat:@"%@",[[userInfo objectForKey:@"aps"] objectForKey:@"alert"]]];
-            [[NSUserDefaults standardUserDefaults] setObject:[NSKeyedArchiver archivedDataWithRootObject:pushedNotifications] forKey:@"savedArray"];
-            NSLog(@"saved array = %@",pushedNotifications);
-        }
         
     }else{
-    if ([[userInfo objectForKey:@"sender"] isEqualToString:[[PFUser currentUser]objectForKey:@"name"]]) {
-        
-    }else{
-        
-       
+    
         [JHNotificationManager notificationWithMessage:
          [[NSString stringWithFormat:@"%@",[[userInfo objectForKey:@"aps"] objectForKey:@"alert"]]stringByReplacingOccurrencesOfString:[NSString stringWithFormat:@"%@'s",[[PFUser currentUser]objectForKey:@"name"]] withString:@"your"]];
-        if (![[NSUserDefaults standardUserDefaults] objectForKey:@"savedArray"]) {
-             pushedNotifications = [[NSMutableArray alloc]init ];
-        }else{
-            pushedNotifications = [[NSUserDefaults standardUserDefaults] objectForKey:@"savedArray"];
-            [pushedNotifications addObject:[NSString stringWithFormat:@"%@",[[userInfo objectForKey:@"aps"] objectForKey:@"alert"]]];
-        [[NSUserDefaults standardUserDefaults] setObject:[NSKeyedArchiver archivedDataWithRootObject:pushedNotifications] forKey:@"savedArray"];
-            NSLog(@"saved array = %@",pushedNotifications);
-        }
+        
     }
    
     }
+
+    
     if ([UIApplication sharedApplication].applicationState == UIApplicationStateInactive) {
 
     PFQuery* routequery = [PFQuery queryWithClassName:@"Route"];
@@ -335,9 +322,11 @@
         if (!currentLocation){
             CLLocation* mycurrloc = [[CLLocation alloc]initWithLatitude:newLocation.coordinate.latitude longitude:newLocation.coordinate.longitude];
             self.currentLocation = mycurrloc;
+             NSLog(@"currentLocation new= %@",self.currentLocation);
             [mycurrloc release];
         }else{
             self.currentLocation = newLocation;
+             NSLog(@"currentLocation = %@",self.currentLocation);
         }
     }
     // else skip the event and process the next one.
@@ -402,7 +391,10 @@
         
         [[PFUser currentUser] setObject:[result objectForKey:@"about_me"] forKey:@"about_me"];
         
-        [[PFUser currentUser] saveInBackground];
+        [[PFUser currentUser] saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+            [PFPush subscribeToChannelInBackground:[NSString stringWithFormat:@"channel%@",[[PFUser currentUser] objectForKey:@"facebookid"]] target:self selector:@selector(subscribeFinished:error:)];
+            NSLog(@"subscribed to channeluser %@",[NSString stringWithFormat:@"channel%@",[[PFUser currentUser] objectForKey:@"facebookid"]]);
+        }];
         
         
         [FlurryAnalytics setUserID:[[PFUser currentUser] objectForKey:@"name"]];
