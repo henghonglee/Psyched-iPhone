@@ -8,7 +8,7 @@
 #import <BugSense-iOS/BugSenseCrashController.h>
 #import "FlurryAnalytics.h"
 
-#define VERSION 1.3
+#define VERSION 1.4
 @implementation ParseStarterProjectAppDelegate
 @synthesize badgeView;
 @synthesize window=_window;
@@ -37,7 +37,10 @@
     [PFFacebookUtils initializeWithApplicationId:@"200778040017319"];
     // Override point for customization after application launch.
    
-
+    if([[NSUserDefaults standardUserDefaults] objectForKey:@"NearbyDistance"] ==nil){
+        [[NSUserDefaults standardUserDefaults] setObject:@"5" forKey:@"NearbyDistance"];
+    }
+      
    
     InstagramViewController* viewController = [[InstagramViewController alloc]initWithNibName:@"InstagramViewController" bundle:nil];
      LoginViewController* loginVC = [[LoginViewController alloc]initWithNibName:@"LoginViewController" bundle:nil];
@@ -94,7 +97,7 @@
              [PFFacebookUtils logInWithPermissions:permissions block:^(PFUser *user, NSError *error) {
                  [self apiFQLIMe];
                  
-
+                 [permissions release];
                  
                  
              }];

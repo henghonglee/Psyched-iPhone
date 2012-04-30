@@ -34,7 +34,8 @@
 @synthesize gymReccomended;
 @synthesize gymLiked;
 @synthesize gymCommented;
-
+@synthesize gymTags;
+@synthesize gymSections;
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
@@ -62,6 +63,7 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    gymSections = [[NSMutableDictionary alloc]init ];
     if (gymObject) {
         [self furthurinit];               
     }else{
@@ -145,6 +147,7 @@
     gymGradeDown = [[NSMutableArray alloc]init];
     gymGradeUp = [[NSMutableArray alloc]init];
     gymReccomended = [[NSMutableArray alloc]init];
+    gymTags = [[NSMutableArray alloc]init];
     gymLiked = [[NSMutableArray alloc]init];
         routeArray = [[NSMutableArray alloc]init];
     gymCommented = [[NSMutableArray alloc]init];
@@ -153,8 +156,12 @@
 
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    
+    if (tabView.segmentIndex==3) {
+        NSLog(@"numberofsections = %d", [[self.gymSections allKeys] count]+2);
+         return [[self.gymSections allKeys] count]+2;
+    }
     return 2;
+
 }
 -(CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
 {
@@ -163,9 +170,19 @@
         
     if(section==0)
         return 184;
-//    if(section==1)
-//        return 109;
+    if(section==1)
     return 44;
+    
+    return 22;
+}
+-(NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
+{
+    if (section>1) {
+    NSString* selectedsection = [[[self.gymSections allKeys]objectAtIndex:section-2] stringByReplacingOccurrencesOfString:@"_" withString:@" "];
+        return selectedsection;
+    }else{
+        return nil;
+    }
 }
 -(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
@@ -184,9 +201,7 @@
     if (section==0) {
         return 1;
     }
-//    if (section==1) {
-//        return 1;
-//    }
+    if (section==1) {
     switch (tabView.segmentIndex) {
         case 0:
             return [routeArray count];
@@ -198,7 +213,7 @@
             return [gymGradeDown count];
             break;    
         case 3:
-            return [gymReccomended count];
+            return 0;
             break;    
         case 4:
             return [gymLiked count];
@@ -209,18 +224,34 @@
         default:
             return 0;
             break;
+        }
+    }else{
+               NSString* selectedsection = [[self.gymSections allKeys]objectAtIndex:section-2];
+        NSLog(@"number of rows in section %d = %d",section,[[self.gymSections valueForKey:selectedsection] count]);
+
+        return [[self.gymSections valueForKey:selectedsection] count];
     }
   
 }
 - (UIView *)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section {
-    
-    if (section==1){
+   
         return [[UIView new] autorelease];
-    }       
-    return nil;
+   
 }
 -(CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section
 {
+    if (tabView.segmentIndex==3) {
+        if (section==1){
+
+            if ([[self.gymSections allKeys] count]==0) {
+            return 323;
+            }else{
+                return 0;
+            }
+        }
+        
+    }
+    
     if(section==1){
     switch (tabView.segmentIndex) {
         case 0:
@@ -283,6 +314,7 @@
                 }
             }
         }
+        cell.owner = self;
         cell.pfObject = gymObject;
         
         PFGeoPoint* geopoint = [gymObject objectForKey:@"gymlocation"];
@@ -393,13 +425,28 @@
                                                  cell.routeImageView.alpha = 1.0;
                                              } 
                                              completion:^(BOOL finished){
-                                                 // NSLog(@"Done!");
+                                                 cell.routeImageView.layer.masksToBounds = YES;
+                                                 cell.routeImageView.layer.cornerRadius = 5.0f;
+                                                 cell.imageBackgroundView.layer.shadowPath =[UIBezierPath bezierPathWithRect:cell.routeImageView.bounds].CGPath;
+                                                 cell.imageBackgroundView.layer.shadowColor = [UIColor blackColor].CGColor;
+                                                 cell.imageBackgroundView.layer.shadowOpacity = 0.7f;
+                                                 cell.imageBackgroundView.layer.shadowOffset = CGSizeMake(2.0f, 2.0f);
+                                                 cell.imageBackgroundView.layer.shadowRadius = 3.0f;
+                                                 cell.imageBackgroundView.layer.cornerRadius = 5.0f;
                                              }];
                         }];
                         
                         
                     }else{
                         cell.routeImageView.image = ((RouteObject*)[self.routeArray objectAtIndex:indexPath.row]).retrievedImage;
+                        cell.routeImageView.layer.masksToBounds = YES;
+                        cell.routeImageView.layer.cornerRadius = 5.0f;
+                        cell.imageBackgroundView.layer.shadowPath =[UIBezierPath bezierPathWithRect:cell.routeImageView.bounds].CGPath;
+                        cell.imageBackgroundView.layer.shadowColor = [UIColor blackColor].CGColor;
+                        cell.imageBackgroundView.layer.shadowOpacity = 0.7f;
+                        cell.imageBackgroundView.layer.shadowOffset = CGSizeMake(2.0f, 2.0f);
+                        cell.imageBackgroundView.layer.shadowRadius = 3.0f;
+                        cell.imageBackgroundView.layer.cornerRadius = 5.0f;
                     }
                     double timesincenow =  [((NSDate*)object.createdAt) timeIntervalSinceNow];
                     //NSLog(@"timesincenow = %i",((int)timesincenow));
@@ -426,8 +473,7 @@
                 break;
             case 1:
                 if ([self.gymGradeUp count]>0) {
-                PFObject* object = ((RouteObject*)[self.gymGradeUp objectAtIndex:indexPath.row]).pfobj;
-                NSLog(@"showing flash array");
+                    PFObject* object = ((RouteObject*)[self.gymGradeUp objectAtIndex:indexPath.row]).pfobj;
                 cell.commentcount.text = [NSString stringWithFormat:@"%@",[[object objectForKey:@"commentcount"]stringValue]];
                 cell.likecount.text = [NSString stringWithFormat:@"%@",[[object objectForKey:@"likecount"]stringValue ]];
                 cell.viewcount.text = [NSString stringWithFormat:@"%@",[[object objectForKey:@"viewcount"]stringValue ]];
@@ -510,13 +556,28 @@
                                              cell.routeImageView.alpha = 1.0;
                                          } 
                                          completion:^(BOOL finished){
-                                             // NSLog(@"Done!");
+                                             cell.routeImageView.layer.masksToBounds = YES;
+                                             cell.routeImageView.layer.cornerRadius = 5.0f;
+                                             cell.imageBackgroundView.layer.shadowPath =[UIBezierPath bezierPathWithRect:cell.routeImageView.bounds].CGPath;
+                                             cell.imageBackgroundView.layer.shadowColor = [UIColor blackColor].CGColor;
+                                             cell.imageBackgroundView.layer.shadowOpacity = 0.7f;
+                                             cell.imageBackgroundView.layer.shadowOffset = CGSizeMake(2.0f, 2.0f);
+                                             cell.imageBackgroundView.layer.shadowRadius = 3.0f;
+                                             cell.imageBackgroundView.layer.cornerRadius = 5.0f;
                                          }];
                     }];
                     
                     
                 }else{
                     cell.routeImageView.image = ((RouteObject*)[self.gymGradeUp objectAtIndex:indexPath.row]).retrievedImage;
+                    cell.routeImageView.layer.masksToBounds = YES;
+                    cell.routeImageView.layer.cornerRadius = 5.0f;
+                    cell.imageBackgroundView.layer.shadowPath =[UIBezierPath bezierPathWithRect:cell.routeImageView.bounds].CGPath;
+                    cell.imageBackgroundView.layer.shadowColor = [UIColor blackColor].CGColor;
+                    cell.imageBackgroundView.layer.shadowOpacity = 0.7f;
+                    cell.imageBackgroundView.layer.shadowOffset = CGSizeMake(2.0f, 2.0f);
+                    cell.imageBackgroundView.layer.shadowRadius = 3.0f;
+                    cell.imageBackgroundView.layer.cornerRadius = 5.0f;
                 }
                 double timesincenow =  [((NSDate*)object.createdAt) timeIntervalSinceNow];
                 //NSLog(@"timesincenow = %i",((int)timesincenow));
@@ -544,7 +605,6 @@
             case 2:
                 if ([self.gymGradeDown count]>0) {
                     PFObject* object = ((RouteObject*)[self.gymGradeDown objectAtIndex:indexPath.row]).pfobj;
-                    NSLog(@"showing flash array");
                     cell.commentcount.text = [NSString stringWithFormat:@"%@",[[object objectForKey:@"commentcount"]stringValue]];
                     cell.likecount.text = [NSString stringWithFormat:@"%@",[[object objectForKey:@"likecount"]stringValue ]];
                     cell.viewcount.text = [NSString stringWithFormat:@"%@",[[object objectForKey:@"viewcount"]stringValue ]];
@@ -628,13 +688,28 @@
                                                  cell.routeImageView.alpha = 1.0;
                                              } 
                                              completion:^(BOOL finished){
-                                                 // NSLog(@"Done!");
+                                                 cell.routeImageView.layer.masksToBounds = YES;
+                                                 cell.routeImageView.layer.cornerRadius = 5.0f;
+                                                 cell.imageBackgroundView.layer.shadowPath =[UIBezierPath bezierPathWithRect:cell.routeImageView.bounds].CGPath;
+                                                 cell.imageBackgroundView.layer.shadowColor = [UIColor blackColor].CGColor;
+                                                 cell.imageBackgroundView.layer.shadowOpacity = 0.7f;
+                                                 cell.imageBackgroundView.layer.shadowOffset = CGSizeMake(2.0f, 2.0f);
+                                                 cell.imageBackgroundView.layer.shadowRadius = 3.0f;
+                                                 cell.imageBackgroundView.layer.cornerRadius = 5.0f;
                                              }];
                         }];
                         
                         
                     }else{
                         cell.routeImageView.image = ((RouteObject*)[self.gymGradeDown objectAtIndex:indexPath.row]).retrievedImage;
+                        cell.routeImageView.layer.masksToBounds = YES;
+                        cell.routeImageView.layer.cornerRadius = 5.0f;
+                        cell.imageBackgroundView.layer.shadowPath =[UIBezierPath bezierPathWithRect:cell.routeImageView.bounds].CGPath;
+                        cell.imageBackgroundView.layer.shadowColor = [UIColor blackColor].CGColor;
+                        cell.imageBackgroundView.layer.shadowOpacity = 0.7f;
+                        cell.imageBackgroundView.layer.shadowOffset = CGSizeMake(2.0f, 2.0f);
+                        cell.imageBackgroundView.layer.shadowRadius = 3.0f;
+                        cell.imageBackgroundView.layer.cornerRadius = 5.0f;
                     }
                     double timesincenow =  [((NSDate*)object.createdAt) timeIntervalSinceNow];
                     //NSLog(@"timesincenow = %i",((int)timesincenow));
@@ -659,6 +734,142 @@
                    
                 }
                 break;
+            case 3:
+                  NSLog(@"cellforrow");
+                self.gymTags = [self.gymSections valueForKey:[[self.gymSections allKeys]objectAtIndex:indexPath.section-2]];
+              
+                if ([[self.gymSections valueForKey:[[self.gymSections allKeys]objectAtIndex:indexPath.section-2]] count]>0) {
+                    PFObject* object = ((RouteObject*)[[self.gymSections valueForKey:[[self.gymSections allKeys]objectAtIndex:indexPath.section-2]] objectAtIndex:indexPath.row]).pfobj;
+                    NSLog(@"showing flash array");
+                    cell.commentcount.text = [NSString stringWithFormat:@"%@",[[object objectForKey:@"commentcount"]stringValue]];
+                    cell.likecount.text = [NSString stringWithFormat:@"%@",[[object objectForKey:@"likecount"]stringValue ]];
+                    cell.viewcount.text = [NSString stringWithFormat:@"%@",[[object objectForKey:@"viewcount"]stringValue ]];
+                    cell.routeLocationLabel.text = [object objectForKey:@"location"];
+                    
+                    __block NSString* imagelink;
+                    
+                    if ([object objectForKey:@"isPage"]==[NSNumber numberWithBool:YES]) {
+                        
+                        [[object objectForKey:@"Gym"]fetchIfNeededInBackgroundWithBlock:^(PFObject *object, NSError *error) {
+                            imagelink=[object objectForKey:@"imagelink"];  
+                            cell.ownerNameLabel.text = [object objectForKey:@"name"];
+                            if (((RouteObject*)[[self.gymSections valueForKey:[[self.gymSections allKeys]objectAtIndex:indexPath.section-2]] objectAtIndex:indexPath.row]).ownerImage) {
+                                cell.ownerImage.image = ((RouteObject*)[[self.gymSections valueForKey:[[self.gymSections allKeys]objectAtIndex:indexPath.section-2]] objectAtIndex:indexPath.row]).ownerImage;
+                            }else{
+                                ASIHTTPRequest* request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:imagelink]];
+                                [request setCompletionBlock:^{
+                                    UIImage* ownerImage = [UIImage imageWithData:[request responseData]];
+                                    
+                                    cell.ownerImage.image = ownerImage;
+                                    ((RouteObject*)[[self.gymSections valueForKey:[[self.gymSections allKeys]objectAtIndex:indexPath.section-2]] objectAtIndex:indexPath.row]).ownerImage= ownerImage;
+                                    cell.ownerImage.alpha =0.0;
+                                    [UIView animateWithDuration:0.3
+                                                          delay:0.0
+                                                        options: UIViewAnimationCurveEaseOut
+                                                     animations:^{
+                                                         cell.ownerImage.alpha = 1.0;
+                                                     } 
+                                                     completion:^(BOOL finished){
+                                                         // NSLog(@"Done!");
+                                                     }];
+                                }];
+                                [request setFailedBlock:^{}];
+                                [request startAsynchronous];
+                            }
+                        }];
+                        
+                    }else{
+                        imagelink = [object objectForKey:@"userimage"];
+                        cell.ownerNameLabel.text = [object objectForKey:@"username"];
+                        
+                        
+                        if (((RouteObject*)[[self.gymSections valueForKey:[[self.gymSections allKeys]objectAtIndex:indexPath.section-2]] objectAtIndex:indexPath.row]).ownerImage) {
+                            cell.ownerImage.image = ((RouteObject*)[[self.gymSections valueForKey:[[self.gymSections allKeys]objectAtIndex:indexPath.section-2]] objectAtIndex:indexPath.row]).ownerImage;
+                        }else{
+                            ASIHTTPRequest* request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:imagelink]];
+                            [request setCompletionBlock:^{
+                                UIImage* ownerImage = [UIImage imageWithData:[request responseData]];
+                                
+                                cell.ownerImage.image = ownerImage;
+                                ((RouteObject*)[[self.gymSections valueForKey:[[self.gymSections allKeys]objectAtIndex:indexPath.section-2]] objectAtIndex:indexPath.row]).ownerImage= ownerImage;
+                                cell.ownerImage.alpha =0.0;
+                                [UIView animateWithDuration:0.3
+                                                      delay:0.0
+                                                    options: UIViewAnimationCurveEaseOut
+                                                 animations:^{
+                                                     cell.ownerImage.alpha = 1.0;
+                                                 } 
+                                                 completion:^(BOOL finished){
+                                                     // NSLog(@"Done!");
+                                                 }];
+                            }];
+                            [request setFailedBlock:^{}];
+                            [request startAsynchronous];
+                        }
+                    }
+                    if (!((RouteObject*)[[self.gymSections valueForKey:[[self.gymSections allKeys]objectAtIndex:indexPath.section-2]] objectAtIndex:indexPath.row]).retrievedImage) {
+                        
+                        PFFile *imagefile = [object objectForKey:@"thumbImageFile"];
+                        [imagefile getDataInBackgroundWithBlock:^(NSData* imageData,NSError *error){
+                            UIImage* retrievedImage = [UIImage imageWithData:imageData];
+                            
+                            ((RouteObject*)[[self.gymSections valueForKey:[[self.gymSections allKeys]objectAtIndex:indexPath.section-2]] objectAtIndex:indexPath.row]).retrievedImage = retrievedImage;
+                            cell.routeImageView.image = retrievedImage;
+                            cell.routeImageView.alpha =0.0;
+                            [UIView animateWithDuration:0.3
+                                                  delay:0.0
+                                                options: UIViewAnimationCurveEaseOut
+                                             animations:^{
+                                                 cell.routeImageView.alpha = 1.0;
+                                             } 
+                                             completion:^(BOOL finished){
+                                                 cell.routeImageView.layer.masksToBounds = YES;
+                                                 cell.routeImageView.layer.cornerRadius = 5.0f;
+                                                 cell.imageBackgroundView.layer.shadowPath =[UIBezierPath bezierPathWithRect:cell.routeImageView.bounds].CGPath;
+                                                 cell.imageBackgroundView.layer.shadowColor = [UIColor blackColor].CGColor;
+                                                 cell.imageBackgroundView.layer.shadowOpacity = 0.7f;
+                                                 cell.imageBackgroundView.layer.shadowOffset = CGSizeMake(2.0f, 2.0f);
+                                                 cell.imageBackgroundView.layer.shadowRadius = 3.0f;
+                                                 cell.imageBackgroundView.layer.cornerRadius = 5.0f;
+                                             }];
+                        }];
+                        
+                        
+                    }else{
+                        cell.routeImageView.image = ((RouteObject*)[[self.gymSections valueForKey:[[self.gymSections allKeys]objectAtIndex:indexPath.section-2]] objectAtIndex:indexPath.row]).retrievedImage;
+                        cell.routeImageView.layer.masksToBounds = YES;
+                        cell.routeImageView.layer.cornerRadius = 5.0f;
+                        cell.imageBackgroundView.layer.shadowPath =[UIBezierPath bezierPathWithRect:cell.routeImageView.bounds].CGPath;
+                        cell.imageBackgroundView.layer.shadowColor = [UIColor blackColor].CGColor;
+                        cell.imageBackgroundView.layer.shadowOpacity = 0.7f;
+                        cell.imageBackgroundView.layer.shadowOffset = CGSizeMake(2.0f, 2.0f);
+                        cell.imageBackgroundView.layer.shadowRadius = 3.0f;
+                        cell.imageBackgroundView.layer.cornerRadius = 5.0f;
+                    }
+                    double timesincenow =  [((NSDate*)object.createdAt) timeIntervalSinceNow];
+                    //NSLog(@"timesincenow = %i",((int)timesincenow));
+                    int timeint = ((int)timesincenow);
+                    //if more than 1 day show number of days
+                    //if more than 60min show number of hrs
+                    //if more than 24hrs show days
+                    
+                    if (timeint < -86400) {
+                        cell.timeLabel.text = [NSString stringWithFormat:@"%id",timeint/-86400];
+                    }else if(timeint < -3600){
+                        cell.timeLabel.text = [NSString stringWithFormat:@"%ih",timeint/-3600];
+                    }else{
+                        cell.timeLabel.text = [NSString stringWithFormat:@"%im",timeint/-60];
+                    }
+                    
+                    
+                    //    [request2 release];
+                    
+                    cell.todoTextLabel.text = [object objectForKey:@"description"];
+                    cell.difficultyLabel.text = [object objectForKey:@"difficultydescription"];
+                    
+                }
+                break;
+            
             default:
                 break;
         }
@@ -669,9 +880,9 @@
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
-    
+    NSLog(@"indexrow =%d",indexPath.row);
     RouteDetailViewController* viewController = [[RouteDetailViewController alloc]initWithNibName:@"RouteDetailViewController" bundle:nil];
-  
+              
     switch (tabView.segmentIndex) {
         case 0:
             viewController.routeObject = [self.routeArray objectAtIndex:indexPath.row];
@@ -684,7 +895,10 @@
             viewController.routeObject = [self.gymGradeDown objectAtIndex:indexPath.row];
             break;
         case 3:
-            viewController.routeObject = [self.gymReccomended objectAtIndex:indexPath.row];
+            NSLog(@"test");
+            NSString* selectedSection = [[self.gymSections allKeys] objectAtIndex:indexPath.section-2];
+            NSMutableArray* selectedArray = [self.gymSections valueForKey:selectedSection]; 
+            viewController.routeObject = [selectedArray objectAtIndex:indexPath.row];
             break;
         case 4:
             viewController.routeObject = [self.gymLiked objectAtIndex:indexPath.row];
@@ -715,7 +929,7 @@
     [tabView addTabItemWithTitle:@"Newest!" icon:[UIImage imageNamed:@"icon1.png"]];
     [tabView addTabItemWithTitle:@"Hardest" icon:[UIImage imageNamed:@"project_white.png"]];
     [tabView addTabItemWithTitle:@"Easiest" icon:[UIImage imageNamed:@"flash_white.png"]];
-//    [tabView addTabItemWithTitle:@"Most Recommended" icon:[UIImage imageNamed:@"project_white.png"]];
+    [tabView addTabItemWithTitle:@"Hashtags" icon:[UIImage imageNamed:@"project_white.png"]];
 //    [tabView addTabItemWithTitle:@"Most Liked" icon:[UIImage imageNamed:@"followed.png"]];
 //    [tabView addTabItemWithTitle:@"Most Commented" icon:[UIImage imageNamed:@"followed.png"]];
 //    
@@ -806,7 +1020,44 @@
 
             break;
         case 3:
+            [queryRoute whereKey:@"outdated" notEqualTo:[NSNumber numberWithBool:true]];
+            [queryRoute whereKey:@"routelocation" nearGeoPoint:[gymObject objectForKey:@"gymlocation"] withinKilometers:1.];
+            [queryRoute orderByAscending:@"difficulty"];
+            [queryRoute findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+               // NSLog(@"objects = %@",objects);
+                //prepare arrays
+                for (PFObject* object in objects) {
+                    NSString* sectionToInsert =  [object objectForKey:@"hashtag"];
+                    BOOL found = NO;
+                    for (NSString *str in [self.gymSections allKeys])
+                    {
+                        if ([str isEqualToString:sectionToInsert])
+                        {
+                            found = YES;
+                        }
+                    }
+                    if (!found && sectionToInsert!=NULL)
+                    {
+                     
+                        [self.gymSections setValue:[[[NSMutableArray alloc] init]autorelease] forKey:sectionToInsert];
+                    }
+                }
+                for (NSString* key in [self.gymSections allKeys]) {
+                    [[self.gymSections objectForKey:key] removeAllObjects];
+                }
+                for (PFObject* object in objects) {
+                    if ([object objectForKey:@"hashtag"]) {
+                    
+                    RouteObject* route = [[RouteObject alloc]init];
+                    route.pfobj = object;
             
+                    [[self.gymSections objectForKey:[object objectForKey:@"hashtag"]] addObject:route];
+                    [route release];
+                    }
+                }
+                NSLog(@"self.gymsections all keys count= %d",[[self.gymSections allKeys]count]);
+                [gymTable reloadData];
+            }];
             break;
         default:
             break;

@@ -15,6 +15,9 @@
 @end
 
 @implementation SettingsViewController
+@synthesize distanceSlider;
+@synthesize distanceLabel;
+@synthesize LoggedInUser;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -31,6 +34,9 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    [distanceSlider setValue:[[[NSUserDefaults standardUserDefaults]objectForKey:@"NearbyDistance"]floatValue]];
+    distanceLabel.text = [NSString stringWithFormat:@"%.0f",[[[NSUserDefaults standardUserDefaults]objectForKey:@"NearbyDistance"]floatValue]];
+    LoggedInUser.text = [NSString stringWithFormat:@"Signed in as:%@",[[PFUser currentUser]objectForKey:@"name"]];
     // Do any additional setup after loading the view from its nib.
 }
 -(IBAction)LogOut:(id)sender
@@ -51,8 +57,17 @@
         
     
 }
+- (IBAction)distanceSliderChanged:(UISlider*)sender {
+    NSLog(@"slider did change");
+    [[NSUserDefaults standardUserDefaults]setObject:[NSString stringWithFormat:@"%f",sender.value] forKey:@"NearbyDistance"];
+    
+    distanceLabel.text = [NSString stringWithFormat:@"%.0f",sender.value];
+}
 - (void)viewDidUnload
 {
+    [self setDistanceSlider:nil];
+    [self setDistanceLabel:nil];
+    [self setLoggedInUser:nil];
     [super viewDidUnload];
     // Release any retained subviews of the main view.
     // e.g. self.myOutlet = nil;
@@ -63,4 +78,10 @@
     return (interfaceOrientation == UIInterfaceOrientationPortrait);
 }
 
+- (void)dealloc {
+    [distanceSlider release];
+    [distanceLabel release];
+    [LoggedInUser release];
+    [super dealloc];
+}
 @end

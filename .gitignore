@@ -6,5 +6,6 @@
 *.perspectivev3
 *.xcworkspace
 *.swp
+ParseStarterProjectAppDelegate.m
 xcuserdata
 

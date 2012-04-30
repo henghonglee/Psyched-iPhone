@@ -12,6 +12,7 @@
 #import "ASIHTTPRequest.h"
 #import "LoadMoreCell.h"
 #import "UIColor+Hex.h"
+#import <QuartzCore/QuartzCore.h>
 #import "GradientButton.h"
 @implementation MyTableController
 @synthesize routeTableView;
@@ -209,21 +210,6 @@
     [self presentModalViewController:viewController animated:YES];
     [viewController release];
 }
--(void)loadcounter
-{
-     NSLog(@"%d/%d of loading",loadcount,[routeArray count]);
-    if (loadcount == [routeArray count]) {
-       [routeTableView reloadData]; 
-        loadcount = 1;
-        [((DAReloadActivityButton*)refreshButton) stopAnimating];
-        NSLog(@"finished loading");
-    }else{
-        loadcount++;
-       
-    }
-    
-}
-
 
 - (void)viewDidUnload
 {
@@ -234,9 +220,6 @@
     NSLog(@"view did unload");
     self.routeArray = nil;
     [self setRouteTableView:nil];
-
-    // Release any retained subviews of the main view.
-    // e.g. self.myOutlet = nil;
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
@@ -367,6 +350,7 @@
                                                     options: UIViewAnimationCurveEaseOut
                                                  animations:^{
                                                      cell.ownerImage.alpha = 1.0;
+                                                     
                                                  } 
                                                  completion:^(BOOL finished){
                                                      
@@ -392,25 +376,41 @@
                         ((RouteObject*)[self.routeArray objectAtIndex:indexPath.row]).retrievedImage = retrievedImage;
                         cell.routeImageView.alpha = 0.0;
                         cell.routeImageView.image = retrievedImage;
-                       
+
                         [UIView animateWithDuration:0.3
                           delay:0.0
                         options: UIViewAnimationCurveEaseOut
                      animations:^{
                          cell.routeImageView.alpha = 1.0;
+                         
                      } 
                      completion:^(BOOL finished){
-                        // NSLog(@"Done!");
+                         cell.routeImageView.layer.masksToBounds = YES;
+                         cell.routeImageView.layer.cornerRadius = 5.0f;
+                         cell.imageBackgroundView.layer.shadowPath =[UIBezierPath bezierPathWithRect:cell.routeImageView.bounds].CGPath;
+                         cell.imageBackgroundView.layer.shadowColor = [UIColor blackColor].CGColor;
+                         cell.imageBackgroundView.layer.shadowOpacity = 0.7f;
+                         cell.imageBackgroundView.layer.shadowOffset = CGSizeMake(2.0f, 2.0f);
+                         cell.imageBackgroundView.layer.shadowRadius = 3.0f;
+                         cell.imageBackgroundView.layer.cornerRadius = 5.0f;
                      }];
                     }];
                     
                     
                 }else{
                     cell.routeImageView.image = ((RouteObject*)[self.routeArray objectAtIndex:indexPath.row]).retrievedImage;
+                    cell.routeImageView.layer.masksToBounds = YES;
+                    cell.routeImageView.layer.cornerRadius = 5.0f;
+                    cell.imageBackgroundView.layer.shadowPath =[UIBezierPath bezierPathWithRect:cell.routeImageView.bounds].CGPath;
+                    cell.imageBackgroundView.layer.shadowColor = [UIColor blackColor].CGColor;
+                    cell.imageBackgroundView.layer.shadowOpacity = 0.7f;
+                    cell.imageBackgroundView.layer.shadowOffset = CGSizeMake(2.0f, 2.0f);
+                    cell.imageBackgroundView.layer.shadowRadius = 3.0f;
+                    cell.imageBackgroundView.layer.cornerRadius = 5.0f;
                     
                 };
                 
-                
+                    
                 double timesincenow =  [((NSDate*)object.createdAt) timeIntervalSinceNow];
                 //NSLog(@"timesincenow = %i",((int)timesincenow));
                 int timeint = ((int)timesincenow);
@@ -485,6 +485,104 @@
        return cell;
             
         }else if([[routeArray objectAtIndex:indexPath.row] isKindOfClass:[FeedObject class]]){
+            if ([[((FeedObject*)[routeArray objectAtIndex:indexPath.row]).pfobj objectForKey:@"action"] isEqualToString:@"comment"]) {
+                static NSString *CommentTableCellIdentifier = @"CommentTableCell";
+                CommentTableCell* cell = (CommentTableCell*) [tableView dequeueReusableCellWithIdentifier:CommentTableCellIdentifier]; 
+                if (cell == nil) {
+                    NSArray *topLevelObjects = [[NSBundle mainBundle] loadNibNamed:@"CommentTableCell" owner:nil options:nil];
+                    for(id currentObject in topLevelObjects){
+                        if([currentObject isKindOfClass:[UITableViewCell class]]){
+                            cell = (CommentTableCell*)currentObject;
+                            
+                        }
+                    }
+                }    
+                
+                
+                FeedObject* selectedFeedObj = ((FeedObject*)[routeArray objectAtIndex:indexPath.row]);
+                PFObject* selectedPFObj = selectedFeedObj.pfobj;
+                cell.userNameLabel.text = [selectedPFObj objectForKey:@"sender"];
+                cell.commentTextLabel.text = [selectedPFObj objectForKey:@"commenttext"];
+               
+                if (!selectedFeedObj.routeImage && !((FeedObject*)[self.routeArray objectAtIndex:indexPath.row]).isLoading) {
+                    ((FeedObject*)[self.routeArray objectAtIndex:indexPath.row]).isLoading = YES;
+                    [[selectedFeedObj.pfobj objectForKey:@"linkedroute"]fetchIfNeededInBackgroundWithBlock:^(PFObject *object, NSError *error) {
+                        NSLog(@"fetched route = %@",object);
+                    PFFile *imagefile = [object objectForKey:@"thumbImageFile"];
+                    [queryArray addObject:imagefile];
+                    [imagefile getDataInBackgroundWithBlock:^(NSData* imageData,NSError *error){
+                        [queryArray removeObject:imagefile];
+                            ((FeedObject*)[self.routeArray objectAtIndex:indexPath.row]).isLoading = NO;     
+                        UIImage* retrievedImage = [UIImage imageWithData:imageData];
+                        ((FeedObject*)[self.routeArray objectAtIndex:indexPath.row]).routeImage = retrievedImage;
+                        cell.routeImageView.alpha = 0.0;
+                        cell.routeImageView.image = retrievedImage;
+                        
+                        [UIView animateWithDuration:0.3
+                                              delay:0.0
+                                            options: UIViewAnimationCurveEaseOut
+                                         animations:^{
+                                             cell.routeImageView.alpha = 1.0;
+                                         } 
+                                         completion:^(BOOL finished){
+                                             cell.routeImageView.layer.masksToBounds = YES;
+                                             cell.routeImageView.layer.cornerRadius = 5.0f;
+                                             cell.imageBackgroundView.layer.shadowPath =[UIBezierPath bezierPathWithRect:cell.routeImageView.bounds].CGPath;
+                                             cell.imageBackgroundView.layer.shadowColor = [UIColor blackColor].CGColor;
+                                             cell.imageBackgroundView.layer.shadowOpacity = 0.7f;
+                                             cell.imageBackgroundView.layer.shadowOffset = CGSizeMake(2.0f, 2.0f);
+                                             cell.imageBackgroundView.layer.shadowRadius = 3.0f;
+                                             cell.imageBackgroundView.layer.cornerRadius = 5.0f;
+                                         }];
+                    }];
+                        }];
+                }else{
+                    cell.routeImageView.image = selectedFeedObj.routeImage;
+                    cell.routeImageView.layer.masksToBounds = YES;
+                    cell.routeImageView.layer.cornerRadius = 5.0f;
+                    cell.imageBackgroundView.layer.shadowPath =[UIBezierPath bezierPathWithRect:cell.routeImageView.bounds].CGPath;
+                    cell.imageBackgroundView.layer.shadowColor = [UIColor blackColor].CGColor;
+                    cell.imageBackgroundView.layer.shadowOpacity = 0.7f;
+                    cell.imageBackgroundView.layer.shadowOffset = CGSizeMake(2.0f, 2.0f);
+                    cell.imageBackgroundView.layer.shadowRadius = 3.0f;
+                    cell.imageBackgroundView.layer.cornerRadius = 5.0f;
+                }
+
+                if (selectedFeedObj.senderImage){
+                    cell.userImageView.image = selectedFeedObj.senderImage;
+                }else{
+                    NSString* urlstring = [NSString stringWithFormat:@"%@",[selectedPFObj objectForKey:@"senderimagelink"]];
+                    NSLog(@"urlstring = %@",urlstring);
+                    
+                    ASIHTTPRequest* request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:urlstring]];
+                    [request setCompletionBlock:^{
+                        
+                        selectedFeedObj.senderImage = [UIImage imageWithData:[request responseData]];
+                        cell.userImageView.image = selectedFeedObj.senderImage;
+                    }];
+                    [request setFailedBlock:^{}];
+                    [request startAsynchronous];
+                }
+                
+               
+                double timesincenow =  [((NSDate*)selectedPFObj.createdAt) timeIntervalSinceNow];
+                
+                int timeint = ((int)timesincenow);
+                if (timeint < -86400) {
+                    cell.timeLabel.text = [NSString stringWithFormat:@"%id ago",timeint/-86400];
+                }else if(timeint < -3600){
+                    cell.timeLabel.text = [NSString stringWithFormat:@"%ih ago",timeint/-3600];
+                }else{
+                    cell.timeLabel.text = [NSString stringWithFormat:@"%im ago",timeint/-60];
+                }
+                
+                
+                
+                
+                
+                
+                return cell;    
+            }else{
         static NSString *FromCellIdentifier = @"FromCell";
         FeedCell* cell = (FeedCell*) [tableView dequeueReusableCellWithIdentifier:FromCellIdentifier]; 
         if (cell == nil) {
@@ -585,9 +683,9 @@
             }else{
                 cell.timeLabel.text = [NSString stringWithFormat:@"%im ago",timeint/-60];
             }
-        
+            
         return cell;
-
+            }    
         }else{
             static NSString *gymCellIdentifier = @"GymCell";
             GymCell* cell = (GymCell*) [tableView dequeueReusableCellWithIdentifier:gymCellIdentifier]; 
@@ -616,6 +714,14 @@
                                             options: UIViewAnimationCurveEaseOut
                                          animations:^{
                                              cell.gymThumbnailView.alpha = 1.0;
+                                             cell.gymThumbnailView.layer.masksToBounds = YES;
+                                             cell.gymThumbnailView.layer.cornerRadius = 5.0f;
+                                             cell.imageBackgroundView.layer.shadowPath =[UIBezierPath bezierPathWithRect:cell.gymThumbnailView.bounds].CGPath;
+                                             cell.imageBackgroundView.layer.shadowColor = [UIColor blackColor].CGColor;
+                                             cell.imageBackgroundView.layer.shadowOpacity = 0.7f;
+                                             cell.imageBackgroundView.layer.shadowOffset = CGSizeMake(2.0f, 2.0f);
+                                             cell.imageBackgroundView.layer.shadowRadius = 3.0f;
+                                             cell.imageBackgroundView.layer.cornerRadius = 5.0f;
                                          } 
                                          completion:^(BOOL finished){
                                              
@@ -626,6 +732,14 @@
 
                 }else{
                     cell.gymThumbnailView.image = selectedGymObject.thumb;
+                    cell.gymThumbnailView.layer.masksToBounds = YES;
+                    cell.gymThumbnailView.layer.cornerRadius = 5.0f;
+                    cell.imageBackgroundView.layer.shadowPath =[UIBezierPath bezierPathWithRect:cell.gymThumbnailView.bounds].CGPath;
+                    cell.imageBackgroundView.layer.shadowColor = [UIColor blackColor].CGColor;
+                    cell.imageBackgroundView.layer.shadowOpacity = 0.7f;
+                    cell.imageBackgroundView.layer.shadowOffset = CGSizeMake(2.0f, 2.0f);
+                    cell.imageBackgroundView.layer.shadowRadius = 3.0f;
+                    cell.imageBackgroundView.layer.cornerRadius = 5.0f;
                 }
             }
 
@@ -642,7 +756,11 @@
         if ([[routeArray objectAtIndex:indexPath.row]isKindOfClass:[RouteObject class]]) {
             return 120;
         }else  if ([[routeArray objectAtIndex:indexPath.row]isKindOfClass:[FeedObject class]]){
+               if ([[((FeedObject*)[routeArray objectAtIndex:indexPath.row]).pfobj objectForKey:@"action"] isEqualToString:@"comment"]) {
+                   return 64;
+               }else{
             return 44;
+               }
         }else{
             return 120;
         }
@@ -691,6 +809,7 @@
 
 -(void)tabView:(JMTabView *)_tabView didSelectTabAtIndex:(NSUInteger)itemIndex;
 {
+    
     NSLog(@"canceling %d queries",[queryArray count]);
     for (id pfobject in queryArray) {
         if (pfobject) {
@@ -709,6 +828,7 @@
         }
         
     }
+    
     
     
     PFQuery* locationQuery = [PFQuery queryWithClassName:@"Route"];
@@ -735,7 +855,7 @@
     
     PFQuery* gradeQuery = [PFQuery queryWithClassName:@"Route"];
     [gradeQuery whereKey:@"outdated" notEqualTo:[NSNumber numberWithBool:true]];
-    [gradeQuery whereKey:@"routelocation" nearGeoPoint:[PFGeoPoint geoPointWithLatitude:((ParseStarterProjectAppDelegate*)[[UIApplication sharedApplication] delegate]).currentLocation.coordinate.latitude longitude:((ParseStarterProjectAppDelegate*)[[UIApplication sharedApplication] delegate]).currentLocation.coordinate.longitude] withinKilometers:5.];
+    [gradeQuery whereKey:@"routelocation" nearGeoPoint:[PFGeoPoint geoPointWithLatitude:((ParseStarterProjectAppDelegate*)[[UIApplication sharedApplication] delegate]).currentLocation.coordinate.latitude longitude:((ParseStarterProjectAppDelegate*)[[UIApplication sharedApplication] delegate]).currentLocation.coordinate.longitude] withinKilometers:[[[NSUserDefaults standardUserDefaults] objectForKey:@"NearbyDistance"] floatValue]];
     [gradeQuery orderByDescending:@"difficulty"];
     [gradeQuery setLimit:20];
     gradeQuery.cachePolicy = kPFCachePolicyNetworkElseCache;
@@ -743,7 +863,7 @@
     
     PFQuery* projectsQuery = [PFQuery queryWithClassName:@"Route"];
     [projectsQuery whereKey:@"outdated" notEqualTo:[NSNumber numberWithBool:true]];
-    [projectsQuery whereKey:@"routelocation" nearGeoPoint:[PFGeoPoint geoPointWithLatitude:((ParseStarterProjectAppDelegate*)[[UIApplication sharedApplication] delegate]).currentLocation.coordinate.latitude longitude:((ParseStarterProjectAppDelegate*)[[UIApplication sharedApplication] delegate]).currentLocation.coordinate.longitude] withinKilometers:5.];
+    [projectsQuery whereKey:@"routelocation" nearGeoPoint:[PFGeoPoint geoPointWithLatitude:((ParseStarterProjectAppDelegate*)[[UIApplication sharedApplication] delegate]).currentLocation.coordinate.latitude longitude:((ParseStarterProjectAppDelegate*)[[UIApplication sharedApplication] delegate]).currentLocation.coordinate.longitude] withinKilometers:[[[NSUserDefaults standardUserDefaults] objectForKey:@"NearbyDistance"] floatValue]];
     PFQuery* projquery = [PFQuery queryWithClassName:@"Project"];
     [projquery whereKey:@"user" equalTo:[PFUser  currentUser]];
     [projquery whereKey:@"route" matchesQuery:projectsQuery];
@@ -762,7 +882,7 @@
     [recommendQuery whereKey:@"usersrecommended" equalTo:[[PFUser currentUser]objectForKey:@"name"]];
     [recommendQuery whereKey:@"userssent" notEqualTo:[[PFUser currentUser]objectForKey:@"name"]];
     [recommendQuery whereKey:@"usersflashed" notEqualTo:[[PFUser currentUser]objectForKey:@"name"]];
-     [recommendQuery orderByDescending:@"updatedAt"];
+     [recommendQuery orderByDescending:@"createdAt"];
     [recommendQuery setLimit:20];
     recommendQuery.cachePolicy = kPFCachePolicyNetworkElseCache;
     
@@ -781,6 +901,7 @@
                 
                 [queryArray removeObject:recentQuery];
                 [routeArray removeAllObjects];
+                
                 if ([objects count]<20) {
                     shouldDisplayNext =0;
                 }
@@ -791,17 +912,20 @@
                         [routeArray addObject:newRouteObject];
                         [newRouteObject release];
                     }
-                    
-                }
+                
+                
+                NSLog(@"objects count = %d",[objects count]);
                 PFQuery* feedQuery = [PFQuery queryWithClassName:@"Feed"];
                 [feedQuery whereKey:@"sender" containedIn:followedPosters];
-                NSArray* arrayActions = [NSArray arrayWithObjects:@"added",@"approval", nil];
+                NSArray* arrayActions = [NSArray arrayWithObjects:@"added",@"approval",@"like", nil];
                 [feedQuery whereKey:@"action" notContainedIn:arrayActions];
                 [feedQuery whereKey:@"createdAt" greaterThan:((PFObject*)[objects objectAtIndex:([objects count]-1)]).createdAt];
                 [queryArray addObject:feedQuery];
-                [feedQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+                NSLog(@"before finding feeds");
+                [feedQuery findObjectsInBackgroundWithBlock:^(NSArray *feedobjects, NSError *error) {
                     [queryArray removeObject:feedQuery];
-                    for (PFObject* feed in objects) {
+                    NSLog(@"feed objects count = %d",[feedobjects count]);
+                    for (PFObject* feed in feedobjects) {
                         if ([[feed objectForKey:@"message"] rangeOfString:@"following"].location!=NSNotFound && [[feed objectForKey:@"message"] rangeOfString:[[PFUser currentUser]objectForKey:@"name"]].location==NSNotFound) {
                             
                         }else{
@@ -827,11 +951,13 @@
                 
                 //find feeds that time falls between first and last route
                 
-                
-        
+                }else{
+                        [routeTableView reloadData];
+                }
+                    
             }];
             
-            
+            NSLog(@"end case 0");
             
             break;
         case 1:
@@ -1017,7 +1143,7 @@
     
     PFQuery* gradeQuery = [PFQuery queryWithClassName:@"Route"];
     [gradeQuery whereKey:@"outdated" notEqualTo:[NSNumber numberWithBool:true]];
-    [gradeQuery whereKey:@"routelocation" nearGeoPoint:[PFGeoPoint geoPointWithLatitude:((ParseStarterProjectAppDelegate*)[[UIApplication sharedApplication] delegate]).currentLocation.coordinate.latitude longitude:((ParseStarterProjectAppDelegate*)[[UIApplication sharedApplication] delegate]).currentLocation.coordinate.longitude] withinKilometers:5.];
+    [gradeQuery whereKey:@"routelocation" nearGeoPoint:[PFGeoPoint geoPointWithLatitude:((ParseStarterProjectAppDelegate*)[[UIApplication sharedApplication] delegate]).currentLocation.coordinate.latitude longitude:((ParseStarterProjectAppDelegate*)[[UIApplication sharedApplication] delegate]).currentLocation.coordinate.longitude] withinKilometers:[[[NSUserDefaults standardUserDefaults] objectForKey:@"NearbyDistance"] floatValue]];
     [gradeQuery orderByDescending:@"difficulty"];
     [gradeQuery setLimit:20];
     gradeQuery.cachePolicy = kPFCachePolicyNetworkElseCache;
@@ -1025,7 +1151,7 @@
     
     PFQuery* projectsQuery = [PFQuery queryWithClassName:@"Route"];
     [projectsQuery whereKey:@"outdated" notEqualTo:[NSNumber numberWithBool:true]];
-    [projectsQuery whereKey:@"routelocation" nearGeoPoint:[PFGeoPoint geoPointWithLatitude:((ParseStarterProjectAppDelegate*)[[UIApplication sharedApplication] delegate]).currentLocation.coordinate.latitude longitude:((ParseStarterProjectAppDelegate*)[[UIApplication sharedApplication] delegate]).currentLocation.coordinate.longitude] withinKilometers:5.];
+    [projectsQuery whereKey:@"routelocation" nearGeoPoint:[PFGeoPoint geoPointWithLatitude:((ParseStarterProjectAppDelegate*)[[UIApplication sharedApplication] delegate]).currentLocation.coordinate.latitude longitude:((ParseStarterProjectAppDelegate*)[[UIApplication sharedApplication] delegate]).currentLocation.coordinate.longitude] withinKilometers:[[[NSUserDefaults standardUserDefaults] objectForKey:@"NearbyDistance"] floatValue]];
     PFQuery* projquery = [PFQuery queryWithClassName:@"Project"];
     [projquery whereKey:@"user" equalTo:[PFUser  currentUser]];
     [projquery whereKey:@"route" matchesQuery:projectsQuery];
@@ -1043,11 +1169,14 @@
     [recommendQuery whereKey:@"usersrecommended" equalTo:[[PFUser currentUser]objectForKey:@"name"]];
     [recommendQuery whereKey:@"userssent" notEqualTo:[[PFUser currentUser]objectForKey:@"name"]];
     [recommendQuery whereKey:@"usersflashed" notEqualTo:[[PFUser currentUser]objectForKey:@"name"]];
-    [recommendQuery orderByDescending:@"updatedAt"];
+    [recommendQuery orderByDescending:@"createdAt"];
     [recommendQuery setLimit:20];
     recommendQuery.cachePolicy = kPFCachePolicyNetworkElseCache;
     NSLog(@"will load next 20 for %d",tabView.segmentIndex); 
             int routecount=0;
+    
+    
+    
     switch (tabView.segmentIndex) {
         case 0:
 
@@ -1078,7 +1207,7 @@
                 }
                 PFQuery* feedQuery = [PFQuery queryWithClassName:@"Feed"];
                 [feedQuery whereKey:@"sender" containedIn:followedPosters];
-                NSArray* arrayActions = [NSArray arrayWithObjects:@"added",@"approval", nil];
+                NSArray* arrayActions = [NSArray arrayWithObjects:@"added",@"approval",@"like", nil];
                 [feedQuery whereKey:@"action" notContainedIn:arrayActions];
                 [feedQuery whereKey:@"createdAt" lessThan:((RouteObject*)[routeArray objectAtIndex:oldroutearraycount]).pfobj.createdAt];
                 [feedQuery whereKey:@"createdAt" greaterThan:((RouteObject*)[routeArray objectAtIndex:([routeArray count]-1)]).pfobj.createdAt];
@@ -1181,7 +1310,7 @@
                     
                     for (PFObject* proj in objects) {
                         RouteObject* newRouteObject =  [[RouteObject alloc]init];
-                        newRouteObject.pfobj = [[proj objectForKey:@"route"]fetchIfNeeded];
+                        newRouteObject.pfobj = proj;
                         [routeArray addObject:newRouteObject];
                         [newRouteObject release];
                     }
@@ -1195,19 +1324,21 @@
             
             [gradeQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
                 [queryArray removeObject:gradeQuery];
-                [routeArray removeAllObjects] ;
+
                 if ([objects count]>0) {
                     if ([objects count]<20) {
                         shouldDisplayNext =0;
                     }
                     
                     for (PFObject* proj in objects) {
+
                         RouteObject* newRouteObject =  [[RouteObject alloc]init];
-                        newRouteObject.pfobj = [[proj objectForKey:@"route"]fetchIfNeeded];
+                        newRouteObject.pfobj = proj;
                         [routeArray addObject:newRouteObject];
                         [newRouteObject release];
                     }
                 }
+                NSLog(@"done adding objects");
                 [routeTableView reloadData];
             }];
             
@@ -1303,8 +1434,8 @@
     [viewController release];
     }else if([[routeArray objectAtIndex:indexPath.row] isKindOfClass:[FeedObject class]]){
         PFObject* followfeedobj = ((FeedObject*)[routeArray objectAtIndex:indexPath.row]).pfobj;
-        NSString* followmessagestring =[followfeedobj objectForKey:@"message"];
-        if([followmessagestring rangeOfString:@"route"].location!=NSNotFound){
+      
+        if([followfeedobj objectForKey:@"linkedroute"]){
             RouteDetailViewController* viewController = [[RouteDetailViewController alloc]initWithNibName:@"RouteDetailViewController" bundle:nil];
             RouteObject* newRouteObject = [[RouteObject alloc]init];
             [[((FeedObject*)[routeArray objectAtIndex:indexPath.row]).pfobj objectForKey:@"linkedroute"]fetchIfNeededInBackgroundWithBlock:^(PFObject *object, NSError *error) {
@@ -1351,6 +1482,8 @@
 }
 - (void)animate:(DAReloadActivityButton *)button
 {
+    [routeArray removeAllObjects];
+    [routeTableView reloadData];
     [button startAnimating];
     [self reloadTableViewDataSource];
 
@@ -1370,11 +1503,11 @@
     }];
     
     //reset stamp image
-    for (id obj in routeArray) {
-        if ([obj isKindOfClass:[RouteObject class]]) {
-        ((RouteObject*)obj).stampImage = nil;     
-        }
-    }
+//    for (id obj in routeArray) {
+//        if ([obj isKindOfClass:[RouteObject class]]) {
+//        ((RouteObject*)obj).stampImage = nil;     
+//        }
+//    }
     if (tabView.segmentIndex==0) {
         
     PFQuery* followedquery = [PFQuery queryWithClassName:@"Follow"];

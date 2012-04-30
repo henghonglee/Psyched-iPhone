@@ -16,6 +16,7 @@
 @property (retain, nonatomic) IBOutlet UILabel *routeCountLabel;
 @property (retain, nonatomic) IBOutlet UILabel *likeCountLabel;
 @property (retain, nonatomic) IBOutlet UILabel *FollowCountLabel;
+@property (retain, nonatomic) UIViewController* owner;
 @property (retain, nonatomic) IBOutlet MKMapView *gymMapView;
 @property (retain, nonatomic) IBOutlet UILabel *routeCount;
 @property (retain, nonatomic) IBOutlet UILabel *likeCount;

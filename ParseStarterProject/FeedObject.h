@@ -10,6 +10,7 @@
 #import <Parse/Parse.h>
 @interface FeedObject : NSObject
 @property(retain,nonatomic) UIImage* senderImage;
+@property(retain,nonatomic) UIImage* routeImage;
 @property(retain,nonatomic) PFObject* pfobj;
-
+@property(nonatomic) BOOL isLoading;
 @end

@@ -570,7 +570,9 @@ kAPIGraphCommentPhoto,
                     if (succeeded) {
                         //should clear flash feed also
                         PFQuery* flashFeedQuery = [PFQuery queryWithClassName:@"Feed"];
-                        [flashFeedQuery whereKey:@"message" equalTo:[NSString stringWithFormat:@"%@ flashed %@'s route",[[PFUser currentUser]objectForKey:@"name"],[routeObject.pfobj objectForKey:@"username"]]];
+                        [flashFeedQuery whereKey:@"sender" equalTo:[[PFUser currentUser]objectForKey:@"name"]];
+                        [flashFeedQuery whereKey:@"linkedroute" equalTo:routeObject.pfobj];
+                        [flashFeedQuery whereKey:@"action" equalTo:@"flash"];
                         [flashFeedQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
                             for (PFObject* feed in objects) {
                                 [feed deleteInBackground];
@@ -599,12 +601,25 @@ kAPIGraphCommentPhoto,
                         //add flash feed here
                         PFObject* flashFeed = [PFObject objectWithClassName:@"Feed"];
                         [flashFeed setObject:routeObject.pfobj forKey:@"linkedroute"];
-                        [flashFeed setObject:[NSString stringWithFormat:@"%@ flashed %@'s route",[[PFUser currentUser]objectForKey:@"name"],[routeObject.pfobj objectForKey:@"username"]] forKey:@"message"];
                         [flashFeed setObject:[[PFUser currentUser]objectForKey:@"name"] forKey:@"sender"];
                         [flashFeed setObject:[[PFUser currentUser]objectForKey:@"profilepicture"] forKey:@"senderimagelink"];
                         [flashFeed setObject:@"flash" forKey:@"action"];
-                        [flashFeed saveInBackground];
-                        
+ 
+                        if (![[[PFUser currentUser]objectForKey:@"name"] isEqualToString:usernameLabel.text]){
+                        [flashFeed setObject:[NSString stringWithFormat:@"%@ flashed %@'s route",[[PFUser currentUser]objectForKey:@"name"],usernameLabel.text] forKey:@"message"];
+                       
+                        }else{
+                            if ([[[PFUser currentUser]objectForKey:@"sex"] isEqualToString:@"female"]) {
+                                [flashFeed setObject:[NSString stringWithFormat:@"%@ flashed her route",[[PFUser currentUser] objectForKey:@"name"]] forKey:@"message"];
+                                
+                            }else if([[[PFUser currentUser]objectForKey:@"sex"] isEqualToString:@"male"]) {
+                                [flashFeed setObject:[NSString stringWithFormat:@"%@ flashed his route",[[PFUser currentUser] objectForKey:@"name"]] forKey:@"message"];
+                            }else{
+                                [flashFeed setObject:[NSString stringWithFormat:@"%@ flashed his/her route",[[PFUser currentUser] objectForKey:@"name"]] forKey:@"message"];
+                            }
+                            
+                        }
+                    [flashFeed saveInBackground];
                     [flashbutton setImage:[UIImage imageNamed:@"tick.png"] forState:UIControlStateNormal];
                     flashCountLabel.text = [NSString stringWithFormat:@"%d",[flashCountLabel.text intValue]+1];
                         [flashbutton setUserInteractionEnabled:YES];
@@ -617,7 +632,7 @@ kAPIGraphCommentPhoto,
         }];
         
         PFQuery* query2 = [PFQuery queryWithClassName:@"Sent"];
-                query2.cachePolicy = kPFCachePolicyNetworkElseCache;
+        query2.cachePolicy = kPFCachePolicyNetworkElseCache;
         [query2 whereKey:@"username" equalTo:[[PFUser currentUser]objectForKey:@"name"]];
         [query2 whereKey:@"route" equalTo:routeObject.pfobj];
         [queryArray addObject:query2];
@@ -628,7 +643,9 @@ kAPIGraphCommentPhoto,
                 [((PFObject*)[fetchedSent objectAtIndex:0]) deleteInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
                     if (succeeded) {
                         PFQuery* sendFeedQuery = [PFQuery queryWithClassName:@"Feed"];
-                        [sendFeedQuery whereKey:@"message" equalTo:[NSString stringWithFormat:@"%@ sent %@'s route",[[PFUser currentUser]objectForKey:@"name"],[routeObject.pfobj objectForKey:@"username"]]];
+                        [sendFeedQuery whereKey:@"sender" equalTo:[[PFUser currentUser]objectForKey:@"name"]];
+                        [sendFeedQuery whereKey:@"linkedroute" equalTo:routeObject.pfobj];
+                        [sendFeedQuery whereKey:@"action" equalTo:@"sent"];
                         [sendFeedQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
                             for (PFObject* feed in objects) {
                                 [feed deleteInBackground];
@@ -656,7 +673,9 @@ kAPIGraphCommentPhoto,
                     [((PFObject*)[fetchedProject objectAtIndex:0]) deleteInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
                         if (succeeded) {
                             PFQuery* projFeedQuery = [PFQuery queryWithClassName:@"Feed"];
-                            [projFeedQuery whereKey:@"message" equalTo:[NSString stringWithFormat:@"%@ started projecting %@'s route",[[PFUser currentUser]objectForKey:@"name"],[routeObject.pfobj objectForKey:@"username"]]];
+                            [projFeedQuery whereKey:@"sender" equalTo:[[PFUser currentUser]objectForKey:@"name"]];
+                            [projFeedQuery whereKey:@"linkedroute" equalTo:routeObject.pfobj];
+                            [projFeedQuery whereKey:@"action" equalTo:@"project"];
                             [projFeedQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
                                 for (PFObject* feed in objects) {
                                     [feed deleteInBackground];
@@ -738,7 +757,9 @@ kAPIGraphCommentPhoto,
                 [((PFObject*)[fetchedFlash objectAtIndex:0]) deleteInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
                     if (succeeded) {
                         PFQuery* flashFeedQuery = [PFQuery queryWithClassName:@"Feed"];
-                        [flashFeedQuery whereKey:@"message" equalTo:[NSString stringWithFormat:@"%@ flashed %@'s route",[[PFUser currentUser]objectForKey:@"name"],[routeObject.pfobj objectForKey:@"username"]]];
+                        [flashFeedQuery whereKey:@"sender" equalTo:[[PFUser currentUser]objectForKey:@"name"]];
+                        [flashFeedQuery whereKey:@"linkedroute" equalTo:routeObject.pfobj];
+                        [flashFeedQuery whereKey:@"action" equalTo:@"flash"];
                         [flashFeedQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
                             for (PFObject* feed in objects) {
                                 [feed deleteInBackground];
@@ -766,7 +787,9 @@ kAPIGraphCommentPhoto,
             [((PFObject*)[fetchedSent objectAtIndex:0]) deleteInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
                 if (succeeded) {
                     PFQuery* sendFeedQuery = [PFQuery queryWithClassName:@"Feed"];
-                    [sendFeedQuery whereKey:@"message" equalTo:[NSString stringWithFormat:@"%@ sent %@'s route",[[PFUser currentUser]objectForKey:@"name"],[routeObject.pfobj objectForKey:@"username"]]];
+                    [sendFeedQuery whereKey:@"sender" equalTo:[[PFUser currentUser]objectForKey:@"name"]];
+                    [sendFeedQuery whereKey:@"linkedroute" equalTo:routeObject.pfobj];
+                    [sendFeedQuery whereKey:@"action" equalTo:@"sent"];
                     [sendFeedQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
                         for (PFObject* feed in objects) {
                             [feed deleteInBackground];
@@ -791,10 +814,23 @@ kAPIGraphCommentPhoto,
                 if (succeeded) {
                     PFObject* sendFeed = [PFObject objectWithClassName:@"Feed"];
                     [sendFeed setObject:routeObject.pfobj forKey:@"linkedroute"];
-                    [sendFeed setObject:[NSString stringWithFormat:@"%@ sent %@'s route",[[PFUser currentUser]objectForKey:@"name"],[routeObject.pfobj objectForKey:@"username"]] forKey:@"message"];
+                    if (![[[PFUser currentUser]objectForKey:@"name"] isEqualToString:usernameLabel.text]){
+                        [sendFeed setObject:[NSString stringWithFormat:@"%@ sent %@'s route",[[PFUser currentUser]objectForKey:@"name"],usernameLabel.text] forKey:@"message"];
+                        
+                    }else{
+                        if ([[[PFUser currentUser]objectForKey:@"sex"] isEqualToString:@"female"]) {
+                            [sendFeed setObject:[NSString stringWithFormat:@"%@ sent her route",[[PFUser currentUser] objectForKey:@"name"]] forKey:@"message"];
+                            
+                        }else if([[[PFUser currentUser]objectForKey:@"sex"] isEqualToString:@"male"]) {
+                            [sendFeed setObject:[NSString stringWithFormat:@"%@ sent his route",[[PFUser currentUser] objectForKey:@"name"]] forKey:@"message"];
+                        }else{
+                            [sendFeed setObject:[NSString stringWithFormat:@"%@ sent his/her route",[[PFUser currentUser] objectForKey:@"name"]] forKey:@"message"];
+                        }
+                        
+                    }
                     [sendFeed setObject:[[PFUser currentUser]objectForKey:@"name"] forKey:@"sender"];
                     [sendFeed setObject:[[PFUser currentUser]objectForKey:@"profilepicture"] forKey:@"senderimagelink"];
-                    [sendFeed setObject:@"send" forKey:@"action"];
+                    [sendFeed setObject:@"sent" forKey:@"action"];
                     [sendFeed saveInBackground];
                 [sentbutton setImage:[UIImage imageNamed:@"tick.png"] forState:UIControlStateNormal];
                 sendCountLabel.text = [NSString stringWithFormat:@"%d",[sendCountLabel.text intValue]+1];
@@ -820,7 +856,10 @@ kAPIGraphCommentPhoto,
             [((PFObject*)[fetchedProject objectAtIndex:0]) deleteInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
                 if (succeeded) {
                     PFQuery* projFeedQuery = [PFQuery queryWithClassName:@"Feed"];
-                    [projFeedQuery whereKey:@"message" equalTo:[NSString stringWithFormat:@"%@ started projecting %@'s route",[[PFUser currentUser]objectForKey:@"name"],[routeObject.pfobj objectForKey:@"username"]]];
+                    
+                    [projFeedQuery whereKey:@"sender" equalTo:[[PFUser currentUser]objectForKey:@"name"]];
+                    [projFeedQuery whereKey:@"linkedroute" equalTo:routeObject.pfobj];
+                    [projFeedQuery whereKey:@"action" equalTo:@"project"];
                     [projFeedQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
                         for (PFObject* feed in objects) {
                             [feed deleteInBackground];
@@ -897,7 +936,9 @@ kAPIGraphCommentPhoto,
                 [((PFObject*)[fetchedFlash objectAtIndex:0]) deleteInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
                     if (succeeded) {
                         PFQuery* flashFeedQuery = [PFQuery queryWithClassName:@"Feed"];
-                        [flashFeedQuery whereKey:@"message" equalTo:[NSString stringWithFormat:@"%@ flashed %@'s route",[[PFUser currentUser]objectForKey:@"name"],[routeObject.pfobj objectForKey:@"username"]]];
+                        [flashFeedQuery whereKey:@"sender" equalTo:[[PFUser currentUser]objectForKey:@"name"]];
+                        [flashFeedQuery whereKey:@"linkedroute" equalTo:routeObject.pfobj];
+                        [flashFeedQuery whereKey:@"action" equalTo:@"flash"];
                         [flashFeedQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
                             for (PFObject* feed in objects) {
                                 [feed deleteInBackground];
@@ -925,7 +966,9 @@ kAPIGraphCommentPhoto,
                 [((PFObject*)[fetchedSent objectAtIndex:0]) deleteInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
                     if (succeeded) {
                         PFQuery* sendFeedQuery = [PFQuery queryWithClassName:@"Feed"];
-                        [sendFeedQuery whereKey:@"message" equalTo:[NSString stringWithFormat:@"%@ sent %@'s route",[[PFUser currentUser]objectForKey:@"name"],[routeObject.pfobj objectForKey:@"username"]]];
+                        [sendFeedQuery whereKey:@"sender" equalTo:[[PFUser currentUser]objectForKey:@"name"]];
+                        [sendFeedQuery whereKey:@"linkedroute" equalTo:routeObject.pfobj];
+                        [sendFeedQuery whereKey:@"action" equalTo:@"sent"];
                         [sendFeedQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
                             for (PFObject* feed in objects) {
                                 [feed deleteInBackground];
@@ -953,7 +996,9 @@ kAPIGraphCommentPhoto,
                 [((PFObject*)[fetchedProject objectAtIndex:0]) deleteInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
                     if (succeeded) {
                         PFQuery* projFeedQuery = [PFQuery queryWithClassName:@"Feed"];
-                        [projFeedQuery whereKey:@"message" equalTo:[NSString stringWithFormat:@"%@ started projecting %@'s route",[[PFUser currentUser]objectForKey:@"name"],[routeObject.pfobj objectForKey:@"username"]]];
+                        [projFeedQuery whereKey:@"sender" equalTo:[[PFUser currentUser]objectForKey:@"name"]];
+                        [projFeedQuery whereKey:@"linkedroute" equalTo:routeObject.pfobj];
+                        [projFeedQuery whereKey:@"action" equalTo:@"project"];
                         [projFeedQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
                             for (PFObject* feed in objects) {
                                 [feed deleteInBackground];
@@ -976,7 +1021,20 @@ kAPIGraphCommentPhoto,
                 [newProj saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
                     PFObject* projFeed = [PFObject objectWithClassName:@"Feed"];
                     [projFeed setObject:routeObject.pfobj forKey:@"linkedroute"];
-                    [projFeed setObject:[NSString stringWithFormat:@"%@ started projecting %@'s route",[[PFUser currentUser]objectForKey:@"name"],[routeObject.pfobj objectForKey:@"username"]] forKey:@"message"];
+                    if (![[[PFUser currentUser]objectForKey:@"name"] isEqualToString:usernameLabel.text]){
+                        [projFeed setObject:[NSString stringWithFormat:@"%@ started projecting %@'s route",[[PFUser currentUser]objectForKey:@"name"],usernameLabel.text] forKey:@"message"];
+                        
+                    }else{
+                        if ([[[PFUser currentUser]objectForKey:@"sex"] isEqualToString:@"female"]) {
+                            [projFeed setObject:[NSString stringWithFormat:@"%@ started projecting her route",[[PFUser currentUser] objectForKey:@"name"]] forKey:@"message"];
+                            
+                        }else if([[[PFUser currentUser]objectForKey:@"sex"] isEqualToString:@"male"]) {
+                            [projFeed setObject:[NSString stringWithFormat:@"%@ started projecting his route",[[PFUser currentUser] objectForKey:@"name"]] forKey:@"message"];
+                        }else{
+                            [projFeed setObject:[NSString stringWithFormat:@"%@ started projecting his/her route",[[PFUser currentUser] objectForKey:@"name"]] forKey:@"message"];
+                        }
+                        
+                    }
                     [projFeed setObject:[[PFUser currentUser]objectForKey:@"name"] forKey:@"sender"];
                     [projFeed setObject:[[PFUser currentUser]objectForKey:@"profilepicture"] forKey:@"senderimagelink"];
                     [projFeed setObject:@"project" forKey:@"action"];
@@ -1364,11 +1422,11 @@ kAPIGraphCommentPhoto,
 commentTextField.text = @"";
 }
 -(void)CommentNotification{
-    if(![[[PFUser currentUser] objectForKey:@"name"] isEqualToString:[routeObject.pfobj objectForKey:@"username"]]){
+    if(![[[PFUser currentUser] objectForKey:@"name"] isEqualToString:usernameLabel.text]){
         NSMutableDictionary *data = [NSMutableDictionary dictionary];
         [data setObject:routeObject.pfobj.objectId forKey:@"linkedroute"];
         [data setObject:[NSNumber numberWithInt:1] forKey:@"badge"];
-        [data setObject:[NSString stringWithFormat:@"%@ commented on %@'s route",[[PFUser currentUser] objectForKey:@"name"],[routeObject.pfobj objectForKey:@"username"]] forKey:@"alert"];
+        [data setObject:[NSString stringWithFormat:@"%@ commented on %@'s route",[[PFUser currentUser] objectForKey:@"name"],usernameLabel.text] forKey:@"alert"];
         [data setObject:[NSString stringWithFormat:@"%@",[[PFUser currentUser] objectForKey:@"name"]] forKey:@"sender"];
         
         [PFPush sendPushDataToChannelInBackground:[NSString stringWithFormat:@"channel%@",routeObject.pfobj.objectId] withData:data];
@@ -1377,7 +1435,8 @@ commentTextField.text = @"";
         [feedObject setObject:[[PFUser currentUser] objectForKey:@"name"] forKey:@"sender"];
         [feedObject setObject:[[PFUser currentUser] objectForKey:@"profilepicture"] forKey:@"senderimagelink"];
         [feedObject setObject:routeObject.pfobj forKey:@"linkedroute"];
-        [feedObject setObject:[routeObject.pfobj objectForKey:@"imageFile"] forKey:@"imagefile"];
+        [feedObject setObject:commentTextField.text forKey:@"commenttext"];
+        [feedObject setObject:@"comment" forKey:@"action"];
         [feedObject setObject:[NSString stringWithFormat:@"%@ commented on %@'s route",[[PFUser currentUser] objectForKey:@"name"],[routeObject.pfobj objectForKey:@"username"]] forKey:@"message"];
         [feedObject saveInBackground];
         
@@ -1402,6 +1461,8 @@ commentTextField.text = @"";
         [feedObject setObject:[[PFUser currentUser] objectForKey:@"name"] forKey:@"sender"];
         [feedObject setObject:[[PFUser currentUser] objectForKey:@"profilepicture"] forKey:@"senderimagelink"];
         [feedObject setObject:routeObject.pfobj forKey:@"linkedroute"];
+        [feedObject setObject:commentTextField.text forKey:@"commenttext"];
+        [feedObject setObject:@"comment" forKey:@"action"];
         if ([[[PFUser currentUser]objectForKey:@"sex"] isEqualToString:@"female"]) {
             [feedObject setObject:[routeObject.pfobj objectForKey:@"imageFile"] forKey:@"imagefile"];                    [feedObject setObject:[NSString stringWithFormat:@"%@ commented on her route",[[PFUser currentUser] objectForKey:@"name"]] forKey:@"message"];
             
@@ -1774,7 +1835,7 @@ if (cell == nil) {
     }else{
         cell.commentTime.text = [NSString stringWithFormat:@"%im ago",timeint/-60];
     }
-
+    
     cell.commentLabel.text = [[commentsArray objectAtIndex:indexPath.row] objectForKey:@"text"];
     cell.commenterNameLabel.text = [[commentsArray objectAtIndex:indexPath.row] objectForKey:@"commentername"];
     ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:[[commentsArray objectAtIndex:indexPath.row] objectForKey:@"commenterimage"]] ];
@@ -1807,24 +1868,40 @@ if (cell == nil) {
         
         [PFPush sendPushDataToChannelInBackground:[NSString stringWithFormat:@"channel%@",friend.uid] withData:data];
         
-        PFObject* feedObject = [PFObject objectWithClassName:@"Feed"];
-        [feedObject setObject:[[PFUser currentUser] objectForKey:@"name"] forKey:@"sender"];
-        [feedObject setObject:[[PFUser currentUser] objectForKey:@"profilepicture"] forKey:@"senderimagelink"];
-        [feedObject setObject:routeObject.pfobj forKey:@"linkedroute"];
-        [feedObject setObject:@"tag" forKey:@"action"];
-        [feedObject setObject:[NSString stringWithFormat:@"%@ recommended %@ a route",[[PFUser currentUser] objectForKey:@"name"],friend.name] forKey:@"message"];
         
-        [feedObject saveInBackground];
         NSMutableArray* recommendedUsersArray = [[NSMutableArray alloc]initWithArray:[routeObject.pfobj objectForKey:@"usersrecommended"]];
         if (![recommendedUsersArray containsObject:friend.name]) {
             [recommendedUsersArray addObject:friend.name];
             [routeObject.pfobj setObject:recommendedUsersArray forKey:@"usersrecommended"];
 
         }
-            [routeObject.pfobj saveEventually];        
+        [recommendedUsersArray release];
+       
+}
         
+    
+    PFObject* feedObject = [PFObject objectWithClassName:@"Feed"];
+    [feedObject setObject:[[PFUser currentUser] objectForKey:@"name"] forKey:@"sender"];
+    [feedObject setObject:[[PFUser currentUser] objectForKey:@"profilepicture"] forKey:@"senderimagelink"];
+    [feedObject setObject:routeObject.pfobj forKey:@"linkedroute"];
+    [feedObject setObject:@"recommend" forKey:@"action"];
+    
+    
+    if ([recommendedArray count]==0) {
         
+    }else if([recommendedArray count]==1){
+    [feedObject setObject:[NSString stringWithFormat:@"%@ recommended %@'s route to %@",[[PFUser currentUser]objectForKey:@"name"],usernameLabel.text,((FBfriend*)[recommendedArray objectAtIndex:0]).name] forKey:@"message"];    
+    }else if([recommendedArray count]==2){
+    [feedObject setObject:[NSString stringWithFormat:@"%@ recommended %@'s route to %@ and 1 other",[[PFUser currentUser]objectForKey:@"name"],usernameLabel.text,((FBfriend*)[recommendedArray objectAtIndex:0]).name] forKey:@"message"];    
+    }else{
+     [feedObject setObject:[NSString stringWithFormat:@"%@ recommended %@'s route to %@ and %d others",[[PFUser currentUser]objectForKey:@"name"],usernameLabel.text,((FBfriend*)[recommendedArray objectAtIndex:0]).name,[recommendedArray count]-1] forKey:@"message"];   
     }
+    
+    
+        
+    
+    [feedObject saveInBackground];
+            [routeObject.pfobj saveEventually]; 
 }
 
 

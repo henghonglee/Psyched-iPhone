@@ -7,7 +7,8 @@
 //
 
 #import "GymDetailCell.h"
-
+#import <Parse/Parse.h>
+#import "MapViewController.h"
 @implementation GymDetailCell
 @synthesize facebookid;
 @synthesize routeCountLabel;
@@ -16,7 +17,7 @@
 @synthesize gymMapView;
 @synthesize routeCount;
 @synthesize likeCount;
-
+@synthesize owner;
 @synthesize followingCount;
 @synthesize pfObject;
 - (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
@@ -34,8 +35,17 @@
 
     // Configure the view for the selected state
 }
+- (IBAction)showGym:(id)sender {
+    MapViewController* mapVC = [[MapViewController alloc]initWithNibName:@"MapViewController" bundle:nil];
+    mapVC.geopoint = (PFGeoPoint*)[pfObject objectForKey:@"gymlocation"];
+    mapVC.gymName = [pfObject objectForKey:@"name"];
+    [self.owner.navigationController pushViewController:mapVC animated:YES];
+    
+    [mapVC release];
+}
 - (IBAction)FollowUS:(id)sender {
     NSArray* adminArray = [[pfObject fetchIfNeeded] objectForKey:@"admin"];
+    if (![adminArray containsObject:[[PFUser currentUser] objectForKey:@"name"]]) {
     PFQuery* followedQuery = [PFQuery queryWithClassName:@"Follow"];
     [followedQuery whereKey:@"follower" equalTo:[PFUser currentUser]];
     [followedQuery whereKey:@"followed" containedIn:adminArray];
@@ -58,7 +68,7 @@
         }
         
     }];
-    
+    }
 }
 - (IBAction)LikeUs:(id)sender {
     [[UIApplication sharedApplication]openURL:[NSURL URLWithString:[NSString stringWithFormat:@"fb://page/%@",[pfObject objectForKey:@"facebookid"]]]];

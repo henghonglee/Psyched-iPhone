@@ -27,4 +27,5 @@
 @property (nonatomic) BOOL isFetchingGym;
 @property (retain, nonatomic) IBOutlet UIView *approvalView;
 @property (retain,nonatomic) PFObject* routePFObject;
+@property (retain, nonatomic) IBOutlet UIView *imageBackgroundView;
 @end

@@ -18,6 +18,7 @@
 @synthesize geopoint;
 @synthesize mapView;
 @synthesize gymName;
+
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
@@ -30,7 +31,7 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    self.navigationItem.title = @"Route Location";
+    self.navigationItem.title = @"Location";
     CLLocationCoordinate2D locCoord = CLLocationCoordinate2DMake(geopoint.latitude, geopoint.longitude);
     
     Annote *dropPin = [[Annote alloc] initWithCoordinate:locCoord title:gymName subtitle:@""];  

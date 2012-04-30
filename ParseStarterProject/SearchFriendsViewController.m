@@ -135,7 +135,7 @@ kAPIGraphUserPhotosPost,
     }      
                 //[FBfriendsArray addObject:newFBfriend];
                 
-           
+    [fbidArray release];  
 }
 
 - (void)viewDidUnload

@@ -89,6 +89,7 @@
                             [self addCenterButtonWithImage:[UIImage imageNamed:@"cameraTabBarItem copy.png"] highlightImage:nil];
     [mainNav release];
     [newsnav release];
+    [feedsViewController release];
     [profilenav release];
     [feedsNav release];
 }

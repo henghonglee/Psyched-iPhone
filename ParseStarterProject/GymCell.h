@@ -12,5 +12,6 @@
 @property (retain, nonatomic) IBOutlet UIImageView *gymThumbnailView;
 @property (retain, nonatomic) IBOutlet UILabel *gymNameLabel;
 @property (retain, nonatomic) IBOutlet UILabel *gymAboutLabel;
+@property (retain, nonatomic) IBOutlet UIView *imageBackgroundView;
 
 @end

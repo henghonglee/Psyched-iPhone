@@ -10,4 +10,7 @@
 
 @interface SettingsViewController : UIViewController
 -(IBAction)dismissSettings:(id)sender;
+@property (retain, nonatomic) IBOutlet UISlider *distanceSlider;
+@property (retain, nonatomic) IBOutlet UILabel *distanceLabel;
+@property (retain, nonatomic) IBOutlet UILabel *LoggedInUser;
 @end

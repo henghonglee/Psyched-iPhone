@@ -292,12 +292,20 @@ typedef enum apiCall {
     }
     [newRoute setObject:locationTextField.text forKey:@"location"];
     if ([recommendArray count]>0) {
-        descriptionTextField.text = [descriptionTextField.text stringByAppendingFormat:@"(%@)  ",[gymlist objectAtIndex:difficultyint]];
         
         for (FBfriend*user in recommendArray) {
-            descriptionTextField.text = [descriptionTextField.text stringByAppendingFormat:@"@%@ ",user.name];
+            descriptionTextField.text = [descriptionTextField.text stringByAppendingFormat:@" @%@ ",user.name];
         }
         
+    }
+    NSString* hashtag;
+    if ([descriptionTextField.text rangeOfString:@"#"].location != NSNotFound){
+    NSScanner *scanner = [NSScanner scannerWithString:descriptionTextField.text];
+    
+    [scanner scanUpToString:@"#" intoString:NULL];
+    [scanner setScanLocation:[scanner scanLocation] + 1];
+    [scanner scanUpToString:@" " intoString:&hashtag];
+    [newRoute setObject:hashtag forKey:@"hashtag"];
     }
     [newRoute setObject:descriptionTextField.text forKey:@"description"];
     [newRoute setObject:[PFGeoPoint geoPointWithLatitude:routeLoc.latitude longitude:routeLoc.longitude] forKey:@"routelocation"];

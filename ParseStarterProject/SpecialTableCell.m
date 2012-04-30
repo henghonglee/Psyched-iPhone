@@ -26,12 +26,13 @@
 @synthesize difficultyLabel;
 @synthesize approvalView;
 @synthesize routePFObject;
+@synthesize imageBackgroundView;
 @synthesize isFetchingGym;
 - (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
 {
     self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
     if (self) {
-        cellbgimageview.layer.cornerRadius = 10;
+      
         // Initialization code
     }
     return self;
@@ -76,6 +77,7 @@
     [stampImageView release];
     [difficultyLabel release];
     [approvalView release];
+    [imageBackgroundView release];
     [super dealloc];
 }
 @end

@@ -160,7 +160,7 @@
         }
             if (isFollowing){
                 NSLog(@"isfollowing %@",cell.nameLabel.text);
-                isFollowing = NO;
+
                     [cell.followButton setBackgroundImage:[UIImage imageNamed:@"following_text.png"] forState:UIControlStateNormal];
             }else{
                 NSLog(@"is not following %@",cell.nameLabel.text);

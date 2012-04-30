@@ -28,6 +28,8 @@
 #import "FeedObject.h"
 #import "GymObject.h"
 #import "GymCell.h"
+#import "CommentTableCell.h"
+#import "UIView+InnerShadow.h"
 @interface MyTableController : UIViewController<PF_FBRequestDelegate,JMTabViewDelegate,UITableViewDelegate,UITableViewDataSource,EGORefreshTableHeaderDelegate,UIScrollViewDelegate,CLLocationManagerDelegate>
 {
     

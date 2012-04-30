@@ -10,5 +10,7 @@
 
 @implementation FeedObject
 @synthesize senderImage;
+@synthesize routeImage;
 @synthesize pfobj;
+@synthesize isLoading;
 @end

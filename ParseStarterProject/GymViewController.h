@@ -20,7 +20,9 @@
 @property (nonatomic,retain) NSMutableArray* gymReccomended;
 @property (nonatomic,retain) NSMutableArray* gymLiked;
 @property (nonatomic,retain) NSMutableArray* gymCommented;
+@property (nonatomic,retain) NSMutableArray* gymTags;
 @property (nonatomic,retain) NSMutableArray* routeArray;
+@property (nonatomic,retain) NSMutableDictionary* gymSections;
 @property (nonatomic,retain) NSURL* gymURL;
 @property (retain,nonatomic) PFObject* gymObject;
 @property (retain, nonatomic) IBOutlet UIImageView *gymProfileImageView;

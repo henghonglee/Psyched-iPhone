@@ -1,17 +1,19 @@
 //
-//  GymCell.m
+//  CommentTableCell.m
 //  ParseStarterProject
 //
-//  Created by Shaun Tan on 19/4/12.
+//  Created by Shaun Tan on 26/4/12.
 //  Copyright (c) 2012 __MyCompanyName__. All rights reserved.
 //
 
-#import "GymCell.h"
+#import "CommentTableCell.h"
 
-@implementation GymCell
-@synthesize gymThumbnailView;
-@synthesize gymNameLabel;
-@synthesize gymAboutLabel;
+@implementation CommentTableCell
+@synthesize routeImageView;
+@synthesize userImageView;
+@synthesize commentTextLabel;
+@synthesize userNameLabel;
+@synthesize timeLabel;
 @synthesize imageBackgroundView;
 
 - (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
@@ -31,9 +33,11 @@
 }
 
 - (void)dealloc {
-    [gymThumbnailView release];
-    [gymNameLabel release];
-    [gymAboutLabel release];
+    [routeImageView release];
+    [userImageView release];
+    [commentTextLabel release];
+    [userNameLabel release];
+    [timeLabel release];
     [imageBackgroundView release];
     [super dealloc];
 }

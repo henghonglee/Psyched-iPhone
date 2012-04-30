@@ -301,27 +301,20 @@
     }];
     
     // grab user feeds
-    
-    userfeeds = [[NSMutableArray alloc]init ];
-    PFQuery* query = [PFQuery queryWithClassName:@"Feed"];
-        query.cachePolicy= kPFCachePolicyNetworkElseCache;         
-    [query whereKey:@"sender" equalTo:username];
-    [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
-        [userfeeds addObjectsFromArray:objects];
-        NSArray *sortedArray;
-        sortedArray = [userfeeds sortedArrayUsingComparator:^(id a, id b) {
-            PFObject* first = a;
-            PFObject* second = b;
-            
-            return [((NSDate*)second.createdAt) compare:((NSDate*)first.createdAt)];
-            
-        }];
-        [userfeeds removeAllObjects];
-        [userfeeds addObjectsFromArray:sortedArray];
-        [userFeedTable reloadData];
-        userFeedTable.scrollEnabled = YES;
-    } ];
-    
+        // grab user feeds
+        
+
+        PFQuery* queryForNotification = [PFQuery queryWithClassName:@"Feed"];
+        [queryForNotification  whereKey:@"sender" notEqualTo:username];
+        [queryForNotification whereKey:@"message" containsString:username];
+        [queryForNotification orderByDescending:@"createdAt"];
+        [queryForNotification findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+#warning  not saved into feedobject here
+            [userfeeds removeAllObjects];
+            [userfeeds addObjectsFromArray:objects];
+            [userFeedTable reloadData];
+            [userFeedTable setScrollEnabled:YES];
+        }];    
     //grab user followed
     
     followedArray = [[NSMutableArray alloc]init];
@@ -455,7 +448,7 @@
         [request setCompletionBlock:^{
             
             cell.senderImage.image= [UIImage imageWithData:[request responseData]];
-             
+            
         }];
         [request setFailedBlock:^{}];
         [request startAsynchronous];

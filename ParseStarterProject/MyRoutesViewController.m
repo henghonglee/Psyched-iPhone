@@ -244,13 +244,28 @@
                                              cell.routeImageView.alpha = 1.0;
                                          } 
                                          completion:^(BOOL finished){
-                                             // NSLog(@"Done!");
+                                             cell.routeImageView.layer.masksToBounds = YES;
+                                             cell.routeImageView.layer.cornerRadius = 5.0f;
+                                             cell.imageBackgroundView.layer.shadowPath =[UIBezierPath bezierPathWithRect:cell.routeImageView.bounds].CGPath;
+                                             cell.imageBackgroundView.layer.shadowColor = [UIColor blackColor].CGColor;
+                                             cell.imageBackgroundView.layer.shadowOpacity = 0.7f;
+                                             cell.imageBackgroundView.layer.shadowOffset = CGSizeMake(2.0f, 2.0f);
+                                             cell.imageBackgroundView.layer.shadowRadius = 3.0f;
+                                             cell.imageBackgroundView.layer.cornerRadius = 5.0f;
                                          }];
                     }];
                     
                     
                 }else{
                     cell.routeImageView.image = ((RouteObject*)[self.flashArray objectAtIndex:indexPath.row]).retrievedImage;
+                    cell.routeImageView.layer.masksToBounds = YES;
+                    cell.routeImageView.layer.cornerRadius = 5.0f;
+                    cell.imageBackgroundView.layer.shadowPath =[UIBezierPath bezierPathWithRect:cell.routeImageView.bounds].CGPath;
+                    cell.imageBackgroundView.layer.shadowColor = [UIColor blackColor].CGColor;
+                    cell.imageBackgroundView.layer.shadowOpacity = 0.7f;
+                    cell.imageBackgroundView.layer.shadowOffset = CGSizeMake(2.0f, 2.0f);
+                    cell.imageBackgroundView.layer.shadowRadius = 3.0f;
+                    cell.imageBackgroundView.layer.cornerRadius = 5.0f;
                 }
                 double timesincenow =  [((NSDate*)object.createdAt) timeIntervalSinceNow];
                 //NSLog(@"timesincenow = %i",((int)timesincenow));
@@ -338,7 +353,14 @@
                                              cell.routeImageView.alpha = 1.0;
                                          } 
                                          completion:^(BOOL finished){
-                                             // NSLog(@"Done!");
+                                             cell.routeImageView.layer.masksToBounds = YES;
+                                             cell.routeImageView.layer.cornerRadius = 5.0f;
+                                             cell.imageBackgroundView.layer.shadowPath =[UIBezierPath bezierPathWithRect:cell.routeImageView.bounds].CGPath;
+                                             cell.imageBackgroundView.layer.shadowColor = [UIColor blackColor].CGColor;
+                                             cell.imageBackgroundView.layer.shadowOpacity = 0.7f;
+                                             cell.imageBackgroundView.layer.shadowOffset = CGSizeMake(2.0f, 2.0f);
+                                             cell.imageBackgroundView.layer.shadowRadius = 3.0f;
+                                             cell.imageBackgroundView.layer.cornerRadius = 5.0f;
                                          }];
 
                     }];
@@ -346,6 +368,14 @@
                     
                 }else{
                     cell.routeImageView.image = ((RouteObject*)[self.sentArray objectAtIndex:indexPath.row]).retrievedImage;
+                    cell.routeImageView.layer.masksToBounds = YES;
+                    cell.routeImageView.layer.cornerRadius = 5.0f;
+                    cell.imageBackgroundView.layer.shadowPath =[UIBezierPath bezierPathWithRect:cell.routeImageView.bounds].CGPath;
+                    cell.imageBackgroundView.layer.shadowColor = [UIColor blackColor].CGColor;
+                    cell.imageBackgroundView.layer.shadowOpacity = 0.7f;
+                    cell.imageBackgroundView.layer.shadowOffset = CGSizeMake(2.0f, 2.0f);
+                    cell.imageBackgroundView.layer.shadowRadius = 3.0f;
+                    cell.imageBackgroundView.layer.cornerRadius = 5.0f;
                 }
                 double timesincenow =  [((NSDate*)object.createdAt) timeIntervalSinceNow];
                 //NSLog(@"timesincenow = %i",((int)timesincenow));
@@ -383,35 +413,58 @@ NSLog(@"showing proj array with ob %@",object);
                         imagelink=[object objectForKey:@"imagelink"];  
                         cell.ownerNameLabel.text = [object objectForKey:@"name"]; 
                     }];
-                    
+                    if (((RouteObject*)[self.projectArray objectAtIndex:indexPath.row]).ownerImage) {
+                        cell.ownerImage.image = ((RouteObject*)[self.projectArray objectAtIndex:indexPath.row]).ownerImage;
+                    }else{
+                        ASIHTTPRequest* request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:imagelink]];
+                        [request setCompletionBlock:^{
+                            UIImage* ownerImage = [UIImage imageWithData:[request responseData]];
+                            cell.ownerImage.image = ownerImage;
+                            ((RouteObject*)[self.projectArray objectAtIndex:indexPath.row]).ownerImage= ownerImage;
+                            cell.ownerImage.alpha =0.0;
+                            [UIView animateWithDuration:0.3
+                                                  delay:0.0
+                                                options: UIViewAnimationCurveEaseOut
+                                             animations:^{
+                                                 cell.ownerImage.alpha = 1.0;
+                                             } 
+                                             completion:^(BOOL finished){
+                                                 // NSLog(@"Done!");
+                                             }];
+                            
+                        }];
+                        [request setFailedBlock:^{}];
+                        [request startAsynchronous];
+                    }
                 }else{
                     imagelink = [object objectForKey:@"userimage"];
                     cell.ownerNameLabel.text = [object objectForKey:@"username"];
+                    if (((RouteObject*)[self.projectArray objectAtIndex:indexPath.row]).ownerImage) {
+                        cell.ownerImage.image = ((RouteObject*)[self.projectArray objectAtIndex:indexPath.row]).ownerImage;
+                    }else{
+                        ASIHTTPRequest* request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:imagelink]];
+                        [request setCompletionBlock:^{
+                            UIImage* ownerImage = [UIImage imageWithData:[request responseData]];
+                            cell.ownerImage.image = ownerImage;
+                            ((RouteObject*)[self.projectArray objectAtIndex:indexPath.row]).ownerImage= ownerImage;
+                            cell.ownerImage.alpha =0.0;
+                            [UIView animateWithDuration:0.3
+                                                  delay:0.0
+                                                options: UIViewAnimationCurveEaseOut
+                                             animations:^{
+                                                 cell.ownerImage.alpha = 1.0;
+                                             } 
+                                             completion:^(BOOL finished){
+                                                 // NSLog(@"Done!");
+                                             }];
+                            
+                        }];
+                        [request setFailedBlock:^{}];
+                        [request startAsynchronous];
+                    }
                 }
 
-                if (((RouteObject*)[self.projectArray objectAtIndex:indexPath.row]).ownerImage) {
-                    cell.ownerImage.image = ((RouteObject*)[self.projectArray objectAtIndex:indexPath.row]).ownerImage;
-                }else{
-                    ASIHTTPRequest* request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:imagelink]];
-                    [request setCompletionBlock:^{
-                        UIImage* ownerImage = [UIImage imageWithData:[request responseData]];
-                        cell.ownerImage.image = ownerImage;
-                        ((RouteObject*)[self.projectArray objectAtIndex:indexPath.row]).ownerImage= ownerImage;
-                        cell.ownerImage.alpha =0.0;
-                        [UIView animateWithDuration:0.3
-                                              delay:0.0
-                                            options: UIViewAnimationCurveEaseOut
-                                         animations:^{
-                                             cell.ownerImage.alpha = 1.0;
-                                         } 
-                                         completion:^(BOOL finished){
-                                             // NSLog(@"Done!");
-                                         }];
-
-                    }];
-                    [request setFailedBlock:^{}];
-                    [request startAsynchronous];
-                }
+               
                 if (!((RouteObject*)[self.projectArray objectAtIndex:indexPath.row]).retrievedImage) {
                     
                     PFFile *imagefile = [object objectForKey:@"thumbImageFile"];
@@ -427,7 +480,14 @@ NSLog(@"showing proj array with ob %@",object);
                                              cell.routeImageView.alpha = 1.0;
                                          } 
                                          completion:^(BOOL finished){
-                                             // NSLog(@"Done!");
+                                             cell.routeImageView.layer.masksToBounds = YES;
+                                             cell.routeImageView.layer.cornerRadius = 5.0f;
+                                             cell.imageBackgroundView.layer.shadowPath =[UIBezierPath bezierPathWithRect:cell.routeImageView.bounds].CGPath;
+                                             cell.imageBackgroundView.layer.shadowColor = [UIColor blackColor].CGColor;
+                                             cell.imageBackgroundView.layer.shadowOpacity = 0.7f;
+                                             cell.imageBackgroundView.layer.shadowOffset = CGSizeMake(2.0f, 2.0f);
+                                             cell.imageBackgroundView.layer.shadowRadius = 3.0f;
+                                             cell.imageBackgroundView.layer.cornerRadius = 5.0f;
                                          }];
 
                     }];
@@ -435,6 +495,14 @@ NSLog(@"showing proj array with ob %@",object);
                     
                 }else{
                     cell.routeImageView.image = ((RouteObject*)[self.projectArray objectAtIndex:indexPath.row]).retrievedImage;
+                    cell.routeImageView.layer.masksToBounds = YES;
+                    cell.routeImageView.layer.cornerRadius = 5.0f;
+                    cell.imageBackgroundView.layer.shadowPath =[UIBezierPath bezierPathWithRect:cell.routeImageView.bounds].CGPath;
+                    cell.imageBackgroundView.layer.shadowColor = [UIColor blackColor].CGColor;
+                    cell.imageBackgroundView.layer.shadowOpacity = 0.7f;
+                    cell.imageBackgroundView.layer.shadowOffset = CGSizeMake(2.0f, 2.0f);
+                    cell.imageBackgroundView.layer.shadowRadius = 3.0f;
+                    cell.imageBackgroundView.layer.cornerRadius = 5.0f;
                 }
                 
                 double timesincenow =  [((NSDate*)object.createdAt) timeIntervalSinceNow];
@@ -550,7 +618,14 @@ NSLog(@"showing proj array with ob %@",object);
                                              cell.routeImageView.alpha = 1.0;
                                          } 
                                          completion:^(BOOL finished){
-                                             // NSLog(@"Done!");
+                                             cell.routeImageView.layer.masksToBounds = YES;
+                                             cell.routeImageView.layer.cornerRadius = 5.0f;
+                                             cell.imageBackgroundView.layer.shadowPath =[UIBezierPath bezierPathWithRect:cell.routeImageView.bounds].CGPath;
+                                             cell.imageBackgroundView.layer.shadowColor = [UIColor blackColor].CGColor;
+                                             cell.imageBackgroundView.layer.shadowOpacity = 0.7f;
+                                             cell.imageBackgroundView.layer.shadowOffset = CGSizeMake(2.0f, 2.0f);
+                                             cell.imageBackgroundView.layer.shadowRadius = 3.0f;
+                                             cell.imageBackgroundView.layer.cornerRadius = 5.0f;
                                          }];
 
                     }];
@@ -558,6 +633,14 @@ NSLog(@"showing proj array with ob %@",object);
                     
                 }else{
                     cell.routeImageView.image = ((RouteObject*)[self.likedArray objectAtIndex:indexPath.row]).retrievedImage;
+                    cell.routeImageView.layer.masksToBounds = YES;
+                    cell.routeImageView.layer.cornerRadius = 5.0f;
+                    cell.imageBackgroundView.layer.shadowPath =[UIBezierPath bezierPathWithRect:cell.routeImageView.bounds].CGPath;
+                    cell.imageBackgroundView.layer.shadowColor = [UIColor blackColor].CGColor;
+                    cell.imageBackgroundView.layer.shadowOpacity = 0.7f;
+                    cell.imageBackgroundView.layer.shadowOffset = CGSizeMake(2.0f, 2.0f);
+                    cell.imageBackgroundView.layer.shadowRadius = 3.0f;
+                    cell.imageBackgroundView.layer.cornerRadius = 5.0f;
                 }
                 
                 double timesincenow =  [((NSDate*)object.createdAt) timeIntervalSinceNow];
