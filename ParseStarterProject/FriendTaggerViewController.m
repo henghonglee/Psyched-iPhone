@@ -34,7 +34,7 @@
 {
     [super viewDidLoad];
     taggerTable.hidden=YES;
-    PF_MBProgressHUD* hud = [PF_MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    MBProgressHUD* hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     hud.labelText = @"Fetching Facebook Friends...";
     UIBarButtonItem* rightButton = [[UIBarButtonItem alloc] initWithTitle:@"Done" style:UIBarButtonSystemItemDone target:self action:@selector(dismissView:)];
     self.navigationItem.rightBarButtonItem = rightButton;
@@ -115,7 +115,7 @@
             //  NSLog(@"fbfriends array = %@",FBfriendsArray);
             [friendsArray addObjectsFromArray:FBfriendsArray];
     [taggerTable reloadData];
-            [PF_MBProgressHUD hideHUDForView:self.view animated:YES];
+            [MBProgressHUD hideHUDForView:self.view animated:YES];
     taggerTable.hidden=NO;
         [taggerTextField becomeFirstResponder];
             
@@ -125,6 +125,7 @@
 {
     [self setTaggerTextField:nil];
     [self setTaggerTable:nil];
+
     [super viewDidUnload];
     // Release any retained subviews of the main view.
     // e.g. self.myOutlet = nil;

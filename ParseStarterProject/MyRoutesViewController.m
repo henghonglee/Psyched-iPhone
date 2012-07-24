@@ -13,6 +13,7 @@
 @synthesize routeTableView;
 @synthesize selectedSegment;
 @synthesize selectedUser;
+@synthesize gymFetchArray;
 @synthesize flashArray,sentArray,projectArray,likedArray,queryArray;
 - (id)initWithStyle:(UITableViewStyle)style
 {
@@ -28,11 +29,11 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    loadcount = 1;
+    shouldDisplayNext = 0;
     headerView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, 320, 44)];
     headerView.backgroundColor = [UIColor darkGrayColor];
     UIImageView* headerviewimage = [[UIImageView alloc]initWithFrame:CGRectMake(0, 0, 320, 44 )];
-    headerviewimage.image = [UIImage imageNamed:@"headerview2.png"];
+    headerviewimage.image = [UIImage imageNamed:@"headerview.png"];
     [headerView addSubview:headerviewimage];
     [headerviewimage release];
     UILabel* headerLabel = [[UILabel alloc]initWithFrame:CGRectMake(60, 0, 200, 44)];
@@ -54,6 +55,11 @@
     [headerView addSubview:backButton];
     [backButton release];
     
+    
+    
+    
+    
+    self.gymFetchArray = [[[NSMutableArray alloc]init]autorelease];
     self.flashArray = [[[NSMutableArray alloc]init]autorelease];
     self.sentArray = [[[NSMutableArray alloc]init]autorelease];
     self.projectArray = [[[NSMutableArray alloc]init]autorelease];
@@ -72,20 +78,7 @@
 -(void)backButtonAction{
     [self.navigationController popViewControllerAnimated:YES];
 }
--(void)loadcounter
-{
-    NSLog(@"%d/%d of loading",loadcount,([flashArray count]+[sentArray count]+[projectArray count]+[likedArray count]));
-    if (loadcount == ([flashArray count]+[sentArray count]+[projectArray count]+[likedArray count])) {
-        [routeTableView reloadData]; 
-        loadcount = 1;
-        NSLog(@"finished loading");
 
-    }else{
-        loadcount++;
-        
-    }
-    
-}
 
 - (void)viewDidUnload
 {
@@ -100,6 +93,7 @@
 //    [self.projectArray release];
     self.likedArray=nil;
     self.queryArray=nil;
+    [self setSelectedUser:nil];
 //    [self.likedArray release];
     [self setRouteTableView:nil];
     
@@ -130,16 +124,16 @@
     if (section==1) {
     switch (tabView.segmentIndex) {
         case 0:
-            return [flashArray count];
+            return [flashArray count]+shouldDisplayNext;
             break;
         case 1:
-            return [sentArray count];
+            return [sentArray count]+shouldDisplayNext;
             break;
         case 2:
-            return [projectArray count];
+            return [projectArray count]+shouldDisplayNext;
             break;
         case 3:
-            return [likedArray count];
+            return [likedArray count]+shouldDisplayNext;
             break;
             
         default:
@@ -165,7 +159,7 @@
 
 -(UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    
+   
     static NSString *CellIdentifier = @"Cell";
     SpecialTableCell* cell = (SpecialTableCell*) [tableView dequeueReusableCellWithIdentifier:CellIdentifier]; 
     if (cell == nil) {
@@ -184,8 +178,22 @@
             
         case 0:
             if ([self.flashArray count]>0) {
+                if(indexPath.row == [self.flashArray count]){
+                    static NSString *identifier = @"lastCell";
+                    LoadMoreCell* cell = (LoadMoreCell*) [tableView dequeueReusableCellWithIdentifier:identifier]; 
+                    if (cell == nil) {
+                        NSArray *topLevelObjects = [[NSBundle mainBundle] loadNibNamed:@"LoadMoreCell" owner:nil options:nil];
+                        for(id currentObject in topLevelObjects){
+                            if([currentObject isKindOfClass:[UITableViewCell class]]){
+                                cell = (LoadMoreCell*)currentObject;
+                                cell.selectionStyle = UITableViewCellSelectionStyleGray;
+                            }
+                        }
+                    }
+                    return cell;
+                }
                 PFObject* object = ((RouteObject*)[self.flashArray objectAtIndex:indexPath.row]).pfobj;
-                                NSLog(@"showing flash array");
+         //                       NSLog(@"showing flash array");
                 cell.commentcount.text = [NSString stringWithFormat:@"%@",[[object objectForKey:@"commentcount"]stringValue]];
                 cell.likecount.text = [NSString stringWithFormat:@"%@",[[object objectForKey:@"likecount"]stringValue ]];
                 cell.viewcount.text = [NSString stringWithFormat:@"%@",[[object objectForKey:@"viewcount"]stringValue ]];
@@ -194,7 +202,7 @@
                 __block NSString* imagelink;
                 
                 if ([object objectForKey:@"isPage"]==[NSNumber numberWithBool:YES]) {
-                    
+
                     [[object objectForKey:@"Gym"]fetchIfNeededInBackgroundWithBlock:^(PFObject *object, NSError *error) {
                         imagelink=[object objectForKey:@"imagelink"];  
                         cell.ownerNameLabel.text = [object objectForKey:@"name"]; 
@@ -295,8 +303,24 @@
             break;
         case 1:
             if ([self.sentArray count]>0) {
+                if(indexPath.row == [self.sentArray count]){
+                    static NSString *identifier = @"lastCell";
+                    LoadMoreCell* cell = (LoadMoreCell*) [tableView dequeueReusableCellWithIdentifier:identifier]; 
+                    if (cell == nil) {
+                        NSArray *topLevelObjects = [[NSBundle mainBundle] loadNibNamed:@"LoadMoreCell" owner:nil options:nil];
+                        for(id currentObject in topLevelObjects){
+                            if([currentObject isKindOfClass:[UITableViewCell class]]){
+                                cell = (LoadMoreCell*)currentObject;
+                                cell.selectionStyle = UITableViewCellSelectionStyleGray;
+                            }
+                        }
+                    }
+                    return cell;
+                }
+                
+                
                 PFObject* object = ((RouteObject*)[self.sentArray objectAtIndex:indexPath.row]).pfobj;
-                NSLog(@"showing sent array");
+  //              NSLog(@"showing sent array");
                 cell.commentcount.text = [NSString stringWithFormat:@"%@",[[object objectForKey:@"commentcount"]stringValue]];
                 cell.likecount.text = [NSString stringWithFormat:@"%@",[[object objectForKey:@"likecount"]stringValue ]];
                 cell.viewcount.text = [NSString stringWithFormat:@"%@",[[object objectForKey:@"viewcount"]stringValue ]];
@@ -304,7 +328,7 @@
                 __block NSString* imagelink;
                 
                 if ([object objectForKey:@"isPage"]==[NSNumber numberWithBool:YES]) {
-                    
+                    [[object objectForKey:@"Gym"]fetchIfNeeded];
                     [[object objectForKey:@"Gym"]fetchIfNeededInBackgroundWithBlock:^(PFObject *object, NSError *error) {
                         imagelink=[object objectForKey:@"imagelink"];  
                          cell.ownerNameLabel.text = [object objectForKey:@"name"]; 
@@ -399,8 +423,22 @@
             break;
         case 2:
             if ([self.projectArray count]>0) {
+                if(indexPath.row == [self.projectArray count]){
+                    static NSString *identifier = @"lastCell";
+                    LoadMoreCell* cell = (LoadMoreCell*) [tableView dequeueReusableCellWithIdentifier:identifier]; 
+                    if (cell == nil) {
+                        NSArray *topLevelObjects = [[NSBundle mainBundle] loadNibNamed:@"LoadMoreCell" owner:nil options:nil];
+                        for(id currentObject in topLevelObjects){
+                            if([currentObject isKindOfClass:[UITableViewCell class]]){
+                                cell = (LoadMoreCell*)currentObject;
+                                cell.selectionStyle = UITableViewCellSelectionStyleGray;
+                            }
+                        }
+                    }
+                    return cell;
+                }
                 PFObject* object = ((RouteObject*)[self.projectArray objectAtIndex:indexPath.row]).pfobj;
-NSLog(@"showing proj array with ob %@",object);
+
                 cell.commentcount.text = [NSString stringWithFormat:@"%@",[[object objectForKey:@"commentcount"]stringValue]];
                 cell.likecount.text = [NSString stringWithFormat:@"%@",[[object objectForKey:@"likecount"]stringValue ]];
                 cell.viewcount.text = [NSString stringWithFormat:@"%@",[[object objectForKey:@"viewcount"]stringValue ]];
@@ -408,7 +446,7 @@ NSLog(@"showing proj array with ob %@",object);
                 __block NSString* imagelink;
                 
                 if ([object objectForKey:@"isPage"]==[NSNumber numberWithBool:YES]) {
-                    
+
                     [[object objectForKey:@"Gym"]fetchIfNeededInBackgroundWithBlock:^(PFObject *object, NSError *error) {
                         imagelink=[object objectForKey:@"imagelink"];  
                         cell.ownerNameLabel.text = [object objectForKey:@"name"]; 
@@ -532,6 +570,20 @@ NSLog(@"showing proj array with ob %@",object);
             break;
         case 3:
             if ([self.likedArray count]>0) {
+                if(indexPath.row == [self.likedArray count]){
+                    static NSString *identifier = @"lastCell";
+                    LoadMoreCell* cell = (LoadMoreCell*) [tableView dequeueReusableCellWithIdentifier:identifier]; 
+                    if (cell == nil) {
+                        NSArray *topLevelObjects = [[NSBundle mainBundle] loadNibNamed:@"LoadMoreCell" owner:nil options:nil];
+                        for(id currentObject in topLevelObjects){
+                            if([currentObject isKindOfClass:[UITableViewCell class]]){
+                                cell = (LoadMoreCell*)currentObject;
+                                cell.selectionStyle = UITableViewCellSelectionStyleGray;
+                            }
+                        }
+                    }
+                    return cell;
+                }
                 PFObject* object = ((RouteObject*)[self.likedArray objectAtIndex:indexPath.row]).pfobj;
                                 NSLog(@"showing like array with ob %@",object);
                 cell.commentcount.text = [NSString stringWithFormat:@"%@",[[object objectForKey:@"commentcount"]stringValue]];
@@ -544,7 +596,7 @@ NSLog(@"showing proj array with ob %@",object);
                 __block NSString* imagelink;
                 
                 if ([object objectForKey:@"isPage"]==[NSNumber numberWithBool:YES]) {
-                    
+
                     [[object objectForKey:@"Gym"]fetchIfNeededInBackgroundWithBlock:^(PFObject *object, NSError *error) {
                         imagelink=[object objectForKey:@"imagelink"];  
                         cell.ownerNameLabel.text = [object objectForKey:@"name"]; 
@@ -728,34 +780,50 @@ NSLog(@"showing proj array with ob %@",object);
 }
 -(void)tabView:(JMTabView *)_tabView didSelectTabAtIndex:(NSUInteger)itemIndex;
 {
+    shouldDisplayNext = 0;
+    [routeTableView reloadData];
     tabView.segmentIndex = itemIndex;
     [tabView setSelectedIndex:itemIndex];
     PFQuery* query = [PFQuery queryWithClassName:@"Flash"];
     [query whereKey:@"username" equalTo:[selectedUser objectForKey:@"name"]];
     [query orderByDescending:@"createdAt"];
+    [query setLimit:20];
     PFQuery* query2 = [PFQuery queryWithClassName:@"Sent"];
     [query2 whereKey:@"username" equalTo:[selectedUser objectForKey:@"name"]];
     [query2 orderByDescending:@"createdAt"];
+    [query2 setLimit:20];
     PFQuery* query3 = [PFQuery queryWithClassName:@"Project"];
     [query3 whereKey:@"username" equalTo:[selectedUser objectForKey:@"name"]];
-    [query3 orderByDescending:@"createdAt"];    
+    [query3 orderByDescending:@"createdAt"];
+    [query3 setLimit:20];
     PFQuery* addedrouteQuery = [PFQuery queryWithClassName:@"Route"];
     [addedrouteQuery whereKey:@"username" equalTo:[selectedUser objectForKey:@"name"]];
     [addedrouteQuery orderByDescending:@"createdAt"];
+    [addedrouteQuery setLimit:20];
     switch (itemIndex) {
             
             
         case 0:
+            
             if ([self.flashArray count]==0) {
                 [queryArray addObject:query];
             [query findObjectsInBackgroundWithBlock:^(NSArray *retrievedObjs, NSError *error){
                 [queryArray removeObject:query];
+                if ([retrievedObjs count]<20) {
+                    shouldDisplayNext = 0;
+                }else{
+                    shouldDisplayNext = 1;
+                }
                 for (PFObject* flash in retrievedObjs)
                 {
                     RouteObject* newRouteObject = [[RouteObject alloc] init];
                     [[flash objectForKey:@"route"]fetchIfNeeded];
                     newRouteObject.pfobj = [flash objectForKey:@"route"];
-                    
+                    if ([[newRouteObject.pfobj objectForKey:@"isPage"]isEqualToNumber:[NSNumber numberWithBool:true]]) {
+                        if (![gymFetchArray containsObject:[newRouteObject.pfobj objectForKey:@"Gym"]]) {
+                            [gymFetchArray addObject:[newRouteObject.pfobj objectForKey:@"Gym"]];
+                        }
+                    }
                     BOOL isadded =NO;
                     for (RouteObject* obj in flashArray){
                         if ([obj.pfobj.objectId isEqualToString:newRouteObject.pfobj.objectId]) {
@@ -767,7 +835,7 @@ NSLog(@"showing proj array with ob %@",object);
                     }
                 [newRouteObject release];
                 }
-                [routeTableView reloadData];
+                     [self fetchGyms];
             }];
             }
             break;
@@ -777,12 +845,22 @@ NSLog(@"showing proj array with ob %@",object);
                 [queryArray addObject:query2];
                       [query2 findObjectsInBackgroundWithBlock:^(NSArray *retrievedObjs, NSError *error){
                           [queryArray removeObject:query2];
+                          if ([retrievedObjs count]<20) {
+                              shouldDisplayNext = 0;
+                          }else{
+                              shouldDisplayNext = 1;
+                          }
                 for (PFObject* sent in retrievedObjs)
                 {
                     RouteObject* newRouteObject = [[RouteObject alloc] init];
                     [[sent objectForKey:@"route"]fetchIfNeeded];
                     newRouteObject.pfobj = [sent objectForKey:@"route"];
-                    
+                    if ([[newRouteObject.pfobj objectForKey:@"isPage"]isEqualToNumber:[NSNumber numberWithBool:true]]) {
+                        if (![gymFetchArray containsObject:[newRouteObject.pfobj objectForKey:@"Gym"]]) {
+                            [gymFetchArray addObject:[newRouteObject.pfobj objectForKey:@"Gym"]];
+                        }
+                        
+                    }
                     BOOL isadded =NO;
                     for (RouteObject* obj in sentArray){
                         if ([obj.pfobj.objectId isEqualToString:newRouteObject.pfobj.objectId]) {
@@ -794,7 +872,7 @@ NSLog(@"showing proj array with ob %@",object);
                     }
                     [newRouteObject release];
                 }
-                [routeTableView reloadData];
+                 [self fetchGyms];
             }];
     }
             break;
@@ -802,13 +880,22 @@ NSLog(@"showing proj array with ob %@",object);
             if ([self.projectArray count]==0) {
                 [queryArray addObject:query3];
             [query3 findObjectsInBackgroundWithBlock:^(NSArray *retrievedObjs, NSError *error){
-                [queryArray removeObject:query3];    
+                [queryArray removeObject:query3];
+                if ([retrievedObjs count]<20) {
+                    shouldDisplayNext = 0;
+                }else{
+                    shouldDisplayNext = 1;
+                }
                 for (PFObject* proj in retrievedObjs)
                 {
                     RouteObject* newRouteObject = [[RouteObject alloc] init];
                     [[proj objectForKey:@"route"]fetchIfNeeded];
                     newRouteObject.pfobj = [proj objectForKey:@"route"];
-                    
+                    if ([[newRouteObject.pfobj objectForKey:@"isPage"]isEqualToNumber:[NSNumber numberWithBool:true]]) {
+                        if (![gymFetchArray containsObject:[newRouteObject.pfobj objectForKey:@"Gym"]]) {
+                            [gymFetchArray addObject:[newRouteObject.pfobj objectForKey:@"Gym"]];
+                        }
+                    }
                     BOOL isadded =NO;
                     for (RouteObject* obj in projectArray){
                         if ([obj.pfobj.objectId isEqualToString:newRouteObject.pfobj.objectId]) {
@@ -820,7 +907,7 @@ NSLog(@"showing proj array with ob %@",object);
                     }
                     [newRouteObject release];
                 }
-                [routeTableView reloadData];
+                 [self fetchGyms];
             }];
         }
             break;
@@ -829,15 +916,25 @@ NSLog(@"showing proj array with ob %@",object);
                 [queryArray addObject:addedrouteQuery];
             [addedrouteQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
                 [queryArray removeObject:addedrouteQuery];
+                if ([objects count]<20) {
+                    shouldDisplayNext = 0;
+                }else{
+                    shouldDisplayNext = 1;
+                }
                 [likedArray removeAllObjects];
                 for (PFObject* route in objects){
                     
                     RouteObject* newRouteObject = [[RouteObject alloc] init];
                     newRouteObject.pfobj = route;
+                    if ([[newRouteObject.pfobj objectForKey:@"isPage"]isEqualToNumber:[NSNumber numberWithBool:true]]) {
+                        if (![gymFetchArray containsObject:[newRouteObject.pfobj objectForKey:@"Gym"]]) {
+                            [gymFetchArray addObject:[newRouteObject.pfobj objectForKey:@"Gym"]];
+                        }
+                    }
                     [self.likedArray addObject:newRouteObject];
                     [newRouteObject release];
                 }
-                [routeTableView reloadData];
+                [self fetchGyms];
             }];
             }
             break;
@@ -849,10 +946,28 @@ NSLog(@"showing proj array with ob %@",object);
             break;
     }
     
-    [routeTableView reloadData];
+
     
     NSLog(@"Selected Tab Index: %d", tabView.segmentIndex);
     
+}
+
+-(void)fetchGyms
+{
+     NSLog(@"in gym fetch");
+    if ([gymFetchArray count]>0) {
+        NSLog(@"fetchinng gyms");
+        [PFObject fetchAllInBackground:gymFetchArray block:^(NSArray *objects, NSError *error) {
+            NSLog(@"done fetchinng gyms");
+            [gymFetchArray removeAllObjects];
+            
+            [routeTableView reloadData];
+        }];   
+    }else{
+        
+        [routeTableView reloadData];
+    }
+
 }
 
 #pragma mark - Table view delegate
@@ -894,28 +1009,220 @@ NSLog(@"showing proj array with ob %@",object);
     
     switch (tabView.segmentIndex) {
         case 0:
-            viewController.routeObject = [self.flashArray objectAtIndex:indexPath.row];
+            if (indexPath.row==([self.flashArray count])){
+                [self lastCellTapped];        
+            }else{
+                viewController.routeObject = [self.flashArray objectAtIndex:indexPath.row];
+                [self.navigationController pushViewController:viewController animated:YES];
+                
+            }
             
             break;
         case 1:
-            viewController.routeObject = [self.sentArray objectAtIndex:indexPath.row];
+            if (indexPath.row==([self.sentArray count])){
+                [self lastCellTapped];        
+            }else{
+                viewController.routeObject = [self.sentArray objectAtIndex:indexPath.row];
+                [self.navigationController pushViewController:viewController animated:YES];
+              
+            }
             break;
         case 2:
-            viewController.routeObject = [self.projectArray objectAtIndex:indexPath.row];
+            if (indexPath.row==([self.projectArray count])){
+                [self lastCellTapped];        
+            }else{
+                viewController.routeObject = [self.projectArray objectAtIndex:indexPath.row];
+                [self.navigationController pushViewController:viewController animated:YES];
+                
+            }
             break;
         case 3:
-            viewController.routeObject = [self.likedArray objectAtIndex:indexPath.row];
+            if (indexPath.row==([self.likedArray count])){
+                [self lastCellTapped];        
+            }else{
+                viewController.routeObject = [self.likedArray objectAtIndex:indexPath.row];
+                [self.navigationController pushViewController:viewController animated:YES];
+                
+            }
             break;
         default:
             
             break;
             
     }
-    [self.navigationController pushViewController:viewController animated:YES];
     [viewController release];
     
 }
+-(void)lastCellTapped
+{
+    
+    PFQuery* query = [PFQuery queryWithClassName:@"Flash"];
+    [query whereKey:@"username" equalTo:[selectedUser objectForKey:@"name"]];
+    [query orderByDescending:@"createdAt"];
+    [query setLimit:20];
+    [query setSkip:[self.flashArray count]];
+    PFQuery* query2 = [PFQuery queryWithClassName:@"Sent"];
+    [query2 whereKey:@"username" equalTo:[selectedUser objectForKey:@"name"]];
+    [query2 orderByDescending:@"createdAt"];
+    [query2 setLimit:20];
+    [query2 setSkip:[self.sentArray count]];
+    PFQuery* query3 = [PFQuery queryWithClassName:@"Project"];
+    [query3 whereKey:@"username" equalTo:[selectedUser objectForKey:@"name"]];
+    [query3 orderByDescending:@"createdAt"];
+    [query3 setLimit:20];
+    [query3 setSkip:[self.projectArray count]];
+    PFQuery* addedrouteQuery = [PFQuery queryWithClassName:@"Route"];
+    [addedrouteQuery whereKey:@"username" equalTo:[selectedUser objectForKey:@"name"]];
+    [addedrouteQuery orderByDescending:@"createdAt"];
+    [addedrouteQuery setLimit:20];
+    [addedrouteQuery setSkip:[self.likedArray count]];
+    switch (tabView.segmentIndex) {
+            
+            
+        case 0:
+                [queryArray addObject:query];
+                [query findObjectsInBackgroundWithBlock:^(NSArray *retrievedObjs, NSError *error){
+                    [queryArray removeObject:query];
+                    if ([retrievedObjs count]<20) {
+                        shouldDisplayNext = 0;
+                    }else{
+                        shouldDisplayNext = 1;
+                    }
+                    for (PFObject* flash in retrievedObjs)
+                    {
+                        RouteObject* newRouteObject = [[RouteObject alloc] init];
+                        [[flash objectForKey:@"route"]fetchIfNeeded];
+                        newRouteObject.pfobj = [flash objectForKey:@"route"];
+                        if ([[newRouteObject.pfobj objectForKey:@"isPage"]isEqualToNumber:[NSNumber numberWithBool:true]]) {
+                            if (![gymFetchArray containsObject:[newRouteObject.pfobj objectForKey:@"Gym"]]) {
+                                [gymFetchArray addObject:[newRouteObject.pfobj objectForKey:@"Gym"]];
+                            }
+                        }
+                        BOOL isadded =NO;
+                        for (RouteObject* obj in flashArray){
+                            if ([obj.pfobj.objectId isEqualToString:newRouteObject.pfobj.objectId]) {
+                                isadded = YES;
+                            }
+                        }
+                        if (!isadded) {
+                            [self.flashArray addObject:newRouteObject];
+                        }
+                        [newRouteObject release];
+                    }
+                    [self fetchGyms];
+                }];
+            
+            break;
+        case 1:
+            
+            
+                [queryArray addObject:query2];
+                [query2 findObjectsInBackgroundWithBlock:^(NSArray *retrievedObjs, NSError *error){
+                    [queryArray removeObject:query2];
+                    if ([retrievedObjs count]<20) {
+                        shouldDisplayNext = 0;
+                    }else{
+                        shouldDisplayNext = 1;
+                    }
+                    for (PFObject* sent in retrievedObjs)
+                    {
+                        RouteObject* newRouteObject = [[RouteObject alloc] init];
+                        [[sent objectForKey:@"route"]fetchIfNeeded];
+                        newRouteObject.pfobj = [sent objectForKey:@"route"];
+                        if ([[newRouteObject.pfobj objectForKey:@"isPage"]isEqualToNumber:[NSNumber numberWithBool:true]]) {
+                            if (![gymFetchArray containsObject:[newRouteObject.pfobj objectForKey:@"Gym"]]) {
+                                [gymFetchArray addObject:[newRouteObject.pfobj objectForKey:@"Gym"]];
+                            }
+                            
+                        }
+                        BOOL isadded =NO;
+                        for (RouteObject* obj in sentArray){
+                            if ([obj.pfobj.objectId isEqualToString:newRouteObject.pfobj.objectId]) {
+                                isadded = YES;
+                            }
+                        }
+                        if (!isadded) {
+                            [self.sentArray addObject:newRouteObject];
+                        }
+                        [newRouteObject release];
+                    }
+                    [self fetchGyms];
+                }];
+            
+            break;
+        case 2:
+            
+                [queryArray addObject:query3];
+                [query3 findObjectsInBackgroundWithBlock:^(NSArray *retrievedObjs, NSError *error){
+                    [queryArray removeObject:query3];
+                    if ([retrievedObjs count]<20) {
+                        shouldDisplayNext = 0;
+                    }else{
+                        shouldDisplayNext = 1;
+                    }
+                    for (PFObject* proj in retrievedObjs)
+                    {
+                        RouteObject* newRouteObject = [[RouteObject alloc] init];
+                        [[proj objectForKey:@"route"]fetchIfNeeded];
+                        newRouteObject.pfobj = [proj objectForKey:@"route"];
+                        if ([[newRouteObject.pfobj objectForKey:@"isPage"]isEqualToNumber:[NSNumber numberWithBool:true]]) {
+                            if (![gymFetchArray containsObject:[newRouteObject.pfobj objectForKey:@"Gym"]]) {
+                                [gymFetchArray addObject:[newRouteObject.pfobj objectForKey:@"Gym"]];
+                            }
+                        }
+                        BOOL isadded =NO;
+                        for (RouteObject* obj in projectArray){
+                            if ([obj.pfobj.objectId isEqualToString:newRouteObject.pfobj.objectId]) {
+                                isadded = YES;
+                            }
+                        }
+                        if (!isadded) {
+                            [self.projectArray addObject:newRouteObject];
+                        }
+                        [newRouteObject release];
+                    }
+                    [self fetchGyms];
+                }];
+            
+            break;
+        case 3:
+            
+                [queryArray addObject:addedrouteQuery];
+                [addedrouteQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+                    [queryArray removeObject:addedrouteQuery];
+                    if ([objects count]<20) {
+                        shouldDisplayNext = 0;
+                    }else{
+                        shouldDisplayNext = 1;
+                    }
 
+                    for (PFObject* route in objects){
+                        
+                        RouteObject* newRouteObject = [[RouteObject alloc] init];
+                        newRouteObject.pfobj = route;
+                        if ([[newRouteObject.pfobj objectForKey:@"isPage"]isEqualToNumber:[NSNumber numberWithBool:true]]) {
+                            if (![gymFetchArray containsObject:[newRouteObject.pfobj objectForKey:@"Gym"]]) {
+                                [gymFetchArray addObject:[newRouteObject.pfobj objectForKey:@"Gym"]];
+                            }
+                        }
+                        [self.likedArray addObject:newRouteObject];
+                        [newRouteObject release];
+                    }
+                    [self fetchGyms];
+                }];
+            
+            break;
+            
+            
+            
+            
+        default:
+            break;
+    }
+
+    
+    
+}
 
 
 #pragma mark -
@@ -926,32 +1233,50 @@ NSLog(@"showing proj array with ob %@",object);
     PFQuery* query = [PFQuery queryWithClassName:@"Flash"];
     [query whereKey:@"username" equalTo:[selectedUser objectForKey:@"name"]];
     [query orderByDescending:@"createdAt"];
+    [query setLimit:[self.flashArray count]];
     PFQuery* query2 = [PFQuery queryWithClassName:@"Sent"];
     [query2 whereKey:@"username" equalTo:[selectedUser objectForKey:@"name"]];
     [query2 orderByDescending:@"createdAt"];
+    [query2 setLimit:[self.sentArray count]];
     PFQuery* query3 = [PFQuery queryWithClassName:@"Project"];
     [query3 whereKey:@"username" equalTo:[selectedUser objectForKey:@"name"]];
     [query3 orderByDescending:@"createdAt"];
+    [query3 setLimit:[self.projectArray count]];
     PFQuery* addedrouteQuery = [PFQuery queryWithClassName:@"Route"];
     [addedrouteQuery whereKey:@"username" equalTo:[selectedUser objectForKey:@"name"]];
     [addedrouteQuery orderByDescending:@"createdAt"];
-    switch (tabView.segmentIndex) {                        
+    [addedrouteQuery setLimit:[self.likedArray count]];
+    switch (tabView.segmentIndex) {
         case 0:
             [queryArray addObject:query];
             [query findObjectsInBackgroundWithBlock:^(NSArray *retrievedObjs, NSError *error){
                 [queryArray removeObject:query];
                 [self.flashArray removeAllObjects];
+               
                 for (PFObject* flash in retrievedObjs)
                 {
                     RouteObject* newRouteObject = [[RouteObject alloc] init];
                     [[flash objectForKey:@"route"]fetchIfNeeded];
                     newRouteObject.pfobj = [flash objectForKey:@"route"];
-                    [self.flashArray addObject:newRouteObject];
+                    if ([[newRouteObject.pfobj objectForKey:@"isPage"]isEqualToNumber:[NSNumber numberWithBool:true]]) {
+                        if (![gymFetchArray containsObject:[newRouteObject.pfobj objectForKey:@"Gym"]]) {
+                            [gymFetchArray addObject:[newRouteObject.pfobj objectForKey:@"Gym"]];
+                        }
+                    }
+                    BOOL isadded =NO;
+                    for (RouteObject* obj in flashArray){
+                        if ([obj.pfobj.objectId isEqualToString:newRouteObject.pfobj.objectId]) {
+                            isadded = YES;
+                        }
+                    }
+                    if (!isadded) {
+                        [self.flashArray addObject:newRouteObject];
+                    }
                     [newRouteObject release];
-                    
                 }
-                [routeTableView reloadData];
+                [self fetchGyms];
             }];
+
             
             break;
         case 1:
@@ -964,11 +1289,26 @@ NSLog(@"showing proj array with ob %@",object);
                     RouteObject* newRouteObject = [[RouteObject alloc] init];
                     [[sent objectForKey:@"route"]fetchIfNeeded];
                     newRouteObject.pfobj = [sent objectForKey:@"route"];
-                    [self.sentArray addObject:newRouteObject];
+                    if ([[newRouteObject.pfobj objectForKey:@"isPage"]isEqualToNumber:[NSNumber numberWithBool:true]]) {
+                        if (![gymFetchArray containsObject:[newRouteObject.pfobj objectForKey:@"Gym"]]) {
+                            [gymFetchArray addObject:[newRouteObject.pfobj objectForKey:@"Gym"]];
+                        }
+                        
+                    }
+                    BOOL isadded =NO;
+                    for (RouteObject* obj in sentArray){
+                        if ([obj.pfobj.objectId isEqualToString:newRouteObject.pfobj.objectId]) {
+                            isadded = YES;
+                        }
+                    }
+                    if (!isadded) {
+                        [self.sentArray addObject:newRouteObject];
+                    }
                     [newRouteObject release];
                 }
-                [routeTableView reloadData];
+                [self fetchGyms];
             }];
+
             
             break;
         case 2:
@@ -981,10 +1321,23 @@ NSLog(@"showing proj array with ob %@",object);
                     RouteObject* newRouteObject = [[RouteObject alloc] init];
                     [[proj objectForKey:@"route"]fetchIfNeeded];
                     newRouteObject.pfobj = [proj objectForKey:@"route"];
-                    [self.projectArray addObject:newRouteObject];
+                    if ([[newRouteObject.pfobj objectForKey:@"isPage"]isEqualToNumber:[NSNumber numberWithBool:true]]) {
+                        if (![gymFetchArray containsObject:[newRouteObject.pfobj objectForKey:@"Gym"]]) {
+                            [gymFetchArray addObject:[newRouteObject.pfobj objectForKey:@"Gym"]];
+                        }
+                    }
+                    BOOL isadded =NO;
+                    for (RouteObject* obj in projectArray){
+                        if ([obj.pfobj.objectId isEqualToString:newRouteObject.pfobj.objectId]) {
+                            isadded = YES;
+                        }
+                    }
+                    if (!isadded) {
+                        [self.projectArray addObject:newRouteObject];
+                    }
                     [newRouteObject release];
                 }
-                [routeTableView reloadData];
+                [self fetchGyms];
             }];
             
             break;
@@ -994,13 +1347,20 @@ NSLog(@"showing proj array with ob %@",object);
             [queryArray removeObject:addedrouteQuery];                
                 [self.likedArray removeAllObjects];
                 for (PFObject* route in objects){
+                    
                     RouteObject* newRouteObject = [[RouteObject alloc] init];
                     newRouteObject.pfobj = route;
+                    if ([[newRouteObject.pfobj objectForKey:@"isPage"]isEqualToNumber:[NSNumber numberWithBool:true]]) {
+                        if (![gymFetchArray containsObject:[newRouteObject.pfobj objectForKey:@"Gym"]]) {
+                            [gymFetchArray addObject:[newRouteObject.pfobj objectForKey:@"Gym"]];
+                        }
+                    }
                     [self.likedArray addObject:newRouteObject];
-                     [newRouteObject release];
-                     }
-                [routeTableView reloadData];
+                    [newRouteObject release];
+                }
+                [self fetchGyms];
             }];
+            
             
             break;
             

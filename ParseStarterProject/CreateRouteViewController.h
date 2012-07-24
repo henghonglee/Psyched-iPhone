@@ -38,7 +38,10 @@
 
 
 -(void)tagPhoto:(NSString*)photoid withUser:(NSString*)facebookid;
+
+@property (retain, nonatomic) IBOutlet UILabel *fblabel;
 @property (retain,nonatomic) NSArray* accounts;
+@property (retain,nonatomic) NSMutableArray* queryArray;
 @property (retain,nonatomic) NSMutableArray* arrayOfAccounts;
 @property (retain,nonatomic) UIPickerView* fbAccountPickerView;
 @property (retain,nonatomic) UIActionSheet* accountActionSheet;
@@ -51,9 +54,10 @@
 @property (retain, nonatomic) NSMutableArray* FBfriendsArray;
 @property (retain, nonatomic) NSMutableArray* tempArray;
 @property (retain, nonatomic) NSMutableArray* recommendArray;
+@property (retain, nonatomic) NSMutableArray* CGPointsArray;
+@property (retain, nonatomic) NSMutableArray* arrowTypeArray;
+
 @property (retain, nonatomic) IBOutlet UITextField *difficultyTextField;
-
-
 @property (retain,nonatomic) NSArray* gymlist;
 @property (retain, nonatomic) IBOutlet UISegmentedControl *segControl;
 @property (retain, nonatomic) IBOutlet UITextField *locationTextField;
@@ -61,6 +65,7 @@
 @property (retain, nonatomic) IBOutlet UIScrollView *scroll;
 @property (retain, nonatomic) IBOutlet UITextView *recommendTextView;
 @property (retain, nonatomic) UIImage* imageTaken;
+@property (retain, nonatomic) UIImage* originalImage;
 @property (retain, nonatomic) IBOutlet UIImageView *imageView;
 @property (retain, nonatomic) IBOutlet UITextField *recommendTextField;
 @property (retain, nonatomic) IBOutlet UISwitch *fbuploadswitch;

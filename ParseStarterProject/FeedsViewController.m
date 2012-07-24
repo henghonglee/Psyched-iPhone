@@ -163,6 +163,11 @@
     [self setSegmentedControl:nil];
     [self setSegheader:nil];
     [self setEmptyView:nil];
+    [self setUnreadArray:nil];
+    [self setFeedsArray:nil];
+    [self setFollowsArray:nil];
+    [self viewDidDisappear:YES];
+    
     [super viewDidUnload];
     // Release any retained subviews of the main view.
     // e.g. self.myOutlet = nil;

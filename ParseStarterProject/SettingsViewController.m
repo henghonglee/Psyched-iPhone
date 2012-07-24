@@ -44,6 +44,7 @@
     [PFUser logOut];
     [[PFFacebookUtils facebook] logout];
     [[PFFacebookUtils facebook] setAccessToken:nil];
+    
     ParseStarterProjectAppDelegate* applicationDelegate = ((ParseStarterProjectAppDelegate*)[[UIApplication sharedApplication]delegate]);
     applicationDelegate.badgeView.text = @"0";
    

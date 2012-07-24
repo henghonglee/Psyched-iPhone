@@ -44,12 +44,12 @@
    // KKGridViewController* feedsViewController =KKviewController;
   
     
-    KKGridViewController* feedsViewController = [[KKGridViewController alloc]init];
-    feedsViewController.gridView.delegate = self;
-    feedsViewController.gridView.dataSource = self;
-    UINavigationController* feedsNav = [[UINavigationController alloc] initWithRootViewController:feedsViewController];
-    feedsViewController.tabBarItem = [[[UITabBarItem alloc] initWithTitle:@"Popular" image:[UIImage imageNamed:@"star.png"] tag:0] autorelease];
-    [FlurryAnalytics logAllPageViews:feedsNav];
+//    KKGridViewController* feedsViewController = [[KKGridViewController alloc]init];
+//    feedsViewController.gridView.delegate = self;
+//    feedsViewController.gridView.dataSource = self;
+//    UINavigationController* feedsNav = [[UINavigationController alloc] initWithRootViewController:feedsViewController];
+//  //  feedsViewController.tabBarItem = [[[UITabBarItem alloc] initWithTitle:@"Popular" image:[UIImage imageNamed:@"star.png"] tag:0] autorelease];
+//    [FlurryAnalytics logAllPageViews:feedsNav];
     
     // get all popular routes
  
@@ -57,41 +57,42 @@
     //main navigation controller
     MyTableController * demoViewController = [[[MyTableController alloc] initWithNibName:nil bundle:nil] autorelease];
     UINavigationController* mainNav = [[UINavigationController alloc]initWithRootViewController:demoViewController];
-    mainNav.tabBarItem = [[[UITabBarItem alloc] initWithTitle:@"Routes" image:[UIImage imageNamed:@"29-heart.png"] tag:0] autorelease];
+   // mainNav.tabBarItem = [[[UITabBarItem alloc] initWithTitle:@"" image:[UIImage imageNamed:@"29-heart.png"] tag:0] autorelease];
         [mainNav.navigationBar setBarStyle:UIBarStyleBlack];
     demoViewController.navigationController.navigationBarHidden = YES;
     [FlurryAnalytics logAllPageViews:mainNav];
     
     
     //news navigation cotnroller
-    NewsViewController* newsVC= [[NewsViewController alloc] initWithNibName:@"NewsViewController" bundle:nil];
-    UINavigationController* newsnav = [[UINavigationController alloc]initWithRootViewController:newsVC];
-    [newsVC release];
-    newsnav.tabBarItem = [[[UITabBarItem alloc] initWithTitle:@"News" image:[UIImage imageNamed:@"news.png"] tag:0] autorelease];
-    [FlurryAnalytics logAllPageViews:newsnav];
+//    NewsViewController* newsVC= [[NewsViewController alloc] initWithNibName:@"NewsViewController" bundle:nil];
+//    UINavigationController* newsnav = [[UINavigationController alloc]initWithRootViewController:newsVC];
+//    [newsVC release];
+//newsnav.tabBarItem = [[[UITabBarItem alloc] initWithTitle:@"" image:[UIImage imageNamed:@"news.png"] tag:0] autorelease];
+//    [FlurryAnalytics logAllPageViews:newsnav];
     
     //profile navigation controller
     ProfileViewController* profileVC = [[ProfileViewController alloc]initWithNibName:@"ProfileViewController" bundle:nil]; 
     UINavigationController* profilenav = [[UINavigationController alloc]initWithRootViewController:profileVC];
     [profileVC release];
-     profilenav.tabBarItem = [[[UITabBarItem alloc] initWithTitle:@"Profile" image:[UIImage imageNamed:@"123-id-card.png"] tag:0] autorelease];
-    [FlurryAnalytics logAllPageViews:profilenav];
-    
-    
-    
+    // profilenav.tabBarItem = [[[UITabBarItem alloc] initWithTitle:@"" image:[UIImage imageNamed:@"123-id-card.png"] tag:0] autorelease];
+
+
   //  [tableNav setNavigationBarHidden:YES];
   self.viewControllers = [NSArray arrayWithObjects:
-                            mainNav,feedsNav,
+                            mainNav,
+                          //feedsNav,
                             [self viewControllerWithTabTitle:@"" image:nil],
-                            newsnav,profilenav, nil];
+                           // newsnav,
+                          profilenav, nil];
    
     
                             [self addCenterButtonWithImage:[UIImage imageNamed:@"cameraTabBarItem copy.png"] highlightImage:nil];
     [mainNav release];
-    [newsnav release];
-    [feedsViewController release];
+   // [newsnav release];
+   // [feedsViewController release];
     [profilenav release];
-    [feedsNav release];
+   // [feedsNav release];
+    
 }
 
 -(void)willAppearIn:(UINavigationController *)navigationController

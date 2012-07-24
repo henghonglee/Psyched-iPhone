@@ -54,6 +54,7 @@ typedef enum {
 @property (nonatomic, strong) IBOutlet UIView *backgroundView; // Underneath contentView, use this to customize backgrounds
 @property (nonatomic, strong) IBOutlet UIView *contentView; // Where all subviews should be.
 @property (nonatomic, strong) IBOutlet UIImageView *imageView;
+@property (nonatomic, strong)  UIImageView *stampImageView;
 @property (nonatomic, copy) KKIndexPath *indexPath;
 @property (nonatomic, copy) NSString *reuseIdentifier; // For usage by KKGridView
 @property (nonatomic, getter = isSelected) BOOL selected;

@@ -17,7 +17,8 @@
 @synthesize instructionButton;
 @synthesize delegate;
 @synthesize confButton;
-
+@synthesize CGPointsArray;
+@synthesize arrowTypeArray;
 @synthesize moreArrowsView;
 @synthesize arrowImageView;
 @synthesize startImageView;
@@ -54,6 +55,7 @@
     [self selectArrow:button1];
     UIBarButtonItem* rightButton = [[UIBarButtonItem alloc] initWithTitle:@"Done" style:UIBarButtonSystemItemDone target:self action:@selector(DoneButton:)];
     self.navigationItem.rightBarButtonItem = rightButton;
+        [self.navigationItem.rightBarButtonItem setEnabled:NO];
     [rightButton release];
     UIBarButtonItem* leftButton = [[UIBarButtonItem alloc] initWithTitle:@"Cancel" style:UIBarButtonSystemItemDone target:self action:@selector(cancelButton:)];
     self.navigationItem.leftBarButtonItem = leftButton;
@@ -97,12 +99,18 @@
     
     [tapGesture requireGestureRecognizerToFail:doubleTapGesture];
      [tapGesture requireGestureRecognizerToFail:longpressGesture];
+            CGPointsArray = [[NSMutableArray alloc]init ];
+                arrowTypeArray = [[NSMutableArray alloc]init ];
     imageStack = [[NSMutableArray alloc]init ];
+    
+
     [imageStack addObject:imageInView];
+
     [self.view sendSubviewToBack:scrollView];
     // Do any additional setup after loading the view from its nib.
 }
 - (IBAction)didFinishInstruction:(UIButton*)sender {
+    [self.navigationItem.rightBarButtonItem setEnabled:YES];
     sender.alpha = 1.0;
     [UIView animateWithDuration:0.4
                           delay:0.0
@@ -157,14 +165,13 @@
 
 CGPoint presspoint = [sender locationInView:self.imageToEdit];
 CGPoint presspointInMainView = [sender locationInView:self.view];
-NSLog(@"presspoint = %@",NSStringFromCGPoint(presspoint));
-//        draggableImageView.center = CGPointMake(presspoint.x, presspoint.y);
+
 CGRect slideViewFinalFrame ;
 
 slideViewFinalFrame = CGRectMake(presspointInMainView.x-(imageToEdit.bounds.size.width/20.0f)*scrollView.zoomScale, presspointInMainView.y, (imageToEdit.bounds.size.width/20.0f)*scrollView.zoomScale, (imageToEdit.bounds.size.height/20.0f)*scrollView.zoomScale);
 
 [self.view sendSubviewToBack:scrollView];
-NSLog(@"finalframe = %@",NSStringFromCGRect(slideViewFinalFrame));
+//NSLog(@"finalframe = %@",NSStringFromCGRect(slideViewFinalFrame));
 draggableImageView.frame = CGRectMake(0, 0, 320, 320);
 
 [UIView animateWithDuration:0.1
@@ -185,7 +192,10 @@ draggableImageView.frame = CGRectMake(0, 0, 320, 320);
                      draggableImageView.frame = CGRectMake(presspoint.x- (imageToEdit.bounds.size.width/imagePercentOfRealImage), presspoint.y, (imageToEdit.bounds.size.width/imagePercentOfRealImage), (imageToEdit.bounds.size.height/imagePercentOfRealImage));
                      imageToEdit.image = [self imageByDrawingCircleOnImage:imageToEdit.image];
                      [imageToEdit setNeedsDisplay];
+                     [CGPointsArray addObject: NSStringFromCGRect(draggableImageView.frame)];
+                     [arrowTypeArray addObject:selectedArrowType];
                      draggableImageView.frame = originalArrowFrame;
+                    
                  }];
 
 }
@@ -195,10 +205,10 @@ draggableImageView.frame = CGRectMake(0, 0, 320, 320);
     if (sender.state == UIGestureRecognizerStateEnded) {
         
     }else if(sender.state == UIGestureRecognizerStateBegan){
-        NSLog(@"pressed for long");
+
         CGPoint presspoint = [sender locationInView:self.imageToEdit];
          CGPoint presspointInMainView = [sender locationInView:self.view];
-        NSLog(@"presspoint = %@",NSStringFromCGPoint(presspoint));
+
 //        draggableImageView.center = CGPointMake(presspoint.x, presspoint.y);
         CGRect slideViewFinalFrame ;
         
@@ -226,6 +236,10 @@ draggableImageView.frame = CGRectMake(0, 0, 320, 320);
                           draggableImageView.frame = CGRectMake(presspoint.x- (imageToEdit.bounds.size.width/imagePercentOfRealImage), presspoint.y, (imageToEdit.bounds.size.width/imagePercentOfRealImage), (imageToEdit.bounds.size.height/imagePercentOfRealImage));
                          imageToEdit.image = [self imageByDrawingCircleOnImage:imageToEdit.image];
                          [imageToEdit setNeedsDisplay];
+                         [CGPointsArray addObject: NSStringFromCGRect(draggableImageView.frame)];
+                         [arrowTypeArray addObject:selectedArrowType];
+                         NSLog(@"cgpointsarray = %@",CGPointsArray);
+                                               NSLog(@"arrowtype array = %@",arrowTypeArray);
                          draggableImageView.frame = originalArrowFrame;
                      }];
        // [draggableImageView setFrame:CGRectMake(presspoint.x- (imageToEdit.bounds.size.width/20.0f), presspoint.y, (imageToEdit.bounds.size.width/20.0f), (imageToEdit.bounds.size.height/20.0f))];
@@ -240,16 +254,44 @@ draggableImageView.frame = CGRectMake(0, 0, 320, 320);
     switch (sender.tag) {
         case 0:
             draggableImageView.image = arrowImageView.image;
+            if (arrowImageView.image ==[UIImage imageNamed:@"arrow1.png"])
+                selectedArrowType = [NSNumber numberWithInt:0];
+            if (arrowImageView.image ==[UIImage imageNamed:@"arrow2"])
+                selectedArrowType = [NSNumber numberWithInt:3];
+            if (arrowImageView.image ==[UIImage imageNamed:@"arrow3"])
+                selectedArrowType = [NSNumber numberWithInt:6];
+            if (arrowImageView.image ==[UIImage imageNamed:@"arrow4"])
+                selectedArrowType = [NSNumber numberWithInt:9];
+            
             break;
         case 1:
             draggableImageView.image = startImageView.image;
+            if (draggableImageView.image ==[UIImage imageNamed:@"start1.png"])
+                selectedArrowType = [NSNumber numberWithInt:1];
+            if (draggableImageView.image ==[UIImage imageNamed:@"start2"])
+                selectedArrowType = [NSNumber numberWithInt:4];
+            if (draggableImageView.image ==[UIImage imageNamed:@"start3"])
+                selectedArrowType = [NSNumber numberWithInt:7];
+            if (draggableImageView.image ==[UIImage imageNamed:@"start4"])
+                selectedArrowType = [NSNumber numberWithInt:10];
+            
             break;
         case 2:
             draggableImageView.image = endImageView.image;
+            if (draggableImageView.image ==[UIImage imageNamed:@"end1.png"])
+                selectedArrowType = [NSNumber numberWithInt:2];
+            if (draggableImageView.image ==[UIImage imageNamed:@"end2"])
+                selectedArrowType = [NSNumber numberWithInt:5];
+            if (draggableImageView.image ==[UIImage imageNamed:@"end3"])
+                selectedArrowType = [NSNumber numberWithInt:8];
+            if (draggableImageView.image ==[UIImage imageNamed:@"end4"])
+                selectedArrowType = [NSNumber numberWithInt:11];
             break;
         default:
             break;
     }
+        
+    
 }
 -(void)viewWillAppear:(BOOL)animated
 {
@@ -260,10 +302,15 @@ draggableImageView.frame = CGRectMake(0, 0, 320, 320);
 - (IBAction)reset:(id)sender {
    
     imageToEdit.image = [imageStack objectAtIndex:[imageStack count]-1];
+    if([CGPointsArray count]){
+    [CGPointsArray removeLastObject];
+    [arrowTypeArray removeLastObject];
+    }
     if( [imageStack objectAtIndex:[imageStack count]-1]==imageInView) {
         
     }else{
     [imageStack removeLastObject];
+
     }
 
 //   
@@ -365,7 +412,7 @@ draggableImageView.frame = CGRectMake(0, 0, 320, 320);
     // [imageMetaData setObject:[self updateExif:myCurrentLocation] forKey:(NSString*)kCGImagePropertyGPSDictionary];          
     
     
-    [library writeImageToSavedPhotosAlbum:[imageToEdit.image CGImage] metadata:imageMetaData completionBlock:^(NSURL *assetURL, NSError *error) {
+    [library writeImageToSavedPhotosAlbum:[[imageStack objectAtIndex:0] CGImage] metadata:imageMetaData completionBlock:^(NSURL *assetURL, NSError *error) {
         if (error) {
             NSLog(@"error is %@",error);
         }
@@ -445,6 +492,9 @@ draggableImageView.frame = CGRectMake(0, 0, 320, 320);
 - (IBAction)DoneButton:(id)sender {
     CreateRouteViewController* viewController= [[CreateRouteViewController alloc]initWithNibName:@"CreateRouteViewController" bundle:nil];
 	viewController.imageTaken = imageToEdit.image;
+    viewController.originalImage = [imageStack objectAtIndex:0];
+    viewController.CGPointsArray = CGPointsArray;
+    viewController.arrowTypeArray = arrowTypeArray;
     viewController.imageMetaData = self.imageMetaData;
     [self.navigationController pushViewController:viewController animated:YES];
     [viewController release];
@@ -511,6 +561,7 @@ draggableImageView.frame = CGRectMake(0, 0, 320, 320);
     }
 }
 - (IBAction)helpButton:(id)sender {
+        [self.navigationItem.rightBarButtonItem setEnabled:NO];
     if (instructionButton.hidden) {
         instructionButton.hidden=NO;
         instructionButton.alpha = 0;
@@ -537,6 +588,40 @@ draggableImageView.frame = CGRectMake(0, 0, 320, 320);
                              
                          }];
     }
+}
+- (IBAction)turnClockwise:(id)sender {
+    //pop all images and turn image
+    imageToEdit.image = [imageStack objectAtIndex:0];
+    if([CGPointsArray count]){
+        [CGPointsArray removeAllObjects];
+        [arrowTypeArray removeAllObjects];
+    }
+    [imageStack removeAllObjects];
+    int imgorientation;
+    switch (imageInView.imageOrientation) {
+        case UIImageOrientationLeft:
+            imgorientation = UIImageOrientationUp;
+            break;
+        case UIImageOrientationUp:
+            imgorientation = UIImageOrientationRight;
+            break;   
+        case UIImageOrientationDown:
+            imgorientation = UIImageOrientationLeft;
+            break;
+        case UIImageOrientationRight:
+            imgorientation = UIImageOrientationDown;
+            break;    
+        default:
+            break;
+    }
+    UIImage * PortraitImage = [[UIImage alloc] initWithCGImage: imageInView.CGImage
+                                                         scale: 1.0
+                                                   orientation: imgorientation];
+    imageInView = PortraitImage;
+    imageToEdit.image = PortraitImage;
+  
+    [imageStack addObject:PortraitImage];
+      [PortraitImage release];
 }
 -(void)dealloc
 {

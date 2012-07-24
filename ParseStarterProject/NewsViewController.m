@@ -16,6 +16,7 @@
 @implementation NewsViewController
 @synthesize newsTable;
 @synthesize navigationBarItem;
+@synthesize newsArray,queryArray;
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
@@ -117,6 +118,9 @@
 - (void)viewDidUnload
 {
     [self setNewsTable:nil];
+    [self setNavigationBarItem:nil];
+    [self setNewsArray:nil];
+    [self setQueryArray:nil];
     [super viewDidUnload];
     // Release any retained subviews of the main view.
     // e.g. self.myOutlet = nil;

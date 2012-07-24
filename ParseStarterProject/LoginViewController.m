@@ -44,17 +44,13 @@
 
     [titleLabel setFont:[UIFont fontWithName:@"Old Stamper" size:50.0]];
     titleLabel.textColor = [UIColor whiteColor];
-    titleLabel.layer.shadowColor = [UIColor darkGrayColor].CGColor;
-    titleLabel.layer.shadowOffset = CGSizeMake(0, -1);
-    titleLabel.layer.shadowOpacity = 0.8;
-    titleLabel.layer.shadowRadius = 1;
     // Do any additional setup after loading the view from its nib.
 }
 - (IBAction)fblogin:(id)sender {
-    
+   
     if (![PFFacebookUtils facebook].accessToken) {
 
-        NSArray* permissions = [[NSArray alloc]initWithObjects:@"user_about_me",@"user_videos",@"user_birthday",@"email",@"user_photos",@"publish_stream",@"offline_access",@"manage_pages",nil];
+        NSArray* permissions = [[NSArray alloc]initWithObjects:@"user_about_me",@"user_videos",@"user_birthday",@"email",@"user_photos",@"publish_stream",@"offline_access",@"manage_pages",@"manage_notifications",nil];
         [PFFacebookUtils logInWithPermissions:permissions block:^(PFUser *user, NSError *error) {
             [[NSUserDefaults standardUserDefaults]setObject:@"updated" forKey:@"updater1.1"];
             [[NSUserDefaults standardUserDefaults] synchronize];
@@ -75,6 +71,8 @@
         }];
         [permissions release];
     }else{
+        
+        
         InstagramViewController* viewController = [[InstagramViewController alloc]initWithNibName:@"InstagramViewController" bundle:nil];
         viewController.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
         [self presentModalViewController:viewController animated:YES];
@@ -88,6 +86,9 @@
     // Using the "pic" picture since this currently has a maximum width of 100 pixels
     // and since the minimum profile picture size is 180 pixels wide we should be able
     // to get a 100 pixel wide version of the profile picture
+
+    
+    
     NSMutableDictionary *params = [NSMutableDictionary dictionaryWithObjectsAndKeys:
                                    @"SELECT about_me,locale,birthday,birthday_date,sex,uid, name, pic , email FROM user WHERE uid=me()", @"query",
                                    nil];

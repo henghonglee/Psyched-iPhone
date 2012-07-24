@@ -23,6 +23,7 @@
 @synthesize unoutdateButton;
 @synthesize postButton;
 @synthesize routeMapView;
+@synthesize rawImageData;
 @synthesize progressBar;
 @synthesize routeLocationLabel;
 @synthesize pinImageView;
@@ -148,8 +149,11 @@ kAPIGraphCommentPhoto,
         
         }
     }else if(dislikealert){
-        if (buttonIndex) {
-            
+        if ([[dislikealert buttonTitleAtIndex:buttonIndex]isEqualToString:@"Show Me"]) {
+            [[routeObject.pfobj objectForKey:@"Gym"]fetchIfNeededInBackgroundWithBlock:^(PFObject *object, NSError *error) {
+                [[UIApplication sharedApplication] openURL:[NSURL URLWithString:[NSString stringWithFormat:@"fb://page/%@",[object objectForKey:@"facebookid"]]]];                
+            }];
+
         }
     }
 }
@@ -195,7 +199,7 @@ kAPIGraphCommentPhoto,
     
     
     
-    NSLog(@"location = %f,%f",((PFGeoPoint*)[routeObject.pfobj objectForKey:@"routelocation"]).latitude,((PFGeoPoint*)[routeObject.pfobj objectForKey:@"routelocation"]).longitude);
+ 
     if (!(((PFGeoPoint*)[routeObject.pfobj objectForKey:@"routelocation"]).latitude ==0.0f &&((PFGeoPoint*)[routeObject.pfobj objectForKey:@"routelocation"]).longitude ==0.0f )) {
     CLLocationCoordinate2D routeLoc = CLLocationCoordinate2DMake(((PFGeoPoint*)[routeObject.pfobj objectForKey:@"routelocation"]).latitude, ((PFGeoPoint*)[routeObject.pfobj objectForKey:@"routelocation"]).longitude);
     [routeMapView setCenterCoordinate:routeLoc zoomLevel:14 animated:NO];
@@ -245,16 +249,12 @@ kAPIGraphCommentPhoto,
     routeImageView.image = routeObject.retrievedImage;
     routeLocationLabel.text = [routeObject.pfobj objectForKey:@"location"]; 
     
-    NSLog(@"getting image if available..");
     [self getImageIfUnavailable];
-    NSLog(@"done getting image");
     //scroll.contentSize = CGSizeMake(320, 566);
     self.navigationController.navigationBarHidden = NO;
-    NSLog(@"checking like sendstatus");
 
     [self checksendstatus];
     [self checkCommunitySendStatus];
-    NSLog(@"done checking sendstatus and likes");
 
     if ([routeObject.pfobj objectForKey:@"isPage"]==[NSNumber numberWithBool:YES]) {
         usernameLabel.text = [[[routeObject.pfobj objectForKey:@"Gym"]fetchIfNeeded] objectForKey:@"name"];
@@ -1088,8 +1088,10 @@ kAPIGraphCommentPhoto,
             }
         }
         [likeButton setUserInteractionEnabled:YES];
+        if ([likedataDict count]>0) {
         [routeObject.pfobj setObject:[NSNumber numberWithInt:[likedataDict count]] forKey:@"likecount"];
-
+        [routeObject.pfobj saveEventually];
+        }
         likeCountLabel.text = [NSString stringWithFormat:@"%d likes",[likedataDict count]];
         NSArray *dataDict = [commentsDict objectForKey:@"data"];
         for (NSDictionary* comment in dataDict) {
@@ -1174,16 +1176,62 @@ kAPIGraphCommentPhoto,
         [progressBar removeFromSuperview];
         self.navigationItem.title = @"Route Details";
         [queryArray removeObject:imagefile];
+        rawImageData = imageData;
+        [rawImageData retain];
         UIImage* retrievedImage = [UIImage imageWithData:imageData];
         routeImageView.image = retrievedImage;
         [scrollView setFrame:CGRectMake(0, 0, 320, 320)];
         
         [scrollView setDelegate:self];
         [scrollView addSubview:routeImageView];
+        [routeImageView release];
         scrollView.contentSize=CGSizeMake(retrievedImage.size.width, retrievedImage.size.width);
         scrollView.maximumZoomScale = 4;
         scrollView.minimumZoomScale = 1;
         [scrollView setZoomScale:1.0f];
+        if([[routeObject.pfobj objectForKey:@"routeVersion"] isEqualToString:@"2"]){
+            NSLog(@"route is version 2, attach overlay here");
+            NSArray* routearrowarray = [routeObject.pfobj objectForKey:@"arrowarray"];
+            NSArray* arrowtypearray = [routeObject.pfobj objectForKey:@"arrowtypearray"];
+             UIImage* pastedimage;
+
+            for (int i=0; i<[routearrowarray count]; i++) {
+               
+                                         
+                CGRect routearrowrect = CGRectFromString([routearrowarray objectAtIndex:i]);
+                if([[arrowtypearray objectAtIndex:i]isEqualToNumber:[NSNumber numberWithInt:0]])
+                    pastedimage = [UIImage imageNamed:@"arrow1.png"];
+                if([[arrowtypearray objectAtIndex:i]isEqualToNumber:[NSNumber numberWithInt:1]])
+                    pastedimage = [UIImage imageNamed:@"start1.png"];
+                if([[arrowtypearray objectAtIndex:i]isEqualToNumber:[NSNumber numberWithInt:2]])
+                    pastedimage = [UIImage imageNamed:@"end1.png"];
+                if([[arrowtypearray objectAtIndex:i]isEqualToNumber:[NSNumber numberWithInt:3]])
+                    pastedimage = [UIImage imageNamed:@"arrow2.png"];
+                if([[arrowtypearray objectAtIndex:i]isEqualToNumber:[NSNumber numberWithInt:4]])
+                    pastedimage = [UIImage imageNamed:@"start2.png"];
+                if([[arrowtypearray objectAtIndex:i]isEqualToNumber:[NSNumber numberWithInt:5]])
+                    pastedimage = [UIImage imageNamed:@"end2.png"];
+                if([[arrowtypearray objectAtIndex:i]isEqualToNumber:[NSNumber numberWithInt:6]])
+                    pastedimage = [UIImage imageNamed:@"arrow3.png"];
+                if([[arrowtypearray objectAtIndex:i]isEqualToNumber:[NSNumber numberWithInt:7]])
+                    pastedimage = [UIImage imageNamed:@"start3.png"];
+                if([[arrowtypearray objectAtIndex:i]isEqualToNumber:[NSNumber numberWithInt:8]])
+                    pastedimage = [UIImage imageNamed:@"end3.png"];
+                if([[arrowtypearray objectAtIndex:i]isEqualToNumber:[NSNumber numberWithInt:9]])
+                    pastedimage = [UIImage imageNamed:@"arrow4.png"];
+                if([[arrowtypearray objectAtIndex:i]isEqualToNumber:[NSNumber numberWithInt:10]])
+                    pastedimage = [UIImage imageNamed:@"start4.png"];
+                if([[arrowtypearray objectAtIndex:i]isEqualToNumber:[NSNumber numberWithInt:11]])
+                    pastedimage = [UIImage imageNamed:@"end4.png"];
+                
+                routeImageView.image = [self imageByDrawingImage:pastedimage OnImage:routeImageView.image inRect:routearrowrect];
+      // [pastedimage release];
+            }
+
+                
+            
+        }
+        
    // }];
      
     } progressBlock:^(int percentDone) {
@@ -1191,7 +1239,7 @@ kAPIGraphCommentPhoto,
             [progressBar setFrame:CGRectMake(70, 17, 180, 10)];
             [self.navigationController.navigationBar addSubview:progressBar];
         }
-        NSLog(@"percentage done = %d",percentDone);
+        //NSLog(@"percentage done = %d",percentDone);
         [progressBar setProgress:((double)percentDone)/100.0 ];
         if (percentDone==100) {
         [progressBar removeFromSuperview];
@@ -1208,12 +1256,36 @@ kAPIGraphCommentPhoto,
    
      
 }   
+- (UIImage *)imageByDrawingImage:(UIImage*)pastedImage OnImage:(UIImage *)image inRect:(CGRect)rect
+{
+    
+    
+    
+	UIGraphicsBeginImageContext(image.size);
+    
+	// draw original image into the context
+	[image drawAtPoint:CGPointZero];
+    
+	// get the context for CoreGraphics
+	
+    [pastedImage drawInRect:rect];
+
+    
+	// make image out of bitmap context
+	UIImage *retImage = UIGraphicsGetImageFromCurrentImageContext();
+    
+	// free the context
+	UIGraphicsEndImageContext();
+    
+	return retImage; 
+}
 
 
 -(void)viewWillDisappear:(BOOL)animated
 {
  
     [commentTextField resignFirstResponder];
+    [rawImageData release];
     if (progressBar.superview) {
     [progressBar removeFromSuperview];
     }
@@ -1229,8 +1301,8 @@ kAPIGraphCommentPhoto,
             }
         }
         [queryArray removeAllObjects];
-    NSLog(@"done canceling queries");
-   
+    NSLog(@"done canceling queries 1");
+    [routeObject release];
     
    
 }
@@ -1285,9 +1357,15 @@ kAPIGraphCommentPhoto,
     [self setOutdateButton:nil];
     [self setUnoutdateButton:nil];
     [self setApprovalView:nil];
+    //[self setApproveButton:nil];
+    //[self setDisapproveButton:nil];
+    [self setPostButton:nil];
+    [self setCommentsArray:nil];
+    [self setQueryArray:nil];
+    [self setSavedArray:nil];
+    [self setRouteObject:nil];
     [self setApproveButton:nil];
     [self setDisapproveButton:nil];
-    [self setPostButton:nil];
     [super viewDidUnload];
     // Release any retained subviews of the main view.
     // e.g. self.myOutlet = nil;
@@ -1310,12 +1388,15 @@ kAPIGraphCommentPhoto,
 }
 - (IBAction)viewUser:(id)sender {
             if ([routeObject.pfobj objectForKey:@"isPage"]==[NSNumber numberWithBool:YES]) {
-                GymViewController* viewController = [[GymViewController alloc]initWithNibName:@"GymViewController" bundle:nil];
-                [[routeObject.pfobj objectForKey:@"Gym"]fetchIfNeededInBackgroundWithBlock:^(PFObject *object, NSError *error) {
-                    viewController.gymObject = object;
-                    [self.navigationController pushViewController:viewController animated:YES];
-                    [viewController release];
-                }];
+//                NSLog(@"opening gym page");
+//                GymViewController* viewController = [[GymViewController alloc]initWithNibName:@"GymViewController" bundle:nil];
+//                [((GymObject*)[routeObject.pfobj objectForKey:@"Gym"]) fetchIfNeededInBackgroundWithBlock:^(PFObject *object, NSError *error) {
+//                    viewController.gymObject = object;
+//                     NSLog(@"pushing in gym object , %@",object);
+//                    [self.navigationController pushViewController:viewController animated:YES];
+//                    [viewController release];
+//                }];
+                
             }else{
     ProfileViewController* viewController = [[ProfileViewController alloc]initWithNibName:@"ProfileViewController" bundle:nil];
 
@@ -1356,7 +1437,7 @@ kAPIGraphCommentPhoto,
                                                   andDelegate:self];
         }];
         
-        
+   
     }else{
         [self PostComment:nil];   
     }
@@ -1366,6 +1447,28 @@ kAPIGraphCommentPhoto,
         NSError*error=nil;
     if ([routeObject.pfobj objectForKey:@"photoid"])
     {//if uploaded to facebook also upload comment to facebook.. keep everything there
+        
+        
+        //save photoid in array in docs directory
+        NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, 
+                                                            NSUserDomainMask, YES);
+        if ([paths count] > 0)
+        {
+            // Path to save array data
+            NSString  *arrayPath = [[paths objectAtIndex:0] 
+                                    stringByAppendingPathComponent:@"array.out"];
+            NSMutableArray *arrayFromFile = [NSMutableArray arrayWithContentsOfFile:arrayPath];
+            if (![arrayFromFile containsObject:[routeObject.pfobj objectForKey:@"photoid"]]) {
+                [arrayFromFile addObject:[routeObject.pfobj objectForKey:@"photoid"]];
+
+            }
+            [arrayFromFile writeToFile:arrayPath atomically:YES];
+
+            
+        }
+            
+            
+            
         currentAPICall = kAPIGraphCommentPhoto;
         NSMutableDictionary *params = [NSMutableDictionary dictionaryWithObjectsAndKeys:
                                        commentTextField.text, @"message",nil];
@@ -1416,8 +1519,7 @@ kAPIGraphCommentPhoto,
         }else{
             NSLog(@"error = %@",error);
         }    
-        
-        [self CommentNotification];
+          [self CommentNotification];
     
 commentTextField.text = @"";
 }
@@ -1918,7 +2020,7 @@ if (cell == nil) {
 
 - (void)dealloc {
     [savedArray release];
-    [routeImageView release];
+
     [UserImageView release];
     [usernameLabel release];
     [descriptionLabel release];
@@ -1951,6 +2053,8 @@ if (cell == nil) {
     [approvalView release];
 
     [postButton release];
+    
     [super dealloc];
+
 }
 @end

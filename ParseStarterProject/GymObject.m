@@ -11,4 +11,5 @@
 @implementation GymObject
 @synthesize pfobj;
 @synthesize thumb;
+@synthesize isLoading;
 @end

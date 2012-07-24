@@ -8,6 +8,7 @@
 
 #import "RouteLocationViewController.h"
 #import <QuartzCore/QuartzCore.h>
+#import "MBProgressHUD.h"
 
 
 @implementation RouteLocationViewController
@@ -40,8 +41,12 @@
     routeLocMap.layer.borderWidth = 3;
     CLLocationCoordinate2D routeLoc = CLLocationCoordinate2DMake([gpLoc latitude],[gpLoc longitude]);
     [routeLocMap setCenterCoordinate:routeLoc zoomLevel:14 animated:NO];
+    MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    hud.labelText = @"Searching nearby locations..";
+    hud.removeFromSuperViewOnHide = YES;
     [locationQuery whereKey:@"routelocation" nearGeoPoint:gpLoc withinKilometers:2.0];
     [locationQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+        [hud hide:YES];
         if (objects) {
             [locationArray removeAllObjects];
         for (PFObject* route in objects) {
@@ -72,6 +77,9 @@
     [self setLocationTextField:nil];
     [self setLocationTable:nil];
     [self setRouteLocMap:nil];
+    [self setLocationText:nil];
+    [self setLocationArray:nil];
+    
     [super viewDidUnload];
     // Release any retained subviews of the main view.
     // e.g. self.myOutlet = nil;

@@ -1,4 +1,4 @@
-
+#import "MBProgressHUD.h"
 
 #import "SearchFriendsViewController.h"
 #import "SearchUserCell.h"
@@ -57,9 +57,62 @@ kAPIGraphUserPhotosPost,
 -(void)apiGraphFriends
 { 
     currentAPIcall = kAPIGetAppUsersFriendsUsing;
+    NSLog(@"access token = %@",[PFFacebookUtils facebook].accessToken);
     self.myRequest = [[PFFacebookUtils facebook] requestWithGraphPath:@"me/friends?fields=installed" andDelegate:self];
-    PF_MBProgressHUD* hud = [PF_MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    MBProgressHUD* hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     hud.labelText = @"Finding friends on Psyched!...";
+    
+    ASIHTTPRequest* accountRequest = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"https://graph.facebook.com/me/friends?fields=installed&access_token=%@",[PFFacebookUtils facebook].accessToken]]];
+
+    [accountRequest setCompletionBlock:^{
+        
+        
+        SBJsonParser *jsonParser = [[SBJsonParser alloc] init];
+        id jsonObject = [jsonParser objectWithString:[accountRequest responseString]];
+        NSLog(@"response = %@",jsonObject);
+            NSArray* fbfriends = [jsonObject objectForKey:@"data"];
+            [searchArray removeAllObjects];
+            [tempArray removeAllObjects];
+            //[FBfriendsArray removeAllObjects];
+            NSMutableArray* fbidArray = [[NSMutableArray alloc]init];
+            for (NSDictionary* obj in fbfriends) {
+                if ([obj objectForKey:@"installed"]) {
+                    
+                    [fbidArray addObject:[NSNumber numberWithInt:[[obj objectForKey:@"id"]intValue]]];
+                    
+                }
+            }
+            if ([fbidArray count]==0) {
+                
+            }else{
+                PFQuery* userquery = [PFQuery queryForUser];
+                [userquery whereKey:@"facebookid" containedIn:fbidArray];
+                [userquery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+                    for (PFUser* user in objects) {
+                        UserObject* userObj = [[UserObject alloc]init];
+                        userObj.user = user;
+                        [searchArray addObject:userObj];  
+                        [tempArray addObject:userObj];
+                        [userObj release];
+                    }
+                    
+                    
+                    [searchTable reloadData];
+                    [MBProgressHUD hideHUDForView:self.view animated:YES];
+                }];
+            }      
+            //[FBfriendsArray addObject:newFBfriend];
+            
+            [fbidArray release];  
+        
+        [jsonParser release], jsonParser = nil;
+    }];
+    [accountRequest setFailedBlock:^{
+        
+    }];
+    [accountRequest startAsynchronous];
+
+    
     
 }
 -(void)followAll:(id)sender
@@ -84,58 +137,15 @@ kAPIGraphUserPhotosPost,
     [[myRequest connection] cancel];
     [PF_FBRequest cancelPreviousPerformRequestsWithTarget:self];
 }
-
--(void)request:(PF_FBRequest *)request didReceiveResponse:(NSURLResponse *)response
-{
-    NSLog(@"%@",response);
-    
-    switch (currentAPIcall) {
-        case kAPIGraphUserFriends:
-            
-            break;
-        case kAPIGraphUserPhotosPost:
-            break;
-        default:
-            break;
-            
-    }
-    
-}
+//
+//-(void)request:(PF_FBRequest *)request didReceiveResponse:(NSURLResponse *)response
+//{
+//    NSLog(@"%@",response);
+// 
+//}
 - (void)request:(PF_FBRequest *)request didLoad:(id)result {
-
-            NSArray* fbfriends = [result objectForKey:@"data"];
-            [searchArray removeAllObjects];
-            [tempArray removeAllObjects];
-            //[FBfriendsArray removeAllObjects];
-            NSMutableArray* fbidArray = [[NSMutableArray alloc]init];
-            for (NSDictionary* obj in fbfriends) {
-                if ([obj objectForKey:@"installed"]) {
-                    [fbidArray addObject:[NSNumber numberWithInt:[[obj objectForKey:@"id"]intValue]]];
-                
-                }
-            }
-    if ([fbidArray count]==0) {
-       
-    }else{
-                PFQuery* userquery = [PFQuery queryForUser];
-                [userquery whereKey:@"facebookid" containedIn:fbidArray];
-                [userquery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
-                    for (PFUser* user in objects) {
-                        UserObject* userObj = [[UserObject alloc]init];
-                        userObj.user = user;
-                        [searchArray addObject:userObj];  
-                        [tempArray addObject:userObj];
-                        [userObj release];
-                    }
-                    
-                    
-                    [searchTable reloadData];
-                     [PF_MBProgressHUD hideHUDForView:self.view animated:YES];
-                }];
-    }      
-                //[FBfriendsArray addObject:newFBfriend];
-                
-    [fbidArray release];  
+NSLog(@" result = %@",result);
+           
 }
 
 - (void)viewDidUnload

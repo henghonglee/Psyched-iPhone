@@ -24,12 +24,14 @@ typedef enum apiCall {
 #import "RouteLocationViewController.h"
 #import <Twitter/Twitter.h>
 @implementation CreateRouteViewController
+@synthesize fblabel;
 @synthesize accounts;
 @synthesize arrayOfAccounts;
 @synthesize fbAccountPickerView,accountActionSheet;
 @synthesize routeLocMapView;
 @synthesize recommendTextField;
 @synthesize routeImageView;
+@synthesize CGPointsArray;
 @synthesize imageMetaData;
 @synthesize locationManager;
 @synthesize myRequest;
@@ -37,15 +39,18 @@ typedef enum apiCall {
 @synthesize twuploadswitch;
 @synthesize imageView,imageTaken;
 @synthesize segControl;
+@synthesize arrowTypeArray;
 @synthesize locationTextField;
 @synthesize descriptionTextField;
 @synthesize scroll;
 @synthesize recommendTextView;
 @synthesize gymlist;
+@synthesize originalImage;
 @synthesize tempArray;
 @synthesize friendsArray;
 @synthesize FBfriendsArray;
 @synthesize recommendArray;
+@synthesize queryArray;
 @synthesize difficultyTextField;
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -61,7 +66,9 @@ typedef enum apiCall {
 {
     // Releases the view if it doesn't have a superview.
     [super didReceiveMemoryWarning];
-    
+    imageView.image=nil;
+    routeImageView.image =nil;
+    routeLocMapView =nil;
     // Release any cached data, images, etc that aren't in use.
 }
 
@@ -88,6 +95,7 @@ typedef enum apiCall {
     friendsArray = [[NSMutableArray alloc]init ];
 
     tempArray=[[NSMutableArray alloc]init ];
+    queryArray=[[NSMutableArray alloc]init ];
     
     arrayOfAccounts = [[NSMutableArray alloc]init ];  
     accounts = [[NSArray alloc]init];
@@ -108,10 +116,28 @@ typedef enum apiCall {
   
     // Do any additional setup after loading the view from its nib.
 }
+-(void)viewWillDisappear:(BOOL)animated
+{
 
+    NSLog(@"canceling %d queries",[queryArray count]);
+    for (id pfobject in queryArray) {
+        if ([pfobject isKindOfClass:[PFFile class]]) {
+            NSLog(@"cancelling pffile upload/download");
+            [((PFFile*)pfobject) cancel];
+        }
+        if ([pfobject isKindOfClass:[PFQuery class]]) {
+            NSLog(@"cancelling pfquery ");
+            [((PFQuery*)pfobject) cancel];
+        }
+    }
+    [queryArray removeAllObjects];
+    [HUD hide:YES];
+    NSLog(@"done canceling queries");
+}
 
 - (void)viewDidUnload
 {
+    
     [self setSegControl:nil];
     [self setLocationTextField:nil];
     [self setDescriptionTextField:nil];
@@ -123,10 +149,13 @@ typedef enum apiCall {
     [self setDifficultyTextField:nil];
     [self setTwuploadswitch:nil];
     [self setRouteImageView:nil];
-    [self setFbuploadswitch:nil];    [super viewDidUnload];
+    [self setFbuploadswitch:nil];    
+    [self setFblabel:nil];
+    [super viewDidUnload];
     // Release any retained subviews of the main view.
     // e.g. self.myOutlet = nil;
 }
+
 -(BOOL)textFieldShouldReturn:(UITextField *)textField{
     [textField resignFirstResponder];
     return YES;
@@ -216,23 +245,58 @@ typedef enum apiCall {
     return [gymlist objectAtIndex:row];
     }
 }
+
+-(void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex
+{
+    //turn off facebook switch regardless
+    fbuploadswitch.on = false;
+    if([[alertView buttonTitleAtIndex:buttonIndex] isEqualToString:@"Reauthenticate"]){
+        NSLog(@"reauthenticating");
+        [PFUser logOut];
+        [[PFFacebookUtils facebook] logout];
+        [[PFFacebookUtils facebook] setAccessToken:nil];
+        NSArray* permissions = [[NSArray alloc]initWithObjects:@"user_about_me",
+                                                                @"user_videos",
+                                                                @"user_birthday",
+                                                                @"email",
+                                                                @"user_photos",
+                                                                @"publish_stream",
+                                                                @"offline_access",
+                                                                @"manage_pages",
+                                                                @"manage_notifications",nil];
+        [PFFacebookUtils logInWithPermissions:permissions block:^(PFUser *user, NSError *error) {
+            
+        }];
+        [permissions release];
+        }
+    if([[alertView buttonTitleAtIndex:buttonIndex] isEqualToString:@"Cancel"]){
+        NSLog(@"user cancelled.");
+    }    
+    
+    
+}
 -(void)actionSheet:(UIActionSheet *)actionSheet didDismissWithButtonIndex:(NSInteger)buttonIndex
 {
+                [self.navigationItem.rightBarButtonItem setEnabled:YES];
     if (actionSheet == accountActionSheet) {
        
         if ([[[arrayOfAccounts objectAtIndex:[fbAccountPickerView selectedRowInComponent:0]]objectForKey:@"name"] isEqualToString:[[PFUser currentUser]objectForKey:@"name"]]) {
             isPage = NO;
+            
         }else{
-            if ([[[arrayOfAccounts objectAtIndex:[fbAccountPickerView selectedRowInComponent:0]]objectForKey:@"likes"]intValue]<50) {
+            if ([[[arrayOfAccounts objectAtIndex:[fbAccountPickerView selectedRowInComponent:0]]objectForKey:@"likes"]intValue]<0) {
                 isPage = NO;
                 UIAlertView* alert = [[UIAlertView alloc]initWithTitle:@"Not Enough Likes on your page" message:@"You need at least 50 likes on your page to post as a page" delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil];
                 [alert show];
                 [alert release];
             }else{
             isPage = YES;
-            arrIndex = [fbAccountPickerView selectedRowInComponent:0];
+                
+            
             }
         }
+        arrIndex = [fbAccountPickerView selectedRowInComponent:0];
+        fblabel.text = [[arrayOfAccounts objectAtIndex:arrIndex]objectForKey:@"name"];
         }else{
     difficultyTextField.text = [gymlist objectAtIndex:[gympickerView selectedRowInComponent:0]];
     difficultyint = [gympickerView selectedRowInComponent:0];
@@ -254,24 +318,29 @@ typedef enum apiCall {
     //find out if the gym object exists , if not create it with the obj dictionary in arrayOfAccounts
     PFQuery* gymQuery = [PFQuery queryWithClassName:@"Gym"];
     [gymQuery whereKey:@"facebookid" equalTo:[NSString stringWithFormat:@"%@",[gymSelected objectForKey:@"id"]]];
-    [gymQuery getFirstObjectInBackgroundWithBlock:^(PFObject *object, NSError *error) {
-        if (object) {
-            NSMutableArray* adminarray = [[NSMutableArray alloc]initWithArray:((NSArray*)[object objectForKey:@"admin"])];
-            [adminarray addObject:[PFUser currentUser].objectId];
-            [object setObject:adminarray forKey:@"admin"];
-            [adminarray release];
-            [self performSelector:@selector(saveRouteInGymSelector:) withObject:object];
+    [gymQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+
+        NSLog(@"error = %@",error);
+        if ([objects count]>0) {
+            [((PFObject*)[objects objectAtIndex:0]) addUniqueObject:[PFUser currentUser].objectId forKey:@"admin"];
+            [self performSelector:@selector(saveRouteInGymSelector:) withObject:[objects objectAtIndex:0]];
         }else{
+        
             PFObject* newGym = [PFObject objectWithClassName:@"Gym"];
             [newGym setObject:[gymSelected objectForKey:@"id"] forKey:@"facebookid"];
             [newGym setObject:[NSNumber numberWithInt:[[gymSelected objectForKey:@"likes"]intValue]] forKey:@"likes"];
             [newGym setObject:[gymSelected objectForKey:@"name"] forKey:@"name"];
             [newGym setObject:[gymSelected objectForKey:@"picture"] forKey:@"imagelink"];
-            [newGym setObject:[gymSelected objectForKey:@"coverimagelink"] forKey:@"coverimagelink"];
-            [newGym setObject:[gymSelected objectForKey:@"about"] forKey:@"about"];
-            [newGym setObject:[PFGeoPoint geoPointWithLatitude:routeLoc.latitude longitude:routeLoc.longitude] forKey:@"gymlocation"];
+            [newGym setObject:[gymSelected objectForKey:@"coverimagelink"] forKey:@"coverimagelink"];   
+            NSString* aboutString;
+            if (![gymSelected objectForKey:@"about"]) {
+                aboutString = @"";
+            }else{
+                aboutString = [gymSelected objectForKey:@"about"];
+            }
+            [newGym setObject:aboutString forKey:@"about"];
+            [newGym setObject:[PFGeoPoint geoPointWithLatitude:routeLoc.latitude longitude:routeLoc.longitude] forKey:@"gymlocation"];       
             NSArray* adminArray = [NSArray arrayWithObjects:[[PFUser currentUser]objectForKey:@"name"], nil];
-            
             [newGym setObject:adminArray forKey:@"admin"];
             [newGym saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
                [self performSelector:@selector(saveRouteInGymSelector:) withObject:newGym]; 
@@ -325,21 +394,26 @@ typedef enum apiCall {
         [usersrecommended addObject:friend.name];
     }
     [newRoute setObject:usersrecommended forKey:@"usersrecommended"];
+   // ParseStarterProjectAppDelegate* appDelegate = (ParseStarterProjectAppDelegate*)[[UIApplication sharedApplication]delegate];
+   // appDelegate.usersrecommended = usersrecommended;
     [usersrecommended release];
     UIImage* thumbnailImage = [imageTaken thumbnailImage:200 transparentBorder:0 cornerRadius:0 interpolationQuality:kCGInterpolationHigh];
     NSData *thumbImageData = UIImageJPEGRepresentation(thumbnailImage, 1.0);
     PFFile *thumbImageFile = [PFFile fileWithName:@"thumbImage.jpeg" data:thumbImageData];
+    [queryArray addObject:thumbImageFile];
     [thumbImageFile save];
+    [queryArray removeObject:thumbImageFile];
     [newRoute setObject:thumbImageFile forKey:@"thumbImageFile"];
-    
-    
-    NSData *imageData = UIImageJPEGRepresentation(imageTaken, 1.0);
-    PFFile *imageFile = [PFFile fileWithName:@"image.jpeg" data:imageData];
+    [newRoute setObject:@"2" forKey:@"routeVersion"];
+    [newRoute setObject:CGPointsArray forKey:@"arrowarray"];
+    [newRoute setObject:arrowTypeArray forKey:@"arrowtypearray"];
+    NSData *imageData = UIImageJPEGRepresentation(originalImage, 1.0);
+    PFFile *imageFile = [PFFile fileWithName:@"gymNoArrows.jpeg" data:imageData];
     NSLog(@"saving...");
-    
+    [queryArray addObject:imageFile];
     //   [PF_MBProgressHUD showHUDAddedTo:self.view animated:YES];
     [imageFile saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
-        
+        [queryArray removeObject:imageFile];
         [newRoute setObject:imageFile forKey:@"imageFile"];
         
         [newRoute saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
@@ -451,7 +525,7 @@ typedef enum apiCall {
 
 -(void)saveRoute
 {
-
+//no facebook save
     
     HUD.mode = MBProgressHUDModeDeterminate;
     HUD.labelText = @"Uploading...";
@@ -487,21 +561,31 @@ typedef enum apiCall {
         [usersrecommended addObject:friend.name];
     }
     [newRoute setObject:usersrecommended forKey:@"usersrecommended"];
+    
+    
+    //ParseStarterProjectAppDelegate* appDelegate = (ParseStarterProjectAppDelegate*)[[UIApplication sharedApplication]delegate];
+    //appDelegate.usersrecommended = usersrecommended;
     [usersrecommended release];
     UIImage* thumbnailImage = [imageTaken thumbnailImage:200 transparentBorder:0 cornerRadius:0 interpolationQuality:kCGInterpolationHigh];
     NSData *thumbImageData = UIImageJPEGRepresentation(thumbnailImage, 1.0);
+   // appDelegate.thumbImageData = thumbImageData;
     PFFile *thumbImageFile = [PFFile fileWithName:@"thumbImage.jpeg" data:thumbImageData];
+    [queryArray addObject:thumbImageFile];
      [thumbImageFile save];
+    [queryArray removeObject:thumbImageFile];
     [newRoute setObject:thumbImageFile forKey:@"thumbImageFile"];
+    [newRoute setObject:@"2" forKey:@"routeVersion"];
+    [newRoute setObject:CGPointsArray forKey:@"arrowarray"];
+        [newRoute setObject:arrowTypeArray forKey:@"arrowtypearray"];
+    NSData *imageData = UIImageJPEGRepresentation(originalImage, 1.0);
+    PFFile *imageFile = [PFFile fileWithName:@"noArrows.jpeg" data:imageData];
     
-    
-    NSData *imageData = UIImageJPEGRepresentation(imageTaken, 1.0);
-    PFFile *imageFile = [PFFile fileWithName:@"image.jpeg" data:imageData];
-    NSLog(@"saving...");
+ //   appDelegate.imageData = imageData;
 
+    [queryArray addObject:imageFile];
     //   [PF_MBProgressHUD showHUDAddedTo:self.view animated:YES];
     [imageFile saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
-            
+        [queryArray removeObject:imageFile];
         [newRoute setObject:imageFile forKey:@"imageFile"];
         
         [newRoute saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
@@ -573,7 +657,8 @@ typedef enum apiCall {
             HUD.customView = [[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"37x-Checkmark.png"]] autorelease];
             HUD.mode = MBProgressHUDModeCustomView;
             HUD.labelText = @"Completed!";
-
+//            ParseStarterProjectAppDelegate* appDelegate = (ParseStarterProjectAppDelegate*)[[UIApplication sharedApplication]delegate];
+      //      appDelegate.wasUploading = NO;
             UIApplication *thisApp = [UIApplication sharedApplication];
             thisApp.idleTimerDisabled = NO;
             [FlurryAnalytics logEvent:@"COMPLETED_SHARE"];
@@ -609,8 +694,20 @@ typedef enum apiCall {
         [alert release];
         return;
     }
+   
+//    ParseStarterProjectAppDelegate* appDelegate = (ParseStarterProjectAppDelegate*)[[UIApplication sharedApplication]delegate];
+//    
+//    appDelegate.isPage = isPage;
+//    appDelegate.isFacebookUpload =fbuploadswitch.on;
+//    appDelegate.uploadDescription = descriptionTextField.text;
+//    appDelegate.uploadLocation = locationTextField.text;
+//    appDelegate.uploadDifficultydesc = difficultyTextField.text;
+//    appDelegate.uploadGeopoint = [PFGeoPoint geoPointWithLatitude:routeLoc.latitude longitude:routeLoc.longitude];
+//    appDelegate.difficultyint = difficultyint;
+//    appDelegate.wasUploading = NO;
+    
     if (twuploadswitch.on) {
-        
+        //twitter on
         if ([TWTweetComposeViewController canSendTweet])
         {
             TWTweetComposeViewController *tweetSheet = 
@@ -619,8 +716,9 @@ typedef enum apiCall {
                 [tweetSheet setInitialText:[NSString stringWithFormat:@"%@",descriptionTextField.text]];
             }else{
                 UIAlertView* alert = [[UIAlertView alloc]initWithTitle:@"Too Long For Tweet" message:@"" delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil];
-    [alert show];
-    [alert release];
+                [alert show];
+                [alert release];
+                [tweetSheet release];
                 return;
             }
             [tweetSheet addImage:imageTaken];
@@ -655,13 +753,14 @@ typedef enum apiCall {
                  }
              }];
             [self presentModalViewController:tweetSheet animated:YES];
-             
+            [tweetSheet release];
         }else{
             UIAlertView* alert = [[UIAlertView alloc]initWithTitle:@"Error" message:@"Couldn't send Tweet" delegate:self cancelButtonTitle:@"OK" otherButtonTitles:@"Settings",nil];
             [alert show];
             [alert release];
         }
     }else{
+        //twitter off
         ((UIButton*)sender).enabled =NO;
         UIApplication *thisApp = [UIApplication sharedApplication];
         thisApp.idleTimerDisabled = YES;
@@ -698,6 +797,7 @@ typedef enum apiCall {
         [[myRequest connection] cancel];
         [myRequest release];
          }
+    [gymlist release];
     [oldAccessToken release];
     [locationManager release];
     [segControl release];
@@ -715,6 +815,7 @@ typedef enum apiCall {
     [difficultyTextField release];
     [twuploadswitch release];
     [routeImageView release];
+    [fblabel release];
     [super dealloc];
 }
 
@@ -763,17 +864,27 @@ typedef enum apiCall {
 
 -(IBAction)facebookswitchon:(UISwitch*)sender{
     if (sender.on) {
+        [self.navigationItem.rightBarButtonItem setEnabled:NO];
     ASIHTTPRequest* accountRequest = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"https://graph.facebook.com/me/accounts&access_token=%@",[PFFacebookUtils facebook].accessToken]]];
     [accountRequest setCompletionBlock:^{
         NSDictionary *contentOfDictionary = [[accountRequest responseString]JSONValue];
         NSLog(@"%@",[accountRequest responseString]);
+        if ([[accountRequest responseString] rangeOfString:@"Invalid OAuth access token."].location != NSNotFound || [[accountRequest responseString] rangeOfString:@"Unsupported get request."].location != NSNotFound) {
+            self.fbuploadswitch.on = NO;
+            UIAlertView* alert = [[UIAlertView alloc]initWithTitle:@"Sorry!" message:@"You need to reauthenticate with Facebook to retrieve your managed pages" delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:@"Reauthenticate",nil];
+
+    [alert show];
+    [alert release];
+        }
         accounts = [contentOfDictionary objectForKey:@"data"];
-       
+
         if ([accounts count]){
         pagesHUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
             pagesHUD.labelText = @"Fetching your managed pages";
             [self performSelectorInBackground:@selector(presentAccountsSheet:) withObject:accounts];
             
+        }else{
+            [self.navigationItem.rightBarButtonItem setEnabled:YES];
         }
     }];
         
@@ -782,6 +893,8 @@ typedef enum apiCall {
         [accountRequest startAsynchronous];
 
     
+    }else{
+        fblabel.text = @"Facebook";
     }
      
 }
@@ -827,7 +940,7 @@ typedef enum apiCall {
         
         [fbAccountPickerView release];
         [accountActionSheet release];
-        
+
     }
 
 }
@@ -892,7 +1005,7 @@ typedef enum apiCall {
             }
          
             [friendsArray addObjectsFromArray:FBfriendsArray];
-            [PF_MBProgressHUD hideHUDForView:self.view animated:YES];
+            [MBProgressHUD hideHUDForView:self.view animated:YES];
             
                        break;
 
@@ -911,6 +1024,7 @@ typedef enum apiCall {
             [self performSelector:@selector(saveRouteInGym) withObject:nil afterDelay:0.0];
             [JHNotificationManager notificationWithMessage:@"Photo uploaded successfully to Facebook Page!"];  
             [[PFFacebookUtils facebook]setAccessToken:[NSString stringWithFormat:@"%@",oldAccessToken]];
+            NSLog(@"reverted to old access token");
             break;
         default:
             break;

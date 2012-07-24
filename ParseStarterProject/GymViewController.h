@@ -12,8 +12,10 @@
 #import "GymDetailCell.h"
 @interface GymViewController : UIViewController<UITableViewDelegate,UITableViewDataSource,JMTabViewDelegate>
 {
-        JMTabView * tabView;
+    JMTabView * tabView;
 }
+@property (retain, nonatomic) IBOutlet UIView *imageViewContainer;
+@property (retain, nonatomic) IBOutlet UIView *profileshadow;
 @property (nonatomic,retain) NSString* gymName;
 @property (nonatomic,retain) NSMutableArray* gymGradeDown;
 @property (nonatomic,retain) NSMutableArray* gymGradeUp;

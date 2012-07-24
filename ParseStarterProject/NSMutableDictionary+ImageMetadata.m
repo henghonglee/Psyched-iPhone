@@ -96,7 +96,7 @@
         
         CLLocationDegrees exifLatitude  = location.coordinate.latitude;
         CLLocationDegrees exifLongitude = location.coordinate.longitude;
-#warning changed here
+//#warning changed here
         NSString *latRef;
         NSString *lngRef;
         if (exifLatitude < 0.0) {

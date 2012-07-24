@@ -13,6 +13,9 @@
 @synthesize gymNameLabel;
 @synthesize gymAboutLabel;
 @synthesize imageBackgroundView;
+@synthesize imageContainer;
+@synthesize addressLabel;
+@synthesize distanceLabel;
 
 - (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
 {
@@ -35,6 +38,9 @@
     [gymNameLabel release];
     [gymAboutLabel release];
     [imageBackgroundView release];
+    [imageContainer release];
+    [addressLabel release];
+    [distanceLabel release];
     [super dealloc];
 }
 @end

@@ -20,8 +20,10 @@
     UIScrollView* scrollView;
     CGPoint locationinscroll;
     NSMutableDictionary* imageMetaData;
+    NSNumber* selectedArrowType;
 }
-
+@property (retain, nonatomic) NSMutableArray* CGPointsArray;
+@property (retain, nonatomic) NSMutableArray* arrowTypeArray;
 @property (retain, nonatomic) IBOutlet UIView *moreArrowsView;
 @property (retain, nonatomic) IBOutlet UIImageView *arrowImageView;
 @property (retain, nonatomic) IBOutlet UIImageView *startImageView;

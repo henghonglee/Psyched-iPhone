@@ -13,5 +13,8 @@
 @property (retain, nonatomic) IBOutlet UILabel *gymNameLabel;
 @property (retain, nonatomic) IBOutlet UILabel *gymAboutLabel;
 @property (retain, nonatomic) IBOutlet UIView *imageBackgroundView;
+@property (retain, nonatomic) IBOutlet UIView *imageContainer;
+@property (retain, nonatomic) IBOutlet UILabel *addressLabel;
+@property (retain, nonatomic) IBOutlet UILabel *distanceLabel;
 
 @end

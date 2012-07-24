@@ -19,6 +19,7 @@
 #import <Foundation/Foundation.h>
 #import "JMTabView.h"
 #import "DAReloadActivityButton.h"
+#import "LoadMoreCell.h"
 #import "EGORefreshTableHeaderView.h"
 @interface MyRoutesViewController : UIViewController<PF_FBRequestDelegate,JMTabViewDelegate,UITableViewDelegate,UITableViewDataSource>
 {
@@ -26,6 +27,7 @@
     JMTabView * tabView;
     UIView* headerView;
     UIButton* refreshButton;
+    NSInteger shouldDisplayNext;
     
 }
 @property(nonatomic)NSInteger selectedSegment;
@@ -36,7 +38,7 @@
 @property (retain, nonatomic) NSMutableArray* projectArray;
 @property (retain, nonatomic) NSMutableArray* likedArray;
 @property (retain, nonatomic) NSMutableArray* queryArray;
-
+@property (retain,nonatomic) NSMutableArray* gymFetchArray;
 -(void)addStandardTabView;
 - (void)reloadTableViewDataSource;
 @end

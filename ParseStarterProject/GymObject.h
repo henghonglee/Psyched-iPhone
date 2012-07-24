@@ -10,5 +10,6 @@
 #import <Parse/Parse.h>
 @interface GymObject : NSObject
 @property (nonatomic,retain) PFObject* pfobj;
-@property (nonatomic,retain) UIImage* thumb;    
+@property (nonatomic,retain) UIImage* thumb; 
+@property (nonatomic) BOOL isLoading;
 @end

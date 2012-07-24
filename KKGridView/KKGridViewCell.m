@@ -33,7 +33,7 @@
 @synthesize highlighted = _highlighted;
 @synthesize selectedBackgroundView = _selectedBackgroundView;
 @synthesize highlightAlpha = _highlightAlpha;
-
+@synthesize stampImageView = _stampImageView;
 
 #pragma mark - Class Methods
 
@@ -74,6 +74,10 @@
         _imageView = [[UIImageView alloc] initWithFrame:self.bounds];
         _imageView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
         [self.contentView addSubview:_imageView];
+        
+        _stampImageView = [[UIImageView alloc] initWithFrame:CGRectMake(-2, -2, 75, 75)];
+        _stampImageView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+        [self.contentView addSubview:_stampImageView];
         
         [_contentView addObserver:self forKeyPath:@"backgroundColor" options:NSKeyValueObservingOptionNew context:NULL];
     }

@@ -54,6 +54,7 @@
 @property (retain, nonatomic) IBOutlet UIScrollView *scroll;
 @property (retain, nonatomic) IBOutlet UILabel *commentCountLabel;
 @property (retain, nonatomic) RouteObject* routeObject;
+@property (retain, nonatomic) NSData* rawImageData;
 @property (retain, nonatomic) IBOutlet UITextField *commentTextField;
 @property (retain, nonatomic) IBOutlet UITextView *descriptionTextView;
 @property (retain, nonatomic) IBOutlet UIButton *likeButton;

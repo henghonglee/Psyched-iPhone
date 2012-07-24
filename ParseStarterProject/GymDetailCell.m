@@ -68,7 +68,12 @@
         }
         
     }];
+        
+        
     }
+    [PFPush subscribeToChannelInBackground:[NSString stringWithFormat:@"channel%@",pfObject.objectId] block:^(BOOL succeeded, NSError *error) {
+        NSLog(@"subscribed to channel for gym"); 
+    }];
 }
 - (IBAction)LikeUs:(id)sender {
     [[UIApplication sharedApplication]openURL:[NSURL URLWithString:[NSString stringWithFormat:@"fb://page/%@",[pfObject objectForKey:@"facebookid"]]]];

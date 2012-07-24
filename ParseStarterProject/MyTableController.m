@@ -16,7 +16,6 @@
 #import "GradientButton.h"
 @implementation MyTableController
 @synthesize routeTableView;
-@synthesize baserouteArray;
 @synthesize followedPosters;
 @synthesize routeArray;
 @synthesize queryArray;
@@ -24,11 +23,11 @@
 @synthesize currentLocation;
 @synthesize emptyGradeView;
 @synthesize emptyView;
-@synthesize followedArray;
 @synthesize locationManager;
-@synthesize unreadArray;
+
 @synthesize settingsButton;
 @synthesize newbadge;
+@synthesize gymFetchArray;
 - (id)initWithStyle:(UITableViewStyle)style
 {
     self = [super init];
@@ -41,6 +40,25 @@
 
 - (void)viewDidLoad
 {
+    
+    UIImage *selectedImage0 = [UIImage imageNamed:@"HomeDB.png"];
+    UIImage *unselectedImage0 = [UIImage imageNamed:@"HomeLB.png"];
+    
+    UIImage *selectedImage2 = [UIImage imageNamed:@"BuildingsDB.png"];
+    UIImage *unselectedImage2 = [UIImage imageNamed:@"BuildingsLB.png"];
+    
+    UITabBar *tabBar = self.tabBarController.tabBar;
+    UITabBarItem *item0 = [tabBar.items objectAtIndex:0];
+
+    UITabBarItem *item2 = [tabBar.items objectAtIndex:2];
+
+    
+    [item0 setFinishedSelectedImage:selectedImage0 withFinishedUnselectedImage:unselectedImage0];
+
+    [item2 setFinishedSelectedImage:selectedImage2 withFinishedUnselectedImage:unselectedImage2];
+    //[item3 setFinishedSelectedImage:selectedImage3 withFinishedUnselectedImage:unselectedImage3];
+    //[item4 setFinishedSelectedImage:selectedImage4 withFinishedUnselectedImage:unselectedImage4];
+
     [super viewDidLoad];
 
     loadcount = 1;
@@ -67,16 +85,23 @@
         newbadge.text =[NSString stringWithFormat:@"%d",number];
     }];
 
+    
+    
+   
+    
+    
     routeTableView = [[UITableView alloc]initWithFrame:CGRectMake(0,0 , 320, 411)];
     routeTableView.delegate = self;
     routeTableView.dataSource = self;
-    routeTableView.backgroundColor = [UIColor darkGrayColor];
+    routeTableView.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
+    routeTableView.separatorColor = [UIColor colorWithRed:209.0/255.0 green:209.0/255.0 blue:209.0/255.0 alpha:1.0];
+    routeTableView.backgroundColor = [UIColor clearColor];
     routeTableView.showsVerticalScrollIndicator = NO;
     routeTableView.bounces = YES;
     headerView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, 320, 44)];
     headerView.backgroundColor = [UIColor darkGrayColor];
     UIImageView* headerviewimage = [[UIImageView alloc]initWithFrame:CGRectMake(0, 0, 320, 44 )];
-    headerviewimage.image = [UIImage imageNamed:@"headerview2.png"];
+    headerviewimage.image = [UIImage imageNamed:@"headerview.png"];
     [headerView addSubview:headerviewimage];
     [headerviewimage release];
     UILabel* headerLabel = [[UILabel alloc]initWithFrame:CGRectMake(60, 0, 200, 44)];
@@ -88,12 +113,16 @@
     
     [settingsButton addTarget:self action:@selector(Settings:) forControlEvents:UIControlEventTouchUpInside];
     [headerView addSubview:settingsButton];
-    [settingsButton setFrame:CGRectMake(7, 7, 30, 30)];
-    
-    refreshButton = [[DAReloadActivityButton alloc]initWithFrame:CGRectMake(276, 0, 44, 44)];
+    [settingsButton setFrame:CGRectMake(7, 3, 38, 38)];
+//    UIImageView* buttonBgImage = [[UIImageView alloc]initWithFrame:CGRectMake(276, 3, 38, 38)];
+//    [buttonBgImage setImage:[UIImage imageNamed:@"orangeButton.png"]];
+     
+    refreshButton = [[DAReloadActivityButton alloc]initWithFrame:CGRectMake(276, 3, 38, 38)];
      [refreshButton addTarget:self action:@selector(animate:) forControlEvents:UIControlEventTouchUpInside];
     refreshButton.contentMode = UIViewContentModeScaleAspectFit;
     refreshButton.showsTouchWhenHighlighted = YES;
+//    [headerView addSubview:buttonBgImage];
+//    [buttonBgImage release];
     [headerView addSubview:refreshButton];
     [refreshButton release];
     [headerView addSubview:headerLabel];
@@ -104,15 +133,14 @@
     self.navigationController.navigationBarHidden = YES;
     self.routeArray = [[[NSMutableArray alloc]init]autorelease];
     self.queryArray = [[[NSMutableArray alloc]init]autorelease];
-    followedPosters = [[NSMutableArray alloc]init ];
-        unreadArray = [[NSMutableArray alloc]init];
+    self.gymFetchArray = [[[NSMutableArray alloc]init]autorelease];
+    self.followedPosters = [[[NSMutableArray alloc]init ]autorelease];
     PFQuery* followedquery = [PFQuery queryWithClassName:@"Follow"];
     [followedquery whereKey:@"follower" equalTo:[PFUser currentUser]];
     [queryArray addObject:followedquery];
     [followedquery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
         [queryArray removeObject:followedquery];
         for (PFObject* follow in objects) {
-          //  NSLog(@"showing routes of %@",[follow objectForKey:@"followed"]);
             
             [followedPosters addObject:[follow objectForKey:@"followed"]];
             
@@ -168,7 +196,6 @@
 -(void)viewWillDisappear:(BOOL)animated
 {
    
-    NSLog(@"canceling %d queries",[queryArray count]);
     for (id pfobject in queryArray) {
         if ([pfobject isKindOfClass:[PFFile class]]) {
             [((PFFile*)pfobject) cancel];
@@ -186,12 +213,16 @@
     }
    
     NSLog(@"done canceling queries");
+    for (RouteObject* route in routeArray) {
+      //  [route release];
+    }
 }
 -(void)LogOut:(id)sender
 {
     [PFUser logOut];
     [[PFFacebookUtils facebook] logout];
     [[PFFacebookUtils facebook] setAccessToken:nil];
+    
     ParseStarterProjectAppDelegate* applicationDelegate = ((ParseStarterProjectAppDelegate*)[[UIApplication sharedApplication]delegate]);
     applicationDelegate.badgeView.text = @"0";
     if([applicationDelegate.window.rootViewController isKindOfClass:[LoginViewController class]])
@@ -212,14 +243,24 @@
 }
 
 - (void)viewDidUnload
-{
+{ 
+    [self setNewbadge:nil];
+    [self setFollowedPosters:nil];
+    [self setLocationManager:nil];
+    [self setCurrentLocation:nil];
+    [self setTitleTableView:nil];
+    [self setRouteTableView:nil];
+    [self setRouteArray:nil];
+    [self setQueryArray:nil];
     
     [self setEmptyGradeView:nil];
     [self setSettingsButton:nil];
+    [self viewDidDisappear:NO];
+    
     [super viewDidUnload];
     NSLog(@"view did unload");
-    self.routeArray = nil;
-    [self setRouteTableView:nil];
+    
+    
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
@@ -263,6 +304,7 @@
             for(id currentObject in topLevelObjects){
                 if([currentObject isKindOfClass:[UITableViewCell class]]){
                     cell = (LoadMoreCell*)currentObject;
+                    
                     cell.selectionStyle = UITableViewCellSelectionStyleGray;
                 }
             }
@@ -304,6 +346,7 @@
                     if ([object objectForKey:@"isPage"]==[NSNumber numberWithBool:YES]) {
                         if (!cell.isFetchingGym) {
                             cell.isFetchingGym = YES;
+                          
                         [[object objectForKey:@"Gym"]fetchIfNeededInBackgroundWithBlock:^(PFObject *object, NSError *error) {
                             cell.isFetchingGym = NO;
                             imagelink=[object objectForKey:@"imagelink"];  
@@ -312,7 +355,9 @@
                                 cell.ownerImage.image = ((RouteObject*)[self.routeArray objectAtIndex:indexPath.row]).ownerImage;
                             }else{
                                 ASIHTTPRequest* request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:imagelink]];
+                               
                                 [request setCompletionBlock:^{
+                                   
                                     UIImage* ownerImage = [UIImage imageWithData:[request responseData]];
                                     cell.ownerImage.alpha = 0.0;
                                     cell.ownerImage.image = ownerImage;
@@ -337,14 +382,18 @@
                         imagelink = [object objectForKey:@"userimage"];
                         cell.ownerNameLabel.text = [object objectForKey:@"username"];
                         if (((RouteObject*)[self.routeArray objectAtIndex:indexPath.row]).ownerImage) {
+                            
                             cell.ownerImage.image = ((RouteObject*)[self.routeArray objectAtIndex:indexPath.row]).ownerImage;
                         }else{
                             ASIHTTPRequest* request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:imagelink]];
                             [request setCompletionBlock:^{
-                                UIImage* ownerImage = [UIImage imageWithData:[request responseData]];
-                                cell.ownerImage.alpha = 0.0;
-                                cell.ownerImage.image = ownerImage;
-                                ((RouteObject*)[self.routeArray objectAtIndex:indexPath.row]).ownerImage= ownerImage;
+                             
+                                   UIImage* ownerImage = [UIImage imageWithData:[request responseData]];
+                                   cell.ownerImage.alpha = 0.0;
+                                   cell.ownerImage.image = ownerImage;
+                                   ((RouteObject*)[self.routeArray objectAtIndex:indexPath.row]).ownerImage= ownerImage;
+                               
+                               
                                 [UIView animateWithDuration:0.3
                                                       delay:0.0
                                                     options: UIViewAnimationCurveEaseOut
@@ -412,7 +461,6 @@
                 
                     
                 double timesincenow =  [((NSDate*)object.createdAt) timeIntervalSinceNow];
-                //NSLog(@"timesincenow = %i",((int)timesincenow));
                 int timeint = ((int)timesincenow);
                 //if more than 1 day show number of days
                 //if more than 60min show number of hrs
@@ -507,7 +555,6 @@
                 if (!selectedFeedObj.routeImage && !((FeedObject*)[self.routeArray objectAtIndex:indexPath.row]).isLoading) {
                     ((FeedObject*)[self.routeArray objectAtIndex:indexPath.row]).isLoading = YES;
                     [[selectedFeedObj.pfobj objectForKey:@"linkedroute"]fetchIfNeededInBackgroundWithBlock:^(PFObject *object, NSError *error) {
-                        NSLog(@"fetched route = %@",object);
                     PFFile *imagefile = [object objectForKey:@"thumbImageFile"];
                     [queryArray addObject:imagefile];
                     [imagefile getDataInBackgroundWithBlock:^(NSData* imageData,NSError *error){
@@ -552,7 +599,6 @@
                     cell.userImageView.image = selectedFeedObj.senderImage;
                 }else{
                     NSString* urlstring = [NSString stringWithFormat:@"%@",[selectedPFObj objectForKey:@"senderimagelink"]];
-                    NSLog(@"urlstring = %@",urlstring);
                     
                     ASIHTTPRequest* request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:urlstring]];
                     [request setCompletionBlock:^{
@@ -611,7 +657,7 @@
                 cell.senderImage.image = selectedFeedObj.senderImage;
             }else{
                 NSString* urlstring = [NSString stringWithFormat:@"%@",[selectedPFObj objectForKey:@"senderimagelink"]];
-                NSLog(@"urlstring = %@",urlstring);
+               
                 
                 ASIHTTPRequest* request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:urlstring]];
                 [request setCompletionBlock:^{
@@ -627,7 +673,7 @@
          
                 cell.readSphereView.image = [UIImage imageNamed:@"bluesphere.png"];
                 [UIView animateWithDuration:0.4
-                                      delay:2.0
+                                      delay:1.0
                                     options: UIViewAnimationCurveEaseOut
                                  animations:^{
                                      cell.readSphereView.alpha = 0.0;
@@ -643,10 +689,8 @@
                                                       completion:^(BOOL finished){
                                                           if (finished) {
                                                               
-                                                          
-                                                          NSMutableArray* _unreadArray = [[NSMutableArray alloc]initWithArray:[selectedPFObj objectForKey:@"viewed"]];
-                                                          [_unreadArray addObject:[[PFUser currentUser]objectForKey:@"name"]];
-                                                          [selectedPFObj setObject:_unreadArray forKey:@"viewed"];    
+                                                              
+                                                          [selectedPFObj addUniqueObject:[[PFUser currentUser]objectForKey:@"name"] forKey:@"viewed"];
                                                           [selectedPFObj saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
                                                               PFQuery* queryForNotification = [PFQuery queryWithClassName:@"Feed"];
                                                               [queryForNotification whereKey:@"viewed" notEqualTo:[[PFUser currentUser]objectForKey:@"name"]];
@@ -655,11 +699,9 @@
                                                               [queryForNotification countObjectsInBackgroundWithBlock:^(int number, NSError *error) {
                                                                   ParseStarterProjectAppDelegate* appDel = (ParseStarterProjectAppDelegate* )[[UIApplication sharedApplication]delegate];
                                                                   appDel.badgeView.text = [NSString stringWithFormat:@"%d",number];
-                                                                  NSLog(@"number = %d",number);
                                                               }];
 
                                                           }];
-                                                          [_unreadArray release];
                                                           }
                                                           
                                                       }];
@@ -700,23 +742,29 @@
             }
             if ([routeArray count]) {
                 GymObject* selectedGymObject = [routeArray objectAtIndex:indexPath.row];
+                cell.addressLabel.text = [selectedGymObject.pfobj objectForKey:@"address"];
+                PFGeoPoint* mypoint = [PFGeoPoint geoPointWithLatitude:((ParseStarterProjectAppDelegate*)[[UIApplication sharedApplication] delegate]).currentLocation.coordinate.latitude longitude:((ParseStarterProjectAppDelegate*)[[UIApplication sharedApplication] delegate]).currentLocation.coordinate.longitude];
+                cell.distanceLabel.text = [NSString stringWithFormat:@"%.1f km away",[mypoint distanceInKilometersTo:[selectedGymObject.pfobj objectForKey:@"gymlocation"]]];
                 cell.gymNameLabel.text = [selectedGymObject.pfobj objectForKey:@"name"];
                 cell.gymAboutLabel.text =[selectedGymObject.pfobj objectForKey:@"about"]; 
                 if (!selectedGymObject.thumb) {
                     ASIHTTPRequest* request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:[selectedGymObject.pfobj objectForKey:@"imagelink"]]];
                     [request setCompletionBlock:^{
                         UIImage* gymThumb = [UIImage imageWithData:[request responseData]];
-                        cell.gymThumbnailView.alpha = 0.0;
+                        cell.imageContainer.alpha = 0.0;
                         cell.gymThumbnailView.image = gymThumb;
+                        if (cell.gymThumbnailView.image.size.height>=cell.gymThumbnailView.image.size.width) {
+                        [cell.gymThumbnailView setFrame:CGRectMake(0, 0, 105, cell.gymThumbnailView.image.size.height/(cell.gymThumbnailView.image.size.width/105))];
+                        }
                         selectedGymObject.thumb= gymThumb;
                         [UIView animateWithDuration:0.3
                                               delay:0.0
                                             options: UIViewAnimationCurveEaseOut
                                          animations:^{
-                                             cell.gymThumbnailView.alpha = 1.0;
-                                             cell.gymThumbnailView.layer.masksToBounds = YES;
-                                             cell.gymThumbnailView.layer.cornerRadius = 5.0f;
-                                             cell.imageBackgroundView.layer.shadowPath =[UIBezierPath bezierPathWithRect:cell.gymThumbnailView.bounds].CGPath;
+                                             cell.imageContainer.alpha = 1.0;
+                                             cell.imageContainer.layer.masksToBounds = YES;
+                                             cell.imageContainer.layer.cornerRadius = 5.0f;
+                                             cell.imageBackgroundView.layer.shadowPath =[UIBezierPath bezierPathWithRect:cell.imageBackgroundView   .bounds].CGPath;
                                              cell.imageBackgroundView.layer.shadowColor = [UIColor blackColor].CGColor;
                                              cell.imageBackgroundView.layer.shadowOpacity = 0.7f;
                                              cell.imageBackgroundView.layer.shadowOffset = CGSizeMake(2.0f, 2.0f);
@@ -734,7 +782,12 @@
                     cell.gymThumbnailView.image = selectedGymObject.thumb;
                     cell.gymThumbnailView.layer.masksToBounds = YES;
                     cell.gymThumbnailView.layer.cornerRadius = 5.0f;
-                    cell.imageBackgroundView.layer.shadowPath =[UIBezierPath bezierPathWithRect:cell.gymThumbnailView.bounds].CGPath;
+                    if (cell.gymThumbnailView.image.size.height>=cell.gymThumbnailView.image.size.width) {
+                        [cell.gymThumbnailView setFrame:CGRectMake(0, 0, 105, cell.gymThumbnailView.image.size.height/(cell.gymThumbnailView.image.size.width/105))];
+                    }
+                    cell.imageContainer.layer.masksToBounds = YES;
+                    cell.imageContainer.layer.cornerRadius = 5.0f;
+                    cell.imageBackgroundView.layer.shadowPath =[UIBezierPath bezierPathWithRect:cell.imageBackgroundView   .bounds].CGPath;
                     cell.imageBackgroundView.layer.shadowColor = [UIColor blackColor].CGColor;
                     cell.imageBackgroundView.layer.shadowOpacity = 0.7f;
                     cell.imageBackgroundView.layer.shadowOffset = CGSizeMake(2.0f, 2.0f);
@@ -782,7 +835,7 @@
 -(void)addStandardTabView
 {
     tabView = [[JMTabView alloc] init];
-    tabView.contentSize = CGSizeMake(800, 44);
+    tabView.contentSize = CGSizeMake(430, 44);
     tabView.showsHorizontalScrollIndicator = NO;
     [tabView setDelegate:self];
     newbadge = [[[LKBadgeView alloc]initWithFrame:CGRectMake(90,2, 50, 30)]autorelease];
@@ -794,12 +847,12 @@
     newbadge.outline = YES;
     
     
-    [tabView addTabItemWithTitle:@"Followed" icon:[UIImage imageNamed:@"followed.png"]];
-    [tabView addTabItemWithTitle:@"Gyms Nearby" icon:[UIImage imageNamed:@"icon2.png"]];
+    [tabView addTabItemWithTitle:@"Followed" icon:[UIImage imageNamed:@"icon2.png"]];
+    [tabView addTabItemWithTitle:@"Places" icon:[UIImage imageNamed:@"followed.png"]];
     [tabView addTabItemWithTitle:@"Recently added" icon:[UIImage imageNamed:@"icon1.png"]];
     [tabView addTabItemWithTitle:@"Recommended           " icon:[UIImage imageNamed:@"nearby.png"] badge:newbadge];
-    [tabView addTabItemWithTitle:@"Projects Near Me" icon:[UIImage imageNamed:@"grade.png"]];
-    [tabView addTabItemWithTitle:@"By Grade Near Me" icon:[UIImage imageNamed:@"project_white.png"]];
+   // [tabView addTabItemWithTitle:@"Projects Near Me" icon:[UIImage imageNamed:@"grade.png"]];
+   // [tabView addTabItemWithTitle:@"By Grade Near Me" icon:[UIImage imageNamed:@"project_white.png"]];
 
 
     
@@ -809,8 +862,7 @@
 
 -(void)tabView:(JMTabView *)_tabView didSelectTabAtIndex:(NSUInteger)itemIndex;
 {
-    
-    NSLog(@"canceling %d queries",[queryArray count]);
+        
     for (id pfobject in queryArray) {
         if (pfobject) {
         if ([pfobject isKindOfClass:[PFFile class]]) {
@@ -901,7 +953,7 @@
                 
                 [queryArray removeObject:recentQuery];
                 [routeArray removeAllObjects];
-                
+                [routeTableView reloadData];
                 if ([objects count]<20) {
                     shouldDisplayNext =0;
                 }
@@ -909,22 +961,24 @@
                     for (PFObject* object in objects) {
                         RouteObject* newRouteObject =  [[RouteObject alloc]init];
                         newRouteObject.pfobj = object;
+                        if ([[newRouteObject.pfobj objectForKey:@"isPage"]isEqualToNumber:[NSNumber numberWithBool:true]]) {
+                                [gymFetchArray addObject:[newRouteObject.pfobj objectForKey:@"Gym"]];
+                            
+                            
+                        }
                         [routeArray addObject:newRouteObject];
                         [newRouteObject release];
                     }
                 
                 
-                NSLog(@"objects count = %d",[objects count]);
                 PFQuery* feedQuery = [PFQuery queryWithClassName:@"Feed"];
                 [feedQuery whereKey:@"sender" containedIn:followedPosters];
-                NSArray* arrayActions = [NSArray arrayWithObjects:@"added",@"approval",@"like", nil];
+                NSArray* arrayActions = [NSArray arrayWithObjects:@"added",@"approval",@"like",@"follow", nil];
                 [feedQuery whereKey:@"action" notContainedIn:arrayActions];
                 [feedQuery whereKey:@"createdAt" greaterThan:((PFObject*)[objects objectAtIndex:([objects count]-1)]).createdAt];
                 [queryArray addObject:feedQuery];
-                NSLog(@"before finding feeds");
                 [feedQuery findObjectsInBackgroundWithBlock:^(NSArray *feedobjects, NSError *error) {
                     [queryArray removeObject:feedQuery];
-                    NSLog(@"feed objects count = %d",[feedobjects count]);
                     for (PFObject* feed in feedobjects) {
                         if ([[feed objectForKey:@"message"] rangeOfString:@"following"].location!=NSNotFound && [[feed objectForKey:@"message"] rangeOfString:[[PFUser currentUser]objectForKey:@"name"]].location==NSNotFound) {
                             
@@ -946,7 +1000,7 @@
                     }];
                     [routeArray removeAllObjects];
                     [routeArray addObjectsFromArray:sortedArray];
-                    [routeTableView reloadData];
+                [self fetchGyms];
                 }];
                 
                 //find feeds that time falls between first and last route
@@ -957,7 +1011,6 @@
                     
             }];
             
-            NSLog(@"end case 0");
             
             break;
         case 1:
@@ -966,6 +1019,7 @@
             [gymQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
                 [queryArray removeObject:gymQuery];
                 [routeArray removeAllObjects] ;
+                                [routeTableView reloadData];
                 if ([objects count]>0) {
                     if ([objects count]<20) {
                         shouldDisplayNext =0;
@@ -973,6 +1027,7 @@
                     for (PFObject* object in objects) {
                         GymObject* newGymObject =  [[GymObject alloc]init];
                         newGymObject.pfobj = object;
+                        
                         [routeArray addObject:newGymObject];
                         [newGymObject release];
                     }
@@ -985,6 +1040,7 @@
             [recentQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
                 [queryArray removeObject:recentQuery];
                 [routeArray removeAllObjects] ;
+                                [routeTableView reloadData];
                 if ([objects count]>0) {
                     if ([objects count]<20) {
                         shouldDisplayNext =0;
@@ -993,11 +1049,15 @@
                     for (PFObject* object in objects) {
                         RouteObject* newRouteObject =  [[RouteObject alloc]init];
                         newRouteObject.pfobj = object;
+                        if ([[newRouteObject.pfobj objectForKey:@"isPage"]isEqualToNumber:[NSNumber numberWithBool:true]]) {
+                               [gymFetchArray addObject:[newRouteObject.pfobj objectForKey:@"Gym"]];
+                            
+                        }
                         [routeArray addObject:newRouteObject];
                         [newRouteObject release];
                     }
                 }
-                [routeTableView reloadData];
+                [self fetchGyms];
             }];
 
             break;
@@ -1007,6 +1067,7 @@
             [recommendQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
                 [queryArray removeObject:recommendQuery];
                 [routeArray removeAllObjects] ;
+                                [routeTableView reloadData];
                 [newbadge setText:[NSString stringWithFormat:@"%d",[objects count]]];
                 if ([objects count]>0) {
                     
@@ -1017,11 +1078,15 @@
                     for (PFObject* object in objects) {
                         RouteObject* newRouteObject =  [[RouteObject alloc]init];
                         newRouteObject.pfobj = object;
+                        if ([[newRouteObject.pfobj objectForKey:@"isPage"]isEqualToNumber:[NSNumber numberWithBool:true]]) {
+                              [gymFetchArray addObject:[newRouteObject.pfobj objectForKey:@"Gym"]];
+                            
+                        }
                         [routeArray addObject:newRouteObject];
                         [newRouteObject release];
                     }
                 }
-                [routeTableView reloadData];
+                [self fetchGyms];
             }];    
             break;
         case 4:
@@ -1031,19 +1096,28 @@
                 [queryArray removeObject:projquery];
                 [routeArray removeAllObjects] ;
                 if ([objects count]>0) {
+                    
                     if ([objects count]<20) {
                         shouldDisplayNext =0;
                     }
+                    [PFObject fetchAllIfNeededInBackground:objects block:^(NSArray *objects, NSError *error) {
+    
                     
                     for (PFObject* proj in objects) {
                         RouteObject* newRouteObject =  [[RouteObject alloc]init];
                         newRouteObject.pfobj = [[proj objectForKey:@"route"]fetchIfNeeded];
                         newRouteObject.stampImage = [UIImage imageNamed:@"projectoverlay210.png"];
+                        if ([[newRouteObject.pfobj objectForKey:@"isPage"]isEqualToNumber:[NSNumber numberWithBool:true]]) {
+                                [gymFetchArray addObject:[newRouteObject.pfobj objectForKey:@"Gym"]];
+
+                        }
                         [routeArray addObject:newRouteObject];
                         [newRouteObject release];
                     }
+                     [self fetchGyms];   
+                    }];
                 }
-                [routeTableView reloadData];
+                
             }];
             break;
         case 5:
@@ -1060,11 +1134,15 @@
                     for (PFObject* object in objects) {
                         RouteObject* newRouteObject =  [[RouteObject alloc]init];
                         newRouteObject.pfobj = object;
+                        if ([[newRouteObject.pfobj objectForKey:@"isPage"]isEqualToNumber:[NSNumber numberWithBool:true]]) {
+                                [gymFetchArray addObject:[newRouteObject.pfobj objectForKey:@"Gym"]];
+                        
+                        }
                         [routeArray addObject:newRouteObject];
                         [newRouteObject release];
                     }
                 }
-                [routeTableView reloadData];
+                [self fetchGyms];
             }];
 
                 break;
@@ -1113,7 +1191,22 @@
         default:
             break;
     }
-        NSLog(@"Selected Tab Index: %d", tabView.segmentIndex);
+}
+
+
+-(void)fetchGyms
+{
+
+    if ([gymFetchArray count]>0) {
+        [PFObject fetchAllInBackground:gymFetchArray block:^(NSArray *objects, NSError *error) {
+            [gymFetchArray removeAllObjects];
+                
+            [routeTableView reloadData];
+        }];   
+    }else{
+       
+            [routeTableView reloadData];
+    }
 }
 
 #pragma mark - Table view delegate
@@ -1172,7 +1265,6 @@
     [recommendQuery orderByDescending:@"createdAt"];
     [recommendQuery setLimit:20];
     recommendQuery.cachePolicy = kPFCachePolicyNetworkElseCache;
-    NSLog(@"will load next 20 for %d",tabView.segmentIndex); 
             int routecount=0;
     
     
@@ -1200,14 +1292,17 @@
                     for (PFObject* object in objects) {
                         RouteObject* newRouteObject =  [[RouteObject alloc]init];
                         newRouteObject.pfobj = object;
+                        if ([[newRouteObject.pfobj objectForKey:@"isPage"]isEqualToNumber:[NSNumber numberWithBool:true]]) {
+                            [gymFetchArray addObject:[newRouteObject.pfobj objectForKey:@"Gym"]];
+                            
+                        }
                         [routeArray addObject:newRouteObject];
                         [newRouteObject release];
                     }
-                    
                 }
                 PFQuery* feedQuery = [PFQuery queryWithClassName:@"Feed"];
                 [feedQuery whereKey:@"sender" containedIn:followedPosters];
-                NSArray* arrayActions = [NSArray arrayWithObjects:@"added",@"approval",@"like", nil];
+                NSArray* arrayActions = [NSArray arrayWithObjects:@"added",@"approval",@"like",@"follow",nil];
                 [feedQuery whereKey:@"action" notContainedIn:arrayActions];
                 [feedQuery whereKey:@"createdAt" lessThan:((RouteObject*)[routeArray objectAtIndex:oldroutearraycount]).pfobj.createdAt];
                 [feedQuery whereKey:@"createdAt" greaterThan:((RouteObject*)[routeArray objectAtIndex:([routeArray count]-1)]).pfobj.createdAt];
@@ -1229,7 +1324,8 @@
                     }];
                     [routeArray removeAllObjects];
                     [routeArray addObjectsFromArray:sortedArray];
-                    [routeTableView reloadData];
+            
+                         [self fetchGyms];
                 }];
             }];
                 break;
@@ -1266,10 +1362,15 @@
                 for (PFObject* object in objects) {
                     RouteObject* newRouteObject =  [[RouteObject alloc]init];
                     newRouteObject.pfobj = object;
+                    if ([[newRouteObject.pfobj objectForKey:@"isPage"]isEqualToNumber:[NSNumber numberWithBool:true]]) {
+                        [gymFetchArray addObject:[newRouteObject.pfobj objectForKey:@"Gym"]];
+                        
+                    }
                     [routeArray addObject:newRouteObject];
                     [newRouteObject release];
                 }
-                [routeTableView reloadData];
+            
+             [self fetchGyms];
             }];
             break;
         case 3:
@@ -1289,11 +1390,16 @@
                     for (PFObject* object in objects) {
                         RouteObject* newRouteObject =  [[RouteObject alloc]init];
                         newRouteObject.pfobj = object;
+                        if ([[newRouteObject.pfobj objectForKey:@"isPage"]isEqualToNumber:[NSNumber numberWithBool:true]]) {
+                            [gymFetchArray addObject:[newRouteObject.pfobj objectForKey:@"Gym"]];
+                            
+                        }
                         [routeArray addObject:newRouteObject];
                         [newRouteObject release];
                     }
+                [self fetchGyms];
                 }
-                [routeTableView reloadData];
+                
             }];
             break;
         case 4:
@@ -1303,6 +1409,7 @@
             [projquery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
                 [queryArray removeObject:projquery];
                 [routeArray removeAllObjects] ;
+                
                 if ([objects count]>0) {
                     if ([objects count]<20) {
                         shouldDisplayNext =0;
@@ -1311,11 +1418,15 @@
                     for (PFObject* proj in objects) {
                         RouteObject* newRouteObject =  [[RouteObject alloc]init];
                         newRouteObject.pfobj = proj;
+                        if ([[newRouteObject.pfobj objectForKey:@"isPage"]isEqualToNumber:[NSNumber numberWithBool:true]]) {
+                            [gymFetchArray addObject:[newRouteObject.pfobj objectForKey:@"Gym"]];
+                            
+                        }
                         [routeArray addObject:newRouteObject];
                         [newRouteObject release];
                     }
+                    [self fetchGyms];
                 }
-                [routeTableView reloadData];
             }];
             break;
         case 5:
@@ -1334,12 +1445,15 @@
 
                         RouteObject* newRouteObject =  [[RouteObject alloc]init];
                         newRouteObject.pfobj = proj;
+                        if ([[newRouteObject.pfobj objectForKey:@"isPage"]isEqualToNumber:[NSNumber numberWithBool:true]]) {
+                            [gymFetchArray addObject:[newRouteObject.pfobj objectForKey:@"Gym"]];
+                            
+                        }
                         [routeArray addObject:newRouteObject];
                         [newRouteObject release];
                     }
+                    [self fetchGyms];
                 }
-                NSLog(@"done adding objects");
-                [routeTableView reloadData];
             }];
             
             break;
@@ -1396,7 +1510,6 @@
 }
 -(void)cancelRequests
 {
-    NSLog(@"canceling %d queries",[queryArray count]);
     for (id pfobject in queryArray) {
         if (pfobject) {
             if ([pfobject isKindOfClass:[PFFile class]]) {
@@ -1455,9 +1568,12 @@
 
     }else{
         GymViewController* viewController = [[GymViewController alloc]initWithNibName:@"GymViewController" bundle:nil];
-        viewController.gymObject = [((GymObject*)[routeArray objectAtIndex:indexPath.row]).pfobj fetchIfNeeded];
-        [self.navigationController pushViewController:viewController animated:YES];
-        [viewController release];
+         [((GymObject*)[routeArray objectAtIndex:indexPath.row]).pfobj fetchIfNeededInBackgroundWithBlock:^(PFObject *object, NSError *error) {
+             viewController.gymObject = object; 
+             [self.navigationController pushViewController:viewController animated:YES];
+             [viewController release];
+        }];
+        
     }
         
         
@@ -1499,7 +1615,6 @@
     [queryForNotification countObjectsInBackgroundWithBlock:^(int number, NSError *error) {
         ParseStarterProjectAppDelegate* appDel = (ParseStarterProjectAppDelegate* )[[UIApplication sharedApplication]delegate];
         appDel.badgeView.text = [NSString stringWithFormat:@"%d",number];
-        NSLog(@"number = %d",number);
     }];
     
     //reset stamp image
@@ -1517,7 +1632,6 @@
         [queryArray removeObject:followedquery];
         [followedPosters removeAllObjects];
         for (PFObject* follow in objects) {
-            //  NSLog(@"showing routes of %@",[follow objectForKey:@"followed"]);
             
             [followedPosters addObject:[follow objectForKey:@"followed"]];
             
@@ -1583,12 +1697,12 @@
 
 
 - (void)dealloc {
+
     [emptyView release];
     [currentLocation release];
     [locationManager release];
-    [followedArray release];
     [queryArray release];
-
+    
     [routeTableView release];
     [emptyGradeView release];
     [settingsButton release];

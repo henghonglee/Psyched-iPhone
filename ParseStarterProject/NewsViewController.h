@@ -19,4 +19,6 @@
 }
 @property (retain, nonatomic) IBOutlet UITableView *newsTable;
 @property (nonatomic, strong) DAReloadActivityButton *navigationBarItem;
+@property (nonatomic, strong) NSMutableArray *newsArray;
+@property (nonatomic, strong) NSMutableArray *queryArray;
 @end

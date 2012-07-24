@@ -33,6 +33,7 @@
 }
 
 - (id)initWithURL:(NSURL *)URL {
+    self = [super init];
     self.webViewController = [[[SVWebViewController alloc] initWithURL:URL] autorelease];
     self.webViewController.newsId = newsId;
     self.webViewController.dictionary = dictionary;

@@ -83,6 +83,7 @@
     
     if(!username){
         username = [[PFUser currentUser] objectForKey:@"name"];
+        [username retain];
     }
     PFQuery* userQuery = [PFQuery queryForUser];
     userQuery.cachePolicy= kPFCachePolicyNetworkElseCache;
@@ -346,6 +347,8 @@
 {
     [super viewWillAppear:YES];
             [followButton setUserInteractionEnabled:NO];
+    
+//TODO: fix crash here
     if ([username isEqualToString:[[PFUser currentUser] objectForKey:@"name"]]) {
         addfriendsbutton.hidden=NO;
         followButton.hidden = YES;
@@ -392,6 +395,11 @@
     [self setFlashButton:nil];
     [self setFollowersButton:nil];
     [self setFollowingButton:nil];
+    [self setSelectedUser:nil];
+    
+    [self setNavigationBarItem:nil];
+    [self setUserfeeds:nil];
+
     [super viewDidUnload];
     // Release any retained subviews of the main view.
     // e.g. self.myOutlet = nil;
@@ -474,7 +482,7 @@
             
             cell.readSphereView.image = [UIImage imageNamed:@"bluesphere.png"];
             [UIView animateWithDuration:0.4
-                                  delay:2.0
+                                  delay:1.0
                                 options: UIViewAnimationCurveEaseOut
                              animations:^{
                                  cell.readSphereView.alpha = 0.0;
@@ -570,6 +578,7 @@ return [userfeeds count];
 - (void)dealloc {
     [selectedUser release];
     [userfeeds release];
+    [username release];
     [userFeedTable release];
     [userNameLabel release];
     [userImageView release];

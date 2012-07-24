@@ -1,10 +1,4 @@
-//
-//  SpecialTableCell.m
-//  ParseStarterProject
-//
-//  Created by Shaun Tan on 9/1/12.
-//  Copyright (c) 2012 __MyCompanyName__. All rights reserved.
-//
+
 #import <QuartzCore/QuartzCore.h>
 #import "SpecialTableCell.h"
 

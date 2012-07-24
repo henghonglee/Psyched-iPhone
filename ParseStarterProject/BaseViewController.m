@@ -8,6 +8,7 @@
 #import "FlurryAnalytics.h"
 #import "RDActionSheet.h"
 #import "LKBadgeView.h"
+#import "RouteDetailViewController.h"
 @implementation BaseViewController
 @synthesize locationManager;
 @synthesize imageMetaData;
@@ -74,10 +75,25 @@ static inline double radians (double degrees) {return degrees * M_PI/180;}
 {
 // [self startStandardUpdates];
     [FlurryAnalytics logEvent:@"SHARE_ACTION" timed:YES];
-    UIActionSheet* PhotoSourceSelector = [[UIActionSheet alloc] initWithTitle:@"" delegate:self cancelButtonTitle:@"Cancel" destructiveButtonTitle:nil otherButtonTitles:@"Take A Photo",@"Choose From Library", nil];
-    [PhotoSourceSelector showInView:self.view];
-    [PhotoSourceSelector setBounds:CGRectMake(0,0,320, 210)];
-    [PhotoSourceSelector release];
+    
+    
+    if([self.selectedViewController isKindOfClass:[UINavigationController class]]&& [((UINavigationController*)self.selectedViewController).topViewController isKindOfClass:[RouteDetailViewController class]]&&[[((RouteDetailViewController*)((UINavigationController*)self.selectedViewController).topViewController).routeObject.pfobj objectForKey:@"routeVersion"] isEqualToString:@"2"]&&(((RouteDetailViewController*)((UINavigationController*)self.selectedViewController).topViewController).rawImageData)){
+        UIActionSheet* PhotoSourceSelector = [[UIActionSheet alloc] initWithTitle:@"" delegate:self cancelButtonTitle:@"Cancel" destructiveButtonTitle:nil otherButtonTitles:@"Take A Photo",@"Choose From Library",@"Use This Photo", nil];
+        [PhotoSourceSelector showInView:self.view];
+        [PhotoSourceSelector setBounds:CGRectMake(0,0,320, 280)];
+        [PhotoSourceSelector release];
+            
+        
+    }else{
+        UIActionSheet* PhotoSourceSelector = [[UIActionSheet alloc] initWithTitle:@"" delegate:self cancelButtonTitle:@"Cancel" destructiveButtonTitle:nil otherButtonTitles:@"Take A Photo",@"Choose From Library", nil];
+        [PhotoSourceSelector showInView:self.view];
+        [PhotoSourceSelector setBounds:CGRectMake(0,0,320, 210)];
+        [PhotoSourceSelector release];
+    }
+
+    
+    
+    
 //    RDActionSheet *actionSheet = [[RDActionSheet alloc] initWithCancelButtonTitle:@"Cancel" primaryButtonTitle:@"Save" destroyButtonTitle:@"Destroy" otherButtonTitles:@"Tweet", nil];
 //    actionSheet.callbackBlock = ^(RDActionSheetResult result, NSInteger buttonIndex) {
 //        
@@ -154,9 +170,6 @@ static inline double radians (double degrees) {return degrees * M_PI/180;}
     UIImage *myImage = [info objectForKey:UIImagePickerControllerOriginalImage];
     UIImage *mycroppedImage =[myImage croppedImage:CGRectMake(0, 0, myImage.size.width, myImage.size.width)];
     
-    
-    //here crash
-    NSLog(@"picker = %@",picker);
     if(picker.sourceType == UIImagePickerControllerSourceTypeCamera){
         CGAffineTransform transform = CGAffineTransformIdentity;
         transform = CGAffineTransformTranslate(transform, 0, myImage.size.width);
@@ -185,7 +198,7 @@ static inline double radians (double degrees) {return degrees * M_PI/180;}
         // Get the resized image from the context and a UIImage
         CGImageRef newImageRef = CGBitmapContextCreateImage(bitmap);
         CGContextRelease(bitmap);
-        newcropped = [[[UIImage imageWithCGImage:newImageRef]resizedImage:CGSizeMake(1024.0, 1024.0) interpolationQuality:kCGInterpolationHigh] retain];
+        newcropped = [[[UIImage imageWithCGImage:newImageRef]resizedImage:CGSizeMake(960.0, 960.0) interpolationQuality:kCGInterpolationHigh] retain];
         CGImageRelease(newImageRef);
         imagepicker  =  picker;
         //prompt here
@@ -238,10 +251,38 @@ static inline double radians (double degrees) {return degrees * M_PI/180;}
             [self pickPhoto:nil];
             break;
         case 2:
-            NSLog(@"share action ended");
-            [FlurryAnalytics endTimedEvent:@"SHARE_ACTION" withParameters:nil];
+            NSLog(@"re-using photo...");
+            if([self.selectedViewController isKindOfClass:[UINavigationController class]]&&[((UINavigationController*)self.selectedViewController).topViewController isKindOfClass:[RouteDetailViewController class]]&&[[((RouteDetailViewController*)((UINavigationController*)self.selectedViewController).topViewController).routeObject.pfobj objectForKey:@"routeVersion"] isEqualToString:@"2"]&&(((RouteDetailViewController*)((UINavigationController*)self.selectedViewController).topViewController).rawImageData)){
+                
+                
+                         PFObject* routepfobj = ((RouteDetailViewController*)((UINavigationController*)self.selectedViewController).topViewController).routeObject.pfobj;
+                    
+                        UIImage* imagetoUse = [UIImage imageWithData:((RouteDetailViewController*)((UINavigationController*)self.selectedViewController).topViewController).rawImageData];
+                        EditImageViewController* EditImageVC = [[EditImageViewController alloc] initWithNibName:@"EditImageViewController" bundle:nil];
+                        UINavigationController* navCont = [[UINavigationController alloc]initWithRootViewController:EditImageVC];
+                        EditImageVC.imageInView = imagetoUse;
+                        imageMetaData = [[NSMutableDictionary alloc]init ];
+                        PFGeoPoint* routegp = [routepfobj objectForKey:@"routelocation"];
+                        CLLocation* newImageLoc = [[CLLocation alloc]initWithLatitude:routegp.latitude longitude:routegp.longitude];
+                        [imageMetaData setLocation:newImageLoc];
+                        [newImageLoc release];
+                        EditImageVC.imageMetaData = imageMetaData;
+                        [imageMetaData release];
+                        EditImageVC.delegate = self;
+                    
+                        [self presentModalViewController:navCont animated:YES];
+                        [navCont release];
+                    
+                
+            }else{
+                NSLog(@"share action ended");
+                [FlurryAnalytics endTimedEvent:@"SHARE_ACTION" withParameters:nil];
+            }
+            
             break;
         default:
+            NSLog(@"share action ended");
+            [FlurryAnalytics endTimedEvent:@"SHARE_ACTION" withParameters:nil];
             break;
     }
 }

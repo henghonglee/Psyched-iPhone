@@ -80,6 +80,11 @@
 {
     [self setSearchTable:nil];
     [self setSearchBar:nil];
+    [self setSearchArray:nil];
+    [self setTempArray:nil];
+    [self setFollowedArray:nil];
+    [self viewDidDisappear:NO];
+    
     [super viewDidUnload];
     // Release any retained subviews of the main view.
     // e.g. self.myOutlet = nil;
