@@ -105,6 +105,7 @@
 
 - (void)animateSelectionToItemAtIndex:(NSUInteger)itemIndex;
 {
+    NSLog(@"obj at index here on self.tabitems");
     JMTabItem * tabItem = [self.tabItems objectAtIndex:itemIndex];
     [UIView beginAnimations:kSelectionAnimation context:self.selectionView];
     [UIView setAnimationBeginsFromCurrentState:YES];

@@ -55,31 +55,36 @@
         [[NSUserDefaults standardUserDefaults] setObject:@"5" forKey:@"NearbyDistance"];
     }
     
+    //test saving array in doc directory
+/*    
+    NSDictionary *dictionary = [NSDictionary dictionaryWithObjectsAndKeys:
+                                @"array", @"array", @"Stout", @"dark", @"Hefeweizen", @"wheat", @"IPA", 
+                                @"hoppy", nil];
     
-   //    
-//    NSDictionary *dictionary = [NSDictionary dictionaryWithObjectsAndKeys:
-//                                array, @"array", @"Stout", @"dark", @"Hefeweizen", @"wheat", @"IPA", 
-//                                @"hoppy", nil];
-//    
     // Get path to documents directory
-//    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, 
-//                                                         NSUserDomainMask, YES);
-//    if ([paths count] > 0)
-//    {
-//        // Path to save array data
-//        NSString  *arrayPath = [[paths objectAtIndex:0] 
-//                                stringByAppendingPathComponent:@"array.out"];
-//        
-//            // Write array
-//       // [array writeToFile:arrayPath atomically:YES];
-//        
-//        // Read both back in new collections
-//        NSMutableArray *arrayFromFile = [NSMutableArray arrayWithContentsOfFile:arrayPath];
-//     
-//        
-//        for (NSString *element in arrayFromFile) 
-//            NSLog(@"element: %@", element);
-//    }
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, 
+                                                         NSUserDomainMask, YES);
+    if ([paths count] > 0)
+    {
+        // Path to save array data
+        NSString  *arrayPath = [[paths objectAtIndex:0] 
+                                stringByAppendingPathComponent:@"array.out"];
+        
+            // Write array
+       // [array writeToFile:arrayPath atomically:YES];
+        
+        // Read both back in new collections
+        NSMutableArray *arrayFromFile = [NSMutableArray arrayWithContentsOfFile:arrayPath];
+     
+        
+        for (NSString *element in arrayFromFile) 
+            NSLog(@"element: %@", element);
+    }
+    
+*/
+    
+//fetch user notifications
+    /*
    // [self apiFQLIMe];
    //http://www.facebook.com/photo.php?fbid=10150725278230883&set=a.10150701479290883.464743.554245882&type=1
 //    NSMutableDictionary *params = [NSMutableDictionary dictionaryWithObjectsAndKeys:
@@ -89,11 +94,7 @@
 //                                            andParams:params
 //                                        andHttpMethod:@"POST"
 //                                          andDelegate:self];
-    
-    
-    
-    
-    
+    */
     
     
     
@@ -105,11 +106,10 @@
     InstagramViewController* viewController = [[InstagramViewController alloc]initWithNibName:@"InstagramViewController" bundle:nil];
      LoginViewController* loginVC = [[LoginViewController alloc]initWithNibName:@"LoginViewController" bundle:nil];
 
-    if ([[[UIDevice currentDevice] systemVersion] floatValue] >= 5.0){
-        [[UINavigationBar appearance] setBackgroundImage:[UIImage imageNamed:@"headerview.png"] forBarMetrics:UIBarMetricsDefault];}
-        //[[UINavigationBar appearance] setBackgroundImage:[UIImage imageNamed:@"navtest.png"] forBarMetrics:UIBarMetricsDefault];}
+    if ([[[UIDevice currentDevice] systemVersion] floatValue] >= 5.0)
+        [[UINavigationBar appearance] setBackgroundImage:[UIImage imageNamed:@"headerview.png"] forBarMetrics:UIBarMetricsDefault];
     
-     if ([PFFacebookUtils facebook].accessToken) {
+     if ([PFFacebookUtils facebook].accessToken) { //if accesstoken is ok
 
          NSLog(@"updater = %@",[[NSUserDefaults standardUserDefaults]objectForKey:@"updater1.1"]);
          
@@ -134,14 +134,6 @@
                           NSLog(@"subscribed to channeluser %@",[NSString stringWithFormat:@"channel%@",[[PFUser currentUser] objectForKey:@"facebookid"]]);
                       }];                 
                       
-                      
-                      
-                      
-                      
-                      
-                      
-                      
-                      
              self.window.rootViewController = viewController;
          
          
@@ -149,9 +141,8 @@
              NSArray* permissions = [[NSArray alloc]initWithObjects:@"user_about_me",@"user_videos",@"user_birthday",@"email",@"user_photos",@"publish_stream",@"offline_access",@"manage_pages",@"manage_notifications",nil];
              [PFFacebookUtils logInWithPermissions:permissions block:^(PFUser *user, NSError *error) {
                  [self apiFQLIMe];
-                 
-                 
                  [[PFUser currentUser] setObject:[NSNumber numberWithDouble:VERSION] forKey:@"version"];
+                 
                  [[PFUser currentUser] saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
                      [PFPush subscribeToChannelInBackground:[NSString stringWithFormat:@"channel%@",[[PFUser currentUser] objectForKey:@"facebookid"]] target:self selector:@selector(subscribeFinished:error:)];
                      NSLog(@"subscribed to channeluser %@",[NSString stringWithFormat:@"channel%@",[[PFUser currentUser] objectForKey:@"facebookid"]]);
@@ -255,25 +246,6 @@
 
  */
 
-/*
- 
-///////////////////////////////////////////////////////////
-// Uncomment these two methods if you are using Facebook
-///////////////////////////////////////////////////////////
- 
-// Pre 4.2 support
-- (BOOL)application:(UIApplication *)application handleOpenURL:(NSURL *)url {
-    return [[PFUser facebook] handleOpenURL:url]; 
-}
- 
-// For 4.2+ support
-- (BOOL)application:(UIApplication *)application openURL:(NSURL *)url
-    sourceApplication:(NSString *)sourceApplication annotation:(id)annotation {
-    return [[PFUser facebook] handleOpenURL:url]; 
-} 
- 
-*/
-
 - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)newDeviceToken
 {
     [PFPush storeDeviceToken:newDeviceToken];
@@ -313,7 +285,7 @@
 
     
     if ([UIApplication sharedApplication].applicationState == UIApplicationStateInactive) {
-
+        NSLog(@"inactive app state.. recieving push");
     PFQuery* routequery = [PFQuery queryWithClassName:@"Route"];
     [routequery whereKey:@"objectId" equalTo:[userInfo objectForKey:@"linkedroute"]];
     [routequery getFirstObjectInBackgroundWithBlock:^(PFObject *object, NSError *error) {
@@ -345,6 +317,8 @@
 
 - (void)applicationDidEnterBackground:(UIApplication *)application
 {
+    //bguploading
+    /*
 //    UIApplication  *app = [UIApplication sharedApplication];
 //    bgTask = [app beginBackgroundTaskWithExpirationHandler:^{ 
 //        [app endBackgroundTask:bgTask]; 
@@ -360,10 +334,7 @@
 //    });
 //    
 //    [app endBackgroundTask:bgTask]; bgTask = UIBackgroundTaskInvalid;
-    /*
-     Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later. 
-     If your application supports background execution, this method is called instead of applicationWillTerminate: when the user quits.
-     */
+    */
 }
 
 - (void)applicationWillEnterForeground:(UIApplication *)application
@@ -371,6 +342,7 @@
     
     NSLog(@"application will enter foreground");
     [[UIApplication sharedApplication]setApplicationIconBadgeNumber:0];
+    //GYM NEARBY CHECK
     /*
     NSLog(@"current user = %@",[PFUser currentUser]);
     if ([PFUser currentUser]) {
@@ -508,6 +480,8 @@
 {
     [_window release];
     [_viewController release];
+    [badgeView removeObserver:self forKeyPath:@"text"];
+    [badgeView release];
     [super dealloc];
 }
 
@@ -518,6 +492,7 @@
     // Using the "pic" picture since this currently has a maximum width of 100 pixels
     // and since the minimum profile picture size is 180 pixels wide we should be able
     // to get a 100 pixel wide version of the profile picture
+    NSLog(@"in apiFQLMe function");
     
     NSMutableDictionary *params = [NSMutableDictionary dictionaryWithObjectsAndKeys:
                                    @"SELECT about_me,locale,birthday,birthday_date,sex,uid, name, pic , email FROM user WHERE uid=me()", @"query",
@@ -540,6 +515,7 @@
         if([result count]==0) {
             return;
         }else{
+            
         result = [((NSArray*)result) objectAtIndex:0];
         }
     }
@@ -603,7 +579,7 @@
 
 
 
-#pragma mark saveroute methods
+#pragma mark saveroute methods for bg saving
 /*
 -(void)saveRoute
 {

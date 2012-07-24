@@ -43,17 +43,15 @@
     UIButton* refreshButton;
 }
 @property (retain, nonatomic) IBOutlet UIButton *settingsButton;
-@property (retain,nonatomic)LKBadgeView* newbadge;
+@property (retain,nonatomic)  LKBadgeView* newbadge;
 @property (retain, nonatomic) NSMutableArray* followedPosters;
 @property (retain, nonatomic) IBOutlet UIView *emptyGradeView;
 @property (retain, nonatomic) IBOutlet UIView *emptyView;
-@property (retain, nonatomic) CLLocationManager* locationManager;
-@property (retain, nonatomic)  CLLocation* currentLocation;
-@property (retain, nonatomic) UIScrollView *titleTableView;
+@property (retain, nonatomic) CLLocation* currentLocation;
 @property (retain, nonatomic) UITableView *routeTableView;
-@property (retain,nonatomic) NSMutableArray* routeArray;
-@property (retain,nonatomic) NSMutableArray* queryArray;
-@property (retain,nonatomic) NSMutableArray* gymFetchArray;
+@property (retain,nonatomic)  NSMutableArray* routeArray;
+@property (retain,nonatomic)  NSMutableArray* queryArray;
+@property (retain,nonatomic)  NSMutableArray* gymFetchArray;
 
 
 -(void)addStandardTabView;

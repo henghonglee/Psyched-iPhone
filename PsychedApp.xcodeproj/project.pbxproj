@@ -201,6 +201,8 @@
 		EF6687CD14F1230100609E05 /* SVWebViewController.bundle in Resources */ = {isa = PBXBuildFile; fileRef = EF6687C914F1230100609E05 /* SVWebViewController.bundle */; };
 		EF6687CE14F1230100609E05 /* SVWebViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EF6687CB14F1230100609E05 /* SVWebViewController.m */; };
 		EF6AB21E15A43B530053A88A /* Icon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = EF6AB21D15A43B530053A88A /* Icon@2x.png */; };
+		EF766B8B15BE923600EF0FCB /* placeholder.png in Resources */ = {isa = PBXBuildFile; fileRef = EF766B8A15BE923600EF0FCB /* placeholder.png */; };
+		EF766B9515BE943B00EF0FCB /* placeholder_user.png in Resources */ = {isa = PBXBuildFile; fileRef = EF766B9415BE943B00EF0FCB /* placeholder_user.png */; };
 		EF77033C15487B8000851903 /* CommentTableCell.m in Sources */ = {isa = PBXBuildFile; fileRef = EF77033B15487B8000851903 /* CommentTableCell.m */; };
 		EF77033F15487B9400851903 /* CommentTableCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = EF77033E15487B9400851903 /* CommentTableCell.xib */; };
 		EF77034115487CC400851903 /* openInvertedComma.png in Resources */ = {isa = PBXBuildFile; fileRef = EF77034015487CC400851903 /* openInvertedComma.png */; };
@@ -275,6 +277,7 @@
 		EFA7E9A814C2C86A00776236 /* fb-connect-large 2.png in Resources */ = {isa = PBXBuildFile; fileRef = EFA7E9A714C2C86900776236 /* fb-connect-large 2.png */; };
 		EFA9F31D152A11FF004883DD /* cameraTabBarItem copy.png in Resources */ = {isa = PBXBuildFile; fileRef = EFA9F31C152A11F9004883DD /* cameraTabBarItem copy.png */; };
 		EFA9F31F152A146E004883DD /* cameraTabBarItem copy@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = EFA9F31E152A1466004883DD /* cameraTabBarItem copy@2x.png */; };
+		EFAD337F15BEA463003EEE1B /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EFAD337E15BEA463003EEE1B /* StoreKit.framework */; };
 		EFB25D4315254EB0002F310B /* Analytics-README.pdf in Resources */ = {isa = PBXBuildFile; fileRef = EFB25D3615254EB0002F310B /* Analytics-README.pdf */; };
 		EFB25D4415254EB0002F310B /* AppCircle-README.pdf in Resources */ = {isa = PBXBuildFile; fileRef = EFB25D3715254EB0002F310B /* AppCircle-README.pdf */; };
 		EFB25D4515254EB0002F310B /* libFlurryAnalytics.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EFB25D3A15254EB0002F310B /* libFlurryAnalytics.a */; };
@@ -607,6 +610,8 @@
 		EF6687CA14F1230100609E05 /* SVWebViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SVWebViewController.h; sourceTree = "<group>"; };
 		EF6687CB14F1230100609E05 /* SVWebViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SVWebViewController.m; sourceTree = "<group>"; };
 		EF6AB21D15A43B530053A88A /* Icon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Icon@2x.png"; sourceTree = "<group>"; };
+		EF766B8A15BE923600EF0FCB /* placeholder.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = placeholder.png; sourceTree = "<group>"; };
+		EF766B9415BE943B00EF0FCB /* placeholder_user.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = placeholder_user.png; sourceTree = "<group>"; };
 		EF77033A15487B7F00851903 /* CommentTableCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CommentTableCell.h; sourceTree = "<group>"; };
 		EF77033B15487B8000851903 /* CommentTableCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CommentTableCell.m; sourceTree = "<group>"; };
 		EF77033E15487B9400851903 /* CommentTableCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CommentTableCell.xib; sourceTree = "<group>"; };
@@ -699,6 +704,7 @@
 		EFA7E9A714C2C86900776236 /* fb-connect-large 2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "fb-connect-large 2.png"; path = "../fb-connect-large 2.png"; sourceTree = "<group>"; };
 		EFA9F31C152A11F9004883DD /* cameraTabBarItem copy.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "cameraTabBarItem copy.png"; sourceTree = "<group>"; };
 		EFA9F31E152A1466004883DD /* cameraTabBarItem copy@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "cameraTabBarItem copy@2x.png"; sourceTree = "<group>"; };
+		EFAD337E15BEA463003EEE1B /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		EFB25D3615254EB0002F310B /* Analytics-README.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = "Analytics-README.pdf"; sourceTree = "<group>"; };
 		EFB25D3715254EB0002F310B /* AppCircle-README.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = "AppCircle-README.pdf"; sourceTree = "<group>"; };
 		EFB25D3915254EB0002F310B /* FlurryAnalytics.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FlurryAnalytics.h; sourceTree = "<group>"; };
@@ -776,6 +782,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				EFAD337F15BEA463003EEE1B /* StoreKit.framework in Frameworks */,
 				EF29CD2515354E8C00AB520E /* Twitter.framework in Frameworks */,
 				09ABC07413A1D52D009C3FCF /* Foundation.framework in Frameworks */,
 				EF62F41414FDC20300933BB8 /* CoreMedia.framework in Frameworks */,
@@ -808,6 +815,7 @@
 		09ABC06213A1D52D009C3FCF = {
 			isa = PBXGroup;
 			children = (
+				EFAD337E15BEA463003EEE1B /* StoreKit.framework */,
 				09ABC07713A1D52D009C3FCF /* ParseStarterProject */,
 				09ABC07013A1D52D009C3FCF /* Frameworks */,
 				09ABC06E13A1D52D009C3FCF /* Products */,
@@ -913,6 +921,7 @@
 				EF5BD4CA14C5DF7D00C4FCB3 /* ProfileViewController.h */,
 				EF5BD4CB14C5DF7F00C4FCB3 /* ProfileViewController.m */,
 				EF5BD4CC14C5DF8000C4FCB3 /* ProfileViewController.xib */,
+				EF766B9415BE943B00EF0FCB /* placeholder_user.png */,
 				EFB25D4B15258E67002F310B /* UserObject.h */,
 				EFB25D4C15258E68002F310B /* UserObject.m */,
 				EF5BD4CF14C5E46000C4FCB3 /* FollowFriendsViewController.h */,
@@ -1374,6 +1383,7 @@
 		EFD4A2A814BA9BC7008A583F /* Images */ = {
 			isa = PBXGroup;
 			children = (
+				EF766B8A15BE923600EF0FCB /* placeholder.png */,
 				EF04A906155BAF2B00D1A91C /* ribbon.png */,
 				EF6520F015A67EE900615655 /* orangeButton.png */,
 				EF04A911155BB1D800D1A91C /* likeribbon.png */,
@@ -1752,6 +1762,8 @@
 				EF384E4315BD8B16008A8B77 /* BuildingsLB.png in Resources */,
 				EF384E4415BD8B16008A8B77 /* BuildingsDB.png in Resources */,
 				EF384E4615BD8D7F008A8B77 /* Icon.png in Resources */,
+				EF766B8B15BE923600EF0FCB /* placeholder.png in Resources */,
+				EF766B9515BE943B00EF0FCB /* placeholder_user.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1937,8 +1949,8 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
-				CODE_SIGN_IDENTITY = "iPhone Distribution";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
+				CODE_SIGN_IDENTITY = "iPhone Developer: Lee Heng Hong (T53AB93G9J)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Lee Heng Hong (T53AB93G9J)";
 				COPY_PHASE_STRIP = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1964,8 +1976,8 @@
 					"-ObjC",
 				);
 				PRODUCT_NAME = PsychedApp;
-				PROVISIONING_PROFILE = "";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
+				PROVISIONING_PROFILE = "477E185C-1E9F-4AB6-82AB-E6B6AD592C26";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "477E185C-1E9F-4AB6-82AB-E6B6AD592C26";
 				TARGETED_DEVICE_FAMILY = 1;
 				USER_HEADER_SEARCH_PATHS = "${SRCROOT}/**";
 				"USER_HEADER_SEARCH_PATHS[arch=*]" = "";
@@ -1978,8 +1990,8 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
-				CODE_SIGN_IDENTITY = "iPhone Distribution";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
+				CODE_SIGN_IDENTITY = "iPhone Developer: Lee Heng Hong (T53AB93G9J)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Lee Heng Hong (T53AB93G9J)";
 				COPY_PHASE_STRIP = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -2003,8 +2015,8 @@
 					"-ObjC",
 				);
 				PRODUCT_NAME = PsychedApp;
-				PROVISIONING_PROFILE = "";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
+				PROVISIONING_PROFILE = "477E185C-1E9F-4AB6-82AB-E6B6AD592C26";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "477E185C-1E9F-4AB6-82AB-E6B6AD592C26";
 				TARGETED_DEVICE_FAMILY = 1;
 				USER_HEADER_SEARCH_PATHS = "";
 				VALIDATE_PRODUCT = YES;

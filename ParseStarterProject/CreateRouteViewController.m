@@ -852,14 +852,66 @@ typedef enum apiCall {
    // NSArray* actionLinks = [NSArray arrayWithObjects:tags, nil];
     NSString *actionLinksStr = [jsonWriter stringWithObject:tags];
     [tags release];
-    NSMutableDictionary *params = [NSMutableDictionary dictionaryWithObjectsAndKeys:
-                                   resizedimg, @"picture",descriptionTextField.text,@"name",@"960",@"height",@"960",@"width",actionLinksStr,@"tags",
-                                   nil];
-
-    [[PFFacebookUtils facebook] requestWithGraphPath:@"me/photos"
-                                    andParams:params
-                                andHttpMethod:@"POST"
-                                  andDelegate:self];
+    
+    NSURL* postURL = [NSURL URLWithString:[NSString stringWithFormat:@"https://graph.facebook.com/me/photos?access_token=%@",[PFFacebookUtils facebook].accessToken]];
+    ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:postURL];
+    NSData* postImageData = UIImagePNGRepresentation(resizedimg);
+    [request setData:postImageData withFileName:@"resizedimg.png" andContentType:@"image/png" forKey:@"picture"];
+    [request setPostValue:descriptionTextField.text forKey:@"name"];
+    [request setPostValue:@"960" forKey:@"height"];    
+    [request setPostValue:@"960" forKey:@"width"];
+    [request setPostValue:actionLinksStr forKey:@"tags"];
+    [request setRequestMethod:@"POST"];
+    [request setCompletionBlock:^{
+        
+        SBJsonParser *jsonParser = [[SBJsonParser alloc] init];
+        NSDictionary *jsonObjects = [jsonParser objectWithString:[request responseString]];
+        [jsonParser release];
+        jsonParser = nil;
+         NSArray* fbfriends = [jsonObjects objectForKey:@"data"];
+        switch (currentAPIcall) {
+            case kAPIGraphUserFriends:
+               
+                [FBfriendsArray removeAllObjects];
+                for (NSDictionary* obj in fbfriends) {
+                    FBfriend* newFBfriend = [[FBfriend alloc]init];
+                    newFBfriend.uid = [obj objectForKey:@"id"];
+                    newFBfriend.name = [obj objectForKey:@"name"];
+                    [FBfriendsArray addObject:newFBfriend];
+                    [newFBfriend release];
+                }
+                
+                [friendsArray addObjectsFromArray:FBfriendsArray];
+                [MBProgressHUD hideHUDForView:self.view animated:YES];
+                
+                break;
+                
+            case kAPIGraphUserPhotosPost:
+                fbphotoid  =   [jsonObjects objectForKey:@"id"]; 
+                [fbphotoid retain];
+                NSLog(@"facebook photoid = %@",fbphotoid);
+                [self performSelector:@selector(saveRoute) withObject:nil afterDelay:0.0];
+                [JHNotificationManager notificationWithMessage:@"Photo uploaded successfully to Facebook!"];  
+                break;
+            case kAPIGraphPagePhotosPost:
+                
+                fbphotoid  =   [jsonObjects objectForKey:@"id"]; 
+                [fbphotoid retain];
+                NSLog(@"facebook photoid = %@",fbphotoid);
+                [self performSelector:@selector(saveRouteInGym) withObject:nil afterDelay:0.0];
+                [JHNotificationManager notificationWithMessage:@"Photo uploaded successfully to Facebook Page!"];  
+                [[PFFacebookUtils facebook]setAccessToken:[NSString stringWithFormat:@"%@",oldAccessToken]];
+                NSLog(@"reverted to old access token");
+                break;
+            default:
+                break;
+        }
+    
+    }];
+    [request setFailedBlock:^{
+        [MBProgressHUD hideHUDForView:self.view animated:YES];
+    }];
+    [request startAsynchronous];
 }
 
 -(IBAction)facebookswitchon:(UISwitch*)sender{
@@ -953,19 +1005,74 @@ typedef enum apiCall {
     UIGraphicsEndImageContext();
 
     
-       
+    NSLog(@"posting with page...");
     
                         [[PFFacebookUtils facebook]setAccessToken:[NSString stringWithFormat:@"%@",[[arrayOfAccounts objectAtIndex:arrIndex] objectForKey:@"access_token"]]];
-                        NSMutableDictionary *params = [NSMutableDictionary dictionaryWithObjectsAndKeys:
-                                                       resizedimg, @"source",descriptionTextField.text,@"message",
-                                                       nil];
-                        
-                        [[PFFacebookUtils facebook] requestWithGraphPath:[NSString stringWithFormat:@"%@/photos",[[arrayOfAccounts objectAtIndex:arrIndex] objectForKey:@"id"]]
-                                                               andParams:params
-                                                           andHttpMethod:@"POST"
-                                                             andDelegate:self];
-                                      
-   
+//                        NSMutableDictionary *params = [NSMutableDictionary dictionaryWithObjectsAndKeys:
+//                                                       resizedimg, @"source",descriptionTextField.text,@"message",
+//                                                       nil];
+//                        
+//                        [[PFFacebookUtils facebook] requestWithGraphPath:[NSString stringWithFormat:@"%@/photos",[[arrayOfAccounts objectAtIndex:arrIndex] objectForKey:@"id"]]
+//                                                               andParams:params
+//                                                           andHttpMethod:@"POST"
+//                                                             andDelegate:self];
+//                                      
+    NSURL* postURL = [NSURL URLWithString:[NSString stringWithFormat:@"https://graph.facebook.com/%@/photos?access_token=%@",[[arrayOfAccounts objectAtIndex:arrIndex] objectForKey:@"id"],[NSString stringWithFormat:@"%@",[[arrayOfAccounts objectAtIndex:arrIndex] objectForKey:@"access_token"]]]];
+    ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:postURL];
+    NSData* postImageData = UIImagePNGRepresentation(resizedimg);
+    [request setData:postImageData withFileName:@"resizedimg.png" andContentType:@"image/png" forKey:@"source"];
+    [request setPostValue:descriptionTextField.text forKey:@"message"];
+    [request setRequestMethod:@"POST"];
+    [request setCompletionBlock:^{
+        
+        SBJsonParser *jsonParser = [[SBJsonParser alloc] init];
+        NSDictionary *jsonObjects = [jsonParser objectWithString:[request responseString]];
+        [jsonParser release];
+        jsonParser = nil;
+        NSArray* fbfriends = [jsonObjects objectForKey:@"data"];
+        switch (currentAPIcall) {
+            case kAPIGraphUserFriends:
+                
+                [FBfriendsArray removeAllObjects];
+                for (NSDictionary* obj in fbfriends) {
+                    FBfriend* newFBfriend = [[FBfriend alloc]init];
+                    newFBfriend.uid = [obj objectForKey:@"id"];
+                    newFBfriend.name = [obj objectForKey:@"name"];
+                    [FBfriendsArray addObject:newFBfriend];
+                    [newFBfriend release];
+                }
+                
+                [friendsArray addObjectsFromArray:FBfriendsArray];
+                [MBProgressHUD hideHUDForView:self.view animated:YES];
+                
+                break;
+                
+            case kAPIGraphUserPhotosPost:
+                fbphotoid  =   [jsonObjects objectForKey:@"id"]; 
+                [fbphotoid retain];
+                NSLog(@"facebook photoid = %@",fbphotoid);
+                [self performSelector:@selector(saveRoute) withObject:nil afterDelay:0.0];
+                [JHNotificationManager notificationWithMessage:@"Photo uploaded successfully to Facebook!"];  
+                break;
+            case kAPIGraphPagePhotosPost:
+                
+                fbphotoid  =   [jsonObjects objectForKey:@"id"]; 
+                [fbphotoid retain];
+                NSLog(@"facebook photoid = %@",fbphotoid);
+                [self performSelector:@selector(saveRouteInGym) withObject:nil afterDelay:0.0];
+                [JHNotificationManager notificationWithMessage:@"Photo uploaded successfully to Facebook Page!"];  
+                [[PFFacebookUtils facebook]setAccessToken:[NSString stringWithFormat:@"%@",oldAccessToken]];
+                NSLog(@"reverted to old access token");
+                break;
+            default:
+                break;
+        }
+        
+    }];
+    [request setFailedBlock:^{
+       [MBProgressHUD hideHUDForView:self.view animated:YES];
+    }];
+    [request startAsynchronous];
 
 
         
@@ -990,7 +1097,7 @@ typedef enum apiCall {
 }
 - (void)request:(PF_FBRequest *)request didLoad:(id)result {
     //NSString* photoid;
-
+    NSLog(@"in result =%@",result);
     switch (currentAPIcall) {
         case kAPIGraphUserFriends:
             NSLog(@"result");
@@ -1038,12 +1145,25 @@ typedef enum apiCall {
 
 -(void)tagPhoto:(NSString*)photoid withUser:(NSString*)facebookid
 {
-    NSMutableDictionary *params = [NSMutableDictionary dictionaryWithObjectsAndKeys:
-                                   [NSString stringWithFormat:@"%@",facebookid ], @"to",@"50",@"x",@"50",@"y",nil];
-    [[PFFacebookUtils facebook] requestWithGraphPath:[NSString stringWithFormat:@"%@/tags",photoid]
-                                  andParams:params
-                              andHttpMethod:@"POST"
-                                andDelegate:self];   
+//    NSMutableDictionary *params = [NSMutableDictionary dictionaryWithObjectsAndKeys:
+//                                   [NSString stringWithFormat:@"%@",facebookid ], @"to",@"50",@"x",@"50",@"y",nil];
+//    [[PFFacebookUtils facebook] requestWithGraphPath:[NSString stringWithFormat:@"%@/tags",photoid]
+//                                  andParams:params
+//                              andHttpMethod:@"POST"
+//                                andDelegate:self]; 
+    NSURL* postURL = [NSURL URLWithString:[NSString stringWithFormat:@"https://graph.facebook.com/%@/tags?access_token=%@",photoid,[PFFacebookUtils facebook].accessToken]];
+    ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:postURL];
+    [request setPostValue:[NSString stringWithFormat:@"%@",facebookid] forKey:@"to"];
+    [request setPostValue:@"50" forKey:@"x"];    
+    [request setPostValue:@"50" forKey:@"y"];    
+    [request setRequestMethod:@"POST"];
+    [request setCompletionBlock:^{
+        NSLog(@"tagged!");        
+    }];
+    [request setFailedBlock:^{
+        [MBProgressHUD hideHUDForView:self.view animated:YES];
+    }];
+    [request startAsynchronous];
 }
 - (void)startStandardUpdates
 {

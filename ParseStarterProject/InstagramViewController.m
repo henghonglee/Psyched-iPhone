@@ -33,8 +33,7 @@
 #import "KKGridView.h"
 #import <Parse/Parse.h>
 @implementation InstagramViewController
-@synthesize KKviewController;
-@synthesize popularRouteArray;
+
 - (void)viewDidLoad
 {
   [super viewDidLoad];

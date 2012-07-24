@@ -1194,10 +1194,10 @@ kAPIGraphCommentPhoto,
             NSArray* routearrowarray = [routeObject.pfobj objectForKey:@"arrowarray"];
             NSArray* arrowtypearray = [routeObject.pfobj objectForKey:@"arrowtypearray"];
              UIImage* pastedimage;
-
+                NSLog(@"routearrowarray = %@",routearrowarray);
             for (int i=0; i<[routearrowarray count]; i++) {
                
-                                         
+
                 CGRect routearrowrect = CGRectFromString([routearrowarray objectAtIndex:i]);
                 if([[arrowtypearray objectAtIndex:i]isEqualToNumber:[NSNumber numberWithInt:0]])
                     pastedimage = [UIImage imageNamed:@"arrow1.png"];

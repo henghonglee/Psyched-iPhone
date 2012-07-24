@@ -91,6 +91,42 @@
 { 
    
     self.myRequest = [[PFFacebookUtils facebook] requestWithGraphPath:@"me/friends" andDelegate:self];
+    
+    ASIHTTPRequest* accountRequest = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"https://graph.facebook.com/me/friends?access_token=%@",[PFFacebookUtils facebook].accessToken]]];
+    
+    [accountRequest setCompletionBlock:^{
+        
+        
+        SBJsonParser *jsonParser = [[SBJsonParser alloc] init];
+        id jsonObject = [jsonParser objectWithString:[accountRequest responseString]];
+        NSLog(@"response = %@",jsonObject);
+        [jsonParser release];
+        jsonParser = nil;
+        NSLog(@"result");
+        NSArray* fbfriends = [jsonObject objectForKey:@"data"];
+        [FBfriendsArray removeAllObjects];
+        for (NSDictionary* obj in fbfriends) {
+            FBfriend* newFBfriend = [[FBfriend alloc]init];
+            newFBfriend.uid = [obj objectForKey:@"id"];
+            newFBfriend.name = [obj objectForKey:@"name"];
+            [FBfriendsArray addObject:newFBfriend];
+            [newFBfriend release];
+        }
+        //  NSLog(@"fbfriends array = %@",FBfriendsArray);
+        [friendsArray addObjectsFromArray:FBfriendsArray];
+        [taggerTable reloadData];
+        [MBProgressHUD hideHUDForView:self.view animated:YES];
+        taggerTable.hidden=NO;
+        [taggerTextField becomeFirstResponder];
+
+        
+    }];
+    [accountRequest setFailedBlock:^{
+        [MBProgressHUD hideHUDForView:self.view animated:YES];
+    }];
+    [accountRequest startAsynchronous];
+    
+    
 }
 -(void)request:(PF_FBRequest *)request didReceiveResponse:(NSURLResponse *)response
 {
@@ -102,23 +138,7 @@
 - (void)request:(PF_FBRequest *)request didLoad:(id)result {
     //NSString* photoid;
     
-            NSLog(@"result");
-            NSArray* fbfriends = [result objectForKey:@"data"];
-            [FBfriendsArray removeAllObjects];
-            for (NSDictionary* obj in fbfriends) {
-                FBfriend* newFBfriend = [[FBfriend alloc]init];
-                newFBfriend.uid = [obj objectForKey:@"id"];
-                newFBfriend.name = [obj objectForKey:@"name"];
-                [FBfriendsArray addObject:newFBfriend];
-                [newFBfriend release];
-            }
-            //  NSLog(@"fbfriends array = %@",FBfriendsArray);
-            [friendsArray addObjectsFromArray:FBfriendsArray];
-    [taggerTable reloadData];
-            [MBProgressHUD hideHUDForView:self.view animated:YES];
-    taggerTable.hidden=NO;
-        [taggerTextField becomeFirstResponder];
-            
+                       
          
 }
 - (void)viewDidUnload

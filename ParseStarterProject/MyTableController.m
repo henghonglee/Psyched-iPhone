@@ -19,11 +19,11 @@
 @synthesize followedPosters;
 @synthesize routeArray;
 @synthesize queryArray;
-@synthesize titleTableView;
+
 @synthesize currentLocation;
 @synthesize emptyGradeView;
 @synthesize emptyView;
-@synthesize locationManager;
+
 
 @synthesize settingsButton;
 @synthesize newbadge;
@@ -58,7 +58,7 @@
     [item2 setFinishedSelectedImage:selectedImage2 withFinishedUnselectedImage:unselectedImage2];
     //[item3 setFinishedSelectedImage:selectedImage3 withFinishedUnselectedImage:unselectedImage3];
     //[item4 setFinishedSelectedImage:selectedImage4 withFinishedUnselectedImage:unselectedImage4];
-
+ NSLog(@"viewdidload");
     [super viewDidLoad];
 
     loadcount = 1;
@@ -129,7 +129,7 @@
     [headerLabel release];
     [self.view addSubview:routeTableView];
     [self addStandardTabView];
-
+ NSLog(@"done added standard tab view");
     self.navigationController.navigationBarHidden = YES;
     self.routeArray = [[[NSMutableArray alloc]init]autorelease];
     self.queryArray = [[[NSMutableArray alloc]init]autorelease];
@@ -145,7 +145,7 @@
             [followedPosters addObject:[follow objectForKey:@"followed"]];
             
         }
-
+        NSLog(@"followposters populated");
      [self tabView:tabView didSelectTabAtIndex:tabView.segmentIndex];
     
     }];
@@ -246,9 +246,8 @@
 { 
     [self setNewbadge:nil];
     [self setFollowedPosters:nil];
-    [self setLocationManager:nil];
     [self setCurrentLocation:nil];
-    [self setTitleTableView:nil];
+
     [self setRouteTableView:nil];
     [self setRouteArray:nil];
     [self setQueryArray:nil];
@@ -357,8 +356,11 @@
                                 ASIHTTPRequest* request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:imagelink]];
                                
                                 [request setCompletionBlock:^{
-                                   
+                                    
                                     UIImage* ownerImage = [UIImage imageWithData:[request responseData]];
+                                    if (ownerImage == nil) {
+                                        ownerImage = [UIImage imageNamed:@"placeholder_user.png"];
+                                    }
                                     cell.ownerImage.alpha = 0.0;
                                     cell.ownerImage.image = ownerImage;
                                     ((RouteObject*)[self.routeArray objectAtIndex:indexPath.row]).ownerImage= ownerImage;
@@ -371,6 +373,7 @@
                                                      completion:^(BOOL finished){
                                                          
                                                      }];
+                                    
                                 }];
                                 [request setFailedBlock:^{}];
                                 [request startAsynchronous];
@@ -389,6 +392,9 @@
                             [request setCompletionBlock:^{
                              
                                    UIImage* ownerImage = [UIImage imageWithData:[request responseData]];
+                                if (ownerImage == nil) {
+                                    ownerImage = [UIImage imageNamed:@"placeholder_user.png"];
+                                }
                                    cell.ownerImage.alpha = 0.0;
                                    cell.ownerImage.image = ownerImage;
                                    ((RouteObject*)[self.routeArray objectAtIndex:indexPath.row]).ownerImage= ownerImage;
@@ -604,6 +610,9 @@
                     [request setCompletionBlock:^{
                         
                         selectedFeedObj.senderImage = [UIImage imageWithData:[request responseData]];
+                        if (selectedFeedObj.senderImage == nil) {
+                            selectedFeedObj.senderImage = [UIImage imageNamed:@"placeholder_user.png"];
+                        }
                         cell.userImageView.image = selectedFeedObj.senderImage;
                     }];
                     [request setFailedBlock:^{}];
@@ -663,6 +672,9 @@
                 [request setCompletionBlock:^{
                     
                     selectedFeedObj.senderImage = [UIImage imageWithData:[request responseData]];
+                    if (selectedFeedObj.senderImage == nil) {
+                        selectedFeedObj.senderImage = [UIImage imageNamed:@"placeholder_user.png"];
+                    }
                     cell.senderImage.image = selectedFeedObj.senderImage;
                 }];
                 [request setFailedBlock:^{}];
@@ -851,6 +863,7 @@
     [tabView addTabItemWithTitle:@"Places" icon:[UIImage imageNamed:@"followed.png"]];
     [tabView addTabItemWithTitle:@"Recently added" icon:[UIImage imageNamed:@"icon1.png"]];
     [tabView addTabItemWithTitle:@"Recommended           " icon:[UIImage imageNamed:@"nearby.png"] badge:newbadge];
+    [newbadge release];
    // [tabView addTabItemWithTitle:@"Projects Near Me" icon:[UIImage imageNamed:@"grade.png"]];
    // [tabView addTabItemWithTitle:@"By Grade Near Me" icon:[UIImage imageNamed:@"project_white.png"]];
 
@@ -938,7 +951,7 @@
     [recommendQuery setLimit:20];
     recommendQuery.cachePolicy = kPFCachePolicyNetworkElseCache;
     
-    
+    NSLog(@"starting queries");
     
     
     shouldDisplayNext=1;
@@ -1700,7 +1713,6 @@
 
     [emptyView release];
     [currentLocation release];
-    [locationManager release];
     [queryArray release];
     
     [routeTableView release];

@@ -49,16 +49,17 @@ static inline double radians (double degrees) {return degrees * M_PI/180;}
   }
     ParseStarterProjectAppDelegate* appDel = (ParseStarterProjectAppDelegate* )[[UIApplication sharedApplication]delegate];
     appDel.badgeView =
-    [[[LKBadgeView alloc] initWithFrame:CGRectMake(100, 200, 50, 30)] autorelease];
+    [[LKBadgeView alloc] initWithFrame:CGRectMake(100, 200, 50, 30)];
     appDel.badgeView.widthMode = LKBadgeViewWidthModeSmall;
     appDel.badgeView.center = CGPointMake(self.tabBar.center.x+145, self.tabBar.center.y-20);
     [appDel.badgeView addObserver:appDel.badgeView forKeyPath:@"text" options:NSKeyValueObservingOptionNew context:nil];
-    [self.view addSubview:appDel.badgeView];
     appDel.badgeView.text = @"0";
     appDel.badgeView.shadowOfText = YES;
     appDel.badgeView.shadow=YES;
     appDel.badgeView.badgeColor = [UIColor redColor];
     appDel.badgeView.outline = YES;
+    [self.view addSubview:appDel.badgeView];
+#warning badgeview unreleased
   [self.view addSubview:button];
 }
 

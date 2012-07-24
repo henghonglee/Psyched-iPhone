@@ -38,6 +38,7 @@
 
 - (void)setBackgroundLayer:(CALayer *)backgroundLayer;
 {
+        NSLog(@"obj at index here on self.layer sublayers");
     CALayer * oldBackground = [[self.layer sublayers] objectAtIndex:0];
     if (oldBackground)
     {

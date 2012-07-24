@@ -11,7 +11,7 @@
 @interface ParseStarterProjectAppDelegate : NSObject <UIApplicationDelegate,CLLocationManagerDelegate,PF_FBRequestDelegate,UIAlertViewDelegate> {
 UIBackgroundTaskIdentifier bgTask;
 }
-@property (nonatomic,retain) PFObject* nearbyGymObject;
+//@property (nonatomic,retain) PFObject* nearbyGymObject;
 @property (nonatomic,retain) NSMutableArray* pushedNotifications;
 @property (retain, nonatomic) CLLocationManager* locationManager;
 @property (retain, nonatomic)  CLLocation* currentLocation;
