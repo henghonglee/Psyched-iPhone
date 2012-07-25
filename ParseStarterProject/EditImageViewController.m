@@ -71,6 +71,54 @@
     }else{
         instructionButton.hidden=NO;
     }
+    
+    
+    
+    if ([[imageMetaData objectForKey:@"sourceType"]isEqualToString:@"UIImagePickerControllerSourceTypeCamera"]) {
+        
+     NSLog(@"crashes around here1");
+     CGAffineTransform transform = CGAffineTransformIdentity;
+         NSLog(@"crashes around here2");
+     transform = CGAffineTransformTranslate(transform, 0, imageInView.size.width);
+         NSLog(@"crashes around here3");
+     transform = CGAffineTransformRotate(transform, -M_PI_2);
+         NSLog(@"crashes around here4");
+     CGRect newRect = CGRectIntegral(CGRectMake(0, 0, imageInView.size.width, imageInView.size.width));
+ NSLog(@"crashes around here5");
+          CGImageRef imageRef = imageInView.CGImage;
+         NSLog(@"crashes around here6");
+     // Build a context that's the same dimensions as the new size
+
+     CGContextRef bitmap = CGBitmapContextCreate(NULL,
+     newRect.size.width,
+     newRect.size.height,
+     CGImageGetBitsPerComponent(imageRef),
+     0,
+     CGImageGetColorSpace(imageRef),
+     CGImageGetBitmapInfo(imageRef));
+        NSLog(@"crashes around here7");
+     // Rotate and/or flip the image if required by its orientation
+     CGContextConcatCTM(bitmap, transform);
+              NSLog(@"crashes around here8");
+     // Set the quality level to use when rescaling
+     CGContextSetInterpolationQuality(bitmap, kCGInterpolationHigh);
+              NSLog(@"crashes around here9");
+     // Draw into the context; this scales the image
+        
+     CGContextDrawImage(bitmap,  newRect, imageRef);
+              NSLog(@"crashes around here10");
+     // Get the resized image from the context and a UIImage
+     CGImageRef newImageRef = CGBitmapContextCreateImage(bitmap);
+                 NSLog(@"crashes around here11");
+     CGContextRelease(bitmap);
+     imageInView = [UIImage imageWithCGImage:newImageRef];
+     CGImageRelease(newImageRef);
+
+    
+    }
+    
+    
+    
       imageToEdit = [[UIImageView alloc]initWithImage:imageInView];
     imageToEdit.userInteractionEnabled = YES;
     CGRect rect = CGRectMake(0, 0, imageInView.size.width, imageInView.size.height);

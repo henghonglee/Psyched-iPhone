@@ -170,53 +170,41 @@ static inline double radians (double degrees) {return degrees * M_PI/180;}
 {
     UIImage *myImage = [info objectForKey:UIImagePickerControllerOriginalImage];
     UIImage *mycroppedImage =[myImage croppedImage:CGRectMake(0, 0, myImage.size.width, myImage.size.width)];
+    if (picker.sourceType == UIImagePickerControllerSourceTypeCamera) 
+    [imageMetaData setObject:@"UIImagePickerControllerSourceTypeCamera" forKey:@"sourceType"];
+/*
+    CGAffineTransform transform = CGAffineTransformIdentity;
+    transform = CGAffineTransformTranslate(transform, 0, mycroppedImage.size.width);
+    transform = CGAffineTransformRotate(transform, -M_PI_2);
+    CGRect newRect = CGRectIntegral(CGRectMake(0, 0, mycroppedImage.size.width, mycroppedImage.size.width));
+    CGImageRef imageRef = mycroppedImage.CGImage;
     
-    if(picker.sourceType == UIImagePickerControllerSourceTypeCamera){
-        CGAffineTransform transform = CGAffineTransformIdentity;
-        transform = CGAffineTransformTranslate(transform, 0, myImage.size.width);
-        transform = CGAffineTransformRotate(transform, -M_PI_2);
-        CGRect newRect = CGRectIntegral(CGRectMake(0, 0, myImage.size.width, myImage.size.width));
-        CGImageRef imageRef = mycroppedImage.CGImage;
-        
-        // Build a context that's the same dimensions as the new size
-        CGContextRef bitmap = CGBitmapContextCreate(NULL,
-                                                    newRect.size.width,
-                                                    newRect.size.height,
-                                                    CGImageGetBitsPerComponent(imageRef),
-                                                    0,
-                                                    CGImageGetColorSpace(imageRef),
-                                                    CGImageGetBitmapInfo(imageRef));
-        
-        // Rotate and/or flip the image if required by its orientation
-        CGContextConcatCTM(bitmap, transform);
-        
-        // Set the quality level to use when rescaling
-        CGContextSetInterpolationQuality(bitmap, kCGInterpolationHigh);
-        
-        // Draw into the context; this scales the image
-        CGContextDrawImage(bitmap,  newRect, imageRef);
-        
-        // Get the resized image from the context and a UIImage
-        CGImageRef newImageRef = CGBitmapContextCreateImage(bitmap);
-        CGContextRelease(bitmap);
-        newcropped = [[[UIImage imageWithCGImage:newImageRef]resizedImage:CGSizeMake(960.0, 960.0) interpolationQuality:kCGInterpolationHigh] retain];
-        CGImageRelease(newImageRef);
-        imagepicker  =  picker;
-        //prompt here
-        [imagepicker dismissModalViewControllerAnimated:NO];
-        EditImageViewController* EditImageVC = [[EditImageViewController alloc] initWithNibName:@"EditImageViewController" bundle:nil];
-        UINavigationController* navCont = [[UINavigationController alloc]initWithRootViewController:EditImageVC];
-        EditImageVC.imageInView = newcropped;
-        NSLog(@"imageData transfered = %@",imageMetaData);
-        EditImageVC.imageMetaData = imageMetaData;
-        EditImageVC.delegate = self;
-        [self presentModalViewController:navCont animated:NO];
-        [navCont release];
-
-       
-        
-    }else{
-        newcropped=[mycroppedImage resizedImage:CGSizeMake(960, 960) interpolationQuality:kCGInterpolationHigh];    
+    // Build a context that's the same dimensions as the new size
+    CGContextRef bitmap = CGBitmapContextCreate(NULL,
+                                                newRect.size.width,
+                                                newRect.size.height,
+                                                CGImageGetBitsPerComponent(imageRef),
+                                                0,
+                                                CGImageGetColorSpace(imageRef),
+                                                CGImageGetBitmapInfo(imageRef));
+    
+    // Rotate and/or flip the image if required by its orientation
+    CGContextConcatCTM(bitmap, transform);
+    
+    // Set the quality level to use when rescaling
+    CGContextSetInterpolationQuality(bitmap, kCGInterpolationHigh);
+    
+    // Draw into the context; this scales the image
+    CGContextDrawImage(bitmap,  newRect, imageRef);
+    
+    // Get the resized image from the context and a UIImage
+    CGImageRef newImageRef = CGBitmapContextCreateImage(bitmap);
+    CGContextRelease(bitmap);
+    newcropped = [UIImage imageWithCGImage:newImageRef];
+    CGImageRelease(newImageRef);
+*/
+                NSLog(@"get newcrop");
+    newcropped=[[mycroppedImage resizedImage:CGSizeMake(960, 960) interpolationQuality:kCGInterpolationHigh]autorelease];    
     
     
     [picker dismissModalViewControllerAnimated:NO];
@@ -228,7 +216,7 @@ static inline double radians (double degrees) {return degrees * M_PI/180;}
     EditImageVC.delegate = self;
     [self presentModalViewController:navCont animated:NO];
     [navCont release];
-    }
+    
 }
 
 

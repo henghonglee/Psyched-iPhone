@@ -52,37 +52,78 @@
     }
     
     
-    
+    //retrieve who the user is following
     PFQuery* followedquery = [PFQuery queryWithClassName:@"Follow"];
     [followedquery whereKey:@"follower" equalTo:[PFUser currentUser]];
     [followedquery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
-        [followedArray addObjectsFromArray:objects];
+    [followedArray addObjectsFromArray:objects];
     
-    
-    PFQuery* query = [PFQuery queryWithClassName:@"Follow"];
-    [query whereKey:@"follower" equalTo:selectedUser];
-    [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+    }];
+    __block int numberOfdivs=2;
+    PFQuery* numberQuery = [PFQuery queryWithClassName:@"Follow"];
+    [numberQuery whereKey:@"follower" equalTo:selectedUser];
+    [numberQuery countObjectsInBackgroundWithBlock:^(int number, NSError *error) {
+        int numberOfiterations = number/numberOfdivs;
+        int numberOfremainder = number%numberOfdivs;
         [searchArray removeAllObjects];
         [tempArray removeAllObjects];
-        for (PFObject* follower in objects) {
-            
-            PFQuery* userquery = [PFQuery queryForUser];
-            [userquery whereKey:@"name" equalTo:[follower objectForKey:@"followed"]];
-            [userquery getFirstObjectInBackgroundWithBlock:^(PFObject *object, NSError *error) {
-                NSLog(@"object = %@",object );
-                if (object) {
-                    UserObject* userObj = [[UserObject alloc]init];
-                    userObj.user = (PFUser*)object;
-                    [searchArray addObject:userObj];
-                    [tempArray addObject:userObj];    
-                    [userObj release];
-                } 
-               [searchTable reloadData]; 
+        for (int i=0; i<numberOfiterations; i++) {
+            PFQuery* query = [PFQuery queryWithClassName:@"Follow"];
+            [query whereKey:@"follower" equalTo:selectedUser];
+            [query orderByAscending:@"created_At"];
+            [query setLimit:numberOfdivs];
+            [query setSkip:numberOfdivs*i];
+            [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+                
+                for (PFObject* follower in objects) {
+                    PFQuery* userquery = [PFUser query];
+                    [userquery whereKey:@"name" equalTo:[follower objectForKey:@"followed"]];
+                    [userquery getFirstObjectInBackgroundWithBlock:^(PFObject *object, NSError *error) {
+                        
+                        if (object) {
+                            UserObject* userObj = [[UserObject alloc]init];
+                            userObj.user = (PFUser*)object;
+                            [searchArray addObject:userObj];
+                            [tempArray addObject:userObj];    
+                            [userObj release];
+                        } 
+                        [searchTable reloadData]; 
+                    }];
+                    
+                }
             }];
-            
+
         }
+        PFQuery* query = [PFQuery queryWithClassName:@"Follow"];
+        [query whereKey:@"follower" equalTo:selectedUser];
+        [query setLimit:numberOfremainder];
+        [query setSkip:numberOfdivs*numberOfiterations];
+        [query orderByAscending:@"created_At"];
+        [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+           
+            for (PFObject* follower in objects) {
+                PFQuery* userquery = [PFUser query];
+                [userquery whereKey:@"name" equalTo:[follower objectForKey:@"followed"]];
+                [userquery getFirstObjectInBackgroundWithBlock:^(PFObject *object, NSError *error) {
+                    
+                    if (object) {
+                        UserObject* userObj = [[UserObject alloc]init];
+                        userObj.user = (PFUser*)object;
+                        [searchArray addObject:userObj];
+                        [tempArray addObject:userObj];    
+                        [userObj release];
+                    } 
+                    [searchTable reloadData]; 
+                }];
+                
+            }
+        }];
+
+        
     }];
-    }];
+    
+    //retrieve who the selecteduser is following
+        
     // Do any additional setup after loading the view from its nib.
 }
 -(void)addFollowers{
@@ -163,7 +204,6 @@
         for (PFObject* obj in followedArray) {
             if ([cell.nameLabel.text isEqualToString:[obj objectForKey:@"followed"]]) {
                 isFollowing = YES;
-                NSLog(@"is a follower");
                 [cell.followButton setBackgroundImage:[UIImage imageNamed:@"following_text.png"] forState:UIControlStateNormal];
             }
             if (!isFollowing){
@@ -173,17 +213,22 @@
         }
         if (userObjForRow.userImage) {
             cell.userImageView.image = userObjForRow.userImage;
+            if (cell.userImageView.image == nil) {
+                cell.userImageView.image = [UIImage imageNamed:@"placeholder_user.png"];
+            }
         }else{
         ASIHTTPRequest* request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:urlstring]];
         [request setCompletionBlock:^{
-            
             userObjForRow.userImage = [UIImage imageWithData:[request responseData]];
             cell.userImageView.image = userObjForRow.userImage;
-
+            if (cell.userImageView.image == nil) {
+                cell.userImageView.image = [UIImage imageNamed:@"placeholder_user.png"];
+            }
         }];
         [request setFailedBlock:^{}];
         [request startAsynchronous];
         }
+        
     }
     
     

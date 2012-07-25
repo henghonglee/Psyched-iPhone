@@ -58,32 +58,14 @@
     [item2 setFinishedSelectedImage:selectedImage2 withFinishedUnselectedImage:unselectedImage2];
     //[item3 setFinishedSelectedImage:selectedImage3 withFinishedUnselectedImage:unselectedImage3];
     //[item4 setFinishedSelectedImage:selectedImage4 withFinishedUnselectedImage:unselectedImage4];
- NSLog(@"viewdidload");
+
     [super viewDidLoad];
 
     loadcount = 1;
     shouldDisplayNext = 1;
     // [self startStandardUpdates];
     
-    PFQuery* queryForNotification = [PFQuery queryWithClassName:@"Feed"];
-    [queryForNotification whereKey:@"viewed" notEqualTo:[[PFUser currentUser]objectForKey:@"name"]];
-    [queryForNotification  whereKey:@"sender" notEqualTo:[[PFUser currentUser]objectForKey:@"name"]];
-    [queryForNotification whereKey:@"message" containsString:[[PFUser currentUser]objectForKey:@"name"]];
-    [queryForNotification countObjectsInBackgroundWithBlock:^(int number, NSError *error) {
-        ParseStarterProjectAppDelegate* appDel = (ParseStarterProjectAppDelegate* )[[UIApplication sharedApplication]delegate];
-        appDel.badgeView.text = [NSString stringWithFormat:@"%d",number];
-       
-    }];
-    PFQuery* recommendQuery = [PFQuery queryWithClassName:@"Route"];
-    [recommendQuery whereKey:@"outdated" notEqualTo:[NSNumber numberWithBool:true]];
-    [recommendQuery whereKey:@"usersrecommended" equalTo:[[PFUser currentUser]objectForKey:@"name"]];
-    [recommendQuery whereKey:@"userssent" notEqualTo:[[PFUser currentUser]objectForKey:@"name"]];
-    [recommendQuery whereKey:@"usersflashed" notEqualTo:[[PFUser currentUser]objectForKey:@"name"]];
-    [recommendQuery orderByDescending:@"updatedAt"];
-    recommendQuery.cachePolicy = kPFCachePolicyNetworkElseCache;
-    [recommendQuery countObjectsInBackgroundWithBlock:^(int number, NSError *error) {
-        newbadge.text =[NSString stringWithFormat:@"%d",number];
-    }];
+    
 
     
     
@@ -155,6 +137,25 @@
    // [self startStandardUpdates];
     //
         self.navigationController.navigationBarHidden = YES;
+    PFQuery* queryForNotification = [PFQuery queryWithClassName:@"Feed"];
+    [queryForNotification whereKey:@"viewed" notEqualTo:[[PFUser currentUser]objectForKey:@"name"]];
+    [queryForNotification  whereKey:@"sender" notEqualTo:[[PFUser currentUser]objectForKey:@"name"]];
+    [queryForNotification whereKey:@"message" containsString:[[PFUser currentUser]objectForKey:@"name"]];
+    [queryForNotification countObjectsInBackgroundWithBlock:^(int number, NSError *error) {
+        ParseStarterProjectAppDelegate* appDel = (ParseStarterProjectAppDelegate* )[[UIApplication sharedApplication]delegate];
+        appDel.badgeView.text = [NSString stringWithFormat:@"%d",number];
+        
+    }];
+    PFQuery* recommendQuery = [PFQuery queryWithClassName:@"Route"];
+    [recommendQuery whereKey:@"outdated" notEqualTo:[NSNumber numberWithBool:true]];
+    [recommendQuery whereKey:@"usersrecommended" equalTo:[[PFUser currentUser]objectForKey:@"name"]];
+    [recommendQuery whereKey:@"userssent" notEqualTo:[[PFUser currentUser]objectForKey:@"name"]];
+    [recommendQuery whereKey:@"usersflashed" notEqualTo:[[PFUser currentUser]objectForKey:@"name"]];
+    [recommendQuery orderByDescending:@"updatedAt"];
+    recommendQuery.cachePolicy = kPFCachePolicyNetworkElseCache;
+    [recommendQuery countObjectsInBackgroundWithBlock:^(int number, NSError *error) {
+        newbadge.text =[NSString stringWithFormat:@"%d",number];
+    }];
 }
 - (UIView *)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section {
     
@@ -244,6 +245,7 @@
 
 - (void)viewDidUnload
 { 
+     NSLog(@"view did unload");
     [self setNewbadge:nil];
     [self setFollowedPosters:nil];
     [self setCurrentLocation:nil];
@@ -254,10 +256,10 @@
     
     [self setEmptyGradeView:nil];
     [self setSettingsButton:nil];
-    [self viewDidDisappear:NO];
+ //   [self viewDidDisappear:NO];
     
     [super viewDidUnload];
-    NSLog(@"view did unload");
+   
     
     
 }

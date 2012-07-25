@@ -42,31 +42,74 @@
     tempArray = [[NSMutableArray alloc]init];
     searchArray = [[NSMutableArray alloc]init];
     followedArray = [[NSMutableArray alloc]init];
+    
+    //get users the current user followed
     PFQuery* followedquery = [PFQuery queryWithClassName:@"Follow"];
     [followedquery whereKey:@"follower" equalTo:[PFUser currentUser]];
-    
     [followedquery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
         [followedArray addObjectsFromArray:objects];
     
-    PFQuery* query = [PFQuery queryWithClassName:@"Follow"];
-    [query whereKey:@"followed" equalTo:[selectedUser objectForKey:@"name"]];
-    [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+      }];
+    PFQuery* numberQuery = [PFQuery queryWithClassName:@"Follow"];
+    [numberQuery whereKey:@"followed" equalTo:[selectedUser objectForKey:@"name"]];
+    [numberQuery countObjectsInBackgroundWithBlock:^(int number, NSError *error) {
+        int numberOfiterations = number/10;
+        int numberOfremainder = number%10;
         [searchArray removeAllObjects];
         [tempArray removeAllObjects];
-        for (PFObject* follower in objects) {
-            UserObject* userObj = [[UserObject alloc]init];
-            userObj.user= [follower objectForKey:@"follower"];
-            [userObj.user fetchIfNeeded];
-
-            [searchArray addObject:userObj];
-            [tempArray addObject:userObj];
-            [userObj release];
+        for (int i=0; i<numberOfiterations; i++) {
+            PFQuery* query = [PFQuery queryWithClassName:@"Follow"];
+            [query whereKey:@"followed" equalTo:[selectedUser objectForKey:@"name"]];
+            [query orderByAscending:@"created_At"];
+            [query setLimit:10];
+            [query setSkip:10*i];
+            [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+                for (PFObject* follower in objects) {
+                    UserObject* userObj = [[UserObject alloc]init];
+                    userObj.user= [follower objectForKey:@"follower"];
+                    [userObj.user fetchIfNeededInBackgroundWithBlock:^(PFObject *object, NSError *error) {
+                        [searchArray addObject:userObj];
+                        [tempArray addObject:userObj];
+                        [userObj release];    
+                            [searchTable reloadData];
+                    }];
+                    
+                    
+                }
+            
+                
+            }];
+            
         }
-        NSLog(@"fetched =%@",objects);
-        NSLog(@"temparray =%@",tempArray);
-        [searchTable reloadData];
+        PFQuery* query = [PFQuery queryWithClassName:@"Follow"];
+        [query whereKey:@"followed" equalTo:[selectedUser objectForKey:@"name"]];
+        [query setLimit:numberOfremainder];
+        [query setSkip:10*numberOfiterations];
+        [query orderByAscending:@"created_At"];
+        [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+            
+            for (PFObject* follower in objects) {
+                UserObject* userObj = [[UserObject alloc]init];
+                userObj.user= [follower objectForKey:@"follower"];
+                [userObj.user fetchIfNeededInBackgroundWithBlock:^(PFObject *object, NSError *error) {
+                    [searchArray addObject:userObj];
+                    [tempArray addObject:userObj];
+                    [userObj release];    
+                        [searchTable reloadData];
+                }];
+                
+            }
+
+            
+        }];
+
+    
+    
+    
+    
+        
     }];
-   }];
+
     // Do any additional setup after loading the view from its nib.
 }
 -(void)viewWillAppear:(BOOL)animated
@@ -150,12 +193,18 @@ if (cell == nil) {
         }
         if (((UserObject*)[searchArray objectAtIndex:indexPath.row]).userImage) {
             cell.userImageView.image =((UserObject*)[searchArray objectAtIndex:indexPath.row]).userImage;
+            if (cell.userImageView.image == nil) {
+                cell.userImageView.image = [UIImage imageNamed:@"placeholder_user.png"];
+            }
         }else{
         ASIHTTPRequest* request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:urlstring]];
         [request setCompletionBlock:^{
             
            cell.userImageView.image = [UIImage imageWithData:[request responseData]];
             ((UserObject*)[searchArray objectAtIndex:indexPath.row]).userImage = [UIImage imageWithData:[request responseData]];
+            if (cell.userImageView.image == nil) {
+                cell.userImageView.image = [UIImage imageNamed:@"placeholder_user.png"];
+            }
         }];
         [request setFailedBlock:^{}];
         [request startAsynchronous];

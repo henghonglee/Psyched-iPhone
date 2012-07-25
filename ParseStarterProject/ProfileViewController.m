@@ -59,7 +59,23 @@
 
 - (void)viewDidLoad
 {
+    UIImage *selectedImage0 = [UIImage imageNamed:@"HomeDB.png"];
+    UIImage *unselectedImage0 = [UIImage imageNamed:@"HomeLB.png"];
+    
+    UIImage *selectedImage2 = [UIImage imageNamed:@"BuildingsDB.png"];
+    UIImage *unselectedImage2 = [UIImage imageNamed:@"BuildingsLB.png"];
+    
+    UITabBar *tabBar = self.tabBarController.tabBar;
+    UITabBarItem *item0 = [tabBar.items objectAtIndex:0];
+    
+    UITabBarItem *item2 = [tabBar.items objectAtIndex:2];
+    
+    
+    [item0 setFinishedSelectedImage:selectedImage0 withFinishedUnselectedImage:unselectedImage0];
+    
+    [item2 setFinishedSelectedImage:selectedImage2 withFinishedUnselectedImage:unselectedImage2];
     [super viewDidLoad];
+    
     self.navigationItem.title = @"Profile";
     userImageView.layer.borderColor = [UIColor whiteColor].CGColor;
     userImageView.layer.borderWidth = 3;
@@ -80,64 +96,63 @@
     self.navigationItem.rightBarButtonItem = barButtonItem;
     [barButtonItem release];
     
-    
+
     if(!username){
         username = [[PFUser currentUser] objectForKey:@"name"];
         [username retain];
     }
-    PFQuery* userQuery = [PFQuery queryForUser];
+    PFQuery* userQuery = [PFUser query];
     userQuery.cachePolicy= kPFCachePolicyNetworkElseCache;
     [userQuery whereKey:@"name" equalTo:username];
     [userQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
-
-
-    selectedUser = [objects objectAtIndex:0];
+        NSLog(@"loading profile");
+        selectedUser = [objects objectAtIndex:0];
         [selectedUser retain];
         NSLog(@"selected User = %@ , retain count = %d",selectedUser, [selectedUser retainCount]);
-    if (userimage) {
-        userImageView.image = userimage;
-    }else{
-        ASIHTTPRequest* request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:[selectedUser objectForKey:@"profilepicture"]] ];
-        [request setCompletionBlock:^{
-            userimage = [UIImage imageWithData:[request responseData]];
+        if (userimage) {
             userImageView.image = userimage;
-        }];
-        [request setFailedBlock:^{}];
-        [request startAsynchronous];
-    }
-    PFQuery* likequery = [PFQuery queryWithClassName:@"Route"];
+        }else{
+            ASIHTTPRequest* request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:[selectedUser objectForKey:@"profilepicture"]] ];
+            [request setCompletionBlock:^{
+                userimage = [UIImage imageWithData:[request responseData]];
+                userImageView.image = userimage;
+            }];
+            [request setFailedBlock:^{}];
+            [request startAsynchronous];
+        }
+        PFQuery* likequery = [PFQuery queryWithClassName:@"Route"];
         likequery.cachePolicy= kPFCachePolicyNetworkElseCache; 
-    [likequery whereKey:@"username" equalTo:username];
-    [likequery countObjectsInBackgroundWithBlock:^(int number, NSError *error) {
-        NSLog(@"%d likes",number);
-        likeLabel.text = [NSString stringWithFormat:@"%d",number];
-        addedButton.userInteractionEnabled = YES;
-    }];
-    PFQuery* flashquery = [PFQuery queryWithClassName:@"Flash"];
+        [likequery whereKey:@"username" equalTo:username];
+        [likequery countObjectsInBackgroundWithBlock:^(int number, NSError *error) {
+            NSLog(@"%d likes",number);
+            likeLabel.text = [NSString stringWithFormat:@"%d",number];
+            addedButton.userInteractionEnabled = YES;
+        }];
+        PFQuery* flashquery = [PFQuery queryWithClassName:@"Flash"];
         flashquery.cachePolicy= kPFCachePolicyNetworkElseCache;
-    [flashquery whereKey:@"username" equalTo:username];
-    [flashquery countObjectsInBackgroundWithBlock:^(int number, NSError *error) {
-        NSLog(@"%d flashes",number);
-        flashLabel.text = [NSString stringWithFormat:@"%d",number];
-       flashButton.userInteractionEnabled = YES;
-    }];
-    PFQuery* sentquery = [PFQuery queryWithClassName:@"Sent"];
+        [flashquery whereKey:@"username" equalTo:username];
+        [flashquery countObjectsInBackgroundWithBlock:^(int number, NSError *error) {
+            NSLog(@"%d flashes",number);
+            flashLabel.text = [NSString stringWithFormat:@"%d",number];
+            flashButton.userInteractionEnabled = YES;
+        }];
+        PFQuery* sentquery = [PFQuery queryWithClassName:@"Sent"];
         sentquery.cachePolicy= kPFCachePolicyNetworkElseCache;
-    [sentquery whereKey:@"username" equalTo:username];
-    [sentquery countObjectsInBackgroundWithBlock:^(int number, NSError *error) {
-        NSLog(@"%d sends",number); 
-        sendLabel.text = [NSString stringWithFormat:@"%d",number];
-        sendsButton.userInteractionEnabled = YES;
-    }];
-    PFQuery* projquery = [PFQuery queryWithClassName:@"Project"];
+        [sentquery whereKey:@"username" equalTo:username];
+        [sentquery countObjectsInBackgroundWithBlock:^(int number, NSError *error) {
+            NSLog(@"%d sends",number); 
+            sendLabel.text = [NSString stringWithFormat:@"%d",number];
+            sendsButton.userInteractionEnabled = YES;
+        }];
+        PFQuery* projquery = [PFQuery queryWithClassName:@"Project"];
         projquery.cachePolicy= kPFCachePolicyNetworkElseCache;
-    [projquery whereKey:@"username" equalTo:username];
-    [projquery countObjectsInBackgroundWithBlock:^(int number, NSError *error) {
-        NSLog(@"%d projs",number);
-        projectLabel.text = [NSString stringWithFormat:@"%d",number];
-        projectsButton.userInteractionEnabled = YES;
-    }];
-    PFQuery* followingwhoquery = [PFQuery queryWithClassName:@"Follow"];
+        [projquery whereKey:@"username" equalTo:username];
+        [projquery countObjectsInBackgroundWithBlock:^(int number, NSError *error) {
+            NSLog(@"%d projs",number);
+            projectLabel.text = [NSString stringWithFormat:@"%d",number];
+            projectsButton.userInteractionEnabled = YES;
+        }];
+        PFQuery* followingwhoquery = [PFQuery queryWithClassName:@"Follow"];
         followingwhoquery.cachePolicy= kPFCachePolicyNetworkElseCache;
         [followingwhoquery whereKey:@"follower" equalTo:selectedUser];
         [followingwhoquery countObjectsInBackgroundWithBlock:^(int number, NSError *error) {
@@ -145,63 +160,65 @@
             followingButton.userInteractionEnabled = YES;
         }];
         
-    PFQuery* followingquery = [PFQuery queryWithClassName:@"Follow"];
+        PFQuery* followingquery = [PFQuery queryWithClassName:@"Follow"];
         followingquery.cachePolicy= kPFCachePolicyNetworkElseCache;
-    [followingquery whereKey:@"followed" equalTo:username];
-    [followingquery countObjectsInBackgroundWithBlock:^(int number, NSError *error) {
-        NSLog(@"%d followers",number);
-        followingLabel.text = [NSString stringWithFormat:@"%d",number];
-       followersButton.userInteractionEnabled = YES;
-    }];
-    
-    // grab user feeds
-    
-    userfeeds = [[NSMutableArray alloc]init ];
+        [followingquery whereKey:@"followed" equalTo:username];
+        [followingquery countObjectsInBackgroundWithBlock:^(int number, NSError *error) {
+            NSLog(@"%d followers",number);
+            followingLabel.text = [NSString stringWithFormat:@"%d",number];
+            followersButton.userInteractionEnabled = YES;
+        }];
+        
+        // grab user feeds
+        
+        userfeeds = [[NSMutableArray alloc]init ];
         PFQuery* queryForNotification = [PFQuery queryWithClassName:@"Feed"];
         [queryForNotification  whereKey:@"sender" notEqualTo:username];
         [queryForNotification whereKey:@"message" containsString:username];
         [queryForNotification orderByDescending:@"createdAt"];
         [queryForNotification findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
             
-                    [userfeeds addObjectsFromArray:objects];
-                    [userFeedTable reloadData];
+            [userfeeds addObjectsFromArray:objects];
+            [userFeedTable reloadData];
         }];
         
-    
-    //grab user followed
-    
-    followedArray = [[NSMutableArray alloc]init];
-    PFQuery* followedquery = [PFQuery queryWithClassName:@"Follow"];
-
+        
+        //grab user followed
+        
+        followedArray = [[NSMutableArray alloc]init];
+        PFQuery* followedquery = [PFQuery queryWithClassName:@"Follow"];
+        
         followedquery.cachePolicy= kPFCachePolicyNetworkElseCache;
-    [followedquery whereKey:@"follower" equalTo:[PFUser currentUser]];
-    [followedquery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
-        [followedArray addObjectsFromArray:objects];
-        BOOL isFollowing=NO;
-        for (PFObject* obj in followedArray) {
-            if ([userNameLabel.text isEqualToString:[obj objectForKey:@"followed"]]) {
-                isFollowing =YES;
+        [followedquery whereKey:@"follower" equalTo:[PFUser currentUser]];
+        [followedquery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+            [followedArray addObjectsFromArray:objects];
+            BOOL isFollowing=NO;
+            for (PFObject* obj in followedArray) {
+                if ([userNameLabel.text isEqualToString:[obj objectForKey:@"followed"]]) {
+                    isFollowing =YES;
+                }
             }
-        }
-        if (isFollowing) {
-            [followButton setUserInteractionEnabled:YES];
-            [followButton setTitle:@"Unfollow" forState:UIControlStateNormal];
-            followButton.tag = 1;
-        }else{
-            [followButton setUserInteractionEnabled:YES];
-            [followButton setTitle:@"Follow" forState:UIControlStateNormal];
-            followButton.tag = 0;
-        }
+            if (isFollowing) {
+                [followButton setUserInteractionEnabled:YES];
+                [followButton setTitle:@"Unfollow" forState:UIControlStateNormal];
+                followButton.tag = 1;
+            }else{
+                [followButton setUserInteractionEnabled:YES];
+                [followButton setTitle:@"Follow" forState:UIControlStateNormal];
+                followButton.tag = 0;
+            }
+        }];
+        
     }];
     
-    }];
+    //TODO: fix crash here
+       
     
     // Do any additional setup after loading the view from its nib.
     
     
     
 }
-
 
 - (IBAction)showfollowers:(id)sender {
     FollowFriendsViewController* viewController = [[FollowFriendsViewController alloc]initWithNibName:@"FollowFriendsViewController" bundle:nil];
@@ -233,7 +250,7 @@
 {
     userFeedTable.scrollEnabled = NO;
     [navigationBarItem startAnimating];
-    PFQuery* userQuery = [PFQuery queryForUser];
+    PFQuery* userQuery = [PFUser query];
     [userQuery whereKey:@"name" equalTo:username];
     
     [userQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
@@ -347,17 +364,17 @@
 {
     [super viewWillAppear:YES];
             [followButton setUserInteractionEnabled:NO];
-    
-//TODO: fix crash here
     if ([username isEqualToString:[[PFUser currentUser] objectForKey:@"name"]]) {
         addfriendsbutton.hidden=NO;
         followButton.hidden = YES;
     }else{
-                addfriendsbutton.hidden=YES;
+        addfriendsbutton.hidden=YES;
         followButton.hidden = NO;
     }
     self.navigationController.navigationBarHidden = NO;
     userNameLabel.text = username;
+
+    
 }
 
 - (IBAction)myroutes:(UIButton*)sender {

@@ -47,6 +47,7 @@
     
     for (JMTabItem * item in self.tabItems)
     {
+        NSLog(@"layingout subviews2");
         [item sizeToFit];
         [item setFrame:CGRectMake(xOffset, yOffset, item.frame.size.width, item.frame.size.height)];
         
@@ -64,6 +65,7 @@
     containerSize_.height = itemHeight;
     
     [self sizeToFit];
+            NSLog(@"layingout subviews3");
   //  [self centerInSuperView];
 }
 

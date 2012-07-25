@@ -102,7 +102,7 @@ typedef enum apiCall {
     //[PF_MBProgressHUD showHUDAddedTo:self.view animated:YES];
 
     
-    //PFQuery* query = [PFQuery queryForUser];
+    //PFQuery* query = [PFUser query];
     //[friendsArray addObjectsFromArray:[query findObjects]];
 
 

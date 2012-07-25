@@ -29,16 +29,17 @@
 //@synthesize usersrecommended;
 //@synthesize fbphotoid;
 //@synthesize recommendArray;
+
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
 
     [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleBlackOpaque animated:YES];
     [[UIApplication sharedApplication]setApplicationIconBadgeNumber:0];
-   // [FlurryAnalytics startSession:@"N66I1CJV446Z75ZV8G8V"];
-   // NSDictionary *myStuff = [NSDictionary dictionaryWithObjectsAndKeys:@"myObject", @"myKey", nil];
-   // [BugSenseCrashController sharedInstanceWithBugSenseAPIKey:@"ade3c7ab" 
-    //                                           userDictionary:myStuff 
-    //                                          sendImmediately:YES];
+    [FlurryAnalytics startSession:@"N66I1CJV446Z75ZV8G8V"];
+    NSDictionary *myStuff = [NSDictionary dictionaryWithObjectsAndKeys:@"myObject", @"myKey", nil];
+    [BugSenseCrashController sharedInstanceWithBugSenseAPIKey:@"ade3c7ab" 
+                                               userDictionary:myStuff 
+                                              sendImmediately:YES];
     [self startStandardUpdates];
     // ****************************************************************************
     // Uncomment and fill in with your Parse credentials:
@@ -50,10 +51,10 @@
     [Parse setApplicationId:@"rUk14GRi8xY6ieFQGyXcJ39iQUPuGo1ihR2dAKeh" clientKey:@"aOz04F0XOehjH9a58b95V4nKtcCZNUNUxbCoqM48"];
     [PFFacebookUtils initializeWithApplicationId:@"200778040017319"];
     // Override point for customization after application launch.
-   
-    if([[NSUserDefaults standardUserDefaults] objectForKey:@"NearbyDistance"] ==nil){
-        [[NSUserDefaults standardUserDefaults] setObject:@"5" forKey:@"NearbyDistance"];
-    }
+    
+//    if([[NSUserDefaults standardUserDefaults] objectForKey:@"NearbyDistance"] ==nil){
+//        [[NSUserDefaults standardUserDefaults] setObject:@"5" forKey:@"NearbyDistance"];
+//    }
     
     //test saving array in doc directory
 /*    
@@ -108,12 +109,10 @@
 
     if ([[[UIDevice currentDevice] systemVersion] floatValue] >= 5.0)
         [[UINavigationBar appearance] setBackgroundImage:[UIImage imageNamed:@"headerview.png"] forBarMetrics:UIBarMetricsDefault];
-    
+    if ([[NSUserDefaults standardUserDefaults] objectForKey:@"updater1.1"]) {
+        
      if ([PFFacebookUtils facebook].accessToken) { //if accesstoken is ok
-
-         NSLog(@"updater = %@",[[NSUserDefaults standardUserDefaults]objectForKey:@"updater1.1"]);
-         
-                  if ([[[NSUserDefaults standardUserDefaults]objectForKey:@"updater1.1"] isEqualToString:@"updated"]) {
+         NSLog(@"access token is ok");
              NSDictionary *dictionary = 
              [NSDictionary dictionaryWithObjectsAndKeys:[[PFUser currentUser] objectForKey:@"email"],@"email",[[PFUser currentUser] objectForKey:@"birthday_date"],@"birthday_date",[[PFUser currentUser] objectForKey:@"name"],@"name",[[PFUser currentUser] objectForKey:@"sex"],@"sex",[[PFUser currentUser] objectForKey:@"uid"],@"uid",[[PFUser currentUser] objectForKey:@"about_me"],@"about_me", nil];
              [FlurryAnalytics setUserID:[[PFUser currentUser] objectForKey:@"name"]];
@@ -132,12 +131,13 @@
                       [[PFUser currentUser] saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
                           [PFPush subscribeToChannelInBackground:[NSString stringWithFormat:@"channel%@",[[PFUser currentUser] objectForKey:@"facebookid"]] target:self selector:@selector(subscribeFinished:error:)];
                           NSLog(@"subscribed to channeluser %@",[NSString stringWithFormat:@"channel%@",[[PFUser currentUser] objectForKey:@"facebookid"]]);
+                           
                       }];                 
                       
-             self.window.rootViewController = viewController;
-         
+              self.window.rootViewController = viewController;
          
          }else{
+             
              NSArray* permissions = [[NSArray alloc]initWithObjects:@"user_about_me",@"user_videos",@"user_birthday",@"email",@"user_photos",@"publish_stream",@"offline_access",@"manage_pages",@"manage_notifications",nil];
              [PFFacebookUtils logInWithPermissions:permissions block:^(PFUser *user, NSError *error) {
                  [self apiFQLIMe];
@@ -151,13 +151,9 @@
              }];
              [permissions release];
          }
-         
-     }else{
-         
-         self.window.rootViewController = loginVC;
-         
+        }else{
+            self.window.rootViewController = loginVC; 
      }
-    
     [viewController release];
     [loginVC release ];
     [self.window makeKeyAndVisible];
@@ -193,15 +189,17 @@
 }
 
 #pragma mark fb methods
+
 - (BOOL)application:(UIApplication *)application handleOpenURL:(NSURL *)url {
     return [[PFFacebookUtils facebook] handleOpenURL:url];
 }
+
 - (BOOL)application:(UIApplication *)application openURL:(NSURL *)url
   sourceApplication:(NSString *)sourceApplication annotation:(id)annotation {
     return [[PFFacebookUtils facebook] handleOpenURL:url]; 
 }
--(void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex
-{
+
+-(void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex{
     if ([[alertView buttonTitleAtIndex:buttonIndex]isEqualToString:@"Update Now"]) {
         [[UIApplication sharedApplication]openURL:[NSURL URLWithString:@"http://itunes.apple.com/app/psyched!/id511887569?mt=8"]];
     }else if ([[alertView buttonTitleAtIndex:buttonIndex]isEqualToString:@"Reauthenticate"]) {
@@ -246,16 +244,14 @@
 
  */
 
-- (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)newDeviceToken
-{
+- (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)newDeviceToken{
     [PFPush storeDeviceToken:newDeviceToken];
     [PFPush subscribeToChannelInBackground:@"" target:self selector:@selector(subscribeFinished:error:)];
     
     [PFPush unsubscribeFromChannelInBackground:@"channelrecommend"];
 }
 
-- (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error
-{
+- (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error{
 	NSLog(@"application:didFailToRegisterForRemoteNotificationsWithError: %@", error);
 	if ([error code] != 3010) // 3010 is for the iPhone Simulator
     {
@@ -307,16 +303,14 @@
     }
 }
 
-- (void)applicationWillResignActive:(UIApplication *)application
-{
+- (void)applicationWillResignActive:(UIApplication *)application{
     /*
      Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
      Use this method to pause ongoing tasks, disable timers, and throttle down OpenGL ES frame rates. Games should use this method to pause the game.
      */
 }
 
-- (void)applicationDidEnterBackground:(UIApplication *)application
-{
+- (void)applicationDidEnterBackground:(UIApplication *)application{
     //bguploading
     /*
 //    UIApplication  *app = [UIApplication sharedApplication];
@@ -337,8 +331,7 @@
     */
 }
 
-- (void)applicationWillEnterForeground:(UIApplication *)application
-{
+- (void)applicationWillEnterForeground:(UIApplication *)application{
     
     NSLog(@"application will enter foreground");
     [[UIApplication sharedApplication]setApplicationIconBadgeNumber:0];
@@ -369,8 +362,7 @@
     /*
      Called as part of the transition from the background to the inactive state; here you can undo many of the changes made on entering the background.
      */
--(void)fbOAuthCheck
-{
+-(void)fbOAuthCheck{
     NSLog(@"facebook oauth check when entering foreground %@",[PFFacebookUtils facebook].accessToken);
     ASIHTTPRequest* accountRequest = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"https://graph.facebook.com/me/picture?access_token=%@",[PFFacebookUtils facebook].accessToken]]];
     accountRequest.shouldRedirect = YES;
@@ -393,8 +385,7 @@
     [accountRequest startAsynchronous];
 }
 
-- (void)applicationDidBecomeActive:(UIApplication *)application
-{
+- (void)applicationDidBecomeActive:(UIApplication *)application{
     NSLog(@"app did become active");
     
     [[UIApplication sharedApplication]setApplicationIconBadgeNumber:0];
@@ -413,8 +404,7 @@
      */
 }
 
-- (void)applicationWillTerminate:(UIApplication *)application
-{
+- (void)applicationWillTerminate:(UIApplication *)application{
     /*
      Called when the application is about to terminate.
      Save data if appropriate.
@@ -430,8 +420,7 @@
         NSLog(@"ParseStarterProject failed to subscribe to push notifications on the broadcast channel.");
     }
 }
-- (void)startStandardUpdates
-{
+- (void)startStandardUpdates{
     // Create the location manager if this object does not
     // already have one.
     if (nil == locationManager)
@@ -453,8 +442,7 @@
 // Delegate method from the CLLocationManagerDelegate protocol.
 - (void)locationManager:(CLLocationManager *)manager
     didUpdateToLocation:(CLLocation *)newLocation
-           fromLocation:(CLLocation *)oldLocation
-{
+           fromLocation:(CLLocation *)oldLocation{
     // If it's a relatively recent event, turn off updates to save power
     NSDate* eventDate = newLocation.timestamp;
     NSTimeInterval howRecent = [eventDate timeIntervalSinceNow];
@@ -476,8 +464,7 @@
     // else skip the event and process the next one.
 }
 
-- (void)dealloc
-{
+- (void)dealloc{
     [_window release];
     [_viewController release];
     [badgeView removeObserver:self forKeyPath:@"text"];
@@ -493,14 +480,85 @@
     // and since the minimum profile picture size is 180 pixels wide we should be able
     // to get a 100 pixel wide version of the profile picture
     NSLog(@"in apiFQLMe function");
+//    
+//    NSMutableDictionary *params = [NSMutableDictionary dictionaryWithObjectsAndKeys:
+//                                   @"SELECT about_me,locale,birthday,birthday_date,sex,uid, name, pic , email FROM user WHERE uid=me()", @"query",
+//                                   nil];
+//    [[PFFacebookUtils facebook] requestWithMethodName:@"fql.query"
+//                                            andParams:params
+//                                        andHttpMethod:@"POST"
+//                                          andDelegate:self];
     
-    NSMutableDictionary *params = [NSMutableDictionary dictionaryWithObjectsAndKeys:
-                                   @"SELECT about_me,locale,birthday,birthday_date,sex,uid, name, pic , email FROM user WHERE uid=me()", @"query",
-                                   nil];
-    [[PFFacebookUtils facebook] requestWithMethodName:@"fql.query"
-                                            andParams:params
-                                        andHttpMethod:@"POST"
-                                          andDelegate:self];
+    NSURL* reqURL = [NSURL URLWithString:[NSString stringWithFormat:@"https://graph.facebook.com/fql?q=SELECT+about_me,locale,birthday,birthday_date,sex,uid,name,pic,email+FROM+user+WHERE+uid=me()&access_token=%@",[PFFacebookUtils facebook].accessToken]];
+    ASIHTTPRequest* fqlRequest = [ASIHTTPRequest requestWithURL:reqURL];
+    [fqlRequest setCompletionBlock:^{
+        SBJsonParser *jsonParser = [[SBJsonParser alloc] init];
+        NSArray *jsonObjects = [[jsonParser objectWithString:[fqlRequest responseString]] objectForKey:@"data"];
+        [jsonParser release];
+        jsonParser = nil;
+        
+        NSLog(@"result = %@ class = %@",jsonObjects,[jsonObjects class]);
+        if ([jsonObjects isKindOfClass:[NSArray class]]) {
+            if([((NSArray*)jsonObjects) count]==0) {
+                NSLog(@"couldnt get user values .. exiting");
+                return;
+            }else{
+                
+                NSDictionary* result = [((NSArray*)jsonObjects) objectAtIndex:0];
+                // This callback can be a result of getting the user's basic
+                // information or getting the user's permissions.
+                if ([result objectForKey:@"name"]) {
+                    
+                    [[PFUser currentUser] setObject:[result objectForKey:@"email"] forKey:@"email"];
+                    [[PFUser currentUser] setObject:[result objectForKey:@"pic"] forKey:@"profilepicture"]; 
+                    [[PFUser currentUser] setObject:[result objectForKey:@"name"] forKey:@"name"]; 
+                    [[PFUser currentUser] setObject:[result objectForKey:@"uid"] forKey:@"facebookid"]; 
+                    [[PFUser currentUser] setObject:[result objectForKey:@"birthday_date"] forKey:@"birthday_date"];
+                    
+                    NSString *trimmedString=[((NSString*)[result objectForKey:@"birthday_date"]) substringFromIndex:[((NSString*)[result objectForKey:@"birthday_date"]) length]-4];
+                    NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
+                    [formatter setDateFormat:@"YYYY"];
+                    NSString *yearString = [formatter stringFromDate:[NSDate date]];
+                    [formatter release];
+                    int age = [yearString intValue]-[trimmedString intValue];
+                    
+                    [[PFUser currentUser] setObject:[NSNumber numberWithInt:age] forKey:@"age"];         
+                    [[PFUser currentUser] setObject:[result objectForKey:@"sex"] forKey:@"sex"]; 
+                    [[PFUser currentUser] setObject:[result objectForKey:@"locale"] forKey:@"locale"];
+                    [[PFUser currentUser] setObject:[result objectForKey:@"about_me"] forKey:@"about_me"];
+                    [[PFUser currentUser] saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+                        [PFPush subscribeToChannelInBackground:[NSString stringWithFormat:@"channel%@",[[PFUser currentUser] objectForKey:@"facebookid"]] target:self selector:@selector(subscribeFinished:error:)];
+                        NSLog(@"subscribed to channeluser %@",[NSString stringWithFormat:@"channel%@",[[PFUser currentUser] objectForKey:@"facebookid"]]);
+                        [FlurryAnalytics setUserID:[[PFUser currentUser] objectForKey:@"name"]];
+                        if ([[[PFUser currentUser] objectForKey:@"sex"] isEqualToString:@"male"]) {
+                            [FlurryAnalytics setGender:@"m"];
+                        }else{
+                            [FlurryAnalytics setGender:@"f"];
+                        }
+                        [FlurryAnalytics setAge:age];
+                        NSDictionary *dictionary = 
+                        [NSDictionary dictionaryWithObjectsAndKeys:[result objectForKey:@"email"],@"email",[result objectForKey:@"birthday"],@"birthday",[result objectForKey:@"name"],@"name",[result objectForKey:@"sex"],@"sex",[result objectForKey:@"uid"],@"uid",[result objectForKey:@"about_me"],@"about_me", nil];
+                        
+                        [FlurryAnalytics logEvent:@"USER_LOGIN" withParameters:dictionary timed:YES];
+                        InstagramViewController* viewController = [[InstagramViewController alloc]initWithNibName:@"InstagramViewController" bundle:nil];
+                        [[NSUserDefaults standardUserDefaults]setObject:@"updated" forKey:@"updater1.1"];
+                        [[NSUserDefaults standardUserDefaults] synchronize];
+                        self.window.rootViewController = viewController;
+                        [viewController release];
+                    }];
+                    
+                    
+                    
+                }
+            }
+        }
+    }];
+    [fqlRequest setFailedBlock:^{
+        NSLog(@"fql req failed");
+    }];
+    [fqlRequest startAsynchronous];
+    
+    
 }
 
 #pragma mark - FBRequestDelegate Methods
@@ -510,62 +568,7 @@
 }
 
 - (void)request:(PF_FBRequest *)request didLoad:(id)result {
-    NSLog(@"result = %@",result);
-    if ([result isKindOfClass:[NSArray class]]) {
-        if([result count]==0) {
-            return;
-        }else{
-            
-        result = [((NSArray*)result) objectAtIndex:0];
-        }
-    }
-    // This callback can be a result of getting the user's basic
-    // information or getting the user's permissions.
-    if ([result objectForKey:@"name"]) {
-
-        [[PFUser currentUser] setObject:[result objectForKey:@"email"] forKey:@"email"];
-        [[PFUser currentUser] setObject:[result objectForKey:@"pic"] forKey:@"profilepicture"]; 
-        [[PFUser currentUser] setObject:[result objectForKey:@"name"] forKey:@"name"]; 
-        [[PFUser currentUser] setObject:[result objectForKey:@"uid"] forKey:@"facebookid"]; 
-        
-        [[PFUser currentUser] setObject:[result objectForKey:@"birthday_date"] forKey:@"birthday_date"];
-        NSString *trimmedString=[((NSString*)[result objectForKey:@"birthday_date"]) substringFromIndex:[((NSString*)[result objectForKey:@"birthday_date"]) length]-4];
-        NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
-        [formatter setDateFormat:@"YYYY"];
-        NSString *yearString = [formatter stringFromDate:[NSDate date]];
-        [formatter release];
-        int age = [yearString intValue]-[trimmedString intValue];
-        [[PFUser currentUser] setObject:[NSNumber numberWithInt:age] forKey:@"age"];         
-        
-        [[PFUser currentUser] setObject:[result objectForKey:@"sex"] forKey:@"sex"]; 
-        
-        [[PFUser currentUser] setObject:[result objectForKey:@"locale"] forKey:@"locale"];
-        
-        [[PFUser currentUser] setObject:[result objectForKey:@"about_me"] forKey:@"about_me"];
-        
-        [[PFUser currentUser] saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
-            [PFPush subscribeToChannelInBackground:[NSString stringWithFormat:@"channel%@",[[PFUser currentUser] objectForKey:@"facebookid"]] target:self selector:@selector(subscribeFinished:error:)];
-            NSLog(@"subscribed to channeluser %@",[NSString stringWithFormat:@"channel%@",[[PFUser currentUser] objectForKey:@"facebookid"]]);
-        }];
-        
-        
-        [FlurryAnalytics setUserID:[[PFUser currentUser] objectForKey:@"name"]];
-        if ([[[PFUser currentUser] objectForKey:@"sex"] isEqualToString:@"male"]) {
-            [FlurryAnalytics setGender:@"m"];
-        }else{
-            [FlurryAnalytics setGender:@"f"];
-        }
-        [FlurryAnalytics setAge:age];
-        NSDictionary *dictionary = 
-        [NSDictionary dictionaryWithObjectsAndKeys:[result objectForKey:@"email"],@"email",[result objectForKey:@"birthday"],@"birthday",[result objectForKey:@"name"],@"name",[result objectForKey:@"sex"],@"sex",[result objectForKey:@"uid"],@"uid",[result objectForKey:@"about_me"],@"about_me", nil];
-        
-        [FlurryAnalytics logEvent:@"USER_LOGIN" withParameters:dictionary timed:YES];
-         InstagramViewController* viewController = [[InstagramViewController alloc]initWithNibName:@"InstagramViewController" bundle:nil];
-        [[NSUserDefaults standardUserDefaults]setObject:@"updated" forKey:@"updater1.1"];
-        [[NSUserDefaults standardUserDefaults] synchronize];
-        self.window.rootViewController = viewController;
-        [viewController release];
-    }
+    
 }
 
 

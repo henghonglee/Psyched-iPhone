@@ -71,6 +71,11 @@ kAPIGraphUserPhotosPost,
         id jsonObject = [jsonParser objectWithString:[accountRequest responseString]];
         NSLog(@"response = %@",jsonObject);
             NSArray* fbfriends = [jsonObject objectForKey:@"data"];
+        if ([fbfriends count]==0) {
+            hud.labelText = @"Couldn't find any friends =(";
+            [hud hide:YES afterDelay:1];
+            return;
+        }
             [searchArray removeAllObjects];
             [tempArray removeAllObjects];
             //[FBfriendsArray removeAllObjects];
@@ -85,7 +90,7 @@ kAPIGraphUserPhotosPost,
             if ([fbidArray count]==0) {
                 
             }else{
-                PFQuery* userquery = [PFQuery queryForUser];
+                PFQuery* userquery = [PFUser query];
                 [userquery whereKey:@"facebookid" containedIn:fbidArray];
                 [userquery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
                     for (PFUser* user in objects) {

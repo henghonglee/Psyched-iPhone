@@ -128,7 +128,7 @@ kAPIGraphCommentPhoto,
         [self.routeObject.pfobj setObject:@"pending" forKey:@"approvalstatus"];
         [self.routeObject.pfobj saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
         outdateButton.hidden = YES;    
-            PFQuery* userQuery = [PFQuery queryForUser];
+            PFQuery* userQuery = [PFUser query];
             [userQuery whereKey:@"name" equalTo:[self.routeObject.pfobj objectForKey:@"username"]];
             [userQuery getFirstObjectInBackgroundWithBlock:^(PFObject *object, NSError *error) {
                 NSMutableDictionary *data = [NSMutableDictionary dictionary];
@@ -169,19 +169,19 @@ kAPIGraphCommentPhoto,
     [unavailableLabel setFont:[UIFont fontWithName:@"Old Stamper" size:20.0]];
     unavailableLabel.textColor = [UIColor redColor];
     [likeButton setUserInteractionEnabled:NO];
-    approveButton = [[GradientButton alloc]initWithFrame:CGRectMake(195, 6, 100, 40)];
+    approveButton = [[[GradientButton alloc]initWithFrame:CGRectMake(195, 6, 100, 40)]autorelease];
     [approveButton setTitle:@"Approve" forState:UIControlStateNormal];
     [approveButton useGreenConfirmStyle];
     [approveButton addTarget:self action:@selector(approveOutdate:) forControlEvents:UIControlEventTouchUpInside];
     [approvalView addSubview:approveButton];
-    [approveButton release];
+
     
-    disapproveButton = [[GradientButton alloc]initWithFrame:CGRectMake(195, 51, 100, 40)];
+    disapproveButton = [[[GradientButton alloc]initWithFrame:CGRectMake(195, 51, 100, 40)] autorelease];
     [disapproveButton setTitle:@"Disapprove" forState:UIControlStateNormal];
     [disapproveButton addTarget:self action:@selector(disapproveOutdate:) forControlEvents:UIControlEventTouchUpInside];
     [disapproveButton useRedDeleteStyle];
     [approvalView addSubview:disapproveButton];
-    [disapproveButton release];
+
     
     difficultyLabel.text = [routeObject.pfobj objectForKey:@"difficultydescription"];
     NSString *foo = [routeObject.pfobj objectForKey:@"description"];
@@ -1302,7 +1302,7 @@ kAPIGraphCommentPhoto,
         }
         [queryArray removeAllObjects];
     NSLog(@"done canceling queries 1");
-    [routeObject release];
+
     
    
 }
@@ -1364,8 +1364,6 @@ kAPIGraphCommentPhoto,
     [self setQueryArray:nil];
     [self setSavedArray:nil];
     [self setRouteObject:nil];
-    [self setApproveButton:nil];
-    [self setDisapproveButton:nil];
     [super viewDidUnload];
     // Release any retained subviews of the main view.
     // e.g. self.myOutlet = nil;
@@ -2051,7 +2049,7 @@ if (cell == nil) {
     [outdateButton release];
     [unoutdateButton release];
     [approvalView release];
-
+    [routeObject release];
     [postButton release];
     
     [super dealloc];
