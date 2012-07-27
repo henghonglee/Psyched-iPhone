@@ -18,5 +18,6 @@
 @property (retain, nonatomic) IBOutlet UISearchBar *searchBar;
 @property (retain,nonatomic) NSMutableArray* tempArray;
 @property (retain,nonatomic) NSMutableArray* followedArray;
+@property (retain,nonatomic) NSMutableArray* queryArray;
 
 @end

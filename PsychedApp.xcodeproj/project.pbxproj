@@ -30,6 +30,9 @@
 		EF04A910155BB17200D1A91C /* sentribbon.png in Resources */ = {isa = PBXBuildFile; fileRef = EF04A90F155BB17200D1A91C /* sentribbon.png */; };
 		EF04A912155BB1D800D1A91C /* likeribbon.png in Resources */ = {isa = PBXBuildFile; fileRef = EF04A911155BB1D800D1A91C /* likeribbon.png */; };
 		EF079E0114E82C3400A0B12D /* profilebg.jpg in Resources */ = {isa = PBXBuildFile; fileRef = EF079E0014E82C3300A0B12D /* profilebg.jpg */; };
+		EF0A655115BFE40B003BF1E5 /* step1.png in Resources */ = {isa = PBXBuildFile; fileRef = EF0A655015BFE40B003BF1E5 /* step1.png */; };
+		EF0A655415BFE5CA003BF1E5 /* step2.png in Resources */ = {isa = PBXBuildFile; fileRef = EF0A655315BFE5CA003BF1E5 /* step2.png */; };
+		EF0A655615BFE626003BF1E5 /* step3.png in Resources */ = {isa = PBXBuildFile; fileRef = EF0A655515BFE626003BF1E5 /* step3.png */; };
 		EF0C4F9414BDC427003F88D4 /* EditImageViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EF0C4F9214BDC427003F88D4 /* EditImageViewController.m */; };
 		EF0C4F9514BDC427003F88D4 /* EditImageViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = EF0C4F9314BDC427003F88D4 /* EditImageViewController.xib */; };
 		EF1679C71541AE8600CE757A /* CommentsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EF1679C51541AE8600CE757A /* CommentsViewController.m */; };
@@ -192,6 +195,8 @@
 		EF62F40F14FDBD7500933BB8 /* ImageIO.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EF62F40E14FDBD7500933BB8 /* ImageIO.framework */; };
 		EF62F41214FDC0F500933BB8 /* NSMutableDictionary+ImageMetadata.m in Sources */ = {isa = PBXBuildFile; fileRef = EF62F41114FDC0F500933BB8 /* NSMutableDictionary+ImageMetadata.m */; };
 		EF62F41414FDC20300933BB8 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EF62F41314FDC20300933BB8 /* CoreMedia.framework */; };
+		EF63F7BE15C15A2300FBC12C /* screenimage.png in Resources */ = {isa = PBXBuildFile; fileRef = EF63F7BD15C15A2300FBC12C /* screenimage.png */; };
+		EF63F7C315C19DCD00FBC12C /* 2195-500x500.png in Resources */ = {isa = PBXBuildFile; fileRef = EF63F7C215C19DCD00FBC12C /* 2195-500x500.png */; };
 		EF6520F115A67EE900615655 /* orangeButton.png in Resources */ = {isa = PBXBuildFile; fileRef = EF6520F015A67EE900615655 /* orangeButton.png */; };
 		EF6687A314F0C22700609E05 /* NewsCell.m in Sources */ = {isa = PBXBuildFile; fileRef = EF6687A214F0C22700609E05 /* NewsCell.m */; };
 		EF6687A514F0C23B00609E05 /* NewsCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = EF6687A414F0C23B00609E05 /* NewsCell.xib */; };
@@ -356,6 +361,9 @@
 		EF04A90F155BB17200D1A91C /* sentribbon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = sentribbon.png; sourceTree = "<group>"; };
 		EF04A911155BB1D800D1A91C /* likeribbon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = likeribbon.png; sourceTree = "<group>"; };
 		EF079E0014E82C3300A0B12D /* profilebg.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = profilebg.jpg; sourceTree = "<group>"; };
+		EF0A655015BFE40B003BF1E5 /* step1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = step1.png; path = ParseStarterProject/step1.png; sourceTree = "<group>"; };
+		EF0A655315BFE5CA003BF1E5 /* step2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = step2.png; path = ParseStarterProject/step2.png; sourceTree = "<group>"; };
+		EF0A655515BFE626003BF1E5 /* step3.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = step3.png; path = ParseStarterProject/step3.png; sourceTree = "<group>"; };
 		EF0C4F9114BDC427003F88D4 /* EditImageViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EditImageViewController.h; sourceTree = "<group>"; };
 		EF0C4F9214BDC427003F88D4 /* EditImageViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EditImageViewController.m; sourceTree = "<group>"; };
 		EF0C4F9314BDC427003F88D4 /* EditImageViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = EditImageViewController.xib; sourceTree = "<group>"; };
@@ -597,6 +605,8 @@
 		EF62F41014FDC0F500933BB8 /* NSMutableDictionary+ImageMetadata.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSMutableDictionary+ImageMetadata.h"; sourceTree = "<group>"; };
 		EF62F41114FDC0F500933BB8 /* NSMutableDictionary+ImageMetadata.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSMutableDictionary+ImageMetadata.m"; sourceTree = "<group>"; };
 		EF62F41314FDC20300933BB8 /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
+		EF63F7BD15C15A2300FBC12C /* screenimage.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = screenimage.png; sourceTree = "<group>"; };
+		EF63F7C215C19DCD00FBC12C /* 2195-500x500.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "2195-500x500.png"; sourceTree = "<group>"; };
 		EF6520F015A67EE900615655 /* orangeButton.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = orangeButton.png; sourceTree = "<group>"; };
 		EF6687A114F0C22700609E05 /* NewsCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NewsCell.h; sourceTree = "<group>"; };
 		EF6687A214F0C22700609E05 /* NewsCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NewsCell.m; sourceTree = "<group>"; };
@@ -815,6 +825,10 @@
 		09ABC06213A1D52D009C3FCF = {
 			isa = PBXGroup;
 			children = (
+				EF0A655515BFE626003BF1E5 /* step3.png */,
+				EF0A655315BFE5CA003BF1E5 /* step2.png */,
+				EF0A655015BFE40B003BF1E5 /* step1.png */,
+				EF63F7C215C19DCD00FBC12C /* 2195-500x500.png */,
 				09ABC07713A1D52D009C3FCF /* ParseStarterProject */,
 				09ABC07013A1D52D009C3FCF /* Frameworks */,
 				09ABC06E13A1D52D009C3FCF /* Products */,
@@ -1227,6 +1241,7 @@
 				EFD4A29C14BA9956008A583F /* LoginViewController.h */,
 				EFD4A29D14BA9956008A583F /* LoginViewController.m */,
 				EFD4A29E14BA9956008A583F /* LoginViewController.xib */,
+				EF63F7BD15C15A2300FBC12C /* screenimage.png */,
 			);
 			name = Login;
 			sourceTree = "<group>";
@@ -1764,6 +1779,11 @@
 				EF384E4615BD8D7F008A8B77 /* Icon.png in Resources */,
 				EF766B8B15BE923600EF0FCB /* placeholder.png in Resources */,
 				EF766B9515BE943B00EF0FCB /* placeholder_user.png in Resources */,
+				EF0A655115BFE40B003BF1E5 /* step1.png in Resources */,
+				EF0A655415BFE5CA003BF1E5 /* step2.png in Resources */,
+				EF0A655615BFE626003BF1E5 /* step3.png in Resources */,
+				EF63F7BE15C15A2300FBC12C /* screenimage.png in Resources */,
+				EF63F7C315C19DCD00FBC12C /* 2195-500x500.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

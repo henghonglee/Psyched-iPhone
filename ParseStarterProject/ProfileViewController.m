@@ -17,6 +17,7 @@
 #import "SearchFriendsViewController.h"
 @implementation ProfileViewController
 @synthesize userimage;
+@synthesize queryArray;
 @synthesize addedButton;
 @synthesize projectsButton;
 @synthesize sendsButton;
@@ -104,7 +105,9 @@
     PFQuery* userQuery = [PFUser query];
     userQuery.cachePolicy= kPFCachePolicyNetworkElseCache;
     [userQuery whereKey:@"name" equalTo:username];
+    [queryArray addObject:userQuery];
     [userQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+        [queryArray removeObject:userQuery];
         NSLog(@"loading profile");
         selectedUser = [objects objectAtIndex:0];
         [selectedUser retain];
@@ -172,12 +175,14 @@
         // grab user feeds
         
         userfeeds = [[NSMutableArray alloc]init ];
+        queryArray = [[NSMutableArray alloc]init ];
         PFQuery* queryForNotification = [PFQuery queryWithClassName:@"Feed"];
         [queryForNotification  whereKey:@"sender" notEqualTo:username];
         [queryForNotification whereKey:@"message" containsString:username];
         [queryForNotification orderByDescending:@"createdAt"];
+        [queryArray addObject:queryForNotification];
         [queryForNotification findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
-            
+            [queryArray removeObject:queryForNotification];
             [userfeeds addObjectsFromArray:objects];
             [userFeedTable reloadData];
         }];
@@ -190,7 +195,9 @@
         
         followedquery.cachePolicy= kPFCachePolicyNetworkElseCache;
         [followedquery whereKey:@"follower" equalTo:[PFUser currentUser]];
+        [queryArray addObject:followedquery];
         [followedquery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+             [queryArray removeObject:followedquery];
             [followedArray addObjectsFromArray:objects];
             BOOL isFollowing=NO;
             for (PFObject* obj in followedArray) {
@@ -252,8 +259,9 @@
     [navigationBarItem startAnimating];
     PFQuery* userQuery = [PFUser query];
     [userQuery whereKey:@"name" equalTo:username];
-    
+     [queryArray addObject:userQuery];
     [userQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+         [queryArray removeObject:userQuery];
     selectedUser = [objects objectAtIndex:0];    
         [selectedUser retain];
     NSLog(@"selected user  = %@",selectedUser);
@@ -326,7 +334,9 @@
         [queryForNotification  whereKey:@"sender" notEqualTo:username];
         [queryForNotification whereKey:@"message" containsString:username];
         [queryForNotification orderByDescending:@"createdAt"];
+         [queryArray addObject:queryForNotification];
         [queryForNotification findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+             [queryArray addObject:queryForNotification];
 #warning  not saved into feedobject here
             [userfeeds removeAllObjects];
             [userfeeds addObjectsFromArray:objects];
@@ -339,7 +349,9 @@
     PFQuery* followedquery = [PFQuery queryWithClassName:@"Follow"];
         followedquery.cachePolicy= kPFCachePolicyNetworkElseCache;         
     [followedquery whereKey:@"follower" equalTo:[PFUser currentUser]];
+        [queryArray addObject:followedquery];
     [followedquery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+        [queryArray removeObject:followedquery];
         [followedArray addObjectsFromArray:objects];
         BOOL isFollowing=NO;
         for (PFObject* obj in followedArray) {
@@ -427,7 +439,9 @@
     if (sender.tag == 1) {
         PFQuery* query = [PFQuery queryWithClassName:@"Follow"];
         [query whereKey:@"followed" equalTo:userNameLabel.text];
+        [queryArray addObject:query];
         [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error){
+            [queryArray removeObject:query];
             for (PFObject* obj in objects) {
                 [obj deleteInBackground];
             }
@@ -554,23 +568,39 @@
     
     return cell;
 }
+
+-(void)cancelQueries
+{
+    NSLog(@"canceling %d queries",[queryArray count]);
+    for (id pfobject in queryArray) {
+        if ([pfobject isKindOfClass:[PFQuery class]]) {
+            NSLog(@"cancelling pfquery ");
+            [((PFQuery*)pfobject) cancel];
+        }
+    }
+    [queryArray removeAllObjects];
+    NSLog(@"done canceling queries");
+}
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     NSLog(@"didselectrow");
+    [self cancelQueries];
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
-        PFObject* selectedFeed = [userfeeds objectAtIndex:indexPath.row];
+    PFObject* selectedFeed = [userfeeds objectAtIndex:indexPath.row];
     NSString* messagestring =[selectedFeed objectForKey:@"message"];
     if([messagestring rangeOfString:@"route"].location!=NSNotFound){
-
-    RouteDetailViewController* viewController = [[RouteDetailViewController alloc]initWithNibName:@"RouteDetailViewController" bundle:nil];
-    RouteObject* newRouteObject = [[RouteObject alloc]init];
-        newRouteObject.pfobj = [[[userfeeds objectAtIndex:indexPath.row] objectForKey:@"linkedroute"]fetchIfNeeded];
-    viewController.routeObject = newRouteObject;
+        
+           RouteObject* newRouteObject = [[RouteObject alloc]init];
+            newRouteObject.pfobj = [[[userfeeds objectAtIndex:indexPath.row] objectForKey:@"linkedroute"]fetchIfNeeded];
+             RouteDetailViewController* viewController = [[RouteDetailViewController alloc]initWithNibName:@"RouteDetailViewController" bundle:nil];
+            viewController.routeObject = newRouteObject;
+            
+            [self.navigationController pushViewController:viewController animated:YES];
+            [viewController release];
+            NSLog(@"will release newrouteobj");
+            [newRouteObject release]; 
     
-    [self.navigationController pushViewController:viewController animated:YES];
-    [viewController release];
-    NSLog(@"will release newrouteobj");
- [newRouteObject release]; 
+    
     }
 }
 -(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -593,6 +623,7 @@ return [userfeeds count];
 
 
 - (void)dealloc {
+    [queryArray release];
     [selectedUser release];
     [userfeeds release];
     [username release];

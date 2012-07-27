@@ -8,6 +8,7 @@
 @property (retain,nonatomic)PFUser* selectedUser;
 @property (retain, nonatomic) IBOutlet UITableView *searchTable;
 @property (retain,nonatomic) NSMutableArray* searchArray;
+@property (retain,nonatomic) NSMutableArray* queryArray;
 @property (retain, nonatomic) IBOutlet UISearchBar *searchBar;
 @property (retain,nonatomic) NSMutableArray* tempArray;
 @property (retain,nonatomic) NSMutableArray* followedArray;

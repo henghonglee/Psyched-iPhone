@@ -41,15 +41,16 @@
                                                userDictionary:myStuff 
                                               sendImmediately:YES];
     [self startStandardUpdates];
-    // ****************************************************************************
+    [Parse setApplicationId:@"rUk14GRi8xY6ieFQGyXcJ39iQUPuGo1ihR2dAKeh" clientKey:@"aOz04F0XOehjH9a58b95V4nKtcCZNUNUxbCoqM48"];
+    [PFFacebookUtils initializeWithApplicationId:@"200778040017319"];
+/*    ****************************************************************************
     // Uncomment and fill in with your Parse credentials:
     
     //sandbox
     //[Parse setApplicationId:@"IB67seVg0d1MufvXlA67zW1zHKivUW2cBkXPQ0c0" clientKey:@"Vln8htxgC4uM5ZDIqRDQ2MsJgJjM27hexeGr140i"];
     
     //live
-    [Parse setApplicationId:@"rUk14GRi8xY6ieFQGyXcJ39iQUPuGo1ihR2dAKeh" clientKey:@"aOz04F0XOehjH9a58b95V4nKtcCZNUNUxbCoqM48"];
-    [PFFacebookUtils initializeWithApplicationId:@"200778040017319"];
+    
     // Override point for customization after application launch.
     
 //    if([[NSUserDefaults standardUserDefaults] objectForKey:@"NearbyDistance"] ==nil){
@@ -57,6 +58,7 @@
 //    }
     
     //test saving array in doc directory
+    */
 /*    
     NSDictionary *dictionary = [NSDictionary dictionaryWithObjectsAndKeys:
                                 @"array", @"array", @"Stout", @"dark", @"Hefeweizen", @"wheat", @"IPA", 
@@ -98,7 +100,10 @@
     */
     
     
-    
+        if (![[NSUserDefaults standardUserDefaults] objectForKey:@"updater1.6"]) {
+            [PFFacebookUtils facebook].accessToken = nil;
+            [[NSUserDefaults standardUserDefaults] setObject:@"updated" forKey:@"updater1.6"];
+        }
     
     
     
@@ -137,7 +142,8 @@
               self.window.rootViewController = viewController;
          
          }else{
-             
+             self.window.rootViewController = loginVC; 
+             /*
              NSArray* permissions = [[NSArray alloc]initWithObjects:@"user_about_me",@"user_videos",@"user_birthday",@"email",@"user_photos",@"publish_stream",@"offline_access",@"manage_pages",@"manage_notifications",nil];
              [PFFacebookUtils logInWithPermissions:permissions block:^(PFUser *user, NSError *error) {
                  [self apiFQLIMe];
@@ -150,6 +156,7 @@
                  
              }];
              [permissions release];
+              */
          }
         }else{
             self.window.rootViewController = loginVC; 
@@ -369,7 +376,7 @@
     [accountRequest setCompletionBlock:^{
         
         NSLog(@"response = %@",accountRequest.url);
-        if ([[accountRequest responseString] rangeOfString:@"Invalid OAuth access token."].location != NSNotFound) {
+        if (([[accountRequest responseString] rangeOfString:@"Invalid OAuth access token."].location != NSNotFound)&&[PFFacebookUtils facebook].accessToken) {
             UIAlertView* alert = [[UIAlertView alloc]initWithTitle:@"Sorry!" message:@"You need to reauthenticate with Facebook" delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:@"Reauthenticate",nil];
             
             [alert show];
@@ -397,7 +404,7 @@
             [alert release];
         }  
     }];
-    
+
     //check for Invalid OAuth access token
        /*
      Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.

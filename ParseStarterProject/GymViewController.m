@@ -434,7 +434,9 @@ if (tabView.segmentIndex==3) {
                                 ASIHTTPRequest* request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:imagelink]];
                                 [request setCompletionBlock:^{
                                     UIImage* ownerImage = [UIImage imageWithData:[request responseData]];
-                                    
+                                    if (ownerImage == nil) {
+                                        ownerImage = [UIImage imageNamed:@"placeholder_user.png"];
+                                    }
                                     cell.ownerImage.image = ownerImage;
                                     ((RouteObject*)[self.routeArray objectAtIndex:indexPath.row]).ownerImage= ownerImage;
                                     cell.ownerImage.alpha =0.0;
@@ -463,7 +465,9 @@ if (tabView.segmentIndex==3) {
                         ASIHTTPRequest* request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:imagelink]];
                         [request setCompletionBlock:^{
                             UIImage* ownerImage = [UIImage imageWithData:[request responseData]];
-                            
+                            if (ownerImage == nil) {
+                                ownerImage = [UIImage imageNamed:@"placeholder_user.png"];
+                            }
                             cell.ownerImage.image = ownerImage;
                             ((RouteObject*)[self.routeArray objectAtIndex:indexPath.row]).ownerImage= ownerImage;
                             cell.ownerImage.alpha =0.0;
@@ -564,7 +568,9 @@ if (tabView.segmentIndex==3) {
                                 ASIHTTPRequest* request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:imagelink]];
                                 [request setCompletionBlock:^{
                                     UIImage* ownerImage = [UIImage imageWithData:[request responseData]];
-                                    
+                                    if (ownerImage == nil) {
+                                        ownerImage = [UIImage imageNamed:@"placeholder_user.png"];
+                                    }
                                     cell.ownerImage.image = ownerImage;
                                     ((RouteObject*)[self.gymGradeUp objectAtIndex:indexPath.row]).ownerImage= ownerImage;
                                     cell.ownerImage.alpha =0.0;
@@ -594,7 +600,9 @@ if (tabView.segmentIndex==3) {
                     ASIHTTPRequest* request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:imagelink]];
                     [request setCompletionBlock:^{
                         UIImage* ownerImage = [UIImage imageWithData:[request responseData]];
-                        
+                        if (ownerImage == nil) {
+                            ownerImage = [UIImage imageNamed:@"placeholder_user.png"];
+                        }
                         cell.ownerImage.image = ownerImage;
                         ((RouteObject*)[self.gymGradeUp objectAtIndex:indexPath.row]).ownerImage= ownerImage;
                         cell.ownerImage.alpha =0.0;
@@ -695,7 +703,9 @@ if (tabView.segmentIndex==3) {
                                 ASIHTTPRequest* request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:imagelink]];
                                 [request setCompletionBlock:^{
                                     UIImage* ownerImage = [UIImage imageWithData:[request responseData]];
-                                    
+                                    if (ownerImage == nil) {
+                                        ownerImage = [UIImage imageNamed:@"placeholder_user.png"];
+                                    }
                                     cell.ownerImage.image = ownerImage;
                                     ((RouteObject*)[self.gymGradeDown objectAtIndex:indexPath.row]).ownerImage= ownerImage;
                                     cell.ownerImage.alpha =0.0;
@@ -725,7 +735,9 @@ if (tabView.segmentIndex==3) {
                         ASIHTTPRequest* request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:imagelink]];
                         [request setCompletionBlock:^{
                             UIImage* ownerImage = [UIImage imageWithData:[request responseData]];
-                            
+                            if (ownerImage == nil) {
+                                ownerImage = [UIImage imageNamed:@"placeholder_user.png"];
+                            } 
                             cell.ownerImage.image = ownerImage;
                             ((RouteObject*)[self.gymGradeDown objectAtIndex:indexPath.row]).ownerImage= ownerImage;
                             cell.ownerImage.alpha =0.0;
@@ -829,7 +841,9 @@ if (tabView.segmentIndex==3) {
                                 ASIHTTPRequest* request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:imagelink]];
                                 [request setCompletionBlock:^{
                                     UIImage* ownerImage = [UIImage imageWithData:[request responseData]];
-                                    
+                                    if (ownerImage == nil) {
+                                        ownerImage = [UIImage imageNamed:@"placeholder_user.png"];
+                                    }
                                     cell.ownerImage.image = ownerImage;
                                     ((RouteObject*)[[self.gymSections valueForKey:[self.gymTags objectAtIndex:indexPath.section-2]] objectAtIndex:indexPath.row]).ownerImage= ownerImage;
                                     cell.ownerImage.alpha =0.0;
@@ -859,7 +873,9 @@ if (tabView.segmentIndex==3) {
                             ASIHTTPRequest* request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:imagelink]];
                             [request setCompletionBlock:^{
                                 UIImage* ownerImage = [UIImage imageWithData:[request responseData]];
-                                
+                                if (ownerImage == nil) {
+                                    ownerImage = [UIImage imageNamed:@"placeholder_user.png"];
+                                } 
                                 cell.ownerImage.image = ownerImage;
                                 ((RouteObject*)[[self.gymSections valueForKey:[self.gymTags objectAtIndex:indexPath.section-2]] objectAtIndex:indexPath.row]).ownerImage= ownerImage;
                                 cell.ownerImage.alpha =0.0;

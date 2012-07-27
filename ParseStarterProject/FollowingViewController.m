@@ -15,7 +15,7 @@
 @synthesize searchBar;
 @synthesize searchTable;
 @synthesize selectedUser;
-@synthesize searchArray,tempArray,followedArray;
+@synthesize searchArray,tempArray,followedArray,queryArray;
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
@@ -43,6 +43,7 @@
     tempArray = [[NSMutableArray alloc]init];
     searchArray = [[NSMutableArray alloc]init];
     followedArray = [[NSMutableArray alloc]init];
+    queryArray = [[NSMutableArray alloc]init];
     if ([[selectedUser objectForKey:@"name"] isEqualToString:[[PFUser currentUser] objectForKey:@"name"]]) 
     {
         //display + sign
@@ -55,14 +56,18 @@
     //retrieve who the user is following
     PFQuery* followedquery = [PFQuery queryWithClassName:@"Follow"];
     [followedquery whereKey:@"follower" equalTo:[PFUser currentUser]];
+    [queryArray addObject:followedquery];
     [followedquery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+        [queryArray removeObject:followedquery];
     [followedArray addObjectsFromArray:objects];
     
     }];
-    __block int numberOfdivs=2;
+    __block int numberOfdivs=10;
     PFQuery* numberQuery = [PFQuery queryWithClassName:@"Follow"];
     [numberQuery whereKey:@"follower" equalTo:selectedUser];
+    [queryArray addObject:numberQuery];
     [numberQuery countObjectsInBackgroundWithBlock:^(int number, NSError *error) {
+        [queryArray removeObject:numberQuery];
         int numberOfiterations = number/numberOfdivs;
         int numberOfremainder = number%numberOfdivs;
         [searchArray removeAllObjects];
@@ -73,13 +78,15 @@
             [query orderByAscending:@"created_At"];
             [query setLimit:numberOfdivs];
             [query setSkip:numberOfdivs*i];
+            [queryArray addObject:query];
             [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
-                
+                [queryArray removeObject:query];
                 for (PFObject* follower in objects) {
                     PFQuery* userquery = [PFUser query];
                     [userquery whereKey:@"name" equalTo:[follower objectForKey:@"followed"]];
+                    [queryArray addObject:userquery];
                     [userquery getFirstObjectInBackgroundWithBlock:^(PFObject *object, NSError *error) {
-                        
+                        [queryArray removeObject:userquery];
                         if (object) {
                             UserObject* userObj = [[UserObject alloc]init];
                             userObj.user = (PFUser*)object;
@@ -99,13 +106,15 @@
         [query setLimit:numberOfremainder];
         [query setSkip:numberOfdivs*numberOfiterations];
         [query orderByAscending:@"created_At"];
+        [queryArray addObject:query];
         [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
-           
+            [queryArray removeObject:query];
             for (PFObject* follower in objects) {
                 PFQuery* userquery = [PFUser query];
                 [userquery whereKey:@"name" equalTo:[follower objectForKey:@"followed"]];
+                [queryArray addObject:userquery];
                 [userquery getFirstObjectInBackgroundWithBlock:^(PFObject *object, NSError *error) {
-                    
+                    [queryArray removeObject:userquery];
                     if (object) {
                         UserObject* userObj = [[UserObject alloc]init];
                         userObj.user = (PFUser*)object;
@@ -133,12 +142,21 @@
     [self.navigationController pushViewController:viewController animated:YES];
     [viewController release];
 }
--(void)viewWillAppear:(BOOL)animated
+-(void)viewWillDisappear:(BOOL)animated
 {
-    //    [tempArray removeAllObjects];
-    //    [searchArray removeAllObjects];
-    //    [followedArray removeAllObjects];
-    
+    NSLog(@"canceling %d queries",[queryArray count]);
+    for (id pfobject in queryArray) {
+        if ([pfobject isKindOfClass:[PFFile class]]) {
+            NSLog(@"cancelling pffile upload/download");
+            [((PFFile*)pfobject) cancel];
+        }
+        if ([pfobject isKindOfClass:[PFQuery class]]) {
+            NSLog(@"cancelling pfquery ");
+            [((PFQuery*)pfobject) cancel];
+        }
+    }
+    [queryArray removeAllObjects];
+    NSLog(@"done canceling queries");      
 }
 - (void)viewDidUnload
 {
@@ -164,6 +182,7 @@
 }
 
 - (void)dealloc {
+    [queryArray release];
     [selectedUser release];
     [followedArray release];
     [tempArray release];

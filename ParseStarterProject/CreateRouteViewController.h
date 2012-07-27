@@ -39,7 +39,8 @@
 
 
 -(void)tagPhoto:(NSString*)photoid withUser:(NSString*)facebookid;
-
+@property (nonatomic, assign) UIBackgroundTaskIdentifier fileUploadBackgroundTaskId;
+@property (nonatomic, assign) UIBackgroundTaskIdentifier photoPostBackgroundTaskId;
 @property (retain, nonatomic) IBOutlet UILabel *fblabel;
 @property (retain,nonatomic) NSArray* accounts;
 @property (retain,nonatomic) NSMutableArray* queryArray;

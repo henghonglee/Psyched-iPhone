@@ -31,6 +31,7 @@
 @property (retain, nonatomic) IBOutlet UITableView *userFeedTable;
 @property (retain, nonatomic) IBOutlet UIButton *followButton;
 @property (retain,nonatomic) NSMutableArray* userfeeds;
+@property (retain,nonatomic) NSMutableArray* queryArray;
 @property (retain, nonatomic) IBOutlet UILabel *followingLabel;
 @property (retain, nonatomic) IBOutlet UILabel *flashLabel;
 @property (retain, nonatomic) IBOutlet UILabel *sendLabel;

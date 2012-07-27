@@ -15,8 +15,12 @@
 #import "NSObject+SBJSON.h"
 #import "NSString+SBJSON.h"
 @implementation LoginViewController
+@synthesize pages;
+@synthesize updownarrow;
+@synthesize instructionScroll;
+@synthesize subtitleLabel;
 @synthesize titleLabel;
-
+@synthesize scrollView, pageControl;
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
@@ -39,13 +43,124 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    
-          
-
     [titleLabel setFont:[UIFont fontWithName:@"Old Stamper" size:50.0]];
     titleLabel.textColor = [UIColor whiteColor];
+    instructionScroll.contentSize = CGSizeMake(133,365);
+    pageControlBeingUsed = NO;
+	
+	
+	for (int i = 0; i < pages.count; i++) {
+		CGRect frame;
+		frame.origin.x = self.scrollView.frame.size.width * i;
+		frame.origin.y = 0;
+		frame.size = self.scrollView.frame.size;
+
+        ((UIImageView*)[pages objectAtIndex:i]).frame = frame;
+		[self.scrollView addSubview:((UIImageView*)[pages objectAtIndex:i])];
+            
+		//[pageOneImageView release];
+	}
+	
+	self.scrollView.contentSize = CGSizeMake(self.scrollView.frame.size.width * pages.count, self.scrollView.frame.size.height);
+	
+	self.pageControl.currentPage = 0;
+	self.pageControl.numberOfPages = pages.count-1;
+
+    
+    
     // Do any additional setup after loading the view from its nib.
 }
+
+- (void)scrollViewDidScroll:(UIScrollView *)sender {
+	if (!pageControlBeingUsed) {
+		// Switch the indicator when more than 50% of the previous/next page is visible
+		CGFloat pageWidth = self.scrollView.frame.size.width;
+		page = floor((self.scrollView.contentOffset.x - pageWidth / 2) / pageWidth) + 1;
+        NSLog(@"page = %d",page);
+		self.pageControl.currentPage = page;
+	}
+}
+
+- (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView {
+	pageControlBeingUsed = NO;
+}
+
+- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView {
+	pageControlBeingUsed = NO;
+    NSLog(@"didend decelerating");
+    if (page == 2) {
+        [UIView animateWithDuration:0.3
+                              delay:0.2
+                            options: UIViewAnimationCurveEaseOut
+                         animations:^{
+
+                             updownarrow.alpha = 0.3;
+                         } 
+                         completion:^(BOOL finished){
+                             [UIView animateWithDuration:0.3
+                                                                           delay:0.2
+                                                                         options: UIViewAnimationCurveEaseOut
+                                                                      animations:^{
+                                                                          updownarrow.alpha = 0;
+                                                                      } 
+                                                                      completion:^(BOOL finished){}];}];
+        
+        
+    }else{
+        
+    }
+    if (page == 3) {
+        CGRect slideViewFinalFrame = CGRectMake(00, 00, 320, 410);
+        [UIView animateWithDuration:0.3
+                          delay:0.2
+                        options: UIViewAnimationCurveEaseOut
+                     animations:^{
+                         titleLabel.frame = slideViewFinalFrame;
+                     } 
+                     completion:^(BOOL finished){
+                         
+    [UIView animateWithDuration:0.6
+                          delay:0.2
+                        options: UIViewAnimationCurveEaseOut
+                     animations:^{
+                         subtitleLabel.alpha = 1;
+                     } 
+                     completion:^(BOOL finished){
+                         NSLog(@"Done!");
+                     }];
+                     }];
+    }else{
+            subtitleLabel.alpha = 0;
+        CGRect slideViewFinalFrame = CGRectMake(00, 4, 320, 77);
+        [UIView animateWithDuration:0.8
+                              delay:0.2
+                            options: UIViewAnimationCurveEaseOut
+                         animations:^{
+                             titleLabel.frame = slideViewFinalFrame;
+                         } 
+                         completion:^(BOOL finished){
+                                              
+                                    
+                         }];
+    }
+}
+
+- (IBAction)changePage {
+	// Update the scroll view to the appropriate page
+	CGRect frame;
+	frame.origin.x = self.scrollView.frame.size.width * self.pageControl.currentPage;
+	frame.origin.y = 0;
+	frame.size = self.scrollView.frame.size;
+	[self.scrollView scrollRectToVisible:frame animated:YES];
+	
+	// Keep track of when scrolls happen in response to the page control
+	// value changing. If we don't do this, a noticeable "flashing" occurs
+	// as the the scroll delegate will temporarily switch back the page
+	// number.
+	pageControlBeingUsed = YES;
+}
+
+
 - (IBAction)fblogin:(id)sender {
    
     if (![PFFacebookUtils facebook].accessToken) {
@@ -165,6 +280,10 @@
     [fqlRequest startAsynchronous];
 }
 
+
+
+
+
 #pragma mark - FBRequestDelegate Methods
 /**
  * Called when the Facebook API request has returned a response. This callback
@@ -172,6 +291,7 @@
  * (void)request:(FBRequest *)request didLoad:(id)result,
  * which is passed the parsed response object.
  */
+
 
 
 - (void)request:(PF_FBRequest *)request didReceiveResponse:(NSURLResponse *)response {
@@ -187,6 +307,8 @@
  * (void)request:(FBRequest *)request
  *      didReceiveResponse:(NSURLResponse *)response
  */
+
+
 - (void)request:(PF_FBRequest *)request didLoad:(id)result {
     if ([result isKindOfClass:[NSArray class]]) {
         result = [((NSArray*)result) objectAtIndex:0];
@@ -215,6 +337,10 @@
 - (void)viewDidUnload
 {
     [self setTitleLabel:nil];
+    [self setPages:nil];
+    [self setSubtitleLabel:nil];
+    [self setInstructionScroll:nil];
+    [self setUpdownarrow:nil];
     [super viewDidUnload];
     // Release any retained subviews of the main view.
     // e.g. self.myOutlet = nil;
@@ -232,6 +358,10 @@
 
 - (void)dealloc {
     [titleLabel release];
+    [pages release];
+    [subtitleLabel release];
+    [instructionScroll release];
+    [updownarrow release];
     [super dealloc];
 }
 @end

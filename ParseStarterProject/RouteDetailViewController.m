@@ -1285,7 +1285,6 @@ kAPIGraphCommentPhoto,
 {
  
     [commentTextField resignFirstResponder];
-    [rawImageData release];
     if (progressBar.superview) {
     [progressBar removeFromSuperview];
     }
@@ -1326,6 +1325,7 @@ kAPIGraphCommentPhoto,
 - (void)viewDidUnload
 {
     
+    [self setRawImageData:nil];
     [self setRouteImageView:nil];
     [self setUserImageView:nil];
     [self setUsernameLabel:nil];
@@ -2018,7 +2018,8 @@ if (cell == nil) {
 
 - (void)dealloc {
     [savedArray release];
-
+    
+    [rawImageData release];
     [UserImageView release];
     [usernameLabel release];
     [descriptionLabel release];

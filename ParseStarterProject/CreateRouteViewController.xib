@@ -1,23 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <archive type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="8.00">
 	<data>
-		<int key="IBDocument.SystemTarget">1280</int>
-		<string key="IBDocument.SystemVersion">11D50b</string>
-		<string key="IBDocument.InterfaceBuilderVersion">2182</string>
-		<string key="IBDocument.AppKitVersion">1138.32</string>
-		<string key="IBDocument.HIToolboxVersion">568.00</string>
+		<int key="IBDocument.SystemTarget">1536</int>
+		<string key="IBDocument.SystemVersion">11E53</string>
+		<string key="IBDocument.InterfaceBuilderVersion">2818</string>
+		<string key="IBDocument.AppKitVersion">1138.47</string>
+		<string key="IBDocument.HIToolboxVersion">569.00</string>
 		<object class="NSMutableDictionary" key="IBDocument.PluginVersions">
 			<string key="NS.key.0">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
-			<string key="NS.object.0">1181</string>
+			<string key="NS.object.0">1900</string>
 		</object>
 		<array key="IBDocument.IntegratedClassDependencies">
+			<string>IBMKMapView</string>
 			<string>IBProxyObject</string>
 			<string>IBUIImageView</string>
 			<string>IBUILabel</string>
+			<string>IBUIScrollView</string>
 			<string>IBUISwitch</string>
 			<string>IBUITextField</string>
-			<string>IBMKMapView</string>
-			<string>IBUIScrollView</string>
 			<string>IBUIView</string>
 		</array>
 		<array key="IBDocument.PluginDependencies">
@@ -102,16 +102,16 @@
 								<bool key="IBUIClipsSubviews">YES</bool>
 								<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 								<int key="IBUIContentVerticalAlignment">0</int>
-								<string key="IBUIText"/>
 								<string key="IBUIPlaceholder">Route Location</string>
-								<object class="NSColor" key="IBUITextColor" id="570300061">
-									<int key="NSColorSpace">1</int>
-									<bytes key="NSRGB">MCAwIDAAA</bytes>
-								</object>
 								<bool key="IBUIAdjustsFontSizeToFit">YES</bool>
 								<float key="IBUIMinimumFontSize">17</float>
 								<object class="IBUITextInputTraits" key="IBUITextInputTraits">
 									<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
+								</object>
+								<string key="IBUIText"/>
+								<object class="NSColor" key="IBUITextColor" id="570300061">
+									<int key="NSColorSpace">1</int>
+									<bytes key="NSRGB">MCAwIDAAA</bytes>
 								</object>
 								<object class="IBUIFontDescription" key="IBUIFontDescription" id="382448301">
 									<string key="name">Helvetica-Light</string>
@@ -136,14 +136,14 @@
 								<bool key="IBUIClipsSubviews">YES</bool>
 								<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 								<int key="IBUIContentVerticalAlignment">0</int>
-								<string key="IBUIText"/>
 								<string key="IBUIPlaceholder">Route Description</string>
-								<reference key="IBUITextColor" ref="570300061"/>
 								<bool key="IBUIAdjustsFontSizeToFit">YES</bool>
 								<float key="IBUIMinimumFontSize">17</float>
 								<object class="IBUITextInputTraits" key="IBUITextInputTraits">
 									<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 								</object>
+								<string key="IBUIText"/>
+								<reference key="IBUITextColor" ref="570300061"/>
 								<reference key="IBUIFontDescription" ref="382448301"/>
 								<reference key="IBUIFont" ref="389621486"/>
 							</object>
@@ -157,14 +157,14 @@
 								<bool key="IBUIClipsSubviews">YES</bool>
 								<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 								<int key="IBUIContentVerticalAlignment">0</int>
-								<string key="IBUIText"/>
 								<string key="IBUIPlaceholder">Tag Facebook Friends!</string>
-								<reference key="IBUITextColor" ref="570300061"/>
 								<bool key="IBUIAdjustsFontSizeToFit">YES</bool>
 								<float key="IBUIMinimumFontSize">17</float>
 								<object class="IBUITextInputTraits" key="IBUITextInputTraits">
 									<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 								</object>
+								<string key="IBUIText"/>
+								<reference key="IBUITextColor" ref="570300061"/>
 								<object class="IBUIFontDescription" key="IBUIFontDescription">
 									<string key="name">Helvetica-Light</string>
 									<string key="family">Helvetica</string>
@@ -188,14 +188,14 @@
 								<bool key="IBUIClipsSubviews">YES</bool>
 								<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 								<int key="IBUIContentVerticalAlignment">0</int>
-								<string key="IBUIText"/>
 								<string key="IBUIPlaceholder">Route Difficulty</string>
-								<reference key="IBUITextColor" ref="570300061"/>
 								<bool key="IBUIAdjustsFontSizeToFit">YES</bool>
 								<float key="IBUIMinimumFontSize">17</float>
 								<object class="IBUITextInputTraits" key="IBUITextInputTraits">
 									<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 								</object>
+								<string key="IBUIText"/>
+								<reference key="IBUITextColor" ref="570300061"/>
 								<reference key="IBUIFontDescription" ref="382448301"/>
 								<reference key="IBUIFont" ref="389621486"/>
 							</object>
@@ -223,15 +223,15 @@
 								<int key="IBUIContentMode">7</int>
 								<bool key="IBUIUserInteractionEnabled">NO</bool>
 								<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
+								<nil key="IBUIHighlightedColor"/>
+								<int key="IBUIBaselineAdjustment">1</int>
+								<float key="IBUIMinimumFontSize">10</float>
+								<int key="IBUINumberOfLines">2</int>
 								<string key="IBUIText">Facebook</string>
 								<object class="NSColor" key="IBUITextColor" id="131085681">
 									<int key="NSColorSpace">1</int>
 									<bytes key="NSRGB">MSAxIDEAA</bytes>
 								</object>
-								<nil key="IBUIHighlightedColor"/>
-								<int key="IBUIBaselineAdjustment">1</int>
-								<float key="IBUIMinimumFontSize">10</float>
-								<int key="IBUINumberOfLines">2</int>
 								<object class="IBUIFontDescription" key="IBUIFontDescription" id="1037338344">
 									<int key="type">2</int>
 									<double key="pointSize">19</double>
@@ -241,6 +241,8 @@
 									<double key="NSSize">19</double>
 									<int key="NSfFlags">16</int>
 								</object>
+								<int key="IBUIAutoshrinkMode">2</int>
+								<double key="preferredMaxLayoutWidth">169</double>
 							</object>
 							<object class="IBMKMapView" id="229229298">
 								<reference key="NSNextResponder" ref="459773434"/>
@@ -356,14 +358,16 @@
 								<int key="IBUIContentMode">7</int>
 								<bool key="IBUIUserInteractionEnabled">NO</bool>
 								<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
-								<string key="IBUIText">Twitter</string>
-								<reference key="IBUITextColor" ref="131085681"/>
 								<nil key="IBUIHighlightedColor"/>
 								<int key="IBUIBaselineAdjustment">1</int>
 								<float key="IBUIMinimumFontSize">10</float>
 								<int key="IBUINumberOfLines">2</int>
+								<string key="IBUIText">Twitter</string>
+								<reference key="IBUITextColor" ref="131085681"/>
 								<reference key="IBUIFontDescription" ref="1037338344"/>
 								<reference key="IBUIFont" ref="177157800"/>
+								<int key="IBUIAutoshrinkMode">2</int>
+								<double key="preferredMaxLayoutWidth">170</double>
 							</object>
 							<object class="IBUIImageView" id="503821866">
 								<reference key="NSNextResponder" ref="459773434"/>
@@ -756,6 +760,6 @@
 			<string key="grade.png">{15, 16}</string>
 			<string key="twitter.png">{256, 256}</string>
 		</dictionary>
-		<string key="IBCocoaTouchPluginVersion">1181</string>
+		<string key="IBCocoaTouchPluginVersion">1900</string>
 	</data>
 </archive>

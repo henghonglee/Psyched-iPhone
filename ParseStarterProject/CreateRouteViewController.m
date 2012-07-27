@@ -52,8 +52,12 @@ typedef enum apiCall {
 @synthesize recommendArray;
 @synthesize queryArray;
 @synthesize difficultyTextField;
+@synthesize fileUploadBackgroundTaskId;
+@synthesize photoPostBackgroundTaskId;
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
+    self.fileUploadBackgroundTaskId = UIBackgroundTaskInvalid;
+    self.photoPostBackgroundTaskId = UIBackgroundTaskInvalid;
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
         imageMetaData = [[NSMutableDictionary alloc]init];
@@ -356,8 +360,19 @@ typedef enum apiCall {
     
     PFObject* newRoute = [PFObject objectWithClassName:@"Route"];
     if (fbuploadswitch.on) {
-        [newRoute setObject:fbphotoid forKey:@"photoid"];  
-        [fbphotoid release];
+        ASIHTTPRequest* accountRequest = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"https://graph.facebook.com/%@?access_token=%@",fbphotoid,[PFFacebookUtils facebook].accessToken]]];
+        [accountRequest setCompletionBlock:^{
+            SBJsonParser *jsonParser = [[SBJsonParser alloc] init];
+            NSDictionary *jsonObjects = [jsonParser objectWithString:[accountRequest responseString]];
+            [jsonParser release];
+            jsonParser = nil;
+            [newRoute setObject:[jsonObjects objectForKey:@"source"] forKey:@"fbimagelink"];
+            [newRoute setObject:fbphotoid forKey:@"photoid"];  
+            [fbphotoid release];
+        }];
+        [accountRequest setFailedBlock:^{}];
+        [accountRequest startAsynchronous];
+       
     }
     [newRoute setObject:locationTextField.text forKey:@"location"];
     if ([recommendArray count]>0) {
@@ -532,8 +547,19 @@ typedef enum apiCall {
     
     PFObject* newRoute = [PFObject objectWithClassName:@"Route"];
     if (fbuploadswitch.on) {
-    [newRoute setObject:fbphotoid forKey:@"photoid"];  
-        [fbphotoid release];
+        ASIHTTPRequest* accountRequest = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"https://graph.facebook.com/%@?access_token=%@",fbphotoid,[PFFacebookUtils facebook].accessToken]]];
+        [accountRequest setCompletionBlock:^{
+            SBJsonParser *jsonParser = [[SBJsonParser alloc] init];
+            NSDictionary *jsonObjects = [jsonParser objectWithString:[accountRequest responseString]];
+            [jsonParser release];
+            jsonParser = nil;
+            [newRoute setObject:[jsonObjects objectForKey:@"source"] forKey:@"fbimagelink"];
+            [newRoute setObject:fbphotoid forKey:@"photoid"];  
+            [fbphotoid release];
+        }];
+        [accountRequest setFailedBlock:^{}];
+        [accountRequest startAsynchronous];
+        
     }
     [newRoute setObject:locationTextField.text forKey:@"location"];
     if ([recommendArray count]>0) {
@@ -695,16 +721,7 @@ typedef enum apiCall {
         return;
     }
    
-//    ParseStarterProjectAppDelegate* appDelegate = (ParseStarterProjectAppDelegate*)[[UIApplication sharedApplication]delegate];
-//    
-//    appDelegate.isPage = isPage;
-//    appDelegate.isFacebookUpload =fbuploadswitch.on;
-//    appDelegate.uploadDescription = descriptionTextField.text;
-//    appDelegate.uploadLocation = locationTextField.text;
-//    appDelegate.uploadDifficultydesc = difficultyTextField.text;
-//    appDelegate.uploadGeopoint = [PFGeoPoint geoPointWithLatitude:routeLoc.latitude longitude:routeLoc.longitude];
-//    appDelegate.difficultyint = difficultyint;
-//    appDelegate.wasUploading = NO;
+
     
     if (twuploadswitch.on) {
         //twitter on
@@ -764,7 +781,12 @@ typedef enum apiCall {
         ((UIButton*)sender).enabled =NO;
         UIApplication *thisApp = [UIApplication sharedApplication];
         thisApp.idleTimerDisabled = YES;
-        HUD = [[MBProgressHUD showHUDAddedTo:self.view animated:YES]retain];
+//        self.fileUploadBackgroundTaskId = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:^{
+//            [[UIApplication sharedApplication] endBackgroundTask:self.fileUploadBackgroundTaskId];
+//        }];
+        
+        
+      //  HUD = [[MBProgressHUD showHUDAddedTo:self.view animated:YES]retain];
         
         if (fbuploadswitch.on) {
             if (isPage) {
@@ -1119,7 +1141,6 @@ typedef enum apiCall {
          case kAPIGraphUserPhotosPost:
             fbphotoid  =   [result objectForKey:@"id"]; 
             [fbphotoid retain];
-            NSLog(@"facebook photoid = %@",fbphotoid);
             [self performSelector:@selector(saveRoute) withObject:nil afterDelay:0.0];
               [JHNotificationManager notificationWithMessage:@"Photo uploaded successfully to Facebook!"];  
             break;

@@ -90,7 +90,7 @@
 -(void)apiGraphFriends
 { 
    
-    self.myRequest = [[PFFacebookUtils facebook] requestWithGraphPath:@"me/friends" andDelegate:self];
+    //self.myRequest = [[PFFacebookUtils facebook] requestWithGraphPath:@"me/friends" andDelegate:self];
     
     ASIHTTPRequest* accountRequest = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"https://graph.facebook.com/me/friends?access_token=%@",[PFFacebookUtils facebook].accessToken]]];
     

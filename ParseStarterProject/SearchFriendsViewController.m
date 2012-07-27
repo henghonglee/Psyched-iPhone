@@ -58,7 +58,7 @@ kAPIGraphUserPhotosPost,
 { 
     currentAPIcall = kAPIGetAppUsersFriendsUsing;
     NSLog(@"access token = %@",[PFFacebookUtils facebook].accessToken);
-    self.myRequest = [[PFFacebookUtils facebook] requestWithGraphPath:@"me/friends?fields=installed" andDelegate:self];
+//    self.myRequest = [[PFFacebookUtils facebook] requestWithGraphPath:@"me/friends?fields=installed" andDelegate:self];
     MBProgressHUD* hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     hud.labelText = @"Finding friends on Psyched!...";
     
@@ -223,12 +223,18 @@ NSLog(@" result = %@",result);
         }
         if (userObjForRow.userImage) {
             cell.userImageView.image =userObjForRow.userImage;
+            if (cell.userImageView.image == nil) {
+                cell.userImageView.image = [UIImage imageNamed:@"placeholder_user.png"];
+            }
         }else{
         ASIHTTPRequest* request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:urlstring]];
         [request setCompletionBlock:^{
         
             userObjForRow.userImage = [UIImage imageWithData:[request responseData]];
                         cell.userImageView.image =userObjForRow.userImage;
+            if (cell.userImageView.image == nil) {
+                cell.userImageView.image = [UIImage imageNamed:@"placeholder_user.png"];
+            }
         }];
         [request setFailedBlock:^{}];
         [request startAsynchronous];

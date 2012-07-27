@@ -79,7 +79,10 @@
     [self.navigationController popViewControllerAnimated:YES];
 }
 
-
+-(void)viewWillDisappear:(BOOL)animated
+{
+    [self cancelRequests];
+}
 - (void)viewDidUnload
 {
     
@@ -219,7 +222,9 @@
                     ASIHTTPRequest* request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:imagelink]];
                     [request setCompletionBlock:^{
                         UIImage* ownerImage = [UIImage imageWithData:[request responseData]];
-                           
+                        if (ownerImage == nil) {
+                            ownerImage = [UIImage imageNamed:@"placeholder_user.png"];
+                        }
                         cell.ownerImage.image = ownerImage;
                         ((RouteObject*)[self.flashArray objectAtIndex:indexPath.row]).ownerImage= ownerImage;
                      cell.ownerImage.alpha =0.0;
@@ -345,6 +350,9 @@
                     ASIHTTPRequest* request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:imagelink]];
                     [request setCompletionBlock:^{
                         UIImage* ownerImage = [UIImage imageWithData:[request responseData]];
+                        if (ownerImage == nil) {
+                            ownerImage = [UIImage imageNamed:@"placeholder_user.png"];
+                        }
                         cell.ownerImage.image = ownerImage;
                         ((RouteObject*)[self.sentArray objectAtIndex:indexPath.row]).ownerImage= ownerImage;
                         cell.ownerImage.alpha =0.0;
@@ -457,6 +465,9 @@
                         ASIHTTPRequest* request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:imagelink]];
                         [request setCompletionBlock:^{
                             UIImage* ownerImage = [UIImage imageWithData:[request responseData]];
+                            if (ownerImage == nil) {
+                                ownerImage = [UIImage imageNamed:@"placeholder_user.png"];
+                            }
                             cell.ownerImage.image = ownerImage;
                             ((RouteObject*)[self.projectArray objectAtIndex:indexPath.row]).ownerImage= ownerImage;
                             cell.ownerImage.alpha =0.0;
@@ -483,6 +494,9 @@
                         ASIHTTPRequest* request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:imagelink]];
                         [request setCompletionBlock:^{
                             UIImage* ownerImage = [UIImage imageWithData:[request responseData]];
+                            if (ownerImage == nil) {
+                                ownerImage = [UIImage imageNamed:@"placeholder_user.png"];
+                            }
                             cell.ownerImage.image = ownerImage;
                             ((RouteObject*)[self.projectArray objectAtIndex:indexPath.row]).ownerImage= ownerImage;
                             cell.ownerImage.alpha =0.0;
@@ -606,6 +620,9 @@
                             ASIHTTPRequest* request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:imagelink]];
                             [request setCompletionBlock:^{
                                 UIImage* ownerImage = [UIImage imageWithData:[request responseData]];
+                                if (ownerImage == nil) {
+                                    ownerImage = [UIImage imageNamed:@"placeholder_user.png"];
+                                }
                                 cell.ownerImage.image = ownerImage;
                                 ((RouteObject*)[self.likedArray objectAtIndex:indexPath.row]).ownerImage= ownerImage;
                                 cell.ownerImage.alpha =0.0;
@@ -635,6 +652,9 @@
                         ASIHTTPRequest* request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:imagelink]];
                         [request setCompletionBlock:^{
                             UIImage* ownerImage = [UIImage imageWithData:[request responseData]];
+                            if (ownerImage == nil) {
+                                ownerImage = [UIImage imageNamed:@"placeholder_user.png"];
+                            }
                             cell.ownerImage.image = ownerImage;
                             ((RouteObject*)[self.likedArray objectAtIndex:indexPath.row]).ownerImage= ownerImage;
                             cell.ownerImage.alpha =0.0;
@@ -753,6 +773,22 @@
     return 120;
 }
 
+-(void)cancelRequests
+{
+    NSLog(@"canceling %d queries",[queryArray count]);
+    for (id pfobject in queryArray) {
+        if ([pfobject isKindOfClass:[PFFile class]]) {
+            NSLog(@"cancelling pffile upload/download");
+            [((PFFile*)pfobject) cancel];
+        }
+        if ([pfobject isKindOfClass:[PFQuery class]]) {
+            NSLog(@"cancelling pfquery ");
+            [((PFQuery*)pfobject) cancel];
+        }
+    }
+    [queryArray removeAllObjects];
+    NSLog(@"done canceling queries");
+}
 
 #pragma mark - Table view data source
 
@@ -780,6 +816,8 @@
 }
 -(void)tabView:(JMTabView *)_tabView didSelectTabAtIndex:(NSUInteger)itemIndex;
 {
+    [self cancelRequests];
+    #warning canceling requests is not enough , fetching will cause crash 
     shouldDisplayNext = 0;
     [routeTableView reloadData];
     tabView.segmentIndex = itemIndex;
@@ -814,28 +852,35 @@
                 }else{
                     shouldDisplayNext = 1;
                 }
+                __block int flashretrieve=0;
                 for (PFObject* flash in retrievedObjs)
                 {
                     RouteObject* newRouteObject = [[RouteObject alloc] init];
-                    [[flash objectForKey:@"route"]fetchIfNeeded];
-                    newRouteObject.pfobj = [flash objectForKey:@"route"];
-                    if ([[newRouteObject.pfobj objectForKey:@"isPage"]isEqualToNumber:[NSNumber numberWithBool:true]]) {
-                        if (![gymFetchArray containsObject:[newRouteObject.pfobj objectForKey:@"Gym"]]) {
-                            [gymFetchArray addObject:[newRouteObject.pfobj objectForKey:@"Gym"]];
+                    [[flash objectForKey:@"route"]fetchIfNeededInBackgroundWithBlock:^(PFObject *object, NSError *error) {
+                        newRouteObject.pfobj = [flash objectForKey:@"route"];
+                        if ([[newRouteObject.pfobj objectForKey:@"isPage"]isEqualToNumber:[NSNumber numberWithBool:true]]) {
+                            if (![gymFetchArray containsObject:[newRouteObject.pfobj objectForKey:@"Gym"]]) {
+                                [gymFetchArray addObject:[newRouteObject.pfobj objectForKey:@"Gym"]];
+                            }
                         }
-                    }
-                    BOOL isadded =NO;
-                    for (RouteObject* obj in flashArray){
-                        if ([obj.pfobj.objectId isEqualToString:newRouteObject.pfobj.objectId]) {
-                            isadded = YES;
+                        BOOL isadded =NO;
+                        for (RouteObject* obj in flashArray){
+                            if ([obj.pfobj.objectId isEqualToString:newRouteObject.pfobj.objectId]) {
+                                isadded = YES;
+                            }
                         }
-                    }
-                    if (!isadded) {
-                        [self.flashArray addObject:newRouteObject];
-                    }
-                [newRouteObject release];
+                        if (!isadded) {
+                            [self.flashArray addObject:newRouteObject];
+                        }
+                        [newRouteObject release];
+                        flashretrieve++;
+                        if (flashretrieve==[retrievedObjs count]) {
+                            [self fetchGyms];
+                        }
+                    }];
+                    
                 }
-                     [self fetchGyms];
+                     
             }];
             }
             break;
@@ -850,29 +895,35 @@
                           }else{
                               shouldDisplayNext = 1;
                           }
+                          __block int sentretrieve=0;
                 for (PFObject* sent in retrievedObjs)
                 {
                     RouteObject* newRouteObject = [[RouteObject alloc] init];
-                    [[sent objectForKey:@"route"]fetchIfNeeded];
-                    newRouteObject.pfobj = [sent objectForKey:@"route"];
-                    if ([[newRouteObject.pfobj objectForKey:@"isPage"]isEqualToNumber:[NSNumber numberWithBool:true]]) {
-                        if (![gymFetchArray containsObject:[newRouteObject.pfobj objectForKey:@"Gym"]]) {
-                            [gymFetchArray addObject:[newRouteObject.pfobj objectForKey:@"Gym"]];
+                    [[sent objectForKey:@"route"]fetchIfNeededInBackgroundWithBlock:^(PFObject *object, NSError *error) {
+                        newRouteObject.pfobj = [sent objectForKey:@"route"];
+                        if ([[newRouteObject.pfobj objectForKey:@"isPage"]isEqualToNumber:[NSNumber numberWithBool:true]]) {
+                            if (![gymFetchArray containsObject:[newRouteObject.pfobj objectForKey:@"Gym"]]) {
+                                [gymFetchArray addObject:[newRouteObject.pfobj objectForKey:@"Gym"]];
+                            }
+                            
                         }
-                        
-                    }
-                    BOOL isadded =NO;
-                    for (RouteObject* obj in sentArray){
-                        if ([obj.pfobj.objectId isEqualToString:newRouteObject.pfobj.objectId]) {
-                            isadded = YES;
+                        BOOL isadded =NO;
+                        for (RouteObject* obj in sentArray){
+                            if ([obj.pfobj.objectId isEqualToString:newRouteObject.pfobj.objectId]) {
+                                isadded = YES;
+                            }
                         }
-                    }
-                    if (!isadded) {
-                        [self.sentArray addObject:newRouteObject];
-                    }
-                    [newRouteObject release];
+                        if (!isadded) {
+                            [self.sentArray addObject:newRouteObject];
+                        }
+                        [newRouteObject release]; 
+                        sentretrieve++;
+                        if (sentretrieve== [retrievedObjs count]) {
+                            [self fetchGyms];
+                        }
+                    }];
+                    
                 }
-                 [self fetchGyms];
             }];
     }
             break;
@@ -886,28 +937,35 @@
                 }else{
                     shouldDisplayNext = 1;
                 }
+                __block int projretrieve=0;
                 for (PFObject* proj in retrievedObjs)
                 {
                     RouteObject* newRouteObject = [[RouteObject alloc] init];
-                    [[proj objectForKey:@"route"]fetchIfNeeded];
-                    newRouteObject.pfobj = [proj objectForKey:@"route"];
-                    if ([[newRouteObject.pfobj objectForKey:@"isPage"]isEqualToNumber:[NSNumber numberWithBool:true]]) {
-                        if (![gymFetchArray containsObject:[newRouteObject.pfobj objectForKey:@"Gym"]]) {
-                            [gymFetchArray addObject:[newRouteObject.pfobj objectForKey:@"Gym"]];
+                    [[proj objectForKey:@"route"]fetchIfNeededInBackgroundWithBlock:^(PFObject *object, NSError *error) {
+                        newRouteObject.pfobj = [proj objectForKey:@"route"];
+                        if ([[newRouteObject.pfobj objectForKey:@"isPage"]isEqualToNumber:[NSNumber numberWithBool:true]]) {
+                            if (![gymFetchArray containsObject:[newRouteObject.pfobj objectForKey:@"Gym"]]) {
+                                [gymFetchArray addObject:[newRouteObject.pfobj objectForKey:@"Gym"]];
+                            }
                         }
-                    }
-                    BOOL isadded =NO;
-                    for (RouteObject* obj in projectArray){
-                        if ([obj.pfobj.objectId isEqualToString:newRouteObject.pfobj.objectId]) {
-                            isadded = YES;
+                        BOOL isadded =NO;
+                        for (RouteObject* obj in projectArray){
+                            if ([obj.pfobj.objectId isEqualToString:newRouteObject.pfobj.objectId]) {
+                                isadded = YES;
+                            }
                         }
-                    }
-                    if (!isadded) {
-                        [self.projectArray addObject:newRouteObject];
-                    }
-                    [newRouteObject release];
+                        if (!isadded) {
+                            [self.projectArray addObject:newRouteObject];
+                        }
+                        [newRouteObject release];
+                        projretrieve++;
+                        if (projretrieve==[retrievedObjs count]) {
+                            [self fetchGyms];
+                        }
+                    }];
+                    
                 }
-                 [self fetchGyms];
+                 
             }];
         }
             break;
@@ -927,7 +985,7 @@
                     RouteObject* newRouteObject = [[RouteObject alloc] init];
                     newRouteObject.pfobj = route;
                     if ([[newRouteObject.pfobj objectForKey:@"isPage"]isEqualToNumber:[NSNumber numberWithBool:true]]) {
-                        if (![gymFetchArray containsObject:[newRouteObject.pfobj objectForKey:@"Gym"]]) {
+                        if ((![gymFetchArray containsObject:[newRouteObject.pfobj objectForKey:@"Gym"]])) {
                             [gymFetchArray addObject:[newRouteObject.pfobj objectForKey:@"Gym"]];
                         }
                     }
@@ -957,6 +1015,12 @@
      NSLog(@"in gym fetch");
     if ([gymFetchArray count]>0) {
         NSLog(@"fetchinng gyms");
+        for (PFObject* gymobj in gymFetchArray) {
+            if (gymobj.isDataAvailable) {
+                NSLog(@"removing redundancy");
+                [gymFetchArray removeObject:gymobj];
+            }
+        }
         [PFObject fetchAllInBackground:gymFetchArray block:^(NSArray *objects, NSError *error) {
             NSLog(@"done fetchinng gyms");
             [gymFetchArray removeAllObjects];
