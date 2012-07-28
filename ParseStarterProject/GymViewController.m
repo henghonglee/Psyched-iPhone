@@ -196,7 +196,7 @@
         [gymTable reloadData];
     }];
     [self addStandardTabView];
-    tabView.contentSize = CGSizeMake(600, 44);
+    tabView.contentSize = CGSizeMake(320, 44);
     tabView.showsHorizontalScrollIndicator = NO;
 
     gymGradeDown = [[NSMutableArray alloc]init];

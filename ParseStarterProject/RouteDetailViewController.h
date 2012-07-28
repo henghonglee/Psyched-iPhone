@@ -16,7 +16,7 @@
 #import "FriendTaggerViewController.h"
 #import "GymViewController.h"
 #import "GradientButton.h"
-@interface RouteDetailViewController : UIViewController<UITextFieldDelegate,UITableViewDelegate,UITableViewDataSource,PF_FBRequestDelegate,UIScrollViewDelegate,UIAlertViewDelegate,TaggerDelegate>
+@interface RouteDetailViewController : UIViewController<UITextFieldDelegate,UITableViewDelegate,UITableViewDataSource,PF_FBRequestDelegate,UIScrollViewDelegate,UIAlertViewDelegate,TaggerDelegate,UIActionSheetDelegate>
 {
     int likecount;
     BOOL facebookliked;

@@ -39,10 +39,20 @@
     // Configure the view for the selected state
 }
 - (IBAction)approveOutdate:(id)sender {
+    
+    // maybe we should just delete the route
     [routePFObject setObject:@"approved" forKey:@"approvalstatus"];
     [routePFObject setObject:[NSNumber numberWithBool:YES] forKey:@"outdated"];
     [routePFObject saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
         approvalView.hidden =YES;
+        if (![[[PFUser currentUser] objectForKey:@"facebookid"]isEqualToString:[routePFObject objectForKey:@"approvalreqFBid"]]) {
+        NSMutableDictionary *data = [NSMutableDictionary dictionary];
+        [data setObject:routePFObject.objectId forKey:@"linkedroute"];
+        [data setObject:[NSNumber numberWithInt:1] forKey:@"badge"];
+        [data setObject:[NSString stringWithFormat:@"%@ approved your outdate request",[[PFUser currentUser] objectForKey:@"name"]] forKey:@"alert"];
+        [data setObject:[NSString stringWithFormat:@"%@",[[PFUser currentUser] objectForKey:@"name"]] forKey:@"sender"];
+        [PFPush sendPushDataToChannelInBackground:[NSString stringWithFormat:@"channel%@",[routePFObject objectForKey:@"approvalreqFBid"]] withData:data];
+        }
     }];
 }
 - (IBAction)disapproveOutdate:(id)sender {

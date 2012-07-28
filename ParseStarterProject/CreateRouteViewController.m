@@ -786,7 +786,7 @@ typedef enum apiCall {
 //        }];
         
         
-      //  HUD = [[MBProgressHUD showHUDAddedTo:self.view animated:YES]retain];
+        HUD = [[MBProgressHUD showHUDAddedTo:self.view animated:YES]retain];
         
         if (fbuploadswitch.on) {
             if (isPage) {
@@ -937,7 +937,11 @@ typedef enum apiCall {
 }
 
 -(IBAction)facebookswitchon:(UISwitch*)sender{
-    if (sender.on) {
+    [[PFUser currentUser]refreshInBackgroundWithBlock:^(PFObject *object, NSError *error) {
+        
+    
+    if (sender.on && [[[PFUser currentUser] objectForKey:@"isAdmin"]isEqualToNumber:[NSNumber numberWithBool:YES]]) {
+        
         [self.navigationItem.rightBarButtonItem setEnabled:NO];
     ASIHTTPRequest* accountRequest = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"https://graph.facebook.com/me/accounts&access_token=%@",[PFFacebookUtils facebook].accessToken]]];
     [accountRequest setCompletionBlock:^{
@@ -969,8 +973,9 @@ typedef enum apiCall {
     
     }else{
         fblabel.text = @"Facebook";
+        isPage = NO;
     }
-     
+     }];
 }
 -(void)presentAccountsSheet:(NSArray*)fetchedAccounts{
     [arrayOfAccounts removeAllObjects];
@@ -1030,15 +1035,15 @@ typedef enum apiCall {
     NSLog(@"posting with page...");
     
                         [[PFFacebookUtils facebook]setAccessToken:[NSString stringWithFormat:@"%@",[[arrayOfAccounts objectAtIndex:arrIndex] objectForKey:@"access_token"]]];
-//                        NSMutableDictionary *params = [NSMutableDictionary dictionaryWithObjectsAndKeys:
-//                                                       resizedimg, @"source",descriptionTextField.text,@"message",
-//                                                       nil];
-//                        
-//                        [[PFFacebookUtils facebook] requestWithGraphPath:[NSString stringWithFormat:@"%@/photos",[[arrayOfAccounts objectAtIndex:arrIndex] objectForKey:@"id"]]
-//                                                               andParams:params
-//                                                           andHttpMethod:@"POST"
-//                                                             andDelegate:self];
-//                                      
+/*                        NSMutableDictionary *params = [NSMutableDictionary dictionaryWithObjectsAndKeys:
+                                                       resizedimg, @"source",descriptionTextField.text,@"message",
+                                                       nil];
+                        
+                        [[PFFacebookUtils facebook] requestWithGraphPath:[NSString stringWithFormat:@"%@/photos",[[arrayOfAccounts objectAtIndex:arrIndex] objectForKey:@"id"]]
+                                                               andParams:params
+                                                           andHttpMethod:@"POST"
+                                                             andDelegate:self];
+                                      */
     NSURL* postURL = [NSURL URLWithString:[NSString stringWithFormat:@"https://graph.facebook.com/%@/photos?access_token=%@",[[arrayOfAccounts objectAtIndex:arrIndex] objectForKey:@"id"],[NSString stringWithFormat:@"%@",[[arrayOfAccounts objectAtIndex:arrIndex] objectForKey:@"access_token"]]]];
     ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:postURL];
     NSData* postImageData = UIImagePNGRepresentation(resizedimg);

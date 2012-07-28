@@ -5,6 +5,7 @@
 //  Created by Shaun Tan on 9/1/12.
 //  Copyright (c) 2012 __MyCompanyName__. All rights reserved.
 //
+#import "MBProgressHUD.h"
 #import "JHNotificationManager.h"
 #import "ProfileViewController.h"
 #import "RouteDetailViewController.h"
@@ -94,7 +95,7 @@ kAPIGraphCommentPhoto,
 - (IBAction)unoutdate:(id)sender {
     [self.routeObject.pfobj setObject:[NSNumber numberWithBool:false]forKey:@"outdated"];
     [self.routeObject.pfobj saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
-    outdateButton.hidden = NO;    
+    outdateButton.hidden = YES;
     }];
     
 
@@ -106,6 +107,14 @@ kAPIGraphCommentPhoto,
     [self.routeObject.pfobj saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
             approvalView.hidden = YES;
          [approveButton setUserInteractionEnabled:YES];
+        if (![[[PFUser currentUser] objectForKey:@"facebookid"]isEqualToString:[self.routeObject.pfobj objectForKey:@"approvalreqFBid"]]) {
+            NSMutableDictionary *data = [NSMutableDictionary dictionary];
+            [data setObject:self.routeObject.pfobj.objectId forKey:@"linkedroute"];
+            [data setObject:[NSNumber numberWithInt:1] forKey:@"badge"];
+            [data setObject:[NSString stringWithFormat:@"%@ approved your outdate request",[[PFUser currentUser] objectForKey:@"name"]] forKey:@"alert"];
+            [data setObject:[NSString stringWithFormat:@"%@",[[PFUser currentUser] objectForKey:@"name"]] forKey:@"sender"];
+            [PFPush sendPushDataToChannelInBackground:[NSString stringWithFormat:@"channel%@",[self.routeObject.pfobj objectForKey:@"approvalreqFBid"]] withData:data];
+        }
     }];
 
 }
@@ -125,6 +134,7 @@ kAPIGraphCommentPhoto,
     if (buttonIndex==0) {
         //set approval status to "pending"
         //[self.routeObject.pfobj setObject:[NSNumber numberWithBool:true]forKey:@"outdated"];
+        [self.routeObject.pfobj setObject:[NSString stringWithFormat:@"%@",[[PFUser currentUser] objectForKey:@"facebookid"] ] forKey:@"approvalreqFBid"];
         [self.routeObject.pfobj setObject:@"pending" forKey:@"approvalstatus"];
         [self.routeObject.pfobj saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
         outdateButton.hidden = YES;    
@@ -138,11 +148,7 @@ kAPIGraphCommentPhoto,
                 [data setObject:[NSString stringWithFormat:@"%@",[[PFUser currentUser] objectForKey:@"name"]] forKey:@"sender"];
                 [data setObject:[NSString stringWithFormat:@"%@",[object objectForKey:@"name"]] forKey:@"reciever"];
                 [PFPush sendPushDataToChannelInBackground:[NSString stringWithFormat:@"channel%@",[object objectForKey:@"facebookid"]] withData:data];
-//                PFObject* newFeedObject = [PFObject objectWithClassName:@"Feed"];
-//                [newFeedObject setObject:@"action" forKey:@"approval"];
-//                [newFeedObject setObject:[[PFUser currentUser]objectForKey:@"name"] forKey:@"sender"];
-//                [newFeedObject setObject:self.routeObject.pfobj forKey:@"linkedroute"];
-//                [newFeedObject setObject:[NSString stringWithFormat:@"%@ marked %@'s route as outdated",] forKey:@"message"]
+                NSLog(@"push notification sent for approval");
                 
             }];
         }];
@@ -192,7 +198,6 @@ kAPIGraphCommentPhoto,
     descriptionTextView.frame = CGRectMake(-1, 50, 229, MAX(41,size.height+30));
     descriptionTextView.text = foo;
     
-    
     commentCountLabel.text = [NSString stringWithFormat:@"%@",[[routeObject.pfobj objectForKey:@"commentcount"]stringValue]];
     likeCountLabel.text = [NSString stringWithFormat:@"%@ likes",[[routeObject.pfobj objectForKey:@"likecount"]stringValue]];
     viewCountLabel.text = [NSString stringWithFormat:@"%@ views",[[routeObject.pfobj objectForKey:@"viewcount"]stringValue]];
@@ -220,6 +225,11 @@ kAPIGraphCommentPhoto,
         outdateButton.hidden = NO;
     }
     if ([[routeObject.pfobj objectForKey:@"username"] isEqualToString:[[PFUser currentUser]objectForKey:@"name"]]) {
+        //add delete button if user is owner
+        UIBarButtonItem *anotherButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction target:self action:@selector(deleteActionSheetShow)];
+        self.navigationItem.rightBarButtonItem = anotherButton;
+        [anotherButton release];
+        
         if ([routeObject.pfobj objectForKey:@"outdated"]==[NSNumber numberWithBool:true]) {
             unoutdateButton.hidden = NO;
         }
@@ -503,6 +513,86 @@ kAPIGraphCommentPhoto,
     }];
     }
 
+-(void)deleteActionSheetShow
+{
+    UIActionSheet* deleteActionSheet = [[UIActionSheet alloc] initWithTitle:@"" delegate:self cancelButtonTitle:@"Cancel" destructiveButtonTitle:@"Delete" otherButtonTitles: nil];
+    [deleteActionSheet showFromTabBar:self.tabBarController.tabBar];
+    [deleteActionSheet setBounds:CGRectMake(0,0,320, 150)];
+    [deleteActionSheet release];
+}
+-(void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex
+{
+    if (buttonIndex != actionSheet.cancelButtonIndex) {
+    UIAlertView* alert = [[UIAlertView alloc]initWithTitle:@"Delete" message:@"Do you really want to delete this route?" delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:@"OK",nil];
+    [alert show];
+    [alert release];
+    }
+}
+-(void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
+{
+    if (alertView.cancelButtonIndex == buttonIndex) {
+        
+    }else{
+        [self deleteAction:nil];
+    }
+}
+-(void)deleteAction:(id)sender
+{
+    MBProgressHUD* hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    hud.labelText = @"Deleting route from Psyched... =(";
+    
+   
+        [routeObject.pfobj deleteInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+        PFQuery* deleteQueryFeed = [PFQuery queryWithClassName:@"Feed"];
+        [deleteQueryFeed whereKey:@"linkedroute" equalTo:routeObject.pfobj];
+        [deleteQueryFeed findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+            for (PFObject* obj in objects) {
+                [obj deleteInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+                    NSLog(@"deleted 1 feed");
+                }];
+            }
+        }];
+        PFQuery* deleteQueryFlash = [PFQuery queryWithClassName:@"Flash"];
+        [deleteQueryFlash whereKey:@"route" equalTo:routeObject.pfobj];
+        [deleteQueryFlash findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+            for (PFObject* obj in objects) {
+                [obj deleteInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+                    NSLog(@"deleted 1 flash");
+                }];
+            }
+        }];
+        PFQuery* deleteQuerySent = [PFQuery queryWithClassName:@"Sent"];
+        [deleteQuerySent whereKey:@"route" equalTo:routeObject.pfobj];
+        [deleteQuerySent findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+            for (PFObject* obj in objects) {
+                [obj deleteInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+                    NSLog(@"deleted 1 send");
+                }];
+            }
+        }];
+        PFQuery* deleteQueryProj = [PFQuery queryWithClassName:@"Project"];
+        [deleteQueryProj whereKey:@"route" equalTo:routeObject.pfobj];
+        [deleteQueryProj findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+            for (PFObject* obj in objects) {
+                [obj deleteInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+                    NSLog(@"deleted 1 proj");
+                }];
+            }
+        }];
+            
+            PFQuery* deleteQueryComments = [PFQuery queryWithClassName:@"Comment"];
+            [deleteQueryComments whereKey:@"route" equalTo:routeObject.pfobj];
+            [deleteQueryComments findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+                for (PFObject* obj in objects) {
+                    [obj deleteInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+                        NSLog(@"deleted 1 comment");
+                    }];
+                }
+            }];
+        
+    [hud hide:YES];
+    }];
+}
 
 - (IBAction)flashsentproj:(UIButton*)sender {
     [flashbutton setUserInteractionEnabled:NO];
