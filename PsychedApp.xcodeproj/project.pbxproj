@@ -28,6 +28,8 @@
 		EF0A655115BFE40B003BF1E5 /* step1.png in Resources */ = {isa = PBXBuildFile; fileRef = EF0A655015BFE40B003BF1E5 /* step1.png */; };
 		EF0A655415BFE5CA003BF1E5 /* step2.png in Resources */ = {isa = PBXBuildFile; fileRef = EF0A655315BFE5CA003BF1E5 /* step2.png */; };
 		EF0A655615BFE626003BF1E5 /* step3.png in Resources */ = {isa = PBXBuildFile; fileRef = EF0A655515BFE626003BF1E5 /* step3.png */; };
+		EF0A913215C3D23700705A97 /* psychedIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = EF0A913015C3D23700705A97 /* psychedIcon.png */; };
+		EF0A913315C3D23700705A97 /* psychedIcon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = EF0A913115C3D23700705A97 /* psychedIcon@2x.png */; };
 		EF0C4F9414BDC427003F88D4 /* EditImageViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EF0C4F9214BDC427003F88D4 /* EditImageViewController.m */; };
 		EF0C4F9514BDC427003F88D4 /* EditImageViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = EF0C4F9314BDC427003F88D4 /* EditImageViewController.xib */; };
 		EF1679C71541AE8600CE757A /* CommentsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EF1679C51541AE8600CE757A /* CommentsViewController.m */; };
@@ -332,6 +334,8 @@
 		EF0A655015BFE40B003BF1E5 /* step1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = step1.png; sourceTree = "<group>"; };
 		EF0A655315BFE5CA003BF1E5 /* step2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = step2.png; sourceTree = "<group>"; };
 		EF0A655515BFE626003BF1E5 /* step3.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = step3.png; sourceTree = "<group>"; };
+		EF0A913015C3D23700705A97 /* psychedIcon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = psychedIcon.png; sourceTree = "<group>"; };
+		EF0A913115C3D23700705A97 /* psychedIcon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "psychedIcon@2x.png"; sourceTree = "<group>"; };
 		EF0C4F9114BDC427003F88D4 /* EditImageViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EditImageViewController.h; sourceTree = "<group>"; };
 		EF0C4F9214BDC427003F88D4 /* EditImageViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EditImageViewController.m; sourceTree = "<group>"; };
 		EF0C4F9314BDC427003F88D4 /* EditImageViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = EditImageViewController.xib; sourceTree = "<group>"; };
@@ -1183,11 +1187,6 @@
 				EFD4A29C14BA9956008A583F /* LoginViewController.h */,
 				EFD4A29D14BA9956008A583F /* LoginViewController.m */,
 				EFD4A29E14BA9956008A583F /* LoginViewController.xib */,
-				EF0A655515BFE626003BF1E5 /* step3.png */,
-				EF0A655315BFE5CA003BF1E5 /* step2.png */,
-				EF0A655015BFE40B003BF1E5 /* step1.png */,
-				EF63F7C215C19DCD00FBC12C /* 2195-500x500.png */,
-				EF63F7BD15C15A2300FBC12C /* screenimage.png */,
 			);
 			name = Login;
 			sourceTree = "<group>";
@@ -1344,6 +1343,13 @@
 		EFD4A2A814BA9BC7008A583F /* Images */ = {
 			isa = PBXGroup;
 			children = (
+				EF0A655515BFE626003BF1E5 /* step3.png */,
+				EF0A655315BFE5CA003BF1E5 /* step2.png */,
+				EF0A655015BFE40B003BF1E5 /* step1.png */,
+				EF63F7C215C19DCD00FBC12C /* 2195-500x500.png */,
+				EF63F7BD15C15A2300FBC12C /* screenimage.png */,
+				EF0A913015C3D23700705A97 /* psychedIcon.png */,
+				EF0A913115C3D23700705A97 /* psychedIcon@2x.png */,
 				EF9BAB5615C30C4800FEFFF4 /* closeInvertedComma.png */,
 				EF766B8A15BE923600EF0FCB /* placeholder.png */,
 				EFA02AC21534A9C6004CF6CF /* red_flag.png */,
@@ -1676,6 +1682,8 @@
 				EF63F7BE15C15A2300FBC12C /* screenimage.png in Resources */,
 				EF63F7C315C19DCD00FBC12C /* 2195-500x500.png in Resources */,
 				EF9BAB5715C30C4800FEFFF4 /* closeInvertedComma.png in Resources */,
+				EF0A913215C3D23700705A97 /* psychedIcon.png in Resources */,
+				EF0A913315C3D23700705A97 /* psychedIcon@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1861,8 +1869,8 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
-				CODE_SIGN_IDENTITY = "iPhone Distribution";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1902,8 +1910,8 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
-				CODE_SIGN_IDENTITY = "iPhone Distribution";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",

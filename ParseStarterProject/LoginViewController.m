@@ -39,6 +39,9 @@
 }
 
 #pragma mark - View lifecycle
+- (IBAction)setTitle:(id)sender {
+
+}
 
 - (void)viewDidLoad
 {
@@ -84,6 +87,7 @@
 - (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView {
 	pageControlBeingUsed = NO;
 }
+
 
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView {
 	pageControlBeingUsed = NO;

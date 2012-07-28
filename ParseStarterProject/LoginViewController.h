@@ -18,7 +18,6 @@
 - (void)apiFQLIMe;
 - (IBAction)changePage;
 @property (retain, nonatomic) IBOutletCollection(UIView) NSArray *pages;
-
 @property (retain, nonatomic) IBOutlet UIImageView *updownarrow;
 @property (retain, nonatomic) IBOutlet UIScrollView *instructionScroll;
 @property (retain, nonatomic) IBOutlet UILabel *subtitleLabel;
