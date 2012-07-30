@@ -31,12 +31,17 @@
     UITableView* searchTable;
     int currentAPIcall;
     NSString* fbphotoid;
+   
     int difficultyint;
     CLLocationManager *locationManager;
     CLLocationCoordinate2D routeLoc;
     NSString* oldAccessToken;
 }
+@property (retain, nonatomic) IBOutlet UISwitch *gymSwitch;
 
+@property (retain, nonatomic) IBOutletCollection(UIView) NSArray *socialControls;
+@property (retain, nonatomic) IBOutletCollection(UIView) NSArray *gymControls;
+@property (retain, nonatomic) IBOutlet UILabel *gymShareLabel;
 
 -(void)tagPhoto:(NSString*)photoid withUser:(NSString*)facebookid;
 @property (nonatomic, assign) UIBackgroundTaskIdentifier fileUploadBackgroundTaskId;
@@ -58,7 +63,7 @@
 @property (retain, nonatomic) NSMutableArray* recommendArray;
 @property (retain, nonatomic) NSMutableArray* CGPointsArray;
 @property (retain, nonatomic) NSMutableArray* arrowTypeArray;
-
+@property (retain, nonatomic) PFObject* selectedGymObject;
 @property (retain, nonatomic) IBOutlet UITextField *difficultyTextField;
 @property (retain,nonatomic) NSArray* gymlist;
 @property (retain, nonatomic) IBOutlet UISegmentedControl *segControl;

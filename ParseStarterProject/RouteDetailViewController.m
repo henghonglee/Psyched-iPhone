@@ -95,7 +95,8 @@ kAPIGraphCommentPhoto,
 - (IBAction)unoutdate:(id)sender {
     [self.routeObject.pfobj setObject:[NSNumber numberWithBool:false]forKey:@"outdated"];
     [self.routeObject.pfobj saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
-    outdateButton.hidden = YES;
+    outdateButton.hidden = NO;
+        unoutdateButton.hidden =YES;
     }];
     
 
@@ -107,13 +108,16 @@ kAPIGraphCommentPhoto,
     [self.routeObject.pfobj saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
             approvalView.hidden = YES;
          [approveButton setUserInteractionEnabled:YES];
-        if (![[[PFUser currentUser] objectForKey:@"facebookid"]isEqualToString:[self.routeObject.pfobj objectForKey:@"approvalreqFBid"]]) {
+        if ([self.routeObject.pfobj objectForKey:@"approvalreqFBid"]) {
+         
+        if (![[NSString stringWithFormat:@"%@",[[PFUser currentUser] objectForKey:@"facebookid"]]isEqualToString:[self.routeObject.pfobj objectForKey:@"approvalreqFBid"]]) {
             NSMutableDictionary *data = [NSMutableDictionary dictionary];
             [data setObject:self.routeObject.pfobj.objectId forKey:@"linkedroute"];
             [data setObject:[NSNumber numberWithInt:1] forKey:@"badge"];
             [data setObject:[NSString stringWithFormat:@"%@ approved your outdate request",[[PFUser currentUser] objectForKey:@"name"]] forKey:@"alert"];
             [data setObject:[NSString stringWithFormat:@"%@",[[PFUser currentUser] objectForKey:@"name"]] forKey:@"sender"];
             [PFPush sendPushDataToChannelInBackground:[NSString stringWithFormat:@"channel%@",[self.routeObject.pfobj objectForKey:@"approvalreqFBid"]] withData:data];
+        }
         }
     }];
 
@@ -515,27 +519,20 @@ kAPIGraphCommentPhoto,
 
 -(void)deleteActionSheetShow
 {
-    UIActionSheet* deleteActionSheet = [[UIActionSheet alloc] initWithTitle:@"" delegate:self cancelButtonTitle:@"Cancel" destructiveButtonTitle:@"Delete" otherButtonTitles: nil];
+    deleteActionSheet = [[UIActionSheet alloc] initWithTitle:@"" delegate:self cancelButtonTitle:@"Cancel" destructiveButtonTitle:@"Delete" otherButtonTitles: nil];
     [deleteActionSheet showFromTabBar:self.tabBarController.tabBar];
     [deleteActionSheet setBounds:CGRectMake(0,0,320, 150)];
     [deleteActionSheet release];
 }
 -(void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex
 {
-    if (buttonIndex != actionSheet.cancelButtonIndex) {
-    UIAlertView* alert = [[UIAlertView alloc]initWithTitle:@"Delete" message:@"Do you really want to delete this route?" delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:@"OK",nil];
-    [alert show];
-    [alert release];
-    }
-}
--(void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
-{
-    if (alertView.cancelButtonIndex == buttonIndex) {
-        
+    if (buttonIndex != actionSheet.cancelButtonIndex && actionSheet==deleteActionSheet) {
+        [self deleteAction:nil];   
     }else{
-        [self deleteAction:nil];
+
     }
 }
+
 -(void)deleteAction:(id)sender
 {
     MBProgressHUD* hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
@@ -1688,6 +1685,7 @@ commentTextField.text = @"";
                     [self PostComment:nil];
                 }
             }else{
+#warning i want to remove this
                 [likeButton setUserInteractionEnabled:YES];
                 dislikealert = [[UIAlertView alloc]initWithTitle:@"Sorry!" message:@"Like our page to comment/like our routes!" delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:@"Show Me",nil];
                 [dislikealert show];

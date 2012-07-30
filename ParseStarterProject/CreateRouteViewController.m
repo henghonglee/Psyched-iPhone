@@ -24,6 +24,10 @@ typedef enum apiCall {
 #import "RouteLocationViewController.h"
 #import <Twitter/Twitter.h>
 @implementation CreateRouteViewController
+@synthesize gymSwitch;
+@synthesize socialControls;
+@synthesize gymControls;
+@synthesize gymShareLabel;
 @synthesize fblabel;
 @synthesize accounts;
 @synthesize arrayOfAccounts;
@@ -54,6 +58,7 @@ typedef enum apiCall {
 @synthesize difficultyTextField;
 @synthesize fileUploadBackgroundTaskId;
 @synthesize photoPostBackgroundTaskId;
+@synthesize selectedGymObject;
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
     self.fileUploadBackgroundTaskId = UIBackgroundTaskInvalid;
@@ -81,7 +86,13 @@ typedef enum apiCall {
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    
+    [[PFUser currentUser]refreshInBackgroundWithBlock:^(PFObject *object, NSError *error) {
+        if ([[[PFUser currentUser]objectForKey:@"isAdmin"]isEqualToNumber:[NSNumber numberWithBool:true]]) {
+            for (UIView* view in gymControls) {
+                view.hidden=NO;
+            }
+        }
+    }];
     routeImageView.image = imageTaken;
     routeImageView.layer.borderColor = [UIColor whiteColor].CGColor;    
     routeImageView.layer.borderWidth = 3;
@@ -155,6 +166,10 @@ typedef enum apiCall {
     [self setRouteImageView:nil];
     [self setFbuploadswitch:nil];    
     [self setFblabel:nil];
+    [self setSocialControls:nil];
+    [self setGymControls:nil];
+    [self setGymSwitch:nil];
+    [self setGymShareLabel:nil];
     [super viewDidUnload];
     // Release any retained subviews of the main view.
     // e.g. self.myOutlet = nil;
@@ -250,6 +265,7 @@ typedef enum apiCall {
     }
 }
 
+
 -(void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex
 {
     //turn off facebook switch regardless
@@ -279,6 +295,8 @@ typedef enum apiCall {
     
     
 }
+
+//contains gym selector for fb upload for gyms
 -(void)actionSheet:(UIActionSheet *)actionSheet didDismissWithButtonIndex:(NSInteger)buttonIndex
 {
                 [self.navigationItem.rightBarButtonItem setEnabled:YES];
@@ -306,6 +324,8 @@ typedef enum apiCall {
     difficultyint = [gympickerView selectedRowInComponent:0];
     }
 }
+
+//rotational code
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
 {
     // Return YES for supported orientations
@@ -315,6 +335,8 @@ typedef enum apiCall {
         return NO;
     }
 }
+
+//creates new gym dynamically
 -(void)saveRouteInGym{
     
     NSDictionary* gymSelected = [arrayOfAccounts objectAtIndex:arrIndex];
@@ -353,8 +375,10 @@ typedef enum apiCall {
     }];
 }
 
+//actually saves the gym route in a gym
 -(void)saveRouteInGymSelector:(PFObject*)GymObject
 {
+    NSLog(@"gym object = %@",GymObject);
     HUD.mode = MBProgressHUDModeDeterminate;
     HUD.labelText = @"Uploading...";
     
@@ -375,13 +399,7 @@ typedef enum apiCall {
        
     }
     [newRoute setObject:locationTextField.text forKey:@"location"];
-    if ([recommendArray count]>0) {
-        
-        for (FBfriend*user in recommendArray) {
-            descriptionTextField.text = [descriptionTextField.text stringByAppendingFormat:@" @%@ ",user.name];
-        }
-        
-    }
+  
     NSString* hashtag;
     if ([descriptionTextField.text rangeOfString:@"#"].location != NSNotFound){
     NSScanner *scanner = [NSScanner scannerWithString:descriptionTextField.text];
@@ -423,14 +441,20 @@ typedef enum apiCall {
     [newRoute setObject:CGPointsArray forKey:@"arrowarray"];
     [newRoute setObject:arrowTypeArray forKey:@"arrowtypearray"];
     NSData *imageData = UIImageJPEGRepresentation(originalImage, 1.0);
+    NSData *imageWithArrowsData = UIImageJPEGRepresentation(imageTaken, 1.0);
+    
     PFFile *imageFile = [PFFile fileWithName:@"gymNoArrows.jpeg" data:imageData];
+    PFFile *imageWithArrows = [PFFile fileWithName:@"gymWithArrows.jpeg" data:imageWithArrowsData];
     NSLog(@"saving...");
+    [queryArray addObject:imageWithArrows];
+    [imageWithArrows saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+        [queryArray removeObject:imageWithArrows];        
     [queryArray addObject:imageFile];
     //   [PF_MBProgressHUD showHUDAddedTo:self.view animated:YES];
     [imageFile saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
         [queryArray removeObject:imageFile];
         [newRoute setObject:imageFile forKey:@"imageFile"];
-        
+        [newRoute setObject:imageWithArrows forKey:@"imageFileWithArrows"];
         [newRoute saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
             
             PFObject* feedObject = [PFObject objectWithClassName:@"Feed"];
@@ -535,7 +559,7 @@ typedef enum apiCall {
             HUD.labelText = @"Almost Done...";
         }
     }];
-    
+    }];
 }
 
 -(void)saveRoute
@@ -758,7 +782,9 @@ typedef enum apiCall {
                              HUD.labelText = @"Uploading...";
                          }
                          
-                     } else{
+                     
+                         
+                     }else{
                          [self performSelector:@selector(saveRoute) withObject:nil afterDelay:0.0];
                          HUD.labelText = @"Preparing...";
                      }
@@ -776,7 +802,8 @@ typedef enum apiCall {
             [alert show];
             [alert release];
         }
-    }else{
+    }
+    else{
         //twitter off
         ((UIButton*)sender).enabled =NO;
         UIApplication *thisApp = [UIApplication sharedApplication];
@@ -796,8 +823,14 @@ typedef enum apiCall {
                 [self performSelector:@selector(apiGraphUserPhotosPost:) withObject:imageTaken afterDelay:0.0];
                 HUD.labelText = @"Uploading...";
             }
+            }else if(gymSwitch.on){
+                
+                
+                    [self performSelector:@selector(saveRouteInGymSelector:) withObject:selectedGymObject afterDelay:0.0];
+                    HUD.labelText = @"Preparing...";
+                
 
-        } else{
+            } else{
             [self performSelector:@selector(saveRoute) withObject:nil afterDelay:0.0];
             HUD.labelText = @"Preparing...";
         }
@@ -819,6 +852,7 @@ typedef enum apiCall {
         [[myRequest connection] cancel];
         [myRequest release];
          }
+
     [gymlist release];
     [oldAccessToken release];
     [locationManager release];
@@ -838,6 +872,10 @@ typedef enum apiCall {
     [twuploadswitch release];
     [routeImageView release];
     [fblabel release];
+    [socialControls release];
+    [gymControls release];
+    [gymSwitch release];
+    [gymShareLabel release];
     [super dealloc];
 }
 
@@ -885,7 +923,7 @@ typedef enum apiCall {
     [request setPostValue:actionLinksStr forKey:@"tags"];
     [request setRequestMethod:@"POST"];
     [request setCompletionBlock:^{
-        
+        NSLog(@"done posting to facebook, now to parse!");
         SBJsonParser *jsonParser = [[SBJsonParser alloc] init];
         NSDictionary *jsonObjects = [jsonParser objectWithString:[request responseString]];
         [jsonParser release];
@@ -937,6 +975,8 @@ typedef enum apiCall {
 }
 
 -(IBAction)facebookswitchon:(UISwitch*)sender{
+    
+    /*
     [[PFUser currentUser]refreshInBackgroundWithBlock:^(PFObject *object, NSError *error) {
         
     
@@ -976,6 +1016,32 @@ typedef enum apiCall {
         isPage = NO;
     }
      }];
+    */
+}
+- (IBAction)gymSwitchValueChanged:(UISwitch*)sender {
+    if (sender.on) {
+        [fbuploadswitch setOn:NO];
+        [twuploadswitch setOn:NO];
+        for (UIView* view in socialControls) {
+            
+            view.hidden = YES;
+        }
+        //fetch gyms and display in action sheet
+        PFQuery* queryForGym = [PFQuery queryWithClassName:@"Gym"];
+        [queryForGym whereKey:@"admin" containsString:[PFUser currentUser].objectId];
+        [queryForGym findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+            if ([objects count]>1) {
+                #warning multiple gyms not supported yet!
+            }else{
+                selectedGymObject = [objects objectAtIndex:0];
+                gymShareLabel.text = [NSString stringWithFormat:@"Share as %@",[selectedGymObject objectForKey:@"name"]];
+            }
+        }];
+    }else{
+        for (UIView* view in socialControls) {
+            view.hidden = NO;
+        }
+    }
 }
 -(void)presentAccountsSheet:(NSArray*)fetchedAccounts{
     [arrayOfAccounts removeAllObjects];

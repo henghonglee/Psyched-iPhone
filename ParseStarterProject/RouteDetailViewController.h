@@ -22,6 +22,7 @@
     BOOL facebookliked;
     UIAlertView* dislikealert; 
     UIAlertView* facebookalert;
+    UIActionSheet* deleteActionSheet;
     UIAlertView* flagalert;
     int currentAPICall;
 }
