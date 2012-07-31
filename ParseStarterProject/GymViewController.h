@@ -1,40 +1,40 @@
 //
 //  GymViewController.h
-//  ParseStarterProject
+//  PsychedApp
 //
-//  Created by Shaun Tan on 19/4/12.
-//  Copyright (c) 2012 __MyCompanyName__. All rights reserved.
+//  Created by HengHong on 31/7/12.
+//
 //
 
 #import <UIKit/UIKit.h>
 #import <Parse/Parse.h>
-#import "JMTabView.h"
-#import "GymDetailCell.h"
-@interface GymViewController : UIViewController<UITableViewDelegate,UITableViewDataSource,JMTabViewDelegate>
+#import "ASIHTTPRequest.h"
+#import <QuartzCore/QuartzCore.h>
+#import <Parse/Parse.h>
+#import "RouteObject.h"
+#import "MKMapView+ZoomLevel.h"
+#import "RouteDetailViewController.h"
+@interface GymViewController : UIViewController<UIScrollViewDelegate,UIGestureRecognizerDelegate>
 {
-    JMTabView * tabView;
+	int page;
+	BOOL pageControlBeingUsed;
 }
-@property (retain, nonatomic) IBOutlet UIView *imageViewContainer;
-@property (retain, nonatomic) IBOutlet UIView *profileshadow;
+@property (retain, nonatomic) NSMutableArray* wallViewArrays;
 @property (nonatomic,retain) NSString* gymName;
-@property (nonatomic,retain) NSMutableArray* gymGradeDown;
-@property (nonatomic,retain) NSMutableArray* gymGradeUp;
-@property (nonatomic,retain) NSMutableArray* gymReccomended;
-@property (nonatomic,retain) NSMutableArray* gymLiked;
-@property (nonatomic,retain) NSMutableArray* gymCommented;
-@property (nonatomic,retain) NSMutableArray* gymTags;
-@property (nonatomic,retain) NSMutableArray* routeArray;
-@property (nonatomic,retain) NSMutableDictionary* gymSections;
-@property (nonatomic,retain) NSURL* gymURL;
 @property (retain,nonatomic) PFObject* gymObject;
-@property (retain, nonatomic) IBOutlet UIImageView *gymProfileImageView;
-@property (retain, nonatomic) IBOutlet UIButton *routeCountButton;
-@property (retain, nonatomic) IBOutlet UIButton *followingCountButton;
-@property (retain, nonatomic) IBOutlet UILabel *gymNameLabel;
-@property (retain, nonatomic) IBOutlet UIImageView *gymCoverImageView;
-@property (retain, nonatomic) IBOutlet UITableView *gymTable;
-@property (retain, nonatomic) IBOutlet UIView *headerView;
-@property (retain, nonatomic) IBOutlet UIView *gymMapViewController;
-@property (retain, nonatomic) IBOutlet MKMapView *gymMapView;
 
+@property (nonatomic,retain) NSMutableArray* gymTags;
+@property (nonatomic,retain) NSMutableDictionary* gymSections;
+
+@property (retain, nonatomic) IBOutlet UIImageView *maskbgView;
+@property (retain, nonatomic) IBOutletCollection(UIImageView) NSArray *wallImageViews;
+@property (retain, nonatomic) IBOutlet UIImageView *gymProfileImageView;
+@property (retain, nonatomic) IBOutlet UIButton *ourRoutesButton;
+@property (retain, nonatomic) IBOutlet UILabel *gymNameLabel;
+@property (retain, nonatomic) IBOutlet UIView *profileshadow;
+@property (retain, nonatomic) IBOutlet UIImageView *gymCoverImageView;
+@property (retain, nonatomic) IBOutlet MKMapView *gymMapView;
+@property (retain, nonatomic) IBOutlet UIView *imageViewContainer;
+@property (retain, nonatomic) IBOutlet UIPageControl *pageControl;
+@property (retain, nonatomic) IBOutlet UIScrollView *gymWallScroll;
 @end

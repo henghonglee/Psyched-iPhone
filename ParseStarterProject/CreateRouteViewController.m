@@ -244,7 +244,7 @@ typedef enum apiCall {
 
 -(NSInteger)pickerView:(UIPickerView *)pickerView numberOfRowsInComponent:(NSInteger)component
 {
-    NSLog(@"picker lookingforrows = %@",pickerView);
+
     if (pickerView==fbAccountPickerView) {
         //return 0;
          return [arrayOfAccounts count];
@@ -402,12 +402,14 @@ typedef enum apiCall {
   
     NSString* hashtag;
     if ([descriptionTextField.text rangeOfString:@"#"].location != NSNotFound){
+        NSLog(@"found hashtag!");
     NSScanner *scanner = [NSScanner scannerWithString:descriptionTextField.text];
     
     [scanner scanUpToString:@"#" intoString:NULL];
     [scanner setScanLocation:[scanner scanLocation] + 1];
     [scanner scanUpToString:@" " intoString:&hashtag];
     [newRoute setObject:hashtag forKey:@"hashtag"];
+        NSLog(@"sethashtag to %@",hashtag);
     }
     [newRoute setObject:descriptionTextField.text forKey:@"description"];
     [newRoute setObject:[PFGeoPoint geoPointWithLatitude:routeLoc.latitude longitude:routeLoc.longitude] forKey:@"routelocation"];
@@ -586,6 +588,17 @@ typedef enum apiCall {
         
     }
     [newRoute setObject:locationTextField.text forKey:@"location"];
+    NSString* hashtag;
+    if ([descriptionTextField.text rangeOfString:@"#"].location != NSNotFound){
+        NSLog(@"found hashtag!");
+        NSScanner *scanner = [NSScanner scannerWithString:descriptionTextField.text];
+        
+        [scanner scanUpToString:@"#" intoString:NULL];
+        [scanner setScanLocation:[scanner scanLocation] + 1];
+        [scanner scanUpToString:@" " intoString:&hashtag];
+        [newRoute setObject:hashtag forKey:@"hashtag"];
+        NSLog(@"sethashtag to %@",hashtag);
+    }
     if ([recommendArray count]>0) {
         descriptionTextField.text = [descriptionTextField.text stringByAppendingFormat:@"(%@)  ",[gymlist objectAtIndex:difficultyint]];
         
@@ -819,21 +832,25 @@ typedef enum apiCall {
             if (isPage) {
                 [self performSelector:@selector(apiGraphPagePhotosPost:) withObject:imageTaken afterDelay:0.0];
                 HUD.labelText = @"Uploading...";
+                return;                
             }else {
                 [self performSelector:@selector(apiGraphUserPhotosPost:) withObject:imageTaken afterDelay:0.0];
                 HUD.labelText = @"Uploading...";
+                return;
             }
-            }else if(gymSwitch.on){
+            }
+        if(gymSwitch.on){
                 
-                
+            NSLog(@"saving route in gym selector...");
                     [self performSelector:@selector(saveRouteInGymSelector:) withObject:selectedGymObject afterDelay:0.0];
                     HUD.labelText = @"Preparing...";
-                
+                return;
 
-            } else{
-            [self performSelector:@selector(saveRoute) withObject:nil afterDelay:0.0];
-            HUD.labelText = @"Preparing...";
-        }
+            }
+            
+        [self performSelector:@selector(saveRoute) withObject:nil afterDelay:0.0];
+        HUD.labelText = @"Preparing...";
+        
         //[PF_MBProgressHUD showHUDAddedTo:self.view animated:YES];
         
         
@@ -852,7 +869,7 @@ typedef enum apiCall {
         [[myRequest connection] cancel];
         [myRequest release];
          }
-
+    [selectedGymObject release];
     [gymlist release];
     [oldAccessToken release];
     [locationManager release];
@@ -1032,8 +1049,10 @@ typedef enum apiCall {
         [queryForGym findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
             if ([objects count]>1) {
                 #warning multiple gyms not supported yet!
+                selectedGymObject = [[objects objectAtIndex:0] retain];
+                gymShareLabel.text = [NSString stringWithFormat:@"Share as %@",[selectedGymObject objectForKey:@"name"]];
             }else{
-                selectedGymObject = [objects objectAtIndex:0];
+                selectedGymObject = [[objects objectAtIndex:0] retain];
                 gymShareLabel.text = [NSString stringWithFormat:@"Share as %@",[selectedGymObject objectForKey:@"name"]];
             }
         }];
