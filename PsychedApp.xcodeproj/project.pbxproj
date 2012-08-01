@@ -215,6 +215,7 @@
 		EF7986971540598C00635958 /* GymDetailCell.m in Sources */ = {isa = PBXBuildFile; fileRef = EF7986961540598C00635958 /* GymDetailCell.m */; };
 		EF79869A1540599C00635958 /* GymDetailCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = EF7986991540599C00635958 /* GymDetailCell.xib */; };
 		EF7DC7A61503A2E000DC0433 /* graybuttondepressed.png in Resources */ = {isa = PBXBuildFile; fileRef = EF7DC7A51503A2E000DC0433 /* graybuttondepressed.png */; };
+		EF7EC7C715C84B510014E980 /* base.png in Resources */ = {isa = PBXBuildFile; fileRef = EF7EC7C615C84B510014E980 /* base.png */; };
 		EF8765341547AFCA00589622 /* GradientButton.m in Sources */ = {isa = PBXBuildFile; fileRef = EF8765321547AD2400589622 /* GradientButton.m */; };
 		EF8765381547CEEA00589622 /* SettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EF8765361547CEE700589622 /* SettingsViewController.m */; };
 		EF8765391547CEEA00589622 /* SettingsViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = EF8765371547CEE800589622 /* SettingsViewController.xib */; };
@@ -610,6 +611,7 @@
 		EF7986961540598C00635958 /* GymDetailCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GymDetailCell.m; sourceTree = "<group>"; };
 		EF7986991540599C00635958 /* GymDetailCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = GymDetailCell.xib; sourceTree = "<group>"; };
 		EF7DC7A51503A2E000DC0433 /* graybuttondepressed.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = graybuttondepressed.png; path = ../graybuttondepressed.png; sourceTree = "<group>"; };
+		EF7EC7C615C84B510014E980 /* base.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = base.png; sourceTree = "<group>"; };
 		EF8765311547AD2200589622 /* GradientButton.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GradientButton.h; sourceTree = "<group>"; };
 		EF8765321547AD2400589622 /* GradientButton.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = GradientButton.m; sourceTree = "<group>"; };
 		EF8765351547CEE600589622 /* SettingsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SettingsViewController.h; sourceTree = "<group>"; };
@@ -1201,6 +1203,7 @@
 				EF24513A15C766A3002C2592 /* GymViewController.h */,
 				EF24513B15C766A3002C2592 /* GymViewController.m */,
 				EF90FD93153F2FFB0037D302 /* GymViewController.xib */,
+				EF7EC7C615C84B510014E980 /* base.png */,
 				EF24514515C788AB002C2592 /* walltest.jpg */,
 				EF8765351547CEE600589622 /* SettingsViewController.h */,
 				EF8765361547CEE700589622 /* SettingsViewController.m */,
@@ -1688,6 +1691,7 @@
 				EF0A913215C3D23700705A97 /* psychedIcon.png in Resources */,
 				EF0A913315C3D23700705A97 /* psychedIcon@2x.png in Resources */,
 				EF24514615C788AB002C2592 /* walltest.jpg in Resources */,
+				EF7EC7C715C84B510014E980 /* base.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
