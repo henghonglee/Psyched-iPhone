@@ -439,7 +439,6 @@
 		EF399FDF14BB31AB00A02516 /* Reachability.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Reachability.h; sourceTree = "<group>"; };
 		EF399FE014BB31AB00A02516 /* Reachability.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Reachability.m; sourceTree = "<group>"; };
 		EF39A00814BB321000A02516 /* libz.1.2.5.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.1.2.5.dylib; path = usr/lib/libz.1.2.5.dylib; sourceTree = SDKROOT; };
-		EF39A00A14BB321C00A02516 /* libxml2.2.7.3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libxml2.2.7.3.dylib; path = usr/lib/libxml2.2.7.3.dylib; sourceTree = SDKROOT; };
 		EF39A00C14BB327600A02516 /* libxml2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libxml2.dylib; path = usr/lib/libxml2.dylib; sourceTree = SDKROOT; };
 		EF3BC05214D282D70027F06F /* MyRoutesViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MyRoutesViewController.h; sourceTree = "<group>"; };
 		EF3BC05314D282D80027F06F /* MyRoutesViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MyRoutesViewController.m; sourceTree = "<group>"; };
@@ -808,7 +807,6 @@
 				EF6687BF14F1228600609E05 /* MessageUI.framework */,
 				EF39A00C14BB327600A02516 /* libxml2.dylib */,
 				EF29CD2415354E8C00AB520E /* Twitter.framework */,
-				EF39A00A14BB321C00A02516 /* libxml2.2.7.3.dylib */,
 				EFB25D3515254EB0002F310B /* Flurry iPhone SDK v3.0.9 */,
 				EF39A00814BB321000A02516 /* libz.1.2.5.dylib */,
 				EF4ABE661543CD1B00AC77D8 /* KKGridView */,

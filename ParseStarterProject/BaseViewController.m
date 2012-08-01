@@ -10,9 +10,11 @@
 #import "LKBadgeView.h"
 #import "RouteDetailViewController.h"
 @implementation BaseViewController
+@synthesize reuseImageData;
 @synthesize locationManager;
 @synthesize imageMetaData;
 @synthesize currentLocation;
+@synthesize reusePFObject;
 static inline double radians (double degrees) {return degrees * M_PI/180;}
 // Create a view controller and setup it's tab bar item with a title and image
 -(UIViewController*) viewControllerWithTabTitle:(NSString*) title image:(UIImage*)image
@@ -78,7 +80,7 @@ static inline double radians (double degrees) {return degrees * M_PI/180;}
     [FlurryAnalytics logEvent:@"SHARE_ACTION" timed:YES];
     
     
-    if([self.selectedViewController isKindOfClass:[UINavigationController class]]&& [((UINavigationController*)self.selectedViewController).topViewController isKindOfClass:[RouteDetailViewController class]]&&[[((RouteDetailViewController*)((UINavigationController*)self.selectedViewController).topViewController).routeObject.pfobj objectForKey:@"routeVersion"] isEqualToString:@"2"]&&(((RouteDetailViewController*)((UINavigationController*)self.selectedViewController).topViewController).rawImageData)){
+    if(reuseImageData != nil){
         UIActionSheet* PhotoSourceSelector = [[UIActionSheet alloc] initWithTitle:@"" delegate:self cancelButtonTitle:@"Cancel" destructiveButtonTitle:nil otherButtonTitles:@"Take A Photo",@"Choose From Library",@"Use This Photo", nil];
         [PhotoSourceSelector showInView:self.view];
         [PhotoSourceSelector setBounds:CGRectMake(0,0,320, 280)];
@@ -241,17 +243,17 @@ static inline double radians (double degrees) {return degrees * M_PI/180;}
             break;
         case 2:
             NSLog(@"re-using photo...");
-            if([self.selectedViewController isKindOfClass:[UINavigationController class]]&&[((UINavigationController*)self.selectedViewController).topViewController isKindOfClass:[RouteDetailViewController class]]&&[[((RouteDetailViewController*)((UINavigationController*)self.selectedViewController).topViewController).routeObject.pfobj objectForKey:@"routeVersion"] isEqualToString:@"2"]&&(((RouteDetailViewController*)((UINavigationController*)self.selectedViewController).topViewController).rawImageData)){
+            if(reuseImageData != nil){
                 
                 
-                         PFObject* routepfobj = ((RouteDetailViewController*)((UINavigationController*)self.selectedViewController).topViewController).routeObject.pfobj;
+                         
                     
-                        UIImage* imagetoUse = [UIImage imageWithData:((RouteDetailViewController*)((UINavigationController*)self.selectedViewController).topViewController).rawImageData];
+                        UIImage* imagetoUse = [UIImage imageWithData:reuseImageData];
                         EditImageViewController* EditImageVC = [[EditImageViewController alloc] initWithNibName:@"EditImageViewController" bundle:nil];
                         UINavigationController* navCont = [[UINavigationController alloc]initWithRootViewController:EditImageVC];
                         EditImageVC.imageInView = imagetoUse;
                         imageMetaData = [[NSMutableDictionary alloc]init ];
-                        PFGeoPoint* routegp = [routepfobj objectForKey:@"routelocation"];
+                        PFGeoPoint* routegp = [reusePFObject objectForKey:@"routelocation"];
                         CLLocation* newImageLoc = [[CLLocation alloc]initWithLatitude:routegp.latitude longitude:routegp.longitude];
                         [imageMetaData setLocation:newImageLoc];
                         [newImageLoc release];

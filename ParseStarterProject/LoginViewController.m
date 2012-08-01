@@ -183,7 +183,8 @@
                [self apiFQLIMe];
                 InstagramViewController* viewController = [[InstagramViewController alloc]initWithNibName:@"InstagramViewController" bundle:nil];
                 viewController.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
-                [self presentModalViewController:viewController animated:YES];
+                ParseStarterProjectAppDelegate* applicationDelegate = ((ParseStarterProjectAppDelegate*)[[UIApplication sharedApplication]delegate]);
+                applicationDelegate.window.rootViewController = viewController;
                 [viewController release];
                 //        [self apiGraphUserPhotosPost];
             }

@@ -1,10 +1,4 @@
-//
-//  RouteDetailViewController.m
-//  ParseStarterProject
-//
-//  Created by Shaun Tan on 9/1/12.
-//  Copyright (c) 2012 __MyCompanyName__. All rights reserved.
-//
+#import "InstagramViewController.h"
 #import "MBProgressHUD.h"
 #import "JHNotificationManager.h"
 #import "ProfileViewController.h"
@@ -24,7 +18,7 @@
 @synthesize unoutdateButton;
 @synthesize postButton;
 @synthesize routeMapView;
-@synthesize rawImageData;
+//@synthesize rawImageData;
 @synthesize progressBar;
 @synthesize routeLocationLabel;
 @synthesize pinImageView;
@@ -1263,8 +1257,8 @@ kAPIGraphCommentPhoto,
         [progressBar removeFromSuperview];
         self.navigationItem.title = @"Route Details";
         [queryArray removeObject:imagefile];
-        rawImageData = imageData;
-        [rawImageData retain];
+        //rawImageData = imageData;
+        //[rawImageData retain];
         UIImage* retrievedImage = [UIImage imageWithData:imageData];
         routeImageView.image = retrievedImage;
         [scrollView setFrame:CGRectMake(0, 0, 320, 320)];
@@ -1278,6 +1272,9 @@ kAPIGraphCommentPhoto,
         [scrollView setZoomScale:1.0f];
         if([[routeObject.pfobj objectForKey:@"routeVersion"] isEqualToString:@"2"]){
             NSLog(@"route is version 2, attach overlay here");
+           ParseStarterProjectAppDelegate* applicationDelegate = ((ParseStarterProjectAppDelegate*)[[UIApplication sharedApplication]delegate]);
+            ((BaseViewController*)applicationDelegate.window.rootViewController).reuseImageData = imageData;
+            ((BaseViewController*)applicationDelegate.window.rootViewController).reusePFObject = routeObject.pfobj;
             NSArray* routearrowarray = [routeObject.pfobj objectForKey:@"arrowarray"];
             NSArray* arrowtypearray = [routeObject.pfobj objectForKey:@"arrowtypearray"];
              UIImage* pastedimage;
@@ -1364,13 +1361,15 @@ kAPIGraphCommentPhoto,
 	// free the context
 	UIGraphicsEndImageContext();
     
-	return retImage; 
+	return retImage;
 }
 
 
 -(void)viewWillDisappear:(BOOL)animated
 {
- 
+    ParseStarterProjectAppDelegate* applicationDelegate = ((ParseStarterProjectAppDelegate*)[[UIApplication sharedApplication]delegate]);
+    ((BaseViewController*)applicationDelegate.window.rootViewController).reuseImageData = nil;
+            ((BaseViewController*)applicationDelegate.window.rootViewController).reusePFObject = nil;
     [commentTextField resignFirstResponder];
     if (progressBar.superview) {
     [progressBar removeFromSuperview];
@@ -1412,7 +1411,7 @@ kAPIGraphCommentPhoto,
 - (void)viewDidUnload
 {
     
-    [self setRawImageData:nil];
+   // [self setRawImageData:nil];
     [self setRouteImageView:nil];
     [self setUserImageView:nil];
     [self setUsernameLabel:nil];
@@ -2107,7 +2106,7 @@ if (cell == nil) {
 - (void)dealloc {
     [savedArray release];
     
-    [rawImageData release];
+  //  [rawImageData release];
     [UserImageView release];
     [usernameLabel release];
     [descriptionLabel release];

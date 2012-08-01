@@ -36,6 +36,9 @@
     UIImagePickerController* imagepicker;
     UIImage* newcropped;
 }
+@property (retain , nonatomic) NSData* reuseImageData;
+@property (retain , nonatomic) PFObject* reusePFObject;
+
 @property (retain, nonatomic) NSMutableDictionary* imageMetaData;
 @property (retain, nonatomic) CLLocationManager* locationManager;
 @property (retain, nonatomic)  CLLocation* currentLocation;

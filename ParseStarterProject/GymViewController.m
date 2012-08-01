@@ -5,16 +5,20 @@
 //  Created by HengHong on 31/7/12.
 //
 //
-
+#import "BaseViewController.h"
 #import "GymViewController.h"
 
 #import <QuartzCore/QuartzCore.h>
 @implementation GymViewController
 @synthesize pageControl;
 @synthesize gymWallScroll;
-@synthesize gymRouteScroll;
+@synthesize footerView;
+@synthesize footerUserImageView;
+@synthesize footerLabel;
+@synthesize footerDifficultyLabel;
 @synthesize maskbgView;
 @synthesize wallImageViews;
+@synthesize routePageControl;
 @synthesize gymProfileImageView;
 @synthesize ourRoutesButton;
 @synthesize gymNameLabel;
@@ -25,8 +29,10 @@
 @synthesize gymObject,gymName;
 @synthesize wallViewArrays;
 @synthesize gymTags,gymSections;
-@synthesize wallRoutesArrowArray;
+@synthesize wallRoutesArrowArray,wallRoutesArrowTypeArray;
 @synthesize imageDataArray;
+@synthesize gymRouteScroll;
+
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
@@ -46,6 +52,17 @@
 	
 	pageControlBeingUsed = YES;
 }
+- (IBAction)didChangeRoutePage:(id)sender {
+    // Update the scroll view to the appropriate page
+    NSLog(@"changing route page");
+	CGRect frame;
+	frame.origin.x = self.gymRouteScroll.frame.size.width * self.routePageControl.currentPage;
+	frame.origin.y = 0;
+	frame.size = self.gymRouteScroll.frame.size;
+	[self.gymRouteScroll scrollRectToVisible:frame animated:YES];
+    
+	pageControlBeingUsed = YES;
+}
 
 - (void)viewDidLoad
 {
@@ -54,14 +71,14 @@
     gymTags = [[NSMutableArray alloc]init];
     gymSections = [[NSMutableDictionary alloc]init ];
     wallRoutesArrowArray = [[NSMutableArray alloc]init];
+        wallRoutesArrowTypeArray = [[NSMutableArray alloc]init];
     imageDataArray =[[NSMutableArray alloc]init];
     __block int downloadedRouteCount=0;
     //find number of walls by hashtag
     //get their images
     //if user exits gym page just destroy all from array
     PFQuery* gymWallQuery = [PFQuery queryWithClassName:@"Route"];
-    #warning distance need to change back to 1
-    [gymWallQuery whereKey:@"routelocation" nearGeoPoint:[gymObject objectForKey:@"gymlocation"] withinKilometers:5.];
+    [gymWallQuery whereKey:@"routelocation" nearGeoPoint:[gymObject objectForKey:@"gymlocation"] withinKilometers:0.5];
     [gymWallQuery whereKey:@"outdated" notEqualTo:[NSNumber numberWithBool:true]];
     [gymWallQuery whereKeyExists:@"hashtag"];
     [gymWallQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
@@ -138,12 +155,6 @@
                 [wallimage addGestureRecognizer:doubleTapGesture];
                 [doubleTapGesture release];
                 
-//                UIView* wallShadowView = [[UIView alloc]initWithFrame:CGRectMake(16.5, 35, 287, 287)];
-//                wallShadowView.backgroundColor = [UIColor whiteColor];
-//                wallShadowView.layer.cornerRadius = 5;
-//                [wallView addSubview:wallShadowView];
-//                [wallShadowView release];
-//                
                 [wallView addSubview:wallimage];
                 
                 [wallViewArrays addObject:wallView];
@@ -196,17 +207,32 @@
     
     self.gymWallScroll.hidden = YES;
     self.pageControl.hidden = YES;
-    CGRect slideViewFinalFrame = CGRectMake(0,23.5,320,320);
+    RouteObject* firstRouteObj = ((RouteObject*)[[self.gymSections objectForKey:[self.gymTags objectAtIndex:self.pageControl.currentPage]]objectAtIndex:0]);
+    [self setImagesWithRouteObject:firstRouteObj];
+    footerLabel.text = [NSString stringWithFormat:@"%@",[firstRouteObj.pfobj objectForKey:@"description"]];
+    footerDifficultyLabel.text = [NSString stringWithFormat:@"%@",[firstRouteObj.pfobj objectForKey:@"difficultydescription"]];
+    footerView.hidden=NO;
+    CGRect slideViewFinalFrame = CGRectMake(0,0,320,320);
     [UIView animateWithDuration:0.5
                           delay:0.0
                         options: UIViewAnimationCurveEaseOut
                      animations:^{
                          imgView.frame = slideViewFinalFrame;
+                         footerView.alpha = 0.7;
                      } 
                      completion:^(BOOL finished){
-                         maskbgView.hidden=NO;
-                         maskbgView.alpha = 0.8;
-                         [self performSelectorOnMainThread:@selector(drawArrowOverlays) withObject:nil waitUntilDone:YES];
+                         
+                         [self performSelectorOnMainThread:@selector(addGymScrollToAugmentedImageView:) withObject:imgView waitUntilDone:YES];
+                         
+                         
+                         [UIView animateWithDuration:0.2
+                                               delay:0.0
+                                             options: UIViewAnimationCurveEaseOut
+                                          animations:^{
+                                              gymRouteScroll.alpha=1;
+                                              
+                                          }completion:^(BOOL finished){}];
+
                      }];
     
 }
@@ -216,84 +242,151 @@
     if (self.navigationItem.leftBarButtonItem ==nil) {
         self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:[NSString stringWithFormat:@"%@",[gymObject objectForKey:@"name"]] style:UIBarButtonItemStylePlain target:self action:@selector(returnToGym:)];
     }
-
+    self.navigationItem.rightBarButtonItem = nil;
     maskbgView.hidden=NO;
     maskbgView.image = nil;
     maskbgView.alpha = 0.8;
-   
+    CGRect arrowsSlideViewFinalFrame = CGRectMake(0,0,287,287);
     CGRect slideViewFinalFrame = CGRectMake(16.5,35,287,287);
     [UIView animateWithDuration:0.5
                           delay:0.0
                         options: UIViewAnimationCurveEaseOut
                      animations:^{
-                         sender.view.frame = slideViewFinalFrame;
+                         sender.view.alpha =0;
+                         sender.view.frame = arrowsSlideViewFinalFrame;
+                         sender.view.superview.superview.frame = slideViewFinalFrame;
+                         footerView.alpha=0;
                      }
                      completion:^(BOOL finished){
                          gymWallScroll.hidden = NO;
                          self.pageControl.hidden = NO;
+                         self.routePageControl.hidden=YES;
+                         footerView.hidden =YES;
+                      //   [sender.view removeFromSuperview]; // remove arrowoverlayimageview that was tapped on
+                       //  [sender.view.superview removeFromSuperview];//remove uiscrollview from augmented uiimageview
                          
-                       
-                         [sender.view removeFromSuperview];
+                         [sender.view.superview.superview removeFromSuperview];//remove the augmented uiimageview from the self.view
                      }];
 
 }
--(void)drawArrowOverlays
+-(IBAction)showRoute:(id)sender
 {
-
-    for (RouteObject* route in [self.gymSections objectForKey:[[self.gymSections allKeys] objectAtIndex:self.pageControl.currentPage]]) {
-        //  NSLog(@"arrowarray = %@ , arrowtypearray = %@ ",[route.pfobj objectForKey:@"arrowarray"],[route.pfobj objectForKey:@"arrowtypearray"]);
-        
-        UIImageView* arrowOverlay = [[UIImageView alloc]initWithFrame:CGRectMake(0, 23.5, 320, 320)];
-        [arrowOverlay setImage:[UIImage imageNamed:@"walltest.jpg"]];
-        arrowOverlay.contentMode =UIViewContentModeScaleAspectFit;
-        arrowOverlay.backgroundColor = [UIColor clearColor];
+    
+    RouteDetailViewController* viewController = [[RouteDetailViewController alloc]initWithNibName:@"RouteDetailViewController" bundle:nil];
+    viewController.routeObject = [[self.gymSections objectForKey:[self.gymTags objectAtIndex:self.pageControl.currentPage]]objectAtIndex:self.routePageControl.currentPage];
+    
+    //   viewController.routeObject = [((NSMutableArray*)[self.userDictionary objectForKey:[[self.userDictionary allKeys]objectAtIndex:indexPath.section]]) objectAtIndex:indexPath.index];
+    [self.navigationController pushViewController:viewController animated:NO];
+    [viewController release];
+}
+-(UIImageView*)drawArrowsWithImageView:(UIImageView*)arrowOverlay withIndex:(int)index
+{
+ arrowOverlay.image = nil;
+ arrowOverlay.userInteractionEnabled = YES;
+ UITapGestureRecognizer* doubleTapGesture = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(reverseHandleDoubleTap:)];
+ 
+ doubleTapGesture.delegate = self;
+ [doubleTapGesture setNumberOfTapsRequired : 2];
+ [arrowOverlay addGestureRecognizer:doubleTapGesture];
+ [doubleTapGesture release];
+ for (UIView* view in ((UIView*)[wallViewArrays objectAtIndex:self.pageControl.currentPage]).subviews) {
+ if ([view isKindOfClass:[UIImageView class]]) {
+ [arrowOverlay setImage:((UIImageView*)view).image];
+ }
+ }
+ arrowOverlay.contentMode =UIViewContentModeScaleAspectFit;
+ arrowOverlay.backgroundColor = [UIColor clearColor];
+ 
+ UIImage* pastedimage;
+    NSArray*gymsection =[self.gymSections objectForKey:[[self.gymSections allKeys]objectAtIndex:self.pageControl.currentPage]];
+    
+    RouteObject* route = [gymsection objectAtIndex:self.routePageControl.currentPage];
         NSArray* routearrowarray = [route.pfobj objectForKey:@"arrowarray"];
         NSArray* arrowtypearray = [route.pfobj objectForKey:@"arrowtypearray"];
-        UIImage* pastedimage;
-        NSLog(@"routearrowarray = %@",routearrowarray);
-        for (int i=0; i<[routearrowarray count]; i++) {
-            
-            
-            CGRect routearrowrect = CGRectFromString([routearrowarray objectAtIndex:i]);
-            if([[arrowtypearray objectAtIndex:i]isEqualToNumber:[NSNumber numberWithInt:0]])
-                pastedimage = [UIImage imageNamed:@"arrow1.png"];
-            if([[arrowtypearray objectAtIndex:i]isEqualToNumber:[NSNumber numberWithInt:1]])
-                pastedimage = [UIImage imageNamed:@"start1.png"];
-            if([[arrowtypearray objectAtIndex:i]isEqualToNumber:[NSNumber numberWithInt:2]])
-                pastedimage = [UIImage imageNamed:@"end1.png"];
-            if([[arrowtypearray objectAtIndex:i]isEqualToNumber:[NSNumber numberWithInt:3]])
-                pastedimage = [UIImage imageNamed:@"arrow2.png"];
-            if([[arrowtypearray objectAtIndex:i]isEqualToNumber:[NSNumber numberWithInt:4]])
-                pastedimage = [UIImage imageNamed:@"start2.png"];
-            if([[arrowtypearray objectAtIndex:i]isEqualToNumber:[NSNumber numberWithInt:5]])
-                pastedimage = [UIImage imageNamed:@"end2.png"];
-            if([[arrowtypearray objectAtIndex:i]isEqualToNumber:[NSNumber numberWithInt:6]])
-                pastedimage = [UIImage imageNamed:@"arrow3.png"];
-            if([[arrowtypearray objectAtIndex:i]isEqualToNumber:[NSNumber numberWithInt:7]])
-                pastedimage = [UIImage imageNamed:@"start3.png"];
-            if([[arrowtypearray objectAtIndex:i]isEqualToNumber:[NSNumber numberWithInt:8]])
-                pastedimage = [UIImage imageNamed:@"end3.png"];
-            if([[arrowtypearray objectAtIndex:i]isEqualToNumber:[NSNumber numberWithInt:9]])
-                pastedimage = [UIImage imageNamed:@"arrow4.png"];
-            if([[arrowtypearray objectAtIndex:i]isEqualToNumber:[NSNumber numberWithInt:10]])
-                pastedimage = [UIImage imageNamed:@"start4.png"];
-            if([[arrowtypearray objectAtIndex:i]isEqualToNumber:[NSNumber numberWithInt:11]])
-                pastedimage = [UIImage imageNamed:@"end4.png"];
-            
-            if (i==0) {
-              arrowOverlay.image = [self blankImageByDrawingImage:pastedimage OnImage:arrowOverlay.image inRect:routearrowrect ];
-            }else{
-                arrowOverlay.image = [self imageByDrawingImage:pastedimage OnImage:arrowOverlay.image inRect:routearrowrect ];
-            }
-                                  
-            // [pastedimage release];
-            
-        } //adding arrows to imageview
-        [wallRoutesArrowArray addObject:arrowOverlay];
-        [arrowOverlay release];
+ for (int i=0; i<[routearrowarray count]; i++) {
+ CGRect routearrowrect = CGRectFromString([routearrowarray objectAtIndex:i]);
+ if([[arrowtypearray objectAtIndex:i]isEqualToNumber:[NSNumber numberWithInt:0]])
+ pastedimage = [UIImage imageNamed:@"arrow1.png"];
+ if([[arrowtypearray objectAtIndex:i]isEqualToNumber:[NSNumber numberWithInt:1]])
+ pastedimage = [UIImage imageNamed:@"start1.png"];
+ if([[arrowtypearray objectAtIndex:i]isEqualToNumber:[NSNumber numberWithInt:2]])
+ pastedimage = [UIImage imageNamed:@"end1.png"];
+ if([[arrowtypearray objectAtIndex:i]isEqualToNumber:[NSNumber numberWithInt:3]])
+ pastedimage = [UIImage imageNamed:@"arrow2.png"];
+ if([[arrowtypearray objectAtIndex:i]isEqualToNumber:[NSNumber numberWithInt:4]])
+ pastedimage = [UIImage imageNamed:@"start2.png"];
+ if([[arrowtypearray objectAtIndex:i]isEqualToNumber:[NSNumber numberWithInt:5]])
+ pastedimage = [UIImage imageNamed:@"end2.png"];
+ if([[arrowtypearray objectAtIndex:i]isEqualToNumber:[NSNumber numberWithInt:6]])
+ pastedimage = [UIImage imageNamed:@"arrow3.png"];
+ if([[arrowtypearray objectAtIndex:i]isEqualToNumber:[NSNumber numberWithInt:7]])
+ pastedimage = [UIImage imageNamed:@"start3.png"];
+ if([[arrowtypearray objectAtIndex:i]isEqualToNumber:[NSNumber numberWithInt:8]])
+ pastedimage = [UIImage imageNamed:@"end3.png"];
+ if([[arrowtypearray objectAtIndex:i]isEqualToNumber:[NSNumber numberWithInt:9]])
+ pastedimage = [UIImage imageNamed:@"arrow4.png"];
+ if([[arrowtypearray objectAtIndex:i]isEqualToNumber:[NSNumber numberWithInt:10]])
+ pastedimage = [UIImage imageNamed:@"start4.png"];
+ if([[arrowtypearray objectAtIndex:i]isEqualToNumber:[NSNumber numberWithInt:11]])
+ pastedimage = [UIImage imageNamed:@"end4.png"];
+ 
+ if (i==0) {
+ arrowOverlay.image = [self blankImageByDrawingImage:pastedimage OnImage:arrowOverlay.image inRect:routearrowrect ];
+ }else{
+ arrowOverlay.image = [self imageByDrawingImage:pastedimage OnImage:arrowOverlay.image inRect:routearrowrect ];
+  }
+ }
+    return arrowOverlay;
+}
+
+-(void)addGymScrollToAugmentedImageView:(UIImageView*)imgView
+{
+    maskbgView.hidden=NO;
+    maskbgView.alpha = 1;
+    gymRouteScroll = [[UIScrollView alloc]initWithFrame:CGRectMake(0, 0, 320, 320)];
+    gymRouteScroll.userInteractionEnabled =YES;
+    gymRouteScroll.pagingEnabled = YES;
+    gymRouteScroll.delegate = self;
+    gymRouteScroll.showsHorizontalScrollIndicator = NO;
+    gymRouteScroll.showsVerticalScrollIndicator = NO;
+    
+    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Details" style:UIBarButtonItemStylePlain target:self action:@selector(showRoute:)];
+    self.routePageControl.hidden=NO;
+    
+    [self.view bringSubviewToFront:self.routePageControl];
+    [imgView addSubview:gymRouteScroll];
+    gymRouteScroll.alpha=0;
+    
+    [self.view bringSubviewToFront:footerView];
+    [gymRouteScroll release];
+    
+    
+    
+    [wallRoutesArrowArray removeAllObjects];
+    for (RouteObject* route in [self.gymSections objectForKey:[[self.gymSections allKeys] objectAtIndex:self.pageControl.currentPage]]) {
+        NSArray* routearrowarray = [route.pfobj objectForKey:@"arrowarray"];
+        NSArray* arrowtypearray = [route.pfobj objectForKey:@"arrowtypearray"];
+        [wallRoutesArrowArray addObject:routearrowarray];
+        [wallRoutesArrowTypeArray addObject:arrowtypearray];
         
     }
-
+      
+    pageControlBeingUsed = NO;
+    self.routePageControl.currentPage = 0;
+	self.routePageControl.numberOfPages = wallRoutesArrowArray.count;
+//    CGRect frame;
+//    frame.origin.x = gymRouteScroll.frame.size.width * self.routePageControl.currentPage;
+//    frame.origin.y = 0;
+//    frame.size = gymRouteScroll.frame.size;
+        
+//        UIImageView* imageViewForRoute =[wallRoutesArrowArray objectAtIndex:self.routePageControl.currentPage];
+//        imageViewForRoute.frame = frame;
+//        [imgView addSubview:imageViewForRoute];
+    
+    gymRouteScroll.contentSize = CGSizeMake(imgView.frame.size.width * wallRoutesArrowArray.count, imgView.frame.size.height);
+    UIImageView* arrowOverlay = [[UIImageView alloc]initWithFrame:CGRectMake(0, 0, 320, 320)];
+    [gymRouteScroll addSubview:[self drawArrowsWithImageView:arrowOverlay withIndex:0]];
+    
 }
 - (UIImage *)imageByDrawingImage:(UIImage*)pastedImage OnImage:(UIImage *)image inRect:(CGRect)rect
 {
@@ -345,8 +438,27 @@
 {
     self.navigationController.navigationBarHidden = NO;
     //ideally should check if facebook liked and subscribed here
+    
+    
+    if (!self.pageControl.hidden && !self.routePageControl.hidden) {
+        ParseStarterProjectAppDelegate* applicationDelegate = ((ParseStarterProjectAppDelegate*)[[UIApplication sharedApplication]delegate]);
+        for (UIView* view in ((UIView*)[wallViewArrays objectAtIndex:self.pageControl.currentPage]).subviews) {
+            if ([view isKindOfClass:[UIImageView class]]) {
+                ((BaseViewController*)applicationDelegate.window.rootViewController).reuseImageData = UIImageJPEGRepresentation(((UIImageView*)view).image,1.0) ;
+                ((BaseViewController*)applicationDelegate.window.rootViewController).reusePFObject = ((RouteObject*)[[self.gymSections objectForKey:[self.gymTags objectAtIndex:self.pageControl.currentPage]]objectAtIndex:0]).pfobj;
+                
+            }
+        }
+    }
+    
 }
-
+-(void)viewWillDisappear:(BOOL)animated
+{
+    //set reusedata to nil
+    ParseStarterProjectAppDelegate* applicationDelegate = ((ParseStarterProjectAppDelegate*)[[UIApplication sharedApplication]delegate]);
+    ((BaseViewController*)applicationDelegate.window.rootViewController).reuseImageData = nil;
+    ((BaseViewController*)applicationDelegate.window.rootViewController).reusePFObject = nil;
+}
 -(void)furthurinit
 {
     
@@ -396,26 +508,136 @@
     [request startAsynchronous];
     
 }
-- (void)scrollViewDidScroll:(UIScrollView *)sender {
+- (void)scrollViewDidScroll:(UIScrollView *)sender
+{
 	if (!pageControlBeingUsed) {
 		// Switch the indicator when more than 50% of the previous/next page is visible
+        if (self.pageControl.hidden) {
+            CGFloat pageWidth = self.gymRouteScroll.frame.size.width;
+            page = floor((self.gymRouteScroll.contentOffset.x - pageWidth / 2) / pageWidth) + 1;
+            self.routePageControl.currentPage = page;
+        }else{
 		CGFloat pageWidth = self.gymWallScroll.frame.size.width;
 		page = floor((self.gymWallScroll.contentOffset.x - pageWidth / 2) / pageWidth) + 1;
 		self.pageControl.currentPage = page;
-
+        }
 	}
 }
 
-- (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView {
+- (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView
+{
 	pageControlBeingUsed = NO;
 }
 
 
-- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView {
+- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView
+{
 	pageControlBeingUsed = NO;
-    self.navigationItem.title = [NSString stringWithFormat:@"%@",[[self.gymSections allKeys]objectAtIndex:self.pageControl.currentPage]];
-}
 
+    if(self.pageControl.hidden==NO)
+    {
+        ParseStarterProjectAppDelegate* applicationDelegate = ((ParseStarterProjectAppDelegate*)[[UIApplication sharedApplication]delegate]);
+        for (UIView* view in ((UIView*)[wallViewArrays objectAtIndex:self.pageControl.currentPage]).subviews) {
+            if ([view isKindOfClass:[UIImageView class]]) {
+        ((BaseViewController*)applicationDelegate.window.rootViewController).reuseImageData = UIImageJPEGRepresentation(((UIImageView*)view).image,1.0) ;
+                ((BaseViewController*)applicationDelegate.window.rootViewController).reusePFObject = ((RouteObject*)[[self.gymSections objectForKey:[self.gymTags objectAtIndex:self.pageControl.currentPage]]objectAtIndex:0]).pfobj;
+                
+            }
+        }
+
+    }else if (self.pageControl.hidden&&!self.routePageControl.hidden)
+    {
+        RouteObject* firstRouteObj = ((RouteObject*)[[self.gymSections objectForKey:[self.gymTags objectAtIndex:self.pageControl.currentPage]]objectAtIndex:self.routePageControl.currentPage]);
+        [self setImagesWithRouteObject:firstRouteObj];
+        footerLabel.text = [NSString stringWithFormat:@"%@",[firstRouteObj.pfobj objectForKey:@"description"]];
+        footerDifficultyLabel.text = [NSString stringWithFormat:@"%@",[firstRouteObj.pfobj objectForKey:@"difficultydescription"]];
+        CGRect frame;
+
+        UIImageView* imgView = ((UIImageView*)[gymRouteScroll.subviews objectAtIndex:0]);
+        imgView.alpha =0;
+        frame.origin.x = gymRouteScroll.frame.size.width * self.routePageControl.currentPage;
+        frame.origin.y = 0;
+        frame.size = imgView.frame.size;
+        
+        imgView = [self drawArrowsWithImageView:imgView withIndex:self.routePageControl.currentPage];
+        imgView.frame = frame;
+
+        [UIView animateWithDuration:0.5
+                              delay:0.4
+                            options: UIViewAnimationCurveEaseOut
+                         animations:^{
+                             imgView.alpha = 1.0;
+                         }
+                         completion:^(BOOL finished){
+                              NSLog(@"Done!");
+                         }];
+        
+    }
+    
+}
+-(void)setImagesWithRouteObject:(RouteObject*)object
+{
+    __block NSString* imagelink;
+    
+    if ([object.pfobj objectForKey:@"isPage"]==[NSNumber numberWithBool:YES]) {
+        
+        imagelink=[gymObject objectForKey:@"imagelink"];
+        if (object.ownerImage) {
+            footerUserImageView.image = object.ownerImage;
+        }else{
+            ASIHTTPRequest* request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:imagelink]];
+            [request setCompletionBlock:^{
+                UIImage* ownerImage = [UIImage imageWithData:[request responseData]];
+                if (ownerImage == nil) {
+                    ownerImage = [UIImage imageNamed:@"placeholder_user.png"];
+                }
+                footerUserImageView.image = ownerImage;
+                object.ownerImage= ownerImage;
+                footerUserImageView.alpha =0.0;
+                [UIView animateWithDuration:0.3
+                                      delay:0.0
+                                    options: UIViewAnimationCurveEaseOut
+                                 animations:^{
+                                     footerUserImageView.alpha = 1.0;
+                                 }
+                                 completion:^(BOOL finished){
+                                     // NSLog(@"Done!");
+                                 }];
+            }];
+            [request setFailedBlock:^{}];
+            [request startAsynchronous];
+        }
+        
+        
+    }else{
+        imagelink = [object.pfobj objectForKey:@"userimage"];
+        if (object.ownerImage) {
+            footerUserImageView.image = object.ownerImage;
+        }else{
+            ASIHTTPRequest* request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:imagelink]];
+            [request setCompletionBlock:^{
+                UIImage* ownerImage = [UIImage imageWithData:[request responseData]];
+                if (ownerImage == nil) {
+                    ownerImage = [UIImage imageNamed:@"placeholder_user.png"];
+                }
+                footerUserImageView.image = ownerImage;
+                object.ownerImage= ownerImage;
+                footerUserImageView.alpha =0.0;
+                [UIView animateWithDuration:0.3
+                                      delay:0.0
+                                    options: UIViewAnimationCurveEaseOut
+                                 animations:^{
+                                     footerUserImageView.alpha = 1.0;
+                                 }
+                                 completion:^(BOOL finished){
+                                     // NSLog(@"Done!");
+                                 }];
+            }];
+            [request setFailedBlock:^{}];
+            [request startAsynchronous];
+        }
+    }
+}
 
 - (CGPathRef)renderPaperCurl:(UIView*)imgView
 {
@@ -433,9 +655,14 @@
     
 	return path.CGPath;
 }
+-(void)backAction:(id)sender
+{
+    [self.navigationController popViewControllerAnimated:YES];
+}
 -(void)returnToGym:(id)sender
 {
     self.navigationItem.title = [NSString stringWithFormat:@"%@",[gymObject objectForKey:@"name"]];
+   
     [UIView animateWithDuration:0.5
                           delay:0.0
                         options: UIViewAnimationCurveEaseOut
@@ -449,14 +676,18 @@
                          gymWallScroll.hidden=YES;
                          maskbgView.hidden=YES;
                          self.pageControl.hidden = YES;
+                         self.routePageControl.hidden = YES;
+                          self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc]initWithTitle:@"Back" style:UIBarButtonItemStyleBordered target:self action:@selector(backAction:)];
+
                          //                         [sender.view removeFromSuperview];
                      }];
 
    
     
-    self.navigationItem.leftBarButtonItem = self.navigationItem.backBarButtonItem;
+  
 }
-- (IBAction)ShowWallViewController:(id)sender {
+- (IBAction)ShowWallViewController:(id)sender
+{
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:[NSString stringWithFormat:@"%@",[gymObject objectForKey:@"name"]] style:UIBarButtonItemStylePlain target:self action:@selector(returnToGym:)];
         pageControlBeingUsed = NO;
     for (int i = 0; i < wallViewArrays.count; i++) {
@@ -475,15 +706,27 @@
 	
 	self.pageControl.currentPage = 0;
 	self.pageControl.numberOfPages = wallViewArrays.count;
-    self.navigationItem.title = [NSString stringWithFormat:@"%@",[[self.gymSections allKeys]objectAtIndex:self.pageControl.currentPage]];
+    
     self.gymWallScroll.hidden=NO;
     self.pageControl.hidden =NO;
+    self.routePageControl.hidden =YES;
     self.maskbgView.image = nil;
     self.maskbgView.hidden=NO;
     self.gymWallScroll.alpha=0;
     self.pageControl.alpha =0;
     self.maskbgView.image = nil;
     self.maskbgView.alpha=0;
+    
+    ParseStarterProjectAppDelegate* applicationDelegate = ((ParseStarterProjectAppDelegate*)[[UIApplication sharedApplication]delegate]);
+    for (UIView* view in ((UIView*)[wallViewArrays objectAtIndex:self.pageControl.currentPage]).subviews) {
+        if ([view isKindOfClass:[UIImageView class]]) {
+            ((BaseViewController*)applicationDelegate.window.rootViewController).reuseImageData = UIImageJPEGRepresentation(((UIImageView*)view).image,1.0) ;
+            ((BaseViewController*)applicationDelegate.window.rootViewController).reusePFObject = ((RouteObject*)[[self.gymSections objectForKey:[self.gymTags objectAtIndex:self.pageControl.currentPage]]objectAtIndex:0]).pfobj;
+            
+        }
+    }
+    
+
     [UIView animateWithDuration:0.5
                           delay:0.0
                         options: UIViewAnimationCurveEaseOut
@@ -506,6 +749,7 @@
 }
 
 - (void)dealloc {
+    [wallRoutesArrowTypeArray release];
     [wallRoutesArrowArray release];
     [imageViewContainer release];
     [gymProfileImageView release];
@@ -518,7 +762,11 @@
     [pageControl release];
     [maskbgView release];
     [ourRoutesButton release];
-    [gymRouteScroll release];
+    [routePageControl release];
+    [footerView release];
+    [footerUserImageView release];
+    [footerLabel release];
+    [footerDifficultyLabel release];
     [super dealloc];
 }
 - (void)viewDidUnload {
@@ -533,7 +781,11 @@
     [self setPageControl:nil];
     [self setMaskbgView:nil];
     [self setOurRoutesButton:nil];
-    [self setGymRouteScroll:nil];
+    [self setRoutePageControl:nil];
+    [self setFooterView:nil];
+    [self setFooterUserImageView:nil];
+    [self setFooterLabel:nil];
+    [self setFooterDifficultyLabel:nil];
     [super viewDidUnload];
 }
 @end

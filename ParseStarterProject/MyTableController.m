@@ -569,7 +569,9 @@
                         [queryArray removeObject:imagefile];
                             ((FeedObject*)[self.routeArray objectAtIndex:indexPath.row]).isLoading = NO;     
                         UIImage* retrievedImage = [UIImage imageWithData:imageData];
+                        #warning crashes here
                         ((FeedObject*)[self.routeArray objectAtIndex:indexPath.row]).routeImage = retrievedImage;
+                        //till here
                         cell.routeImageView.alpha = 0.0;
                         cell.routeImageView.image = retrievedImage;
                         if (cell.routeImageView.image==nil){
