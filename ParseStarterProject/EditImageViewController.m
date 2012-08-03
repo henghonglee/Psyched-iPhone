@@ -30,6 +30,7 @@
 @synthesize imageMetaData;
 @synthesize sliderView;
 @synthesize imageStack;
+@synthesize reusePFObject;
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
@@ -539,6 +540,8 @@ draggableImageView.frame = CGRectMake(0, 0, 320, 320);
 */
 - (IBAction)DoneButton:(id)sender {
     CreateRouteViewController* viewController= [[CreateRouteViewController alloc]initWithNibName:@"CreateRouteViewController" bundle:nil];
+    
+    viewController.reusePFObject = reusePFObject;
 	viewController.imageTaken = imageToEdit.image;
     viewController.originalImage = [imageStack objectAtIndex:0];
     viewController.CGPointsArray = CGPointsArray;
@@ -645,7 +648,7 @@ draggableImageView.frame = CGRectMake(0, 0, 320, 320);
         [arrowTypeArray removeAllObjects];
     }
     [imageStack removeAllObjects];
-    int imgorientation;
+    int imgorientation = 0 ;
     switch (imageInView.imageOrientation) {
         case UIImageOrientationLeft:
             imgorientation = UIImageOrientationUp;

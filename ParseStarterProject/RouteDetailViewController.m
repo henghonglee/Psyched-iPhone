@@ -222,6 +222,10 @@ kAPIGraphCommentPhoto,
     }else{
         outdateButton.hidden = NO;
     }
+    //if route object is near admin geopoint , add ability to delete
+    
+    
+
     if ([[routeObject.pfobj objectForKey:@"username"] isEqualToString:[[PFUser currentUser]objectForKey:@"name"]]) {
         //add delete button if user is owner
         UIBarButtonItem *anotherButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction target:self action:@selector(deleteActionSheetShow)];
@@ -231,6 +235,38 @@ kAPIGraphCommentPhoto,
         if ([routeObject.pfobj objectForKey:@"outdated"]==[NSNumber numberWithBool:true]) {
             unoutdateButton.hidden = NO;
         }
+    }else{
+        __block BOOL isNear=NO;
+        PFGeoPoint* routeGP = [routeObject.pfobj objectForKey:@"routelocation"];
+        [[PFUser currentUser]refreshInBackgroundWithBlock:^(PFObject *object, NSError *error) {
+            if ([[[PFUser currentUser]objectForKey:@"isAdmin"] isEqualToNumber:[NSNumber numberWithBool:YES]]) {
+                //fetch gyms hes admin for
+                PFQuery* gymManaged = [PFQuery queryWithClassName:@"Gym"];
+                [gymManaged whereKey:@"admin" containsString:[PFUser currentUser].objectId];
+                [gymManaged findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+                    if ([objects count]>0) {
+                        for (PFObject* gym in objects) {
+                            if ([routeGP distanceInKilometersTo:[gym objectForKey:@"gymlocation"]]<0.5) {
+                                isNear=YES;
+                            }
+
+                        }
+                        if (isNear) {
+                            
+                        
+                        UIBarButtonItem *anotherButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction target:self action:@selector(deleteActionSheetShow)];
+                        self.navigationItem.rightBarButtonItem = anotherButton;
+                        [anotherButton release];
+                        
+                        if ([routeObject.pfobj objectForKey:@"outdated"]==[NSNumber numberWithBool:true]) {
+                            unoutdateButton.hidden = NO;
+                            }
+                        }
+
+                    }
+                }];
+            }
+        }];
     }
     if ([[self.routeObject.pfobj objectForKey:@"approvalstatus"]isEqualToString:@"pending"] && [[self.routeObject.pfobj objectForKey:@"username"]isEqualToString:[[PFUser currentUser]objectForKey:@"name"]]) {
         approvalView.hidden=NO;
@@ -1277,7 +1313,7 @@ kAPIGraphCommentPhoto,
             ((BaseViewController*)applicationDelegate.window.rootViewController).reusePFObject = routeObject.pfobj;
             NSArray* routearrowarray = [routeObject.pfobj objectForKey:@"arrowarray"];
             NSArray* arrowtypearray = [routeObject.pfobj objectForKey:@"arrowtypearray"];
-             UIImage* pastedimage;
+            UIImage* pastedimage = nil;
                 NSLog(@"routearrowarray = %@",routearrowarray);
             for (int i=0; i<[routearrowarray count]; i++) {
                

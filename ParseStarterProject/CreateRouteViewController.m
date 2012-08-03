@@ -59,6 +59,7 @@ typedef enum apiCall {
 @synthesize fileUploadBackgroundTaskId;
 @synthesize photoPostBackgroundTaskId;
 @synthesize selectedGymObject;
+@synthesize reusePFObject;
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
     self.fileUploadBackgroundTaskId = UIBackgroundTaskInvalid;
@@ -70,7 +71,6 @@ typedef enum apiCall {
     }
     return self;
 }
-
 - (void)didReceiveMemoryWarning
 {
     // Releases the view if it doesn't have a superview.
@@ -80,9 +80,7 @@ typedef enum apiCall {
     routeLocMapView =nil;
     // Release any cached data, images, etc that aren't in use.
 }
-
 #pragma mark - View lifecycle
-
 - (void)viewDidLoad
 {
     [super viewDidLoad];
@@ -93,6 +91,11 @@ typedef enum apiCall {
             }
         }
     }];
+    if (reusePFObject) {
+    descriptionTextField.text = [NSString stringWithFormat:@"#%@",[reusePFObject objectForKey:@"hashtag"]];
+    }
+    
+    
     routeImageView.image = imageTaken;
     routeImageView.layer.borderColor = [UIColor whiteColor].CGColor;    
     routeImageView.layer.borderWidth = 3;
@@ -133,7 +136,7 @@ typedef enum apiCall {
 }
 -(void)viewWillDisappear:(BOOL)animated
 {
-
+    reusePFObject = nil;
     NSLog(@"canceling %d queries",[queryArray count]);
     for (id pfobject in queryArray) {
         if ([pfobject isKindOfClass:[PFFile class]]) {
@@ -149,7 +152,6 @@ typedef enum apiCall {
     [HUD hide:YES];
     NSLog(@"done canceling queries");
 }
-
 - (void)viewDidUnload
 {
     
@@ -174,8 +176,8 @@ typedef enum apiCall {
     // Release any retained subviews of the main view.
     // e.g. self.myOutlet = nil;
 }
-
--(BOOL)textFieldShouldReturn:(UITextField *)textField{
+-(BOOL)textFieldShouldReturn:(UITextField *)textField
+{
     [textField resignFirstResponder];
     return YES;
 }
@@ -187,7 +189,6 @@ typedef enum apiCall {
 {
     locationTextField.text = text;
 }
-
 -(BOOL)textFieldShouldBeginEditing:(UITextField *)textField
 {
     if (textField==descriptionTextField) {
@@ -240,8 +241,6 @@ typedef enum apiCall {
         return YES;
     }
     }
-
-
 -(NSInteger)pickerView:(UIPickerView *)pickerView numberOfRowsInComponent:(NSInteger)component
 {
 
@@ -264,8 +263,6 @@ typedef enum apiCall {
     return [gymlist objectAtIndex:row];
     }
 }
-
-
 -(void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex
 {
     //turn off facebook switch regardless
@@ -295,7 +292,6 @@ typedef enum apiCall {
     
     
 }
-
 //contains gym selector for fb upload for gyms
 -(void)actionSheet:(UIActionSheet *)actionSheet didDismissWithButtonIndex:(NSInteger)buttonIndex
 {
@@ -324,7 +320,6 @@ typedef enum apiCall {
     difficultyint = [gympickerView selectedRowInComponent:0];
     }
 }
-
 //rotational code
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
 {
@@ -335,9 +330,9 @@ typedef enum apiCall {
         return NO;
     }
 }
-
 //creates new gym dynamically
--(void)saveRouteInGym{
+-(void)saveRouteInGym
+{
     
     NSDictionary* gymSelected = [arrayOfAccounts objectAtIndex:arrIndex];
   
@@ -374,7 +369,6 @@ typedef enum apiCall {
         }
     }];
 }
-
 //actually saves the gym route in a gym
 -(void)saveRouteInGymSelector:(PFObject*)GymObject
 {
@@ -402,14 +396,14 @@ typedef enum apiCall {
   
     NSString* hashtag;
     if ([descriptionTextField.text rangeOfString:@"#"].location != NSNotFound){
-        NSLog(@"found hashtag!");
+        
     NSScanner *scanner = [NSScanner scannerWithString:descriptionTextField.text];
     
     [scanner scanUpToString:@"#" intoString:NULL];
     [scanner setScanLocation:[scanner scanLocation] + 1];
     [scanner scanUpToString:@" " intoString:&hashtag];
-    [newRoute setObject:hashtag forKey:@"hashtag"];
-        NSLog(@"sethashtag to %@",hashtag);
+    [newRoute setObject:[hashtag lowercaseString] forKey:@"hashtag"];
+        [JHNotificationManager notificationWithMessage:[NSString stringWithFormat:@"Found #%@ hashtag =)",[hashtag lowercaseString]]];
     }
     [newRoute setObject:descriptionTextField.text forKey:@"description"];
     [newRoute setObject:[PFGeoPoint geoPointWithLatitude:routeLoc.latitude longitude:routeLoc.longitude] forKey:@"routelocation"];
@@ -563,7 +557,6 @@ typedef enum apiCall {
     }];
     }];
 }
-
 -(void)saveRoute
 {
 //no facebook save
@@ -641,16 +634,19 @@ typedef enum apiCall {
     [newRoute setObject:CGPointsArray forKey:@"arrowarray"];
         [newRoute setObject:arrowTypeArray forKey:@"arrowtypearray"];
     NSData *imageData = UIImageJPEGRepresentation(originalImage, 1.0);
+    NSData *imageWithArrowsData = UIImageJPEGRepresentation(imageTaken, 1.0);
     PFFile *imageFile = [PFFile fileWithName:@"noArrows.jpeg" data:imageData];
-    
- //   appDelegate.imageData = imageData;
-
+    PFFile *imageWithArrows = [PFFile fileWithName:@"gymWithArrows.jpeg" data:imageWithArrowsData];
+    NSLog(@"saving...");
+    [queryArray addObject:imageWithArrows];
+    [imageWithArrows saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+        [queryArray removeObject:imageWithArrows];
+        [newRoute setObject:imageWithArrows forKey:@"imageFileWithArrows"];
     [queryArray addObject:imageFile];
-    //   [PF_MBProgressHUD showHUDAddedTo:self.view animated:YES];
     [imageFile saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
         [queryArray removeObject:imageFile];
         [newRoute setObject:imageFile forKey:@"imageFile"];
-        
+
         [newRoute saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
                         
             PFObject* feedObject = [PFObject objectWithClassName:@"Feed"];
@@ -736,9 +732,11 @@ typedef enum apiCall {
             HUD.labelText = @"Almost Done...";
         }
     }];
+    }];
     
 }
-- (IBAction)saveAction:(id)sender {
+- (IBAction)saveAction:(id)sender
+{
     if ([locationTextField.text isEqualToString:@""]) {
         UIAlertView* alert = [[UIAlertView alloc]initWithTitle:@"Error" message:@"Please fill in route location" delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil];
         [alert show];
@@ -857,14 +855,14 @@ typedef enum apiCall {
     }
      
 }
-- (IBAction)closeAction:(id)sender {
+- (IBAction)closeAction:(id)sender
+{
     [self dismissModalViewControllerAnimated:YES];
     NSLog(@"share action ended");
     [FlurryAnalytics endTimedEvent:@"SHARE_ACTION" withParameters:nil];
 }
-
-
-- (void)dealloc {
+- (void)dealloc
+{
     if( myRequest ) {
         [[myRequest connection] cancel];
         [myRequest release];
@@ -895,9 +893,6 @@ typedef enum apiCall {
     [gymShareLabel release];
     [super dealloc];
 }
-
-
-
 -(void)TaggerDidReturnWithRecommendedArray:(NSMutableArray *)recommendedArray
 {
 
@@ -910,10 +905,8 @@ typedef enum apiCall {
         }
     }
 }
-
-
-
-- (void)apiGraphUserPhotosPost:(UIImage*)img {
+- (void)apiGraphUserPhotosPost:(UIImage*)img
+{
     currentAPIcall = kAPIGraphUserPhotosPost;
     UIImage* resizedimg = [img resizedImage:CGSizeMake(960, 960) interpolationQuality:kCGInterpolationHigh];
     
@@ -990,8 +983,8 @@ typedef enum apiCall {
     }];
     [request startAsynchronous];
 }
-
--(IBAction)facebookswitchon:(UISwitch*)sender{
+-(IBAction)facebookswitchon:(UISwitch*)sender
+{
     
     /*
     [[PFUser currentUser]refreshInBackgroundWithBlock:^(PFObject *object, NSError *error) {
@@ -1035,7 +1028,8 @@ typedef enum apiCall {
      }];
     */
 }
-- (IBAction)gymSwitchValueChanged:(UISwitch*)sender {
+- (IBAction)gymSwitchValueChanged:(UISwitch*)sender
+{
     if (sender.on) {
         [fbuploadswitch setOn:NO];
         [twuploadswitch setOn:NO];
@@ -1062,7 +1056,8 @@ typedef enum apiCall {
         }
     }
 }
--(void)presentAccountsSheet:(NSArray*)fetchedAccounts{
+-(void)presentAccountsSheet:(NSArray*)fetchedAccounts
+{
     [arrayOfAccounts removeAllObjects];
     for (NSDictionary* obj in fetchedAccounts) {
         ASIHTTPRequest* request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"https://graph.facebook.com/%@&access_token=%@",[NSString stringWithFormat:@"%@",[obj objectForKey:@"id"],[obj objectForKey:@"access_token"]]]]];
@@ -1108,7 +1103,8 @@ typedef enum apiCall {
     }
 
 }
-- (void)apiGraphPagePhotosPost:(UIImage*)img {
+- (void)apiGraphPagePhotosPost:(UIImage*)img
+{
     currentAPIcall = kAPIGraphPagePhotosPost;
     oldAccessToken = [PFFacebookUtils facebook].accessToken;
     [oldAccessToken retain];
@@ -1207,7 +1203,8 @@ typedef enum apiCall {
     }
    
 }
-- (void)request:(PF_FBRequest *)request didLoad:(id)result {
+- (void)request:(PF_FBRequest *)request didLoad:(id)result
+{
     //NSString* photoid;
     NSLog(@"in result =%@",result);
     switch (currentAPIcall) {
@@ -1253,7 +1250,6 @@ typedef enum apiCall {
   //  }
   //  [JHNotificationManager notificationWithMessage:@"Photo uploaded successfully to Facebook!"];    
 }
-
 -(void)tagPhoto:(NSString*)photoid withUser:(NSString*)facebookid
 {
 //    NSMutableDictionary *params = [NSMutableDictionary dictionaryWithObjectsAndKeys:

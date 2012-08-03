@@ -22,6 +22,7 @@
     NSMutableDictionary* imageMetaData;
     NSNumber* selectedArrowType;
 }
+@property (retain, nonatomic)PFObject* reusePFObject;
 @property (retain, nonatomic) NSMutableArray* CGPointsArray;
 @property (retain, nonatomic) NSMutableArray* arrowTypeArray;
 @property (retain, nonatomic) IBOutlet UIView *moreArrowsView;

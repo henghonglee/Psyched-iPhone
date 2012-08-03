@@ -44,20 +44,6 @@
 				<reference key="NSNextResponder"/>
 				<int key="NSvFlags">292</int>
 				<array class="NSMutableArray" key="NSSubviews">
-					<object class="IBUIImageView" id="474486094">
-						<reference key="NSNextResponder" ref="598869303"/>
-						<int key="NSvFlags">292</int>
-						<string key="NSFrameSize">{320, 367}</string>
-						<reference key="NSSuperview" ref="598869303"/>
-						<reference key="NSWindow"/>
-						<string key="NSReuseIdentifierKey">_NS:9</string>
-						<bool key="IBUIUserInteractionEnabled">NO</bool>
-						<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
-						<object class="NSCustomResource" key="IBUIImage">
-							<string key="NSClassName">NSImage</string>
-							<string key="NSResourceName">paperbg.png</string>
-						</object>
-					</object>
 					<object class="IBUIScrollView" id="923988688">
 						<reference key="NSNextResponder" ref="598869303"/>
 						<int key="NSvFlags">268</int>
@@ -584,7 +570,7 @@
 										<string key="NSFrame">{{230, 97}, {72, 37}}</string>
 										<reference key="NSSuperview" ref="969766207"/>
 										<reference key="NSWindow"/>
-										<reference key="NSNextKeyView" ref="474486094"/>
+										<reference key="NSNextKeyView"/>
 										<string key="NSReuseIdentifierKey">_NS:225</string>
 										<bool key="IBUIOpaque">NO</bool>
 										<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
@@ -994,13 +980,14 @@
 									</object>
 									<object class="IBUIButton" id="116035422">
 										<reference key="NSNextResponder" ref="85434868"/>
-										<int key="NSvFlags">292</int>
+										<int key="NSvFlags">-2147483356</int>
 										<string key="NSFrame">{{202, 84}, {92, 22}}</string>
 										<reference key="NSSuperview" ref="85434868"/>
 										<reference key="NSWindow"/>
 										<reference key="NSNextKeyView" ref="697288413"/>
 										<string key="NSReuseIdentifierKey">_NS:225</string>
 										<bool key="IBUIOpaque">NO</bool>
+										<float key="IBUIAlpha">0.0</float>
 										<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 										<int key="IBUIContentHorizontalAlignment">0</int>
 										<int key="IBUIContentVerticalAlignment">0</int>
@@ -1049,6 +1036,7 @@
 										<reference key="NSNextKeyView" ref="969766207"/>
 										<string key="NSReuseIdentifierKey">_NS:225</string>
 										<bool key="IBUIOpaque">NO</bool>
+										<float key="IBUIAlpha">0.0</float>
 										<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 										<int key="IBUIContentHorizontalAlignment">0</int>
 										<int key="IBUIContentVerticalAlignment">0</int>
@@ -1095,8 +1083,7 @@
 				<string key="NSReuseIdentifierKey">_NS:9</string>
 				<object class="NSColor" key="IBUIBackgroundColor">
 					<int key="NSColorSpace">3</int>
-					<bytes key="NSWhite">MQA</bytes>
-					<reference key="NSCustomColorSpace" ref="518401540"/>
+					<bytes key="NSWhite">MC42NjY2NjY2NjY3AA</bytes>
 				</object>
 				<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 			</object>
@@ -1538,7 +1525,6 @@
 						<reference key="object" ref="598869303"/>
 						<array class="NSMutableArray" key="children">
 							<reference ref="923988688"/>
-							<reference ref="474486094"/>
 						</array>
 						<reference key="parent" ref="0"/>
 					</object>
@@ -1824,11 +1810,6 @@
 						<reference key="object" ref="320817873"/>
 						<reference key="parent" ref="3934877"/>
 					</object>
-					<object class="IBObjectRecord">
-						<int key="objectID">230</int>
-						<reference key="object" ref="474486094"/>
-						<reference key="parent" ref="598869303"/>
-					</object>
 				</array>
 			</object>
 			<dictionary class="NSMutableDictionary" key="flattenedProperties">
@@ -1873,7 +1854,6 @@
 				<string key="219.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<string key="22.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<string key="221.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
-				<string key="230.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<string key="28.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<string key="32.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<string key="6.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
@@ -1898,20 +1878,17 @@
 				<object class="IBPartialClassDescription">
 					<string key="className">RouteDetailViewController</string>
 					<string key="superclassName">UIViewController</string>
-					<dictionary class="NSMutableDictionary" key="actions">
-						<string key="didDoubleTap:">UITapGestureRecognizer</string>
-						<string key="showUsers:">UIButton</string>
-					</dictionary>
-					<dictionary class="NSMutableDictionary" key="actionInfosByName">
-						<object class="IBActionInfo" key="didDoubleTap:">
-							<string key="name">didDoubleTap:</string>
-							<string key="candidateClassName">UITapGestureRecognizer</string>
-						</object>
-						<object class="IBActionInfo" key="showUsers:">
+					<object class="NSMutableDictionary" key="actions">
+						<string key="NS.key.0">showUsers:</string>
+						<string key="NS.object.0">UIButton</string>
+					</object>
+					<object class="NSMutableDictionary" key="actionInfosByName">
+						<string key="NS.key.0">showUsers:</string>
+						<object class="IBActionInfo" key="NS.object.0">
 							<string key="name">showUsers:</string>
 							<string key="candidateClassName">UIButton</string>
 						</object>
-					</dictionary>
+					</object>
 					<dictionary class="NSMutableDictionary" key="outlets">
 						<string key="UserImageView">UIImageView</string>
 						<string key="approvalView">UIView</string>
@@ -2095,7 +2072,6 @@
 			<string key="bluegraybutton.png">{420, 261}</string>
 			<string key="bluepin.png">{32, 32}</string>
 			<string key="graybutton.png">{208, 68}</string>
-			<string key="paperbg.png">{640, 822}</string>
 			<string key="placeholder_user.png">{256, 256}</string>
 			<string key="popular.png">{24, 22}</string>
 			<string key="popularbutton.png">{24, 22}</string>

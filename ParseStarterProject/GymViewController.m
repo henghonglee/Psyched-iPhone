@@ -10,12 +10,15 @@
 
 #import <QuartzCore/QuartzCore.h>
 @implementation GymViewController
+@synthesize loadRoutesActivityIndicator;
 @synthesize pageControl;
 @synthesize gymWallScroll;
 @synthesize footerView;
 @synthesize footerUserImageView;
 @synthesize footerLabel;
 @synthesize footerDifficultyLabel;
+@synthesize likeButton;
+@synthesize followButton;
 @synthesize maskbgView;
 @synthesize wallImageViews;
 @synthesize routePageControl;
@@ -32,7 +35,7 @@
 @synthesize wallRoutesArrowArray,wallRoutesArrowTypeArray;
 @synthesize imageDataArray;
 @synthesize gymRouteScroll;
-
+@synthesize queryArray;
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
@@ -41,7 +44,8 @@
     }
     return self;
 }
-- (IBAction)didChangePage:(id)sender {
+- (IBAction)didChangePage:(id)sender
+{
     // Update the scroll view to the appropriate page
     NSLog(@"changing page");
 	CGRect frame;
@@ -52,7 +56,8 @@
 	
 	pageControlBeingUsed = YES;
 }
-- (IBAction)didChangeRoutePage:(id)sender {
+- (IBAction)didChangeRoutePage:(id)sender
+{
     // Update the scroll view to the appropriate page
     NSLog(@"changing route page");
 	CGRect frame;
@@ -63,7 +68,67 @@
     
 	pageControlBeingUsed = YES;
 }
+- (IBAction)likeButton:(id)sender
+{
+    [[UIApplication sharedApplication]openURL:[NSURL URLWithString:[NSString stringWithFormat:@"fb://page/%@",[gymObject objectForKey:@"facebookid"]]]];
 
+}
+- (IBAction)followUsButton:(id)sender
+{
+    followButton.enabled = NO;
+    [PFPush getSubscribedChannelsInBackgroundWithBlock:^(NSSet *channels, NSError *error) {
+        if ([channels containsObject:[NSString stringWithFormat:@"channel%@",gymObject.objectId]]) {
+            NSLog(@"isSubscribedToThisGym");
+            [PFPush unsubscribeFromChannelInBackground:[NSString stringWithFormat:@"channel%@",gymObject.objectId] block:^(BOOL succeeded, NSError *error) {
+                if (succeeded) {
+                    NSLog(@"unsubed from channel channel+gymobject.objectid ");
+                    [followButton setTitle:@"Follow Us!" forState:UIControlStateNormal];
+                    followButton.enabled = YES;
+                }
+            }];
+        }else{
+            [PFPush subscribeToChannelInBackground:[NSString stringWithFormat:@"channel%@",gymObject.objectId] block:^(BOOL succeeded, NSError *error) {
+                if (succeeded) {
+                NSLog(@"subscribed to channel channel+gymobject.objectid ");
+                [followButton setTitle:@"Following!" forState:UIControlStateNormal];
+                 followButton.enabled = YES;
+                                    }
+            }];
+            
+        }
+       
+    }];
+
+   /* 
+    NSArray* adminArray = [[gymObject fetchIfNeeded] objectForKey:@"admin"];
+    if (![adminArray containsObject:[[PFUser currentUser] objectForKey:@"name"]]) {
+        PFQuery* followedQuery = [PFQuery queryWithClassName:@"Follow"];
+        [followedQuery whereKey:@"follower" equalTo:[PFUser currentUser]];
+        [followedQuery whereKey:@"followed" containedIn:adminArray];
+        [followedQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+            //if user followed any admin, each admin follow is detailed here
+            for (NSString* adminName in adminArray) {
+                BOOL isfollowed = NO;
+                for (PFObject* followobj in objects) {
+                    if([adminName isEqualToString:[followobj objectForKey:@"followed"]]){
+                        isfollowed =YES;
+                    }
+                }
+                if (!isfollowed) {
+                    NSLog(@"added new follow");
+                    PFObject* newFollow = [PFObject objectWithClassName:@"Follow"];
+                    [newFollow setObject:adminName forKey:@"followed"];
+                    [newFollow setObject:[PFUser currentUser] forKey:@"follower"];
+                    [newFollow saveInBackground];
+                }
+            }
+            
+        }];
+        
+        
+    }
+    */
+}
 - (void)viewDidLoad
 {
     [super viewDidLoad];
@@ -73,16 +138,33 @@
     wallRoutesArrowArray = [[NSMutableArray alloc]init];
         wallRoutesArrowTypeArray = [[NSMutableArray alloc]init];
     imageDataArray =[[NSMutableArray alloc]init];
+    queryArray =[[NSMutableArray alloc]init];
+    
+     followButton.enabled = NO;
+    [PFPush getSubscribedChannelsInBackgroundWithBlock:^(NSSet *channels, NSError *error) {
+        if ([channels containsObject:[NSString stringWithFormat:@"channel%@",gymObject.objectId]]) {
+            NSLog(@"isSubscribedToThisGym");
+            [followButton setTitle:@"Following!" forState:UIControlStateNormal];
+
+        }else{
+            [followButton setTitle:@"Follow Us!" forState:UIControlStateNormal];
+        }
+                    followButton.enabled = YES;
+    }];
+    
     __block int downloadedRouteCount=0;
     //find number of walls by hashtag
     //get their images
     //if user exits gym page just destroy all from array
+    [loadRoutesActivityIndicator startAnimating];
     PFQuery* gymWallQuery = [PFQuery queryWithClassName:@"Route"];
     [gymWallQuery whereKey:@"routelocation" nearGeoPoint:[gymObject objectForKey:@"gymlocation"] withinKilometers:0.5];
     [gymWallQuery whereKey:@"outdated" notEqualTo:[NSNumber numberWithBool:true]];
     [gymWallQuery whereKeyExists:@"hashtag"];
+    [queryArray addObject:gymWallQuery];
     [gymWallQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
-        
+        [queryArray removeObject:gymWallQuery];
+       
         //NSLog(@"objects = %@",objects);
         //prepare arrays
         for (NSString* key in [self.gymSections allKeys]) {
@@ -126,8 +208,9 @@
             PFObject* firstRoute = ((RouteObject*)[hashtaggedRoutes objectAtIndex:0]).pfobj;
      //       NSLog(@"imagefile =%@",((PFFile*)[firstRoute objectForKey:@"imageFile"]).url);
     //#warning need better alert for download completed here and also change to gym no arrows
+            [queryArray addObject:[firstRoute objectForKey:@"imageFile"]];
             [[firstRoute objectForKey:@"imageFile"] getDataInBackgroundWithBlock:^(NSData *data, NSError *error) {
-                
+                [queryArray removeObject:[firstRoute objectForKey:@"imageFile"]];
                 UIView* wallView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, 320, 320)];
                 wallView.backgroundColor = [UIColor clearColor];
                 
@@ -164,6 +247,7 @@
                 NSLog(@"retrieved 1 image, count at %d/%d",downloadedRouteCount,[self.gymTags count]);
                 if (downloadedRouteCount==[self.gymTags count]) {
                     ourRoutesButton.enabled = true;
+                     [loadRoutesActivityIndicator stopAnimating];
                 }
             }];
             
@@ -177,7 +261,9 @@
     }else{
         PFQuery* gymQuery = [PFQuery queryWithClassName:@"Gym"];
         [gymQuery whereKey:@"name" equalTo:gymName];
+        [queryArray addObject:gymQuery];
         [gymQuery getFirstObjectInBackgroundWithBlock:^(PFObject *object, NSError *error) {
+            [queryArray removeObject:gymQuery];
          gymObject = object;
         [self furthurinit];
          }];
@@ -236,13 +322,15 @@
                      }];
     
 }
-
 -(void)reverseHandleDoubleTap:(UITapGestureRecognizer*)sender
 {
     if (self.navigationItem.leftBarButtonItem ==nil) {
-        self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:[NSString stringWithFormat:@"%@",[gymObject objectForKey:@"name"]] style:UIBarButtonItemStylePlain target:self action:@selector(returnToGym:)];
+       UIBarButtonItem* newLeftButton  = [[UIBarButtonItem alloc] initWithTitle:@"Gym" style:UIBarButtonItemStylePlain target:self action:@selector(returnToGym:)];
+        self.navigationItem.leftBarButtonItem = newLeftButton;
+        [newLeftButton release];
     }
     self.navigationItem.rightBarButtonItem = nil;
+   
     maskbgView.hidden=NO;
     maskbgView.image = nil;
     maskbgView.alpha = 0.8;
@@ -276,7 +364,7 @@
     viewController.routeObject = [[self.gymSections objectForKey:[self.gymTags objectAtIndex:self.pageControl.currentPage]]objectAtIndex:self.routePageControl.currentPage];
     
     //   viewController.routeObject = [((NSMutableArray*)[self.userDictionary objectForKey:[[self.userDictionary allKeys]objectAtIndex:indexPath.section]]) objectAtIndex:indexPath.index];
-    [self.navigationController pushViewController:viewController animated:NO];
+    [self.navigationController pushViewController:viewController animated:YES];
     [viewController release];
 }
 -(UIImageView*)drawArrowsWithImageView:(UIImageView*)arrowOverlay withIndex:(int)index
@@ -297,7 +385,7 @@
  arrowOverlay.contentMode =UIViewContentModeScaleAspectFit;
  arrowOverlay.backgroundColor = [UIColor clearColor];
  
- UIImage* pastedimage;
+ UIImage* pastedimage = nil;
     NSArray*gymsection =[self.gymSections objectForKey:[[self.gymSections allKeys]objectAtIndex:self.pageControl.currentPage]];
     
     RouteObject* route = [gymsection objectAtIndex:self.routePageControl.currentPage];
@@ -338,7 +426,6 @@
  }
     return arrowOverlay;
 }
-
 -(void)addGymScrollToAugmentedImageView:(UIImageView*)imgView
 {
     maskbgView.hidden=NO;
@@ -350,7 +437,9 @@
     gymRouteScroll.showsHorizontalScrollIndicator = NO;
     gymRouteScroll.showsVerticalScrollIndicator = NO;
     
-    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Details" style:UIBarButtonItemStylePlain target:self action:@selector(showRoute:)];
+     UIBarButtonItem* newRightButton = [[UIBarButtonItem alloc] initWithTitle:@"Details" style:UIBarButtonItemStylePlain target:self action:@selector(showRoute:)];
+    self.navigationItem.rightBarButtonItem = newRightButton;
+    [newRightButton release];
     self.routePageControl.hidden=NO;
     
     [self.view bringSubviewToFront:self.routePageControl];
@@ -386,7 +475,7 @@
     gymRouteScroll.contentSize = CGSizeMake(imgView.frame.size.width * wallRoutesArrowArray.count, imgView.frame.size.height);
     UIImageView* arrowOverlay = [[UIImageView alloc]initWithFrame:CGRectMake(0, 0, 320, 320)];
     [gymRouteScroll addSubview:[self drawArrowsWithImageView:arrowOverlay withIndex:0]];
-    
+    [arrowOverlay release];
 }
 - (UIImage *)imageByDrawingImage:(UIImage*)pastedImage OnImage:(UIImage *)image inRect:(CGRect)rect
 {
@@ -458,7 +547,24 @@
     ParseStarterProjectAppDelegate* applicationDelegate = ((ParseStarterProjectAppDelegate*)[[UIApplication sharedApplication]delegate]);
     ((BaseViewController*)applicationDelegate.window.rootViewController).reuseImageData = nil;
     ((BaseViewController*)applicationDelegate.window.rootViewController).reusePFObject = nil;
+    
+    
+    NSLog(@"canceling %d queries",[queryArray count]);
+    for (id pfobject in queryArray) {
+        if ([pfobject isKindOfClass:[PFFile class]]) {
+            NSLog(@"cancelling pffile upload/download");
+            [((PFFile*)pfobject) cancel];
+        }
+        if ([pfobject isKindOfClass:[PFQuery class]]) {
+            NSLog(@"cancelling pfquery ");
+            [((PFQuery*)pfobject) cancel];
+        }
+    }
+    [queryArray removeAllObjects];
+    
+    NSLog(@"done canceling queries");
 }
+
 -(void)furthurinit
 {
     
@@ -523,13 +629,10 @@
         }
 	}
 }
-
 - (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView
 {
 	pageControlBeingUsed = NO;
 }
-
-
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView
 {
 	pageControlBeingUsed = NO;
@@ -638,7 +741,6 @@
         }
     }
 }
-
 - (CGPathRef)renderPaperCurl:(UIView*)imgView
 {
 	CGSize size = imgView.bounds.size;
@@ -659,10 +761,20 @@
 {
     [self.navigationController popViewControllerAnimated:YES];
 }
+- (IBAction)showGym:(id)sender {
+    MapViewController* mapVC = [[MapViewController alloc]initWithNibName:@"MapViewController" bundle:nil];
+    mapVC.geopoint = (PFGeoPoint*)[gymObject objectForKey:@"gymlocation"];
+    mapVC.gymName = [gymObject objectForKey:@"name"];
+    [self.navigationController pushViewController:mapVC animated:YES];
+    
+    [mapVC release];
+}
 -(void)returnToGym:(id)sender
 {
     self.navigationItem.title = [NSString stringWithFormat:@"%@",[gymObject objectForKey:@"name"]];
-   
+    for (UIView* view in gymWallScroll.subviews) {
+        [view removeFromSuperview];
+    }
     [UIView animateWithDuration:0.5
                           delay:0.0
                         options: UIViewAnimationCurveEaseOut
@@ -677,8 +789,9 @@
                          maskbgView.hidden=YES;
                          self.pageControl.hidden = YES;
                          self.routePageControl.hidden = YES;
-                          self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc]initWithTitle:@"Back" style:UIBarButtonItemStyleBordered target:self action:@selector(backAction:)];
-
+                         UIBarButtonItem* newLeftButton = [[UIBarButtonItem alloc]initWithTitle:@"Back" style:UIBarButtonItemStyleBordered target:self action:@selector(backAction:)];
+                         self.navigationItem.leftBarButtonItem = newLeftButton;
+                         [newLeftButton release];
                          //                         [sender.view removeFromSuperview];
                      }];
 
@@ -688,8 +801,13 @@
 }
 - (IBAction)ShowWallViewController:(id)sender
 {
-    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:[NSString stringWithFormat:@"%@",[gymObject objectForKey:@"name"]] style:UIBarButtonItemStylePlain target:self action:@selector(returnToGym:)];
+   UIBarButtonItem*newLeftButton = [[UIBarButtonItem alloc] initWithTitle:@"Gym" style:UIBarButtonItemStylePlain target:self action:@selector(returnToGym:)];
+    self.navigationItem.leftBarButtonItem = newLeftButton;
+    [newLeftButton release];
         pageControlBeingUsed = NO;
+    for (UIView* view in gymWallScroll.subviews) {
+        [view removeFromSuperview];
+    }
     for (int i = 0; i < wallViewArrays.count; i++) {
 		CGRect frame;
 		frame.origin.x = self.gymWallScroll.frame.size.width * i;
@@ -704,7 +822,7 @@
 	
 	self.gymWallScroll.contentSize = CGSizeMake(self.gymWallScroll.frame.size.width * wallViewArrays.count, self.gymWallScroll.frame.size.height);
 	
-	self.pageControl.currentPage = 0;
+
 	self.pageControl.numberOfPages = wallViewArrays.count;
     
     self.gymWallScroll.hidden=NO;
@@ -741,14 +859,13 @@
                      }];
     
 }
-
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
 }
-
-- (void)dealloc {
+- (void)dealloc
+{
     [wallRoutesArrowTypeArray release];
     [wallRoutesArrowArray release];
     [imageViewContainer release];
@@ -767,9 +884,13 @@
     [footerUserImageView release];
     [footerLabel release];
     [footerDifficultyLabel release];
+    [likeButton release];
+    [followButton release];
+    [loadRoutesActivityIndicator release];
     [super dealloc];
 }
-- (void)viewDidUnload {
+- (void)viewDidUnload
+{
     [self setImageViewContainer:nil];
     [self setGymProfileImageView:nil];
     [self setGymNameLabel:nil];
@@ -786,6 +907,9 @@
     [self setFooterUserImageView:nil];
     [self setFooterLabel:nil];
     [self setFooterDifficultyLabel:nil];
+    [self setLikeButton:nil];
+    [self setFollowButton:nil];
+    [self setLoadRoutesActivityIndicator:nil];
     [super viewDidUnload];
 }
 @end

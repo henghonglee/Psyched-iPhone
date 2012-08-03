@@ -26,9 +26,11 @@
 @property (retain, nonatomic) NSMutableArray* wallRoutesArrowTypeArray;
 @property (retain, nonatomic) NSMutableArray* wallViewArrays;
 @property (retain, nonatomic) NSMutableArray* imageDataArray;
+@property (retain, nonatomic) NSMutableArray* queryArray;
 @property (retain, nonatomic) UIScrollView *gymRouteScroll;
 @property (nonatomic,retain) NSString* gymName;
 @property (retain,nonatomic) PFObject* gymObject;
+@property (retain, nonatomic) IBOutlet UIActivityIndicatorView *loadRoutesActivityIndicator;
 
 @property (nonatomic,retain) NSMutableArray* gymTags;
 @property (nonatomic,retain) NSMutableDictionary* gymSections;
@@ -36,6 +38,8 @@
 @property (retain, nonatomic) IBOutlet UIImageView *footerUserImageView;
 @property (retain, nonatomic) IBOutlet UILabel *footerLabel;
 @property (retain, nonatomic) IBOutlet UILabel *footerDifficultyLabel;
+@property (retain, nonatomic) IBOutlet UIButton *likeButton;
+@property (retain, nonatomic) IBOutlet UIButton *followButton;
 
 @property (retain, nonatomic) IBOutlet UIImageView *maskbgView;
 @property (retain, nonatomic) IBOutletCollection(UIImageView) NSArray *wallImageViews;

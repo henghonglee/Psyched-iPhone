@@ -34,7 +34,7 @@
 {
 
     [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleBlackOpaque animated:YES];
-    [[UIApplication sharedApplication]setApplicationIconBadgeNumber:0];
+    
     [FlurryAnalytics startSession:@"N66I1CJV446Z75ZV8G8V"];
     NSDictionary *myStuff = [NSDictionary dictionaryWithObjectsAndKeys:@"myObject", @"myKey", nil];
     [BugSenseCrashController sharedInstanceWithBugSenseAPIKey:@"ade3c7ab" 
@@ -42,12 +42,13 @@
                                               sendImmediately:YES];
     [self startStandardUpdates];
     [Parse setApplicationId:@"rUk14GRi8xY6ieFQGyXcJ39iQUPuGo1ihR2dAKeh" clientKey:@"aOz04F0XOehjH9a58b95V4nKtcCZNUNUxbCoqM48"];
+    //sandbox
+    //[Parse setApplicationId:@"IB67seVg0d1MufvXlA67zW1zHKivUW2cBkXPQ0c0" clientKey:@"Vln8htxgC4uM5ZDIqRDQ2MsJgJjM27hexeGr140i"];
     [PFFacebookUtils initializeWithApplicationId:@"200778040017319"];
 /*    ****************************************************************************
     // Uncomment and fill in with your Parse credentials:
     
-    //sandbox
-    //[Parse setApplicationId:@"IB67seVg0d1MufvXlA67zW1zHKivUW2cBkXPQ0c0" clientKey:@"Vln8htxgC4uM5ZDIqRDQ2MsJgJjM27hexeGr140i"];
+    
     
     //live
     
@@ -165,7 +166,8 @@
     [loginVC release ];
     [self.window makeKeyAndVisible];
     [application registerForRemoteNotificationTypes:UIRemoteNotificationTypeBadge|
-     UIRemoteNotificationTypeAlert];
+     UIRemoteNotificationTypeAlert|
+     UIRemoteNotificationTypeSound];
     if ([launchOptions objectForKey:UIApplicationLaunchOptionsRemoteNotificationKey]) {
         NSDictionary* userInfo = [launchOptions objectForKey:UIApplicationLaunchOptionsRemoteNotificationKey];
         
@@ -341,7 +343,6 @@
 - (void)applicationWillEnterForeground:(UIApplication *)application{
     
     NSLog(@"application will enter foreground");
-    [[UIApplication sharedApplication]setApplicationIconBadgeNumber:0];
     //GYM NEARBY CHECK
     /*
     NSLog(@"current user = %@",[PFUser currentUser]);
@@ -371,6 +372,7 @@
      */
 -(void)fbOAuthCheck{
     NSLog(@"facebook oauth check when entering foreground %@",[PFFacebookUtils facebook].accessToken);
+    if (![self.window.rootViewController isKindOfClass:[LoginViewController class]]) {
     ASIHTTPRequest* accountRequest = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"https://graph.facebook.com/me/picture?access_token=%@",[PFFacebookUtils facebook].accessToken]]];
     accountRequest.shouldRedirect = YES;
     [accountRequest setCompletionBlock:^{
@@ -390,12 +392,16 @@
         
     }];
     [accountRequest startAsynchronous];
+    }
 }
 
 - (void)applicationDidBecomeActive:(UIApplication *)application{
     NSLog(@"app did become active");
+    if (application.applicationIconBadgeNumber != 0)
+        application.applicationIconBadgeNumber = 0;
     
-    [[UIApplication sharedApplication]setApplicationIconBadgeNumber:0];
+        [[PFInstallation currentInstallation] saveEventually];
+    
     PFQuery* versionquery = [PFQuery queryWithClassName:@"Version"];
     [versionquery getFirstObjectInBackgroundWithBlock:^(PFObject *object, NSError *error) {
         if ([[object objectForKey:@"version"] doubleValue] > VERSION) {

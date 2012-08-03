@@ -61,6 +61,7 @@ static inline double radians (double degrees) {return degrees * M_PI/180;}
     appDel.badgeView.badgeColor = [UIColor redColor];
     appDel.badgeView.outline = YES;
     [self.view addSubview:appDel.badgeView];
+
 #warning badgeview unreleased
   [self.view addSubview:button];
 }
@@ -244,14 +245,11 @@ static inline double radians (double degrees) {return degrees * M_PI/180;}
         case 2:
             NSLog(@"re-using photo...");
             if(reuseImageData != nil){
-                
-                
-                         
-                    
                         UIImage* imagetoUse = [UIImage imageWithData:reuseImageData];
                         EditImageViewController* EditImageVC = [[EditImageViewController alloc] initWithNibName:@"EditImageViewController" bundle:nil];
                         UINavigationController* navCont = [[UINavigationController alloc]initWithRootViewController:EditImageVC];
                         EditImageVC.imageInView = imagetoUse;
+                        EditImageVC.reusePFObject = reusePFObject; 
                         imageMetaData = [[NSMutableDictionary alloc]init ];
                         PFGeoPoint* routegp = [reusePFObject objectForKey:@"routelocation"];
                         CLLocation* newImageLoc = [[CLLocation alloc]initWithLatitude:routegp.latitude longitude:routegp.longitude];

@@ -69,11 +69,12 @@ kAPIGraphUserPhotosPost,
         
         SBJsonParser *jsonParser = [[SBJsonParser alloc] init];
         id jsonObject = [jsonParser objectWithString:[accountRequest responseString]];
-        NSLog(@"response = %@",jsonObject);
+                [jsonParser release], jsonParser = nil;
             NSArray* fbfriends = [jsonObject objectForKey:@"data"];
         if ([fbfriends count]==0) {
             hud.labelText = @"Couldn't find any friends =(";
             [hud hide:YES afterDelay:1];
+            
             return;
         }
             [searchArray removeAllObjects];
@@ -110,7 +111,7 @@ kAPIGraphUserPhotosPost,
             
             [fbidArray release];  
         
-        [jsonParser release], jsonParser = nil;
+
     }];
     [accountRequest setFailedBlock:^{
         

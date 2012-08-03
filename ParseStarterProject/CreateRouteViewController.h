@@ -44,6 +44,7 @@
 @property (retain, nonatomic) IBOutlet UILabel *gymShareLabel;
 
 -(void)tagPhoto:(NSString*)photoid withUser:(NSString*)facebookid;
+@property (nonatomic,retain) PFObject* reusePFObject;
 @property (nonatomic, assign) UIBackgroundTaskIdentifier fileUploadBackgroundTaskId;
 @property (nonatomic, assign) UIBackgroundTaskIdentifier photoPostBackgroundTaskId;
 @property (retain, nonatomic) IBOutlet UILabel *fblabel;
