@@ -193,7 +193,7 @@
 								<string key="NSFrame">{{100, 30}, {26, 26}}</string>
 								<reference key="NSSuperview" ref="742879572"/>
 								<reference key="NSWindow"/>
-								<reference key="NSNextKeyView" ref="68812637"/>
+								<reference key="NSNextKeyView" ref="20581349"/>
 								<string key="NSReuseIdentifierKey">_NS:9</string>
 								<bool key="IBUIUserInteractionEnabled">NO</bool>
 								<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
@@ -358,7 +358,7 @@
 						<string key="NSFrame">{{98, 189}, {219, 86}}</string>
 						<reference key="NSSuperview" ref="456701995"/>
 						<reference key="NSWindow"/>
-						<reference key="NSNextKeyView" ref="794941208"/>
+						<reference key="NSNextKeyView" ref="68812637"/>
 						<string key="NSReuseIdentifierKey">_NS:9</string>
 						<bool key="IBUIOpaque">NO</bool>
 						<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
@@ -380,7 +380,7 @@
 						<string key="NSFrameSize">{320, 322}</string>
 						<reference key="NSSuperview" ref="456701995"/>
 						<reference key="NSWindow"/>
-						<reference key="NSNextKeyView" ref="20581349"/>
+						<reference key="NSNextKeyView" ref="794941208"/>
 						<string key="NSReuseIdentifierKey">_NS:9</string>
 						<reference key="IBUIBackgroundColor" ref="995699238"/>
 						<bool key="IBUIOpaque">NO</bool>
@@ -895,11 +895,6 @@
 						<reference key="parent" ref="456701995"/>
 					</object>
 					<object class="IBObjectRecord">
-						<int key="objectID">75</int>
-						<reference key="object" ref="741739854"/>
-						<reference key="parent" ref="456701995"/>
-					</object>
-					<object class="IBObjectRecord">
 						<int key="objectID">76</int>
 						<reference key="object" ref="307263808"/>
 						<reference key="parent" ref="456701995"/>
@@ -964,6 +959,11 @@
 					<object class="IBObjectRecord">
 						<int key="objectID">132</int>
 						<reference key="object" ref="20581349"/>
+						<reference key="parent" ref="456701995"/>
+					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">75</int>
+						<reference key="object" ref="741739854"/>
 						<reference key="parent" ref="456701995"/>
 					</object>
 				</array>

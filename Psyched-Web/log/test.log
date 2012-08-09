@@ -1,0 +1,6 @@
+  Processing by NusController#index as HTML
+Rendered nus/index.html.erb within layouts/application (3.7ms)
+Completed 200 OK in 39ms (Views: 38.2ms | ActiveRecord: 0.0ms)
+  Processing by NusController#index as HTML
+Rendered nus/index.html.erb within layouts/application (3.8ms)
+Completed 200 OK in 31ms (Views: 27.6ms | ActiveRecord: 0.0ms)

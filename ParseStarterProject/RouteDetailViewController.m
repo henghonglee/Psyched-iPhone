@@ -192,7 +192,7 @@ kAPIGraphCommentPhoto,
     CGSize size = [foo sizeWithFont:[UIFont fontWithName:@"Helvetica" size:11.0f]
                   constrainedToSize:CGSizeMake(229, 2000)
                       lineBreakMode:UILineBreakModeWordWrap];
-    NSLog(@"size = %@",NSStringFromCGSize(size));
+
     descriptionTextView.frame = CGRectMake(-1, 50, 229, MAX(41,size.height+30));
     descriptionTextView.text = foo;
     
@@ -291,6 +291,7 @@ kAPIGraphCommentPhoto,
     
     
     routeImageView.image = routeObject.retrievedImage;
+    
     routeLocationLabel.text = [routeObject.pfobj objectForKey:@"location"]; 
     
     [self getImageIfUnavailable];
@@ -403,7 +404,7 @@ kAPIGraphCommentPhoto,
     CGSize size = [foo sizeWithFont:[UIFont fontWithName:@"Helvetica" size:11.0f]
                   constrainedToSize:CGSizeMake(229, 2000)
                       lineBreakMode:UILineBreakModeWordWrap];
-    NSLog(@"size = %@",NSStringFromCGSize(size));
+
     topView.frame = CGRectMake(6,330,307,50+MAX(41,size.height+30));
     
     topView.layer.shadowPath = [self renderPaperCurl:topView];
@@ -1287,6 +1288,7 @@ kAPIGraphCommentPhoto,
     //get route image
     
     PFFile *imagefile = [routeObject.pfobj objectForKey:@"imageFile"];
+    if(!imagefile.isDataAvailable){
     [queryArray addObject:imagefile];
     [imagefile getDataInBackgroundWithBlock:^(NSData* imageData,NSError *error){
         NSLog(@"image recieved");
@@ -1308,16 +1310,16 @@ kAPIGraphCommentPhoto,
         [scrollView setZoomScale:1.0f];
         if([[routeObject.pfobj objectForKey:@"routeVersion"] isEqualToString:@"2"]){
             NSLog(@"route is version 2, attach overlay here");
-           ParseStarterProjectAppDelegate* applicationDelegate = ((ParseStarterProjectAppDelegate*)[[UIApplication sharedApplication]delegate]);
+            ParseStarterProjectAppDelegate* applicationDelegate = ((ParseStarterProjectAppDelegate*)[[UIApplication sharedApplication]delegate]);
             ((BaseViewController*)applicationDelegate.window.rootViewController).reuseImageData = imageData;
             ((BaseViewController*)applicationDelegate.window.rootViewController).reusePFObject = routeObject.pfobj;
             NSArray* routearrowarray = [routeObject.pfobj objectForKey:@"arrowarray"];
             NSArray* arrowtypearray = [routeObject.pfobj objectForKey:@"arrowtypearray"];
             UIImage* pastedimage = nil;
-                NSLog(@"routearrowarray = %@",routearrowarray);
+            NSLog(@"routearrowarray = %@",routearrowarray);
             for (int i=0; i<[routearrowarray count]; i++) {
-               
-
+                
+                
                 CGRect routearrowrect = CGRectFromString([routearrowarray objectAtIndex:i]);
                 if([[arrowtypearray objectAtIndex:i]isEqualToNumber:[NSNumber numberWithInt:0]])
                     pastedimage = [UIImage imageNamed:@"arrow1.png"];
@@ -1345,10 +1347,10 @@ kAPIGraphCommentPhoto,
                     pastedimage = [UIImage imageNamed:@"end4.png"];
                 
                 routeImageView.image = [self imageByDrawingImage:pastedimage OnImage:routeImageView.image inRect:routearrowrect];
-      // [pastedimage release];
+                // [pastedimage release];
             }
-
-                
+            
+            
             
         }
         
@@ -1366,7 +1368,70 @@ kAPIGraphCommentPhoto,
         }
     } ];
     
-    
+    }else{
+        [progressBar removeFromSuperview];
+        self.navigationItem.title = @"Route Details";
+        [queryArray removeObject:imagefile];
+        //rawImageData = imageData;
+        //[rawImageData retain];
+        UIImage* retrievedImage = [UIImage imageWithData:imagefile.getData];
+        routeImageView.image = retrievedImage;
+        [scrollView setFrame:CGRectMake(0, 0, 320, 320)];
+        
+        [scrollView setDelegate:self];
+        [scrollView addSubview:routeImageView];
+        [routeImageView release];
+        scrollView.contentSize=CGSizeMake(retrievedImage.size.width, retrievedImage.size.width);
+        scrollView.maximumZoomScale = 4;
+        scrollView.minimumZoomScale = 1;
+        [scrollView setZoomScale:1.0f];
+        if([[routeObject.pfobj objectForKey:@"routeVersion"] isEqualToString:@"2"]){
+            NSLog(@"route is version 2, attach overlay here");
+            ParseStarterProjectAppDelegate* applicationDelegate = ((ParseStarterProjectAppDelegate*)[[UIApplication sharedApplication]delegate]);
+            ((BaseViewController*)applicationDelegate.window.rootViewController).reuseImageData = imagefile.getData;
+            ((BaseViewController*)applicationDelegate.window.rootViewController).reusePFObject = routeObject.pfobj;
+            NSArray* routearrowarray = [routeObject.pfobj objectForKey:@"arrowarray"];
+            NSArray* arrowtypearray = [routeObject.pfobj objectForKey:@"arrowtypearray"];
+            UIImage* pastedimage = nil;
+            NSLog(@"routearrowarray = %@",routearrowarray);
+            for (int i=0; i<[routearrowarray count]; i++) {
+                
+                
+                CGRect routearrowrect = CGRectFromString([routearrowarray objectAtIndex:i]);
+                if([[arrowtypearray objectAtIndex:i]isEqualToNumber:[NSNumber numberWithInt:0]])
+                    pastedimage = [UIImage imageNamed:@"arrow1.png"];
+                if([[arrowtypearray objectAtIndex:i]isEqualToNumber:[NSNumber numberWithInt:1]])
+                    pastedimage = [UIImage imageNamed:@"start1.png"];
+                if([[arrowtypearray objectAtIndex:i]isEqualToNumber:[NSNumber numberWithInt:2]])
+                    pastedimage = [UIImage imageNamed:@"end1.png"];
+                if([[arrowtypearray objectAtIndex:i]isEqualToNumber:[NSNumber numberWithInt:3]])
+                    pastedimage = [UIImage imageNamed:@"arrow2.png"];
+                if([[arrowtypearray objectAtIndex:i]isEqualToNumber:[NSNumber numberWithInt:4]])
+                    pastedimage = [UIImage imageNamed:@"start2.png"];
+                if([[arrowtypearray objectAtIndex:i]isEqualToNumber:[NSNumber numberWithInt:5]])
+                    pastedimage = [UIImage imageNamed:@"end2.png"];
+                if([[arrowtypearray objectAtIndex:i]isEqualToNumber:[NSNumber numberWithInt:6]])
+                    pastedimage = [UIImage imageNamed:@"arrow3.png"];
+                if([[arrowtypearray objectAtIndex:i]isEqualToNumber:[NSNumber numberWithInt:7]])
+                    pastedimage = [UIImage imageNamed:@"start3.png"];
+                if([[arrowtypearray objectAtIndex:i]isEqualToNumber:[NSNumber numberWithInt:8]])
+                    pastedimage = [UIImage imageNamed:@"end3.png"];
+                if([[arrowtypearray objectAtIndex:i]isEqualToNumber:[NSNumber numberWithInt:9]])
+                    pastedimage = [UIImage imageNamed:@"arrow4.png"];
+                if([[arrowtypearray objectAtIndex:i]isEqualToNumber:[NSNumber numberWithInt:10]])
+                    pastedimage = [UIImage imageNamed:@"start4.png"];
+                if([[arrowtypearray objectAtIndex:i]isEqualToNumber:[NSNumber numberWithInt:11]])
+                    pastedimage = [UIImage imageNamed:@"end4.png"];
+                
+                routeImageView.image = [self imageByDrawingImage:pastedimage OnImage:routeImageView.image inRect:routearrowrect];
+                // [pastedimage release];
+            }
+            
+            
+            
+        }
+
+    }
     
     
     

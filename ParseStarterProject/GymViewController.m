@@ -7,7 +7,7 @@
 //
 #import "BaseViewController.h"
 #import "GymViewController.h"
-
+#import "GradientButton.h"
 #import <QuartzCore/QuartzCore.h>
 @implementation GymViewController
 @synthesize loadRoutesActivityIndicator;
@@ -139,7 +139,6 @@
         wallRoutesArrowTypeArray = [[NSMutableArray alloc]init];
     imageDataArray =[[NSMutableArray alloc]init];
     queryArray =[[NSMutableArray alloc]init];
-    
      followButton.enabled = NO;
     [PFPush getSubscribedChannelsInBackgroundWithBlock:^(NSSet *channels, NSError *error) {
         if ([channels containsObject:[NSString stringWithFormat:@"channel%@",gymObject.objectId]]) {
@@ -199,7 +198,7 @@
         }
         
         [self.gymTags addObjectsFromArray:[self.gymSections allKeys]];
-        [self.gymTags sortUsingSelector:@selector(localizedCaseInsensitiveCompare:)];
+//        [self.gymTags sortUsingSelector:@selector(localizedCaseInsensitiveCompare:)];
     
         for(int i=0; i<[self.gymTags count] ;i++)
         {
@@ -214,14 +213,16 @@
                 UIView* wallView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, 320, 320)];
                 wallView.backgroundColor = [UIColor clearColor];
                 
-                
-                UILabel* wallLabel = [[UILabel alloc]initWithFrame:CGRectMake(0, 0, 320, 30)];
+                UILabel* wallLabel = [[UILabel alloc]initWithFrame:CGRectMake(16.5, 0, 287, 35)];
                 wallLabel.textAlignment = UITextAlignmentCenter;
+                wallLabel.font = [UIFont fontWithName:@"Futura" size:25.0f];
                 wallLabel.text = [NSString stringWithFormat:@"%@",[[self.gymSections allKeys]objectAtIndex:i]];
                 wallLabel.textColor = [UIColor whiteColor];
-                wallLabel.backgroundColor = [UIColor clearColor];
+                wallLabel.backgroundColor = [UIColor blackColor];
+                wallLabel.alpha = 1;
                 [wallView addSubview:wallLabel];
                 [wallLabel release];
+                
                 
 
                 UIImageView* wallimage = [[UIImageView alloc]initWithImage:[UIImage imageWithData:data]];
@@ -237,8 +238,26 @@
                 [doubleTapGesture setNumberOfTapsRequired : 2];
                 [wallimage addGestureRecognizer:doubleTapGesture];
                 [doubleTapGesture release];
-                
                 [wallView addSubview:wallimage];
+                
+                
+                
+                UILabel* wallFooterLabel = [[UILabel alloc]initWithFrame:CGRectMake(0,257, 287, 30)];
+                wallFooterLabel.textAlignment = UITextAlignmentCenter;
+                wallFooterLabel.font = [UIFont fontWithName:@"Futura" size:15.0f];
+                NSString* wallname = [[self.gymSections allKeys] objectAtIndex:i];
+                NSArray* arrayForSection = [self.gymSections objectForKey:wallname];
+                if([arrayForSection count]>1){
+                wallFooterLabel.text = [NSString stringWithFormat:@"%d routes",[arrayForSection count]];
+                }else{
+                wallFooterLabel.text = [NSString stringWithFormat:@"%d route",[arrayForSection count]];    
+                }
+                wallFooterLabel.textColor = [UIColor whiteColor];
+                wallFooterLabel.backgroundColor = [UIColor blackColor];
+                wallFooterLabel.alpha = 0.8;
+                [wallimage addSubview:wallFooterLabel];
+                [wallFooterLabel release];
+                
                 
                 [wallViewArrays addObject:wallView];
                 [wallView release];
@@ -293,6 +312,7 @@
     
     self.gymWallScroll.hidden = YES;
     self.pageControl.hidden = YES;
+    NSLog(@"tag = %@",[self.gymTags objectAtIndex:self.pageControl.currentPage]);
     RouteObject* firstRouteObj = ((RouteObject*)[[self.gymSections objectForKey:[self.gymTags objectAtIndex:self.pageControl.currentPage]]objectAtIndex:0]);
     [self setImagesWithRouteObject:firstRouteObj];
     footerLabel.text = [NSString stringWithFormat:@"%@",[firstRouteObj.pfobj objectForKey:@"description"]];
@@ -540,6 +560,20 @@
         }
     }
     
+}
+-(void)viewDidAppear:(BOOL)animated
+{
+    if(self.pageControl.hidden==NO || self.routePageControl.hidden==NO)
+    {
+        ParseStarterProjectAppDelegate* applicationDelegate = ((ParseStarterProjectAppDelegate*)[[UIApplication sharedApplication]delegate]);
+        for (UIView* view in ((UIView*)[wallViewArrays objectAtIndex:self.pageControl.currentPage]).subviews) {
+            if ([view isKindOfClass:[UIImageView class]]) {
+                ((BaseViewController*)applicationDelegate.window.rootViewController).reuseImageData = UIImageJPEGRepresentation(((UIImageView*)view).image,1.0) ;
+                ((BaseViewController*)applicationDelegate.window.rootViewController).reusePFObject = ((RouteObject*)[[self.gymSections objectForKey:[self.gymTags objectAtIndex:self.pageControl.currentPage]]objectAtIndex:0]).pfobj;
+                
+            }
+        }
+    }
 }
 -(void)viewWillDisappear:(BOOL)animated
 {

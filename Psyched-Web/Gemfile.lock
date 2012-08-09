@@ -186,7 +186,7 @@ DEPENDENCIES
   json
   paperclip (~> 3.0)
   pg
-  rails (= 3.1.1)
+  rails
   rspec-rails
   sass-rails (~> 3.1.4)
   simple_form

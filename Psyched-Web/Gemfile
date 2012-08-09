@@ -1,6 +1,5 @@
 source 'http://rubygems.org'
-
-gem 'rails', '3.1.1'
+gem 'rails'
 gem 'aws-s3'
 gem 'aws-sdk'
 gem 'devise', :git => 'https://github.com/plataformatec/devise.git'
@@ -8,7 +7,7 @@ gem 'devise', :git => 'https://github.com/plataformatec/devise.git'
 gem "paperclip", "~> 3.0"
 
 # Bundle edge Rails instead:
-# gem 'rails',     :git => 'git://github.com/rails/rails.git'
+#gem 'rails',     :git => 'git://github.com/rails/rails.git'
 
 group :production do
   gem "pg"

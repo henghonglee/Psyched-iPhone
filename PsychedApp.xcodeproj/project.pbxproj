@@ -30,7 +30,6 @@
 		EF0A655615BFE626003BF1E5 /* step3.png in Resources */ = {isa = PBXBuildFile; fileRef = EF0A655515BFE626003BF1E5 /* step3.png */; };
 		EF0C4F9414BDC427003F88D4 /* EditImageViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EF0C4F9214BDC427003F88D4 /* EditImageViewController.m */; };
 		EF0C4F9514BDC427003F88D4 /* EditImageViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = EF0C4F9314BDC427003F88D4 /* EditImageViewController.xib */; };
-		EF14364615CAC62F0046789E /* headerviewblack.png in Resources */ = {isa = PBXBuildFile; fileRef = EF14364515CAC62F0046789E /* headerviewblack.png */; };
 		EF1679C71541AE8600CE757A /* CommentsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EF1679C51541AE8600CE757A /* CommentsViewController.m */; };
 		EF1679C81541AE8600CE757A /* CommentsViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = EF1679C61541AE8600CE757A /* CommentsViewController.xib */; };
 		EF1B4B4114BEB7450048E8B2 /* RouteObject.m in Sources */ = {isa = PBXBuildFile; fileRef = EF1B4B4014BEB7450048E8B2 /* RouteObject.m */; };
@@ -298,6 +297,7 @@
 		EFDF2AB81512430700891FF5 /* FollowTableCell.m in Sources */ = {isa = PBXBuildFile; fileRef = EFDF2AB71512430700891FF5 /* FollowTableCell.m */; };
 		EFE6E07E15013D6600F4EC8A /* SearchFriendsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EFE6E07C15013D6600F4EC8A /* SearchFriendsViewController.m */; };
 		EFE6E07F15013D6600F4EC8A /* SearchFriendsViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = EFE6E07D15013D6600F4EC8A /* SearchFriendsViewController.xib */; };
+		EFE7893915D2942600E00C12 /* button-03.jpg in Resources */ = {isa = PBXBuildFile; fileRef = EFE7893815D2942600E00C12 /* button-03.jpg */; };
 		EFFF298F14EB88CE00FC92B2 /* DAReloadActivityButton.m in Sources */ = {isa = PBXBuildFile; fileRef = EFFF298C14EB88CD00FC92B2 /* DAReloadActivityButton.m */; };
 		EFFF299014EB88CE00FC92B2 /* reload.png in Resources */ = {isa = PBXBuildFile; fileRef = EFFF298D14EB88CE00FC92B2 /* reload.png */; };
 		EFFF299114EB88CE00FC92B2 /* reload@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = EFFF298E14EB88CE00FC92B2 /* reload@2x.png */; };
@@ -336,7 +336,6 @@
 		EF0C4F9114BDC427003F88D4 /* EditImageViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EditImageViewController.h; sourceTree = "<group>"; };
 		EF0C4F9214BDC427003F88D4 /* EditImageViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EditImageViewController.m; sourceTree = "<group>"; };
 		EF0C4F9314BDC427003F88D4 /* EditImageViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = EditImageViewController.xib; sourceTree = "<group>"; };
-		EF14364515CAC62F0046789E /* headerviewblack.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = headerviewblack.png; sourceTree = "<group>"; };
 		EF1679C41541AE8600CE757A /* CommentsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CommentsViewController.h; sourceTree = "<group>"; };
 		EF1679C51541AE8600CE757A /* CommentsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CommentsViewController.m; sourceTree = "<group>"; };
 		EF1679C61541AE8600CE757A /* CommentsViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CommentsViewController.xib; sourceTree = "<group>"; };
@@ -726,6 +725,7 @@
 		EFE6E07B15013D6500F4EC8A /* SearchFriendsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SearchFriendsViewController.h; sourceTree = "<group>"; };
 		EFE6E07C15013D6600F4EC8A /* SearchFriendsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SearchFriendsViewController.m; sourceTree = "<group>"; };
 		EFE6E07D15013D6600F4EC8A /* SearchFriendsViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SearchFriendsViewController.xib; sourceTree = "<group>"; };
+		EFE7893815D2942600E00C12 /* button-03.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = "button-03.jpg"; sourceTree = "<group>"; };
 		EFFF298B14EB88CD00FC92B2 /* DAReloadActivityButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DAReloadActivityButton.h; sourceTree = "<group>"; };
 		EFFF298C14EB88CD00FC92B2 /* DAReloadActivityButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DAReloadActivityButton.m; sourceTree = "<group>"; };
 		EFFF298D14EB88CE00FC92B2 /* reload.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = reload.png; sourceTree = "<group>"; };
@@ -774,7 +774,7 @@
 			children = (
 				EF73B48C15CAC2200052B9B0 /* Icon@2x.png */,
 				EF73B48A15CAC21A0052B9B0 /* Icon.png */,
-				EF14364515CAC62F0046789E /* headerviewblack.png */,
+				EFE7893815D2942600E00C12 /* button-03.jpg */,
 				09ABC07713A1D52D009C3FCF /* ParseStarterProject */,
 				09ABC07013A1D52D009C3FCF /* Frameworks */,
 				09ABC06E13A1D52D009C3FCF /* Products */,
@@ -1677,7 +1677,7 @@
 				EF9BAB5715C30C4800FEFFF4 /* closeInvertedComma.png in Resources */,
 				EF73B48B15CAC21B0052B9B0 /* Icon.png in Resources */,
 				EF73B48D15CAC2200052B9B0 /* Icon@2x.png in Resources */,
-				EF14364615CAC62F0046789E /* headerviewblack.png in Resources */,
+				EFE7893915D2942600E00C12 /* button-03.jpg in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
