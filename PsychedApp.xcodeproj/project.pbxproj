@@ -1863,8 +1863,8 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
-				CODE_SIGN_IDENTITY = "iPhone Distribution: Lee Heng Hong";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: Lee Heng Hong";
+				CODE_SIGN_IDENTITY = "iPhone Developer: Lee Heng Hong (T53AB93G9J)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Lee Heng Hong (T53AB93G9J)";
 				COPY_PHASE_STRIP = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1890,8 +1890,8 @@
 					"-ObjC",
 				);
 				PRODUCT_NAME = PsychedApp;
-				PROVISIONING_PROFILE = "6041023E-8693-4AF7-8DE2-13F02E1CEE5B";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "6041023E-8693-4AF7-8DE2-13F02E1CEE5B";
+				PROVISIONING_PROFILE = "F8AE834F-16E6-4D01-8A9F-B18A4A1BD5E3";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "F8AE834F-16E6-4D01-8A9F-B18A4A1BD5E3";
 				TARGETED_DEVICE_FAMILY = 1;
 				USER_HEADER_SEARCH_PATHS = "${SRCROOT}/**";
 				"USER_HEADER_SEARCH_PATHS[arch=*]" = "";
@@ -1904,8 +1904,8 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
-				CODE_SIGN_IDENTITY = "iPhone Distribution: Lee Heng Hong";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: Lee Heng Hong";
+				CODE_SIGN_IDENTITY = "iPhone Developer: Lee Heng Hong (T53AB93G9J)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Lee Heng Hong (T53AB93G9J)";
 				COPY_PHASE_STRIP = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1929,8 +1929,8 @@
 					"-ObjC",
 				);
 				PRODUCT_NAME = PsychedApp;
-				PROVISIONING_PROFILE = "6041023E-8693-4AF7-8DE2-13F02E1CEE5B";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "6041023E-8693-4AF7-8DE2-13F02E1CEE5B";
+				PROVISIONING_PROFILE = "F8AE834F-16E6-4D01-8A9F-B18A4A1BD5E3";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "F8AE834F-16E6-4D01-8A9F-B18A4A1BD5E3";
 				TARGETED_DEVICE_FAMILY = 1;
 				USER_HEADER_SEARCH_PATHS = "";
 				VALIDATE_PRODUCT = YES;

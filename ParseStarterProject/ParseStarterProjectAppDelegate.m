@@ -341,7 +341,11 @@
 }
 
 - (void)applicationWillEnterForeground:(UIApplication *)application{
+    if (application.applicationIconBadgeNumber != 0){
+        application.applicationIconBadgeNumber = 0;
     
+    [[PFInstallation currentInstallation] saveEventually];
+    }
     NSLog(@"application will enter foreground");
     //GYM NEARBY CHECK
     /*
