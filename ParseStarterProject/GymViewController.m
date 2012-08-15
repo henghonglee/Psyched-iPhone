@@ -69,6 +69,7 @@
 }
 - (IBAction)likeButton:(id)sender
 {
+    NSLog(@"like button pressed");
     [[UIApplication sharedApplication]openURL:[NSURL URLWithString:[NSString stringWithFormat:@"fb://page/%@",[gymObject objectForKey:@"facebookid"]]]];
 
 }
@@ -359,7 +360,7 @@
     self.navigationItem.rightBarButtonItem = nil;
    
     maskbgView.hidden=NO;
-    maskbgView.alpha = 0.8;
+    maskbgView.alpha = 1;
     CGRect arrowsSlideViewFinalFrame = CGRectMake(0,0,287,287);
     CGRect slideViewFinalFrame = CGRectMake(16.5,35,287,287);
     [UIView animateWithDuration:0.5
@@ -912,7 +913,7 @@
                         options: UIViewAnimationCurveEaseOut
                      animations:^{
                          gymWallScroll.alpha = 1;
-                         maskbgView.alpha=0.8;
+                         maskbgView.alpha=1;
                          self.pageControl.alpha=1;
                      }
                      completion:^(BOOL finished){

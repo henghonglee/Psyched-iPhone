@@ -1888,7 +1888,7 @@ commentTextField.text = @"";
 
 -(IBAction)LikeButtonPressed:(id)sender{
     [likeButton setUserInteractionEnabled:NO];
-if ([routeObject.pfobj objectForKey:@"isPage"]==[NSNumber numberWithBool:YES]) {
+if ([routeObject.pfobj objectForKey:@"isPage"]==[NSNumber numberWithBool:YES] &&[routeObject.pfobj objectForKey:@"photoid"]) {
     currentAPICall = kAPICheckLikedPage;
     [[self.routeObject.pfobj objectForKey:@"Gym"]fetchIfNeededInBackgroundWithBlock:^(PFObject *object, NSError *error) {
         
