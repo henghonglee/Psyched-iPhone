@@ -15,6 +15,7 @@
 @synthesize imageMetaData;
 @synthesize currentLocation;
 @synthesize reusePFObject;
+@synthesize tempReuseImageData,tempReusePFObject;
 static inline double radians (double degrees) {return degrees * M_PI/180;}
 // Create a view controller and setup it's tab bar item with a title and image
 -(UIViewController*) viewControllerWithTabTitle:(NSString*) title image:(UIImage*)image
@@ -236,20 +237,42 @@ static inline double radians (double degrees) {return degrees * M_PI/180;}
 {
     switch (buttonIndex) {
         case 0:
+            for (id viewController in self.viewControllers) {
+                if([viewController isKindOfClass:[UINavigationController class]]){
+                    [viewController popToRootViewControllerAnimated:NO];
+                }
+            }
             [self takePhoto:nil];            
             break;
         case 1:
-
+            for (id viewController in self.viewControllers) {
+                if([viewController isKindOfClass:[UINavigationController class]]){
+                    [viewController popToRootViewControllerAnimated:NO];
+                }
+            }
             [self pickPhoto:nil];
             break;
         case 2:
-            NSLog(@"re-using photo...");
+            
             if(reuseImageData != nil){
-                        UIImage* imagetoUse = [UIImage imageWithData:reuseImageData];
+                        tempReuseImageData= reuseImageData;
+                        tempReusePFObject = reusePFObject;
+                        reuseImageData=nil;
+                        reusePFObject =nil;
+                        for (id viewController in self.viewControllers) {
+                            if([viewController isKindOfClass:[UINavigationController class]]){
+                                [viewController popToRootViewControllerAnimated:NO];
+                            }
+                        }
+                
+                        UIImage* imagetoUse = [UIImage imageWithData:tempReuseImageData];
+                        [tempReuseImageData release];
+                        NSLog(@"reused photo saved");
                         EditImageViewController* EditImageVC = [[EditImageViewController alloc] initWithNibName:@"EditImageViewController" bundle:nil];
                         UINavigationController* navCont = [[UINavigationController alloc]initWithRootViewController:EditImageVC];
                         EditImageVC.imageInView = imagetoUse;
-                        EditImageVC.reusePFObject = reusePFObject; 
+                        EditImageVC.reusePFObject = tempReusePFObject;
+                        [tempReusePFObject  release];
                         imageMetaData = [[NSMutableDictionary alloc]init ];
                         PFGeoPoint* routegp = [reusePFObject objectForKey:@"routelocation"];
                         CLLocation* newImageLoc = [[CLLocation alloc]initWithLatitude:routegp.latitude longitude:routegp.longitude];

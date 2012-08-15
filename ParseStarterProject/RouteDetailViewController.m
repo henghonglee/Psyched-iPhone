@@ -1375,6 +1375,7 @@ kAPIGraphCommentPhoto,
         //rawImageData = imageData;
         //[rawImageData retain];
         UIImage* retrievedImage = [UIImage imageWithData:imagefile.getData];
+        
         routeImageView.image = retrievedImage;
         [scrollView setFrame:CGRectMake(0, 0, 320, 320)];
         
@@ -1386,10 +1387,11 @@ kAPIGraphCommentPhoto,
         scrollView.minimumZoomScale = 1;
         [scrollView setZoomScale:1.0f];
         if([[routeObject.pfobj objectForKey:@"routeVersion"] isEqualToString:@"2"]){
-            NSLog(@"route is version 2, attach overlay here");
+            
             ParseStarterProjectAppDelegate* applicationDelegate = ((ParseStarterProjectAppDelegate*)[[UIApplication sharedApplication]delegate]);
             ((BaseViewController*)applicationDelegate.window.rootViewController).reuseImageData = imagefile.getData;
             ((BaseViewController*)applicationDelegate.window.rootViewController).reusePFObject = routeObject.pfobj;
+            NSLog(@"route is version 2, attach overlay here");
             NSArray* routearrowarray = [routeObject.pfobj objectForKey:@"arrowarray"];
             NSArray* arrowtypearray = [routeObject.pfobj objectForKey:@"arrowtypearray"];
             UIImage* pastedimage = nil;
@@ -1468,9 +1470,11 @@ kAPIGraphCommentPhoto,
 
 -(void)viewWillDisappear:(BOOL)animated
 {
+    NSLog(@"route detail viewdiddisappear");
     ParseStarterProjectAppDelegate* applicationDelegate = ((ParseStarterProjectAppDelegate*)[[UIApplication sharedApplication]delegate]);
     ((BaseViewController*)applicationDelegate.window.rootViewController).reuseImageData = nil;
-            ((BaseViewController*)applicationDelegate.window.rootViewController).reusePFObject = nil;
+    ((BaseViewController*)applicationDelegate.window.rootViewController).reusePFObject = nil;
+   
     [commentTextField resignFirstResponder];
     if (progressBar.superview) {
     [progressBar removeFromSuperview];
@@ -1492,8 +1496,7 @@ kAPIGraphCommentPhoto,
     
    
 }
-         
- 
+
 - (void)scrollViewDidEndZooming:(UIScrollView *)scrollView withView:(UIView *)view atScale:(float)scale
 {
     
@@ -1609,7 +1612,7 @@ kAPIGraphCommentPhoto,
         //do nothing
     }else{
         [postButton setUserInteractionEnabled:NO];
-    if ([routeObject.pfobj objectForKey:@"isPage"]==[NSNumber numberWithBool:YES]) {
+    if ([routeObject.pfobj objectForKey:@"isPage"]==[NSNumber numberWithBool:YES] &&[routeObject.pfobj objectForKey:@"photoid"]) {
 
         [[self.routeObject.pfobj objectForKey:@"Gym"]fetchIfNeededInBackgroundWithBlock:^(PFObject *object, NSError *error) {
         currentAPICall = kAPICheckLikedComment;            
@@ -1664,7 +1667,7 @@ kAPIGraphCommentPhoto,
        
     
     }else{
-
+        NSLog(@"comment on psyched .. post normally");
         
     PFObject* object = [PFObject objectWithClassName:@"Comment"];
     [object setObject:commentTextField.text forKey:@"text"];
@@ -1691,7 +1694,7 @@ kAPIGraphCommentPhoto,
             [commentsTable layoutIfNeeded];
             commentsTable.frame = CGRectMake(0, 68, 320, [commentsTable contentSize].height);
          [self arrangeSubViewsaftercomments];
-            
+                    [postButton setUserInteractionEnabled:YES];
         }];
         
     }];
@@ -2150,7 +2153,7 @@ if (cell == nil) {
         NSMutableDictionary *data = [NSMutableDictionary dictionary];
         [data setObject:routeObject.pfobj.objectId forKey:@"linkedroute"];
         [data setObject:[NSNumber numberWithInt:1] forKey:@"badge"];
-        [data setObject:[NSString stringWithFormat:@"%@ recommended you a route",[[PFUser currentUser] objectForKey:@"name"],[routeObject.pfobj objectForKey:@"username"]] forKey:@"alert"];
+        [data setObject:[NSString stringWithFormat:@"%@ recommended you a route",[[PFUser currentUser] objectForKey:@"name"]] forKey:@"alert"];
         [data setObject:[NSString stringWithFormat:@"%@",[[PFUser currentUser] objectForKey:@"name"]] forKey:@"sender"];
         [data setObject:[NSString stringWithFormat:@"%@",friend.name] forKey:@"reciever"];
         

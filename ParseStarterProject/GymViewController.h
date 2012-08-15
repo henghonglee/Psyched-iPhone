@@ -19,7 +19,7 @@
 {
 	int page;
 	BOOL pageControlBeingUsed;
-    
+    int currentRoutePage;
 }
 - (IBAction)didChangeRoutePage:(id)sender;
 @property (retain, nonatomic) NSMutableArray* wallRoutesArrowArray;
@@ -31,6 +31,7 @@
 @property (nonatomic,retain) NSString* gymName;
 @property (retain,nonatomic) PFObject* gymObject;
 @property (retain, nonatomic) IBOutlet UIActivityIndicatorView *loadRoutesActivityIndicator;
+@property (retain, nonatomic) IBOutlet UIImageView *bluepin;
 
 @property (nonatomic,retain) NSMutableArray* gymTags;
 @property (nonatomic,retain) NSMutableDictionary* gymSections;
@@ -41,16 +42,14 @@
 @property (retain, nonatomic) IBOutlet UIButton *likeButton;
 @property (retain, nonatomic) IBOutlet UIButton *followButton;
 
-@property (retain, nonatomic) IBOutlet UIImageView *maskbgView;
+@property (retain, nonatomic) IBOutlet UIView *maskbgView;
 @property (retain, nonatomic) IBOutletCollection(UIImageView) NSArray *wallImageViews;
 @property (retain, nonatomic) IBOutlet UIPageControl *routePageControl;
 @property (retain, nonatomic) IBOutlet UIImageView *gymProfileImageView;
 @property (retain, nonatomic) IBOutlet UIButton *ourRoutesButton;
 @property (retain, nonatomic) IBOutlet UILabel *gymNameLabel;
-@property (retain, nonatomic) IBOutlet UIView *profileshadow;
 @property (retain, nonatomic) IBOutlet UIImageView *gymCoverImageView;
 @property (retain, nonatomic) IBOutlet MKMapView *gymMapView;
-@property (retain, nonatomic) IBOutlet UIView *imageViewContainer;
 @property (retain, nonatomic) IBOutlet UIPageControl *pageControl;
 @property (retain, nonatomic) IBOutlet UIScrollView *gymWallScroll;
 

@@ -461,7 +461,7 @@ draggableImageView.frame = CGRectMake(0, 0, 320, 320);
     // [imageMetaData setObject:[self updateExif:myCurrentLocation] forKey:(NSString*)kCGImagePropertyGPSDictionary];          
     
     
-    [library writeImageToSavedPhotosAlbum:[[imageStack objectAtIndex:0] CGImage] metadata:imageMetaData completionBlock:^(NSURL *assetURL, NSError *error) {
+    [library writeImageToSavedPhotosAlbum:[[imageStack objectAtIndex:imageStack.count-1] CGImage] metadata:imageMetaData completionBlock:^(NSURL *assetURL, NSError *error) {
         if (error) {
             NSLog(@"error is %@",error);
         }

@@ -24,11 +24,10 @@
 @synthesize routePageControl;
 @synthesize gymProfileImageView;
 @synthesize ourRoutesButton;
+
 @synthesize gymNameLabel;
-@synthesize profileshadow;
 @synthesize gymCoverImageView;
 @synthesize gymMapView;
-@synthesize imageViewContainer;
 @synthesize gymObject,gymName;
 @synthesize wallViewArrays;
 @synthesize gymTags,gymSections;
@@ -140,6 +139,9 @@
     imageDataArray =[[NSMutableArray alloc]init];
     queryArray =[[NSMutableArray alloc]init];
      followButton.enabled = NO;
+     [self animateInView:_bluepin withFinalRect:CGRectMake(200, 181, 26, 26) andBounceRect:CGRectMake(200, 171, 26, 26)];
+    
+    
     [PFPush getSubscribedChannelsInBackgroundWithBlock:^(NSSet *channels, NSError *error) {
         if ([channels containsObject:[NSString stringWithFormat:@"channel%@",gymObject.objectId]]) {
             NSLog(@"isSubscribedToThisGym");
@@ -160,6 +162,8 @@
     [gymWallQuery whereKey:@"routelocation" nearGeoPoint:[gymObject objectForKey:@"gymlocation"] withinKilometers:0.5];
     [gymWallQuery whereKey:@"outdated" notEqualTo:[NSNumber numberWithBool:true]];
     [gymWallQuery whereKeyExists:@"hashtag"];
+    [gymWallQuery orderByAscending:@"hashtag"];
+    [gymWallQuery addAscendingOrder:@"difficulty"];
     [queryArray addObject:gymWallQuery];
     [gymWallQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
         [queryArray removeObject:gymWallQuery];
@@ -210,7 +214,7 @@
             [queryArray addObject:[firstRoute objectForKey:@"imageFile"]];
             [[firstRoute objectForKey:@"imageFile"] getDataInBackgroundWithBlock:^(NSData *data, NSError *error) {
                 [queryArray removeObject:[firstRoute objectForKey:@"imageFile"]];
-                UIView* wallView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, 320, 320)];
+                UIView* wallView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, 320, 350)];
                 wallView.backgroundColor = [UIColor clearColor];
                 
                 UILabel* wallLabel = [[UILabel alloc]initWithFrame:CGRectMake(16.5, 0, 287, 35)];
@@ -242,7 +246,7 @@
                 
                 
                 
-                UILabel* wallFooterLabel = [[UILabel alloc]initWithFrame:CGRectMake(0,257, 287, 30)];
+                UILabel* wallFooterLabel = [[UILabel alloc]initWithFrame:CGRectMake(16.5,320, 287, 30)];
                 wallFooterLabel.textAlignment = UITextAlignmentCenter;
                 wallFooterLabel.font = [UIFont fontWithName:@"Futura" size:15.0f];
                 NSString* wallname = [[self.gymSections allKeys] objectAtIndex:i];
@@ -254,8 +258,8 @@
                 }
                 wallFooterLabel.textColor = [UIColor whiteColor];
                 wallFooterLabel.backgroundColor = [UIColor blackColor];
-                wallFooterLabel.alpha = 0.8;
-                [wallimage addSubview:wallFooterLabel];
+                wallFooterLabel.alpha = 1;
+                [wallView addSubview:wallFooterLabel];
                 [wallFooterLabel release];
                 
                 
@@ -267,6 +271,7 @@
                 if (downloadedRouteCount==[self.gymTags count]) {
                     ourRoutesButton.enabled = true;
                      [loadRoutesActivityIndicator stopAnimating];
+                    [self animateInView:ourRoutesButton withFinalRect:CGRectMake(100, 244, 216, 92) andBounceRect:CGRectMake(113, 244, 216, 92)];
                 }
             }];
             
@@ -292,6 +297,7 @@
 -(void)handleDoubleTap:(id)sender
 {
     NSLog(@"page tapped on = %d",self.pageControl.currentPage);
+    currentRoutePage =0;
     self.navigationItem.leftBarButtonItem = nil;
     self.navigationItem.hidesBackButton = YES;
     UIImageView* imgView = [[UIImageView alloc]initWithFrame:CGRectMake(16.5, 35, 287, 287)];
@@ -344,6 +350,7 @@
 }
 -(void)reverseHandleDoubleTap:(UITapGestureRecognizer*)sender
 {
+    currentRoutePage=0;
     if (self.navigationItem.leftBarButtonItem ==nil) {
        UIBarButtonItem* newLeftButton  = [[UIBarButtonItem alloc] initWithTitle:@"Gym" style:UIBarButtonItemStylePlain target:self action:@selector(returnToGym:)];
         self.navigationItem.leftBarButtonItem = newLeftButton;
@@ -352,7 +359,6 @@
     self.navigationItem.rightBarButtonItem = nil;
    
     maskbgView.hidden=NO;
-    maskbgView.image = nil;
     maskbgView.alpha = 0.8;
     CGRect arrowsSlideViewFinalFrame = CGRectMake(0,0,287,287);
     CGRect slideViewFinalFrame = CGRectMake(16.5,35,287,287);
@@ -578,9 +584,7 @@
 -(void)viewWillDisappear:(BOOL)animated
 {
     //set reusedata to nil
-    ParseStarterProjectAppDelegate* applicationDelegate = ((ParseStarterProjectAppDelegate*)[[UIApplication sharedApplication]delegate]);
-    ((BaseViewController*)applicationDelegate.window.rootViewController).reuseImageData = nil;
-    ((BaseViewController*)applicationDelegate.window.rootViewController).reusePFObject = nil;
+   
     
     
     NSLog(@"canceling %d queries",[queryArray count]);
@@ -601,21 +605,7 @@
 
 -(void)furthurinit
 {
-    
-    imageViewContainer.layer.borderColor = [UIColor whiteColor].CGColor;
-    imageViewContainer.layer.borderWidth = 3;
-    
-    profileshadow.layer.shadowRadius=2;
-    profileshadow.layer.shadowOpacity = 0.3;
-    profileshadow.layer.shadowColor = [UIColor blackColor].CGColor;
-    profileshadow.layer.shadowOffset = CGSizeMake(0, 2);
-    
-    profileshadow.layer.shadowPath = [self renderPaperCurl:profileshadow];
-    
-    
     gymNameLabel.text = [NSString stringWithFormat:@"%@",[gymObject objectForKey:@"name"]];
-    gymMapView.layer.borderColor = [UIColor whiteColor].CGColor;
-    gymMapView.layer.borderWidth = 3;
     PFGeoPoint* gymgeopoint = ((PFGeoPoint*)[gymObject objectForKey:@"gymlocation"]);
     
     CLLocationCoordinate2D gymLoc = CLLocationCoordinate2DMake(gymgeopoint.latitude,gymgeopoint.longitude);
@@ -628,8 +618,9 @@
     ASIHTTPRequest* coverrequest = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:[gymObject objectForKey:@"coverimagelink"]] ];
     [coverrequest setCompletionBlock:^{
         gymCoverImageView.image = [UIImage imageWithData:[coverrequest responseData]];
+        [self animateInView:gymCoverImageView withFinalRect:CGRectMake(4, 4, 312, 140) andBounceRect:CGRectMake(4, -12, 312, 140)];
         
-    }];
+         }];
     [coverrequest setFailedBlock:^{}];
     [coverrequest startAsynchronous];
     
@@ -637,15 +628,47 @@
     [request setCompletionBlock:^{
         
         gymProfileImageView.image = [UIImage imageWithData:[request responseData]];
-        NSLog(@"size ht = %f",gymProfileImageView.image.size.height);
+        [self animateInView:gymProfileImageView withFinalRect:CGRectMake(4, 148, 92, 92) andBounceRect:CGRectMake(-12, 148, 92, 92)];
+/*        NSLog(@"size ht = %f",gymProfileImageView.image.size.height);
         NSLog(@"size wd = %f",gymProfileImageView.image.size.width);
         if (gymProfileImageView.image.size.height>=gymProfileImageView.image.size.width) {
             [gymProfileImageView setFrame:CGRectMake(0, 0, 75, gymProfileImageView.image.size.height/(gymProfileImageView.image.size.width/75))];
         }
-       
+*/
+     
     }];
     [request setFailedBlock:^{}];
     [request startAsynchronous];
+    
+}
+-(void)animateInView:(UIView*)viewToAnimate withFinalRect:(CGRect)startRect andBounceRect:(CGRect)endRect
+{
+     CGRect slideViewFinalFrame = startRect;
+     CGRect slideViewTempFrame = endRect;
+     [UIView animateWithDuration:0.15
+                           delay:0.3
+                         options: UIViewAnimationCurveLinear
+                      animations:^{
+                          viewToAnimate.frame = slideViewFinalFrame;
+                      }
+                      completion:^(BOOL finished){
+                          [UIView animateWithDuration:0.08
+                                                delay:0.0
+                                              options: UIViewAnimationCurveEaseIn
+                                           animations:^{
+                                               viewToAnimate.frame = slideViewTempFrame;
+                                           }
+                                           completion:^(BOOL finished){
+                                               [UIView animateWithDuration:0.1
+                                                                     delay:0.0
+                                                                   options: UIViewAnimationCurveEaseOut
+                                                                animations:^{
+                                                                    viewToAnimate.frame = slideViewFinalFrame;
+                                                                }
+                                                                completion:^(BOOL finished){
+                                                                    NSLog(@"Done!");
+                                                                }];
+                                           }];                     }];
     
 }
 - (void)scrollViewDidScroll:(UIScrollView *)sender
@@ -684,14 +707,18 @@
 
     }else if (self.pageControl.hidden&&!self.routePageControl.hidden)
     {
+
         RouteObject* firstRouteObj = ((RouteObject*)[[self.gymSections objectForKey:[self.gymTags objectAtIndex:self.pageControl.currentPage]]objectAtIndex:self.routePageControl.currentPage]);
-        [self setImagesWithRouteObject:firstRouteObj];
+        [self setImagesWithRouteObject:firstRouteObj]; //filling up the bottom details bar
         footerLabel.text = [NSString stringWithFormat:@"%@",[firstRouteObj.pfobj objectForKey:@"description"]];
         footerDifficultyLabel.text = [NSString stringWithFormat:@"%@",[firstRouteObj.pfobj objectForKey:@"difficultydescription"]];
         CGRect frame;
 
         UIImageView* imgView = ((UIImageView*)[gymRouteScroll.subviews objectAtIndex:0]);
-        imgView.alpha =0;
+        if (self.routePageControl.currentPage != currentRoutePage) {
+        imgView.alpha =0;    
+        }
+        currentRoutePage = self.routePageControl.currentPage;
         frame.origin.x = gymRouteScroll.frame.size.width * self.routePageControl.currentPage;
         frame.origin.y = 0;
         frame.size = imgView.frame.size;
@@ -793,6 +820,9 @@
 }
 -(void)backAction:(id)sender
 {
+    ParseStarterProjectAppDelegate* applicationDelegate = ((ParseStarterProjectAppDelegate*)[[UIApplication sharedApplication]delegate]);
+    ((BaseViewController*)applicationDelegate.window.rootViewController).reuseImageData = nil;
+    ((BaseViewController*)applicationDelegate.window.rootViewController).reusePFObject = nil;
     [self.navigationController popViewControllerAnimated:YES];
 }
 - (IBAction)showGym:(id)sender {
@@ -862,11 +892,9 @@
     self.gymWallScroll.hidden=NO;
     self.pageControl.hidden =NO;
     self.routePageControl.hidden =YES;
-    self.maskbgView.image = nil;
     self.maskbgView.hidden=NO;
     self.gymWallScroll.alpha=0;
     self.pageControl.alpha =0;
-    self.maskbgView.image = nil;
     self.maskbgView.alpha=0;
     
     ParseStarterProjectAppDelegate* applicationDelegate = ((ParseStarterProjectAppDelegate*)[[UIApplication sharedApplication]delegate]);
@@ -902,10 +930,8 @@
 {
     [wallRoutesArrowTypeArray release];
     [wallRoutesArrowArray release];
-    [imageViewContainer release];
     [gymProfileImageView release];
     [gymNameLabel release];
-    [profileshadow release];
     [gymCoverImageView release];
     [gymMapView release];
     [gymWallScroll release];
@@ -921,14 +947,13 @@
     [likeButton release];
     [followButton release];
     [loadRoutesActivityIndicator release];
+    [_bluepin release];
     [super dealloc];
 }
 - (void)viewDidUnload
 {
-    [self setImageViewContainer:nil];
     [self setGymProfileImageView:nil];
     [self setGymNameLabel:nil];
-    [self setProfileshadow:nil];
     [self setGymCoverImageView:nil];
     [self setGymMapView:nil];
     [self setGymWallScroll:nil];
@@ -944,6 +969,7 @@
     [self setLikeButton:nil];
     [self setFollowButton:nil];
     [self setLoadRoutesActivityIndicator:nil];
+    [self setBluepin:nil];
     [super viewDidUnload];
 }
 @end

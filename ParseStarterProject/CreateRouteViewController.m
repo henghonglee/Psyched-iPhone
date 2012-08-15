@@ -470,7 +470,7 @@ typedef enum apiCall {
                     NSMutableDictionary *data = [NSMutableDictionary dictionary];
                     [data setObject:newRoute.objectId forKey:@"linkedroute"];
                     [data setObject:[NSNumber numberWithInt:1] forKey:@"badge"];
-                    [data setObject:[NSString stringWithFormat:@"%@ tagged you in a route",[[PFUser currentUser] objectForKey:@"name"],[newRoute objectForKey:@"username"]] forKey:@"alert"];
+                    [data setObject:[NSString stringWithFormat:@"%@ tagged you in a route",[[PFUser currentUser] objectForKey:@"name"]] forKey:@"alert"];
                     [data setObject:[NSString stringWithFormat:@"%@",[[PFUser currentUser] objectForKey:@"name"]] forKey:@"sender"];
                     [data setObject:[NSString stringWithFormat:@"%@",user.name] forKey:@"reciever"];
                     
@@ -668,7 +668,7 @@ typedef enum apiCall {
                     NSMutableDictionary *data = [NSMutableDictionary dictionary];
                     [data setObject:newRoute.objectId forKey:@"linkedroute"];
                     [data setObject:[NSNumber numberWithInt:1] forKey:@"badge"];
-                    [data setObject:[NSString stringWithFormat:@"%@ tagged you in a route",[[PFUser currentUser] objectForKey:@"name"],[newRoute objectForKey:@"username"]] forKey:@"alert"];
+                    [data setObject:[NSString stringWithFormat:@"%@ tagged you in a route",[[PFUser currentUser] objectForKey:@"name"]] forKey:@"alert"];
                     [data setObject:[NSString stringWithFormat:@"%@",[[PFUser currentUser] objectForKey:@"name"]] forKey:@"sender"];
                     [data setObject:[NSString stringWithFormat:@"%@",user.name] forKey:@"reciever"];
                     
@@ -1060,7 +1060,7 @@ typedef enum apiCall {
 {
     [arrayOfAccounts removeAllObjects];
     for (NSDictionary* obj in fetchedAccounts) {
-        ASIHTTPRequest* request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"https://graph.facebook.com/%@&access_token=%@",[NSString stringWithFormat:@"%@",[obj objectForKey:@"id"],[obj objectForKey:@"access_token"]]]]];
+        ASIHTTPRequest* request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"https://graph.facebook.com/%@&access_token=%@",[NSString stringWithFormat:@"%@",[obj objectForKey:@"id"] ],[obj objectForKey:@"access_token"]]]];
         [request startSynchronous];   
         NSDictionary *contentDictionary = [[request responseString]JSONValue];
         NSLog(@"canpost = %@",[contentDictionary objectForKey:@"can_post"]);    

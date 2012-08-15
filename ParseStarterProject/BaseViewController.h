@@ -37,6 +37,8 @@
     UIImage* newcropped;
 }
 @property (retain , nonatomic) NSData* reuseImageData;
+@property (retain , nonatomic) NSData* tempReuseImageData;
+@property (retain , nonatomic) PFObject* tempReusePFObject;
 @property (retain , nonatomic) PFObject* reusePFObject;
 
 @property (retain, nonatomic) NSMutableDictionary* imageMetaData;
