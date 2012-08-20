@@ -167,7 +167,7 @@
 
 - (IBAction)fblogin:(id)sender {
    
-    if (![PFFacebookUtils facebook].accessToken) {
+//    if (![PFFacebookUtils facebook].accessToken) {
 
         NSArray* permissions = [[NSArray alloc]initWithObjects:@"user_about_me",@"user_videos",@"user_birthday",@"email",@"user_photos",@"publish_stream",@"offline_access",@"manage_pages",@"manage_notifications",nil];
         [PFFacebookUtils logInWithPermissions:permissions block:^(PFUser *user, NSError *error) {
@@ -181,24 +181,18 @@
                 [self apiFQLIMe];
             } else {
                [self apiFQLIMe];
-                InstagramViewController* viewController = [[InstagramViewController alloc]initWithNibName:@"InstagramViewController" bundle:nil];
-                viewController.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
-                ParseStarterProjectAppDelegate* applicationDelegate = ((ParseStarterProjectAppDelegate*)[[UIApplication sharedApplication]delegate]);
-                applicationDelegate.window.rootViewController = viewController;
-                [viewController release];
+               
                 //        [self apiGraphUserPhotosPost];
             }
         }];
         [permissions release];
-    }else{
-        
-        
-        InstagramViewController* viewController = [[InstagramViewController alloc]initWithNibName:@"InstagramViewController" bundle:nil];
-        viewController.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
-        [self presentModalViewController:viewController animated:YES];
-        [viewController release];
-    }
-       
+//    }else{
+//        InstagramViewController* viewController = [[InstagramViewController alloc]initWithNibName:@"InstagramViewController" bundle:nil];
+//        viewController.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
+//        [self presentModalViewController:viewController animated:YES];
+//        [viewController release];
+//    }
+//       
    }
 
 
@@ -221,6 +215,9 @@
         if ([jsonObjects isKindOfClass:[NSArray class]]) {
             if([((NSArray*)jsonObjects) count]==0) {
                 NSLog(@"couldnt get user values .. exiting");
+                UIAlertView* alert = [[UIAlertView alloc]initWithTitle:@"Error" message:@"Couldnt retrieve your Facebook details" delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil];
+    [alert show];
+    [alert release];
                 return;
             }else{
                 
@@ -249,32 +246,36 @@
                     
                     [[PFUser currentUser] setObject:[result objectForKey:@"about_me"] forKey:@"about_me"];
                     
-                    [[PFUser currentUser] saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
-                        [PFPush subscribeToChannelInBackground:[NSString stringWithFormat:@"channel%@",[[PFUser currentUser] objectForKey:@"facebookid"]] target:self selector:@selector(subscribeFinished:error:)];
-                        NSLog(@"subscribed to channeluser %@",[NSString stringWithFormat:@"channel%@",[[PFUser currentUser] objectForKey:@"facebookid"]]);
-                        
-                    }];
-                    
-                    
+                   
                     [FlurryAnalytics setUserID:[[PFUser currentUser] objectForKey:@"name"]];
-                    if ([[[PFUser currentUser] objectForKey:@"sex"] isEqualToString:@"male"]) {
-                        [FlurryAnalytics setGender:@"m"];
-                    }else{
-                        [FlurryAnalytics setGender:@"f"];
-                    }
+                            if ([[[PFUser currentUser] objectForKey:@"sex"] isEqualToString:@"male"]) {
+                                [FlurryAnalytics setGender:@"m"];
+                            }else{
+                                [FlurryAnalytics setGender:@"f"];
+                            }
                     [FlurryAnalytics setAge:age];
                     NSDictionary *dictionary = 
                     [NSDictionary dictionaryWithObjectsAndKeys:[result objectForKey:@"email"],@"email",[result objectForKey:@"birthday"],@"birthday",[result objectForKey:@"name"],@"name",[result objectForKey:@"sex"],@"sex",[result objectForKey:@"uid"],@"uid",[result objectForKey:@"about_me"],@"about_me", nil];
                     
                     [FlurryAnalytics logEvent:@"NEW_USER_LOGIN" withParameters:dictionary timed:YES];
                     
-                    [JHNotificationManager notificationWithMessage:[NSString stringWithFormat:@"Logged in as %@",[result objectForKey:@"name"]]];
                     
                     
-                    InstagramViewController* viewController = [[InstagramViewController alloc]initWithNibName:@"InstagramViewController" bundle:nil];
-                    viewController.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
-                    [self presentModalViewController:viewController animated:YES];
-                    [viewController release];
+                    [[PFUser currentUser] saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+                        [PFPush subscribeToChannelInBackground:[NSString stringWithFormat:@"channel%@",[[PFUser currentUser] objectForKey:@"facebookid"]]block:^(BOOL succeeded, NSError *error) {
+                            if(succeeded){
+                            [JHNotificationManager notificationWithMessage:[NSString stringWithFormat:@"Logged in as %@",[result objectForKey:@"name"]]];
+                            InstagramViewController* viewController = [[InstagramViewController alloc]initWithNibName:@"InstagramViewController" bundle:nil];
+                            viewController.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
+                            ParseStarterProjectAppDelegate* applicationDelegate = ((ParseStarterProjectAppDelegate*)[[UIApplication sharedApplication]delegate]);
+                            applicationDelegate.window.rootViewController = viewController;
+                            [viewController release];
+                            }
+                        }];
+                        
+                    }];
+                    
+                    
                 }
             }
         }

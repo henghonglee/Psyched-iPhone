@@ -319,7 +319,6 @@
     
     self.gymWallScroll.hidden = YES;
     self.pageControl.hidden = YES;
-    NSLog(@"tag = %@",[self.gymTags objectAtIndex:self.pageControl.currentPage]);
     RouteObject* firstRouteObj = ((RouteObject*)[[self.gymSections objectForKey:[self.gymTags objectAtIndex:self.pageControl.currentPage]]objectAtIndex:0]);
     [self setImagesWithRouteObject:firstRouteObj];
     footerLabel.text = [NSString stringWithFormat:@"%@",[firstRouteObj.pfobj objectForKey:@"description"]];
@@ -390,6 +389,9 @@
     RouteDetailViewController* viewController = [[RouteDetailViewController alloc]initWithNibName:@"RouteDetailViewController" bundle:nil];
     viewController.routeObject = [[self.gymSections objectForKey:[self.gymTags objectAtIndex:self.pageControl.currentPage]]objectAtIndex:self.routePageControl.currentPage];
     
+    ParseStarterProjectAppDelegate* applicationDelegate = ((ParseStarterProjectAppDelegate*)[[UIApplication sharedApplication]delegate]);
+    
+    viewController.routeimage = [UIImage imageWithData:((BaseViewController*)applicationDelegate.window.rootViewController).reuseImageData];
     //   viewController.routeObject = [((NSMutableArray*)[self.userDictionary objectForKey:[[self.userDictionary allKeys]objectAtIndex:indexPath.section]]) objectAtIndex:indexPath.index];
     [self.navigationController pushViewController:viewController animated:YES];
     [viewController release];

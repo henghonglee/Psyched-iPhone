@@ -242,7 +242,9 @@ static inline double radians (double degrees) {return degrees * M_PI/180;}
                     [viewController popToRootViewControllerAnimated:NO];
                 }
             }
-            [self takePhoto:nil];            
+            [self takePhoto:nil];
+            reuseImageData=nil;
+            reusePFObject =nil;
             break;
         case 1:
             for (id viewController in self.viewControllers) {
@@ -251,6 +253,8 @@ static inline double radians (double degrees) {return degrees * M_PI/180;}
                 }
             }
             [self pickPhoto:nil];
+            reuseImageData=nil;
+            reusePFObject =nil;
             break;
         case 2:
             
@@ -272,9 +276,10 @@ static inline double radians (double degrees) {return degrees * M_PI/180;}
                         UINavigationController* navCont = [[UINavigationController alloc]initWithRootViewController:EditImageVC];
                         EditImageVC.imageInView = imagetoUse;
                         EditImageVC.reusePFObject = tempReusePFObject;
-                        [tempReusePFObject  release];
+                        
                         imageMetaData = [[NSMutableDictionary alloc]init ];
-                        PFGeoPoint* routegp = [reusePFObject objectForKey:@"routelocation"];
+                        PFGeoPoint* routegp = [tempReusePFObject objectForKey:@"routelocation"];
+                        [tempReusePFObject  release];
                         CLLocation* newImageLoc = [[CLLocation alloc]initWithLatitude:routegp.latitude longitude:routegp.longitude];
                         [imageMetaData setLocation:newImageLoc];
                         [newImageLoc release];

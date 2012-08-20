@@ -8,7 +8,7 @@
 #import <BugSense-iOS/BugSenseCrashController.h>
 #import "FlurryAnalytics.h"
 
-#define VERSION 1.6
+#define VERSION 1.7
 @implementation ParseStarterProjectAppDelegate
 @synthesize badgeView;
 @synthesize window=_window;
@@ -135,8 +135,10 @@
                       
                       [[PFUser currentUser] setObject:[NSNumber numberWithDouble:VERSION] forKey:@"version"];
                       [[PFUser currentUser] saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
-                          [PFPush subscribeToChannelInBackground:[NSString stringWithFormat:@"channel%@",[[PFUser currentUser] objectForKey:@"facebookid"]] target:self selector:@selector(subscribeFinished:error:)];
-                          NSLog(@"subscribed to channeluser %@",[NSString stringWithFormat:@"channel%@",[[PFUser currentUser] objectForKey:@"facebookid"]]);
+                          [PFPush subscribeToChannelInBackground:[NSString stringWithFormat:@"channel%@",[[PFUser currentUser] objectForKey:@"facebookid"]] block:^(BOOL succeeded, NSError *error) {
+                               NSLog(@"subscribed to channeluser %@",[NSString stringWithFormat:@"channel%@",[[PFUser currentUser] objectForKey:@"facebookid"]]);
+                          }];
+                         
                            
                       }];                 
                       
@@ -341,11 +343,10 @@
 }
 
 - (void)applicationWillEnterForeground:(UIApplication *)application{
-    if (application.applicationIconBadgeNumber != 0){
         application.applicationIconBadgeNumber = 0;
-    
+        [[PFInstallation currentInstallation]setBadge:0];
     [[PFInstallation currentInstallation] saveEventually];
-    }
+
     NSLog(@"application will enter foreground");
     //GYM NEARBY CHECK
     /*
