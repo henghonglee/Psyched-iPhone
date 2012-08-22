@@ -251,49 +251,49 @@ draggableImageView.frame = CGRectMake(0, 0, 320, 320);
 
 -(void)handleLongPress:(UILongPressGestureRecognizer*)sender{
 
-    if (sender.state == UIGestureRecognizerStateEnded) {
-        
-    }else if(sender.state == UIGestureRecognizerStateBegan){
-
-        CGPoint presspoint = [sender locationInView:self.imageToEdit];
-         CGPoint presspointInMainView = [sender locationInView:self.view];
-
-//        draggableImageView.center = CGPointMake(presspoint.x, presspoint.y);
-        CGRect slideViewFinalFrame ;
-        
-           slideViewFinalFrame = CGRectMake(presspointInMainView.x-(imageToEdit.bounds.size.width/20.0f)*scrollView.zoomScale, presspointInMainView.y, (imageToEdit.bounds.size.width/20.0f)*scrollView.zoomScale, (imageToEdit.bounds.size.height/20.0f)*scrollView.zoomScale);
-    
-        [self.view sendSubviewToBack:scrollView];
-        NSLog(@"finalframe = %@",NSStringFromCGRect(slideViewFinalFrame));
-        draggableImageView.frame = CGRectMake(0, 0, 320, 320);
-        
-    [UIView animateWithDuration:0.1
-                          delay:0.0
-                        options: UIViewAnimationCurveEaseIn
-                     animations:^{
-                         draggableImageView.frame =slideViewFinalFrame;
-                     } 
-                     completion:^(BOOL finished){
-                         NSLog(@"Done!");
-                         //play smoke anim
-                         float imagePercentOfRealImage;
-                         if (draggableImageView.image == startImageView.image||draggableImageView.image == endImageView.image) {
-                             imagePercentOfRealImage = 10.0f;
-                         }else{
-                             imagePercentOfRealImage = 20.0f;
-                         }
-                          draggableImageView.frame = CGRectMake(presspoint.x- (imageToEdit.bounds.size.width/imagePercentOfRealImage), presspoint.y, (imageToEdit.bounds.size.width/imagePercentOfRealImage), (imageToEdit.bounds.size.height/imagePercentOfRealImage));
-                         imageToEdit.image = [self imageByDrawingCircleOnImage:imageToEdit.image];
-                         [imageToEdit setNeedsDisplay];
-                         [CGPointsArray addObject: NSStringFromCGRect(draggableImageView.frame)];
-                         [arrowTypeArray addObject:selectedArrowType];
-                         NSLog(@"cgpointsarray = %@",CGPointsArray);
-                                               NSLog(@"arrowtype array = %@",arrowTypeArray);
-                         draggableImageView.frame = originalArrowFrame;
-                     }];
-       // [draggableImageView setFrame:CGRectMake(presspoint.x- (imageToEdit.bounds.size.width/20.0f), presspoint.y, (imageToEdit.bounds.size.width/20.0f), (imageToEdit.bounds.size.height/20.0f))];
-
-    }
+//    if (sender.state == UIGestureRecognizerStateEnded) {
+//        
+//    }else if(sender.state == UIGestureRecognizerStateBegan){
+//
+//        CGPoint presspoint = [sender locationInView:self.imageToEdit];
+//         CGPoint presspointInMainView = [sender locationInView:self.view];
+//
+////        draggableImageView.center = CGPointMake(presspoint.x, presspoint.y);
+//        CGRect slideViewFinalFrame ;
+//        
+//           slideViewFinalFrame = CGRectMake(presspointInMainView.x-(imageToEdit.bounds.size.width/20.0f)*scrollView.zoomScale, presspointInMainView.y, (imageToEdit.bounds.size.width/20.0f)*scrollView.zoomScale, (imageToEdit.bounds.size.height/20.0f)*scrollView.zoomScale);
+//    
+//        [self.view sendSubviewToBack:scrollView];
+//        NSLog(@"finalframe = %@",NSStringFromCGRect(slideViewFinalFrame));
+//        draggableImageView.frame = CGRectMake(0, 0, 320, 320);
+//        
+//    [UIView animateWithDuration:0.1
+//                          delay:0.0
+//                        options: UIViewAnimationCurveEaseIn
+//                     animations:^{
+//                         draggableImageView.frame =slideViewFinalFrame;
+//                     } 
+//                     completion:^(BOOL finished){
+//                         NSLog(@"Done!");
+//                         //play smoke anim
+//                         float imagePercentOfRealImage;
+//                         if (draggableImageView.image == startImageView.image||draggableImageView.image == endImageView.image) {
+//                             imagePercentOfRealImage = 10.0f;
+//                         }else{
+//                             imagePercentOfRealImage = 20.0f;
+//                         }
+//                          draggableImageView.frame = CGRectMake(presspoint.x- (imageToEdit.bounds.size.width/imagePercentOfRealImage), presspoint.y, (imageToEdit.bounds.size.width/imagePercentOfRealImage), (imageToEdit.bounds.size.height/imagePercentOfRealImage));
+//                         imageToEdit.image = [self imageByDrawingCircleOnImage:imageToEdit.image];
+//                         [imageToEdit setNeedsDisplay];
+//                         [CGPointsArray addObject: NSStringFromCGRect(draggableImageView.frame)];
+//                         [arrowTypeArray addObject:selectedArrowType];
+//                         NSLog(@"cgpointsarray = %@",CGPointsArray);
+//                                               NSLog(@"arrowtype array = %@",arrowTypeArray);
+//                         draggableImageView.frame = originalArrowFrame;
+//                     }];
+//       // [draggableImageView setFrame:CGRectMake(presspoint.x- (imageToEdit.bounds.size.width/20.0f), presspoint.y, (imageToEdit.bounds.size.width/20.0f), (imageToEdit.bounds.size.height/20.0f))];
+//
+//    }
 }
 - (IBAction)selectArrow:(UIButton*)sender {
     [button1 setBackgroundImage:[UIImage imageNamed:@"graybutton.png"] forState:UIControlStateNormal];
@@ -540,13 +540,16 @@ draggableImageView.frame = CGRectMake(0, 0, 320, 320);
 */
 - (IBAction)DoneButton:(id)sender {
     CreateRouteViewController* viewController= [[CreateRouteViewController alloc]initWithNibName:@"CreateRouteViewController" bundle:nil];
-    
+
     viewController.reusePFObject = reusePFObject;
 	viewController.imageTaken = imageToEdit.image;
     viewController.originalImage = [imageStack objectAtIndex:0];
     viewController.CGPointsArray = CGPointsArray;
     viewController.arrowTypeArray = arrowTypeArray;
     viewController.imageMetaData = self.imageMetaData;
+    [imageStack removeAllObjects];
+    [imageStack addObject:viewController.originalImage];
+
     [self.navigationController pushViewController:viewController animated:YES];
     [viewController release];
 	[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault animated:YES];
@@ -567,7 +570,7 @@ draggableImageView.frame = CGRectMake(0, 0, 320, 320);
 	// get the context for CoreGraphics
 	
     CGRect newrect = CGRectMake((draggableImageView.frame.origin.x/imageToEdit.bounds.size.width)*image.size.width, (draggableImageView.frame.origin.y/imageToEdit.bounds.size.height)*image.size.height, (draggableImageView.frame.size.width/imageToEdit.bounds.size.width)*image.size.width, (draggableImageView.frame.size.height/imageToEdit.bounds.size.height)*image.size.height);
-    
+                    NSLog(@"still alive here2");
     NSLog(@"newrect = %@",NSStringFromCGRect(newrect));
     [draggableImageView.image drawInRect:newrect];
 
@@ -676,6 +679,8 @@ draggableImageView.frame = CGRectMake(0, 0, 320, 320);
 }
 -(void)dealloc
 {
+    NSLog(@"dealloc on editimageview.. clearing image stack");
+    [imageStack release];
     [imageMetaData release];
     [draggableImageView release];
     [sliderView release];

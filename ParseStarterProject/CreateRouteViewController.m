@@ -57,13 +57,11 @@ typedef enum apiCall {
 @synthesize queryArray;
 @synthesize difficultyTextField;
 @synthesize fileUploadBackgroundTaskId;
-@synthesize photoPostBackgroundTaskId;
 @synthesize selectedGymObject;
 @synthesize reusePFObject;
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
     self.fileUploadBackgroundTaskId = UIBackgroundTaskInvalid;
-    self.photoPostBackgroundTaskId = UIBackgroundTaskInvalid;
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
         imageMetaData = [[NSMutableDictionary alloc]init];
@@ -83,18 +81,23 @@ typedef enum apiCall {
 #pragma mark - View lifecycle
 - (void)viewDidLoad
 {
+    
     [super viewDidLoad];
+#if !(TARGET_IPHONE_SIMULATOR)
     [[PFUser currentUser]refreshInBackgroundWithBlock:^(PFObject *object, NSError *error) {
-        if ([[[PFUser currentUser]objectForKey:@"isAdmin"]isEqualToNumber:[NSNumber numberWithBool:true]]) {
-            for (UIView* view in gymControls) {
-                view.hidden=NO;
-            }
-        }
+        if ([[[PFUser currentUser]objectForKey:@"isAdmin"]isEqualToNumber:[NSNumber numberWithBool:true]]) {for (UIView* view in gymControls) {
+            view.hidden=NO;}}
     }];
+#endif
+    if ([[[PFUser currentUser]objectForKey:@"isAdmin"]isEqualToNumber:[NSNumber numberWithBool:true]]) {for (UIView* view in gymControls) {
+        view.hidden=NO;}}
+    
+
     if (reusePFObject) {
     descriptionTextField.text = [NSString stringWithFormat:@"#%@",[reusePFObject objectForKey:@"hashtag"]];
+        locationTextField.text = [NSString stringWithFormat:@"%@",[reusePFObject objectForKey:@"location"]];
     }
-    
+   
     
     routeImageView.image = imageTaken;
     routeImageView.layer.borderColor = [UIColor whiteColor].CGColor;    
@@ -117,6 +120,7 @@ typedef enum apiCall {
     
     arrayOfAccounts = [[NSMutableArray alloc]init ];  
     accounts = [[NSArray alloc]init];
+    
     //[PF_MBProgressHUD showHUDAddedTo:self.view animated:YES];
 
     
@@ -134,23 +138,24 @@ typedef enum apiCall {
   
     // Do any additional setup after loading the view from its nib.
 }
+
 -(void)viewWillDisappear:(BOOL)animated
 {
     reusePFObject = nil;
-    NSLog(@"canceling %d queries",[queryArray count]);
-    for (id pfobject in queryArray) {
-        if ([pfobject isKindOfClass:[PFFile class]]) {
-            NSLog(@"cancelling pffile upload/download");
-            [((PFFile*)pfobject) cancel];
-        }
-        if ([pfobject isKindOfClass:[PFQuery class]]) {
-            NSLog(@"cancelling pfquery ");
-            [((PFQuery*)pfobject) cancel];
-        }
-    }
-    [queryArray removeAllObjects];
-    [HUD hide:YES];
-    NSLog(@"done canceling queries");
+//    NSLog(@"canceling %d queries",[queryArray count]);
+//    for (id pfobject in queryArray) {
+//        if ([pfobject isKindOfClass:[PFFile class]]) {
+//            NSLog(@"cancelling pffile upload/download");
+//            [((PFFile*)pfobject) cancel];
+//        }
+//        if ([pfobject isKindOfClass:[PFQuery class]]) {
+//            NSLog(@"cancelling pfquery ");
+//            [((PFQuery*)pfobject) cancel];
+//        }
+//    }
+//    [queryArray removeAllObjects];
+//    [HUD hide:YES];
+//    NSLog(@"done canceling queries");
 }
 - (void)viewDidUnload
 {
@@ -372,10 +377,13 @@ typedef enum apiCall {
 //actually saves the gym route in a gym
 -(void)saveRouteInGymSelector:(PFObject*)GymObject
 {
-    NSLog(@"gym object = %@",GymObject);
-    HUD.mode = MBProgressHUDModeDeterminate;
-    HUD.labelText = @"Uploading...";
+    // Request a background execution task to allow us to finish uploading the photo even if the app is backgrounded
+    self.fileUploadBackgroundTaskId = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:^{
+        [[UIApplication sharedApplication] endBackgroundTask:self.fileUploadBackgroundTaskId];
+    }];
     
+    NSLog(@"Requested background expiration task with id %d for photo upload", self.fileUploadBackgroundTaskId);
+        
     PFObject* newRoute = [PFObject objectWithClassName:@"Route"];
     if (fbuploadswitch.on) {
         ASIHTTPRequest* accountRequest = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"https://graph.facebook.com/%@?access_token=%@",fbphotoid,[PFFacebookUtils facebook].accessToken]]];
@@ -430,139 +438,152 @@ typedef enum apiCall {
     NSData *thumbImageData = UIImageJPEGRepresentation(thumbnailImage, 1.0);
     PFFile *thumbImageFile = [PFFile fileWithName:@"thumbImage.jpeg" data:thumbImageData];
     [queryArray addObject:thumbImageFile];
-    [thumbImageFile save];
-    [queryArray removeObject:thumbImageFile];
-    [newRoute setObject:thumbImageFile forKey:@"thumbImageFile"];
-    [newRoute setObject:@"2" forKey:@"routeVersion"];
-    [newRoute setObject:CGPointsArray forKey:@"arrowarray"];
-    [newRoute setObject:arrowTypeArray forKey:@"arrowtypearray"];
-    NSData *imageData = UIImageJPEGRepresentation(originalImage, 1.0);
-    NSData *imageWithArrowsData = UIImageJPEGRepresentation(imageTaken, 1.0);
-    
-    PFFile *imageFile = [PFFile fileWithName:@"gymNoArrows.jpeg" data:imageData];
-    PFFile *imageWithArrows = [PFFile fileWithName:@"gymWithArrows.jpeg" data:imageWithArrowsData];
-    NSLog(@"saving...");
-    [queryArray addObject:imageWithArrows];
-    [imageWithArrows saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
-        [queryArray removeObject:imageWithArrows];        
-    [queryArray addObject:imageFile];
-    //   [PF_MBProgressHUD showHUDAddedTo:self.view animated:YES];
-    [imageFile saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
-        [queryArray removeObject:imageFile];
-        [newRoute setObject:imageFile forKey:@"imageFile"];
-        [newRoute setObject:imageWithArrows forKey:@"imageFileWithArrows"];
-        [newRoute saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
-            
-            PFObject* feedObject = [PFObject objectWithClassName:@"Feed"];
-            [feedObject setObject:[GymObject objectForKey:@"name"] forKey:@"sender"];
-            [feedObject setObject:[GymObject objectForKey:@"imagelink"] forKey:@"senderimagelink"];
-            [feedObject setObject:newRoute forKey:@"linkedroute"];
-            [feedObject setObject:[NSString stringWithFormat:@"%@ added a new route",[GymObject objectForKey:@"name"]] forKey:@"message"];
-            [feedObject setObject:@"added" forKey:@"action"];
-            
-            [feedObject saveInBackground];
-            
-            //recommendations or tagging
-            
-            if ([recommendArray count]>0) {
-                NSLog(@"recommend array count = %d", [recommendArray count]);
-                for (FBfriend* user in recommendArray) {
-                    NSMutableDictionary *data = [NSMutableDictionary dictionary];
-                    [data setObject:newRoute.objectId forKey:@"linkedroute"];
-                    [data setObject:[NSNumber numberWithInt:1] forKey:@"badge"];
-                    [data setObject:[NSString stringWithFormat:@"%@ tagged you in a route",[[PFUser currentUser] objectForKey:@"name"]] forKey:@"alert"];
-                    [data setObject:[NSString stringWithFormat:@"%@",[[PFUser currentUser] objectForKey:@"name"]] forKey:@"sender"];
-                    [data setObject:[NSString stringWithFormat:@"%@",user.name] forKey:@"reciever"];
+    [thumbImageFile saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+        [queryArray removeObject:thumbImageFile];
+        [newRoute setObject:thumbImageFile forKey:@"thumbImageFile"];
+        [newRoute setObject:@"2" forKey:@"routeVersion"];
+        [newRoute setObject:CGPointsArray forKey:@"arrowarray"];
+        [newRoute setObject:arrowTypeArray forKey:@"arrowtypearray"];
+        NSData *imageData = UIImageJPEGRepresentation(originalImage, 1.0);
+        NSData *imageWithArrowsData = UIImageJPEGRepresentation(imageTaken, 1.0);
+        
+        PFFile *imageFile = [PFFile fileWithName:@"gymNoArrows.jpeg" data:imageData];
+        PFFile *imageWithArrows = [PFFile fileWithName:@"gymWithArrows.jpeg" data:imageWithArrowsData];
+        NSLog(@"saving...");
+        [queryArray addObject:imageWithArrows];
+        [imageWithArrows saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+            [queryArray removeObject:imageWithArrows];
+            [queryArray addObject:imageFile];
+            //   [PF_MBProgressHUD showHUDAddedTo:self.view animated:YES];
+            [imageFile saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+                [queryArray removeObject:imageFile];
+                [newRoute setObject:imageFile forKey:@"imageFile"];
+                [newRoute setObject:imageWithArrows forKey:@"imageFileWithArrows"];
+                [newRoute saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
                     
-                    [PFPush sendPushDataToChannelInBackground:[NSString stringWithFormat:@"channel%@",user.uid] withData:data];
-                    
-                                        
-                    
-                    
-                    
-                }
-
-                if ([recommendArray count]==1) {
-                FBfriend*user = [recommendArray objectAtIndex:0];                
-                PFObject* feedObject = [PFObject objectWithClassName:@"Feed"];
-                [feedObject setObject:[[PFUser currentUser] objectForKey:@"name"] forKey:@"sender"];
-                [feedObject setObject:[[PFUser currentUser] objectForKey:@"profilepicture"] forKey:@"senderimagelink"];
-                [feedObject setObject:newRoute forKey:@"linkedroute"];
-                [feedObject setObject:imageFile forKey:@"imagefile"];
-                [feedObject setObject:@"tag" forKey:@"action"];
-                [feedObject setObject:[NSString stringWithFormat:@"%@ tagged %@ in a route",[[PFUser currentUser] objectForKey:@"name"],user.name] forKey:@"message"];
-                
-                [feedObject saveInBackground];
-
-                }else if ([recommendArray count]==2){
-                    FBfriend*user = [recommendArray objectAtIndex:0];
                     PFObject* feedObject = [PFObject objectWithClassName:@"Feed"];
-                    [feedObject setObject:[[PFUser currentUser] objectForKey:@"name"] forKey:@"sender"];
-                    [feedObject setObject:[[PFUser currentUser] objectForKey:@"profilepicture"] forKey:@"senderimagelink"];
+                    [feedObject setObject:[GymObject objectForKey:@"name"] forKey:@"sender"];
+                    [feedObject setObject:[GymObject objectForKey:@"imagelink"] forKey:@"senderimagelink"];
                     [feedObject setObject:newRoute forKey:@"linkedroute"];
-                    [feedObject setObject:imageFile forKey:@"imagefile"];
-                    [feedObject setObject:@"tag" forKey:@"action"];
-                    [feedObject setObject:[NSString stringWithFormat:@"%@ tagged %@ and %d other in a route",[[PFUser currentUser] objectForKey:@"name"],user.name,1] forKey:@"message"];
-                    
-                    [feedObject saveInBackground];   
-                }else{
-                    FBfriend*user = [recommendArray objectAtIndex:0];
-                    PFObject* feedObject = [PFObject objectWithClassName:@"Feed"];
-                    [feedObject setObject:[[PFUser currentUser] objectForKey:@"name"] forKey:@"sender"];
-                    [feedObject setObject:[[PFUser currentUser] objectForKey:@"profilepicture"] forKey:@"senderimagelink"];
-                    [feedObject setObject:newRoute forKey:@"linkedroute"];
-                    [feedObject setObject:imageFile forKey:@"imagefile"];
-                    [feedObject setObject:@"tag" forKey:@"action"];
-                    [feedObject setObject:[NSString stringWithFormat:@"%@ tagged %@ and %d others in a route",[[PFUser currentUser] objectForKey:@"name"],user.name,[recommendArray count]-1] forKey:@"message"];
+                    [feedObject setObject:[NSString stringWithFormat:@"%@ added a new route",[GymObject objectForKey:@"name"]] forKey:@"message"];
+                    [feedObject setObject:@"added" forKey:@"action"];
                     
                     [feedObject saveInBackground];
-                }
+                    
+                    // recommendations or tagging //
+                    if ([recommendArray count]>0) {
+                        NSLog(@"recommend array count = %d", [recommendArray count]);
+                        for (FBfriend* user in recommendArray) {
+                            NSMutableDictionary *data = [NSMutableDictionary dictionary];
+                            [data setObject:newRoute.objectId forKey:@"linkedroute"];
+                            [data setObject:[NSNumber numberWithInt:1] forKey:@"badge"];
+                            [data setObject:[NSString stringWithFormat:@"%@ tagged you in a route",[[PFUser currentUser] objectForKey:@"name"]] forKey:@"alert"];
+                            [data setObject:[NSString stringWithFormat:@"%@",[[PFUser currentUser] objectForKey:@"name"]] forKey:@"sender"];
+                            [data setObject:[NSString stringWithFormat:@"%@",user.name] forKey:@"reciever"];
+                            
+                            [PFPush sendPushDataToChannelInBackground:[NSString stringWithFormat:@"channel%@",user.uid] withData:data];
+                            
+                            
+                            
+                            
+                            
+                        }
+                        
+                        if ([recommendArray count]==1) {
+                            FBfriend*user = [recommendArray objectAtIndex:0];
+                            PFObject* feedObject = [PFObject objectWithClassName:@"Feed"];
+                            [feedObject setObject:[[PFUser currentUser] objectForKey:@"name"] forKey:@"sender"];
+                            [feedObject setObject:[[PFUser currentUser] objectForKey:@"profilepicture"] forKey:@"senderimagelink"];
+                            [feedObject setObject:newRoute forKey:@"linkedroute"];
+                            [feedObject setObject:imageFile forKey:@"imagefile"];
+                            [feedObject setObject:@"tag" forKey:@"action"];
+                            [feedObject setObject:[NSString stringWithFormat:@"%@ tagged %@ in a route",[[PFUser currentUser] objectForKey:@"name"],user.name] forKey:@"message"];
+                            
+                            [feedObject saveInBackground];
+                            
+                        }else if ([recommendArray count]==2){
+                            FBfriend*user = [recommendArray objectAtIndex:0];
+                            PFObject* feedObject = [PFObject objectWithClassName:@"Feed"];
+                            [feedObject setObject:[[PFUser currentUser] objectForKey:@"name"] forKey:@"sender"];
+                            [feedObject setObject:[[PFUser currentUser] objectForKey:@"profilepicture"] forKey:@"senderimagelink"];
+                            [feedObject setObject:newRoute forKey:@"linkedroute"];
+                            [feedObject setObject:imageFile forKey:@"imagefile"];
+                            [feedObject setObject:@"tag" forKey:@"action"];
+                            [feedObject setObject:[NSString stringWithFormat:@"%@ tagged %@ and %d other in a route",[[PFUser currentUser] objectForKey:@"name"],user.name,1] forKey:@"message"];
+                            
+                            [feedObject saveInBackground];
+                        }else{
+                            FBfriend*user = [recommendArray objectAtIndex:0];
+                            PFObject* feedObject = [PFObject objectWithClassName:@"Feed"];
+                            [feedObject setObject:[[PFUser currentUser] objectForKey:@"name"] forKey:@"sender"];
+                            [feedObject setObject:[[PFUser currentUser] objectForKey:@"profilepicture"] forKey:@"senderimagelink"];
+                            [feedObject setObject:newRoute forKey:@"linkedroute"];
+                            [feedObject setObject:imageFile forKey:@"imagefile"];
+                            [feedObject setObject:@"tag" forKey:@"action"];
+                            [feedObject setObject:[NSString stringWithFormat:@"%@ tagged %@ and %d others in a route",[[PFUser currentUser] objectForKey:@"name"],user.name,[recommendArray count]-1] forKey:@"message"];
+                            
+                            [feedObject saveInBackground];
+                        }
+                        
+                        
+                        
+                    }
+                    // recommendations or tagging end//
+                    
+                    
+                    [PFPush subscribeToChannelInBackground:[NSString stringWithFormat:@"channel%@",newRoute.objectId]];
+                    [HUD hide:YES afterDelay:0];
+                    
+                    [[UIApplication sharedApplication] endBackgroundTask:self.fileUploadBackgroundTaskId];
+                    
+                    
+                }];
+                
+                
                 
                 
                 
             }
-            [PFPush subscribeToChannelInBackground:[NSString stringWithFormat:@"channel%@",newRoute.objectId]];
-            [HUD hide:YES afterDelay:0];
-            [self dismissModalViewControllerAnimated:YES];
-            
-            
-            
+             /*progressBlock:^(int percentDone) {
+              
+              HUD.progress = percentDone/100.0f;
+              if (percentDone ==100) {
+              HUD.customView = [[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"37x-Checkmark.png"]] autorelease];
+              HUD.mode = MBProgressHUDModeCustomView;
+              HUD.labelText = @"Completed!";
+              
+              UIApplication *thisApp = [UIApplication sharedApplication];
+              thisApp.idleTimerDisabled = NO;
+              [FlurryAnalytics logEvent:@"COMPLETED_SHARE"];
+              NSLog(@"share action ended");
+              [FlurryAnalytics endTimedEvent:@"SHARE_ACTION" withParameters:nil];
+              
+              }
+              if (percentDone <70 && percentDone>50) {
+              HUD.labelText = @"Halfway Done...";
+              }
+              if (percentDone<100 && percentDone>70) {
+              HUD.labelText = @"Almost Done...";
+              }
+              }*/
+             ];
         }];
-        
-        
-        
-        
-        
-    } progressBlock:^(int percentDone) {
-        
-        HUD.progress = percentDone/100.0f;
-        if (percentDone ==100) {
-            HUD.customView = [[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"37x-Checkmark.png"]] autorelease];
-            HUD.mode = MBProgressHUDModeCustomView;
-            HUD.labelText = @"Completed!";
-            
-            UIApplication *thisApp = [UIApplication sharedApplication];
-            thisApp.idleTimerDisabled = NO;
-            [FlurryAnalytics logEvent:@"COMPLETED_SHARE"];
-            NSLog(@"share action ended");
-            [FlurryAnalytics endTimedEvent:@"SHARE_ACTION" withParameters:nil];
-            
-        }
-        if (percentDone <70 && percentDone>50) {
-            HUD.labelText = @"Halfway Done...";
-        }
-        if (percentDone<100 && percentDone>70) {
-            HUD.labelText = @"Almost Done...";
-        }
     }];
-    }];
+    
+     [self dismissModalViewControllerAnimated:YES];
 }
 -(void)saveRoute
 {
 //no facebook save
+    // Request a background execution task to allow us to finish uploading the photo even if the app is backgrounded
+    self.fileUploadBackgroundTaskId = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:^{
+        [[UIApplication sharedApplication] endBackgroundTask:self.fileUploadBackgroundTaskId];
+    }];
     
-    HUD.mode = MBProgressHUDModeDeterminate;
-    HUD.labelText = @"Uploading...";
+    NSLog(@"Requested background expiration task with id %d for photo upload", self.fileUploadBackgroundTaskId);
+    
+    
+   //
     
     PFObject* newRoute = [PFObject objectWithClassName:@"Route"];
     if (fbuploadswitch.on) {
@@ -573,13 +594,17 @@ typedef enum apiCall {
             [jsonParser release];
             jsonParser = nil;
             [newRoute setObject:[jsonObjects objectForKey:@"source"] forKey:@"fbimagelink"];
-            [newRoute setObject:fbphotoid forKey:@"photoid"];  
+            [newRoute setObject:fbphotoid forKey:@"photoid"];
+            [newRoute saveEventually:^(BOOL succeeded, NSError *error) {
+                NSLog(@"uploaded to facebook and updated newroute pfobj");
+            }];
             [fbphotoid release];
-        }];
+                   }];
         [accountRequest setFailedBlock:^{}];
         [accountRequest startAsynchronous];
         
     }
+
     [newRoute setObject:locationTextField.text forKey:@"location"];
     NSString* hashtag;
     if ([descriptionTextField.text rangeOfString:@"#"].location != NSNotFound){
@@ -626,9 +651,13 @@ typedef enum apiCall {
     NSData *thumbImageData = UIImageJPEGRepresentation(thumbnailImage, 1.0);
    // appDelegate.thumbImageData = thumbImageData;
     PFFile *thumbImageFile = [PFFile fileWithName:@"thumbImage.jpeg" data:thumbImageData];
+    NSLog(@"before uploading thumb");
     [queryArray addObject:thumbImageFile];
-     [thumbImageFile save];
+     [thumbImageFile saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+         
+
     [queryArray removeObject:thumbImageFile];
+        NSLog(@"after uploading thumb");
     [newRoute setObject:thumbImageFile forKey:@"thumbImageFile"];
     [newRoute setObject:@"2" forKey:@"routeVersion"];
     [newRoute setObject:CGPointsArray forKey:@"arrowarray"];
@@ -641,14 +670,17 @@ typedef enum apiCall {
     [queryArray addObject:imageWithArrows];
     [imageWithArrows saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
         [queryArray removeObject:imageWithArrows];
+                NSLog(@"done saving imagewith arrows");
         [newRoute setObject:imageWithArrows forKey:@"imageFileWithArrows"];
+        NSLog(@"saving imagefile");
     [queryArray addObject:imageFile];
     [imageFile saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
         [queryArray removeObject:imageFile];
+                NSLog(@"done saving imagefile");
         [newRoute setObject:imageFile forKey:@"imageFile"];
-
+        NSLog(@"saving new route");
         [newRoute saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
-                        
+            NSLog(@"done saving new route");
             PFObject* feedObject = [PFObject objectWithClassName:@"Feed"];
             [feedObject setObject:[[PFUser currentUser] objectForKey:@"name"] forKey:@"sender"];
             [feedObject setObject:[[PFUser currentUser] objectForKey:@"profilepicture"] forKey:@"senderimagelink"];
@@ -683,23 +715,16 @@ typedef enum apiCall {
                     [feedObject setObject:[NSString stringWithFormat:@"%@ tagged %@ in a route",[[PFUser currentUser] objectForKey:@"name"],user.name] forKey:@"message"];
                     
                     [feedObject saveInBackground];
-                    
-                    
-                    
-                    
                 }
-                
-                
-                
-                
-                
             }
             
             
             
             [PFPush subscribeToChannelInBackground:[NSString stringWithFormat:@"channel%@",newRoute.objectId]];
-                [HUD hide:YES afterDelay:0];
-                 [self dismissModalViewControllerAnimated:YES];
+            [JHNotificationManager notificationWithMessage:@"Successfully uploaded your route!"];
+            NSLog(@"upload completed successfully in background!");
+            [[UIApplication sharedApplication] endBackgroundTask:self.fileUploadBackgroundTaskId];
+                 
             
             
             
@@ -709,7 +734,8 @@ typedef enum apiCall {
         
         
         
-    } progressBlock:^(int percentDone) {
+    }];
+    /*progressBlock:^(int percentDone) {
 
         HUD.progress = percentDone/100.0f;
         if (percentDone ==100) {
@@ -730,10 +756,10 @@ typedef enum apiCall {
         }
         if (percentDone<100 && percentDone>70) {
             HUD.labelText = @"Almost Done...";
-        }
+        }*/
+         }];
     }];
-    }];
-    
+    [self dismissModalViewControllerAnimated:YES];
 }
 - (IBAction)saveAction:(id)sender
 {
@@ -777,27 +803,31 @@ typedef enum apiCall {
             [tweetSheet addURL:[NSURL URLWithString:@"http://bit.ly/HSTcNw"]];
             [tweetSheet setCompletionHandler: 
              ^(TWTweetComposeViewControllerResult result) {
-                 if (result==TWTweetComposeViewControllerResultDone) {
+                 if (result==TWTweetComposeViewControllerResultDone) { // after saving with twitter go on to save on parse
                      [self dismissModalViewControllerAnimated:YES];
                      ((UIButton*)sender).enabled =NO;
                      UIApplication *thisApp = [UIApplication sharedApplication];
                      thisApp.idleTimerDisabled = YES;
-                     HUD = [[MBProgressHUD showHUDAddedTo:self.view animated:YES]retain];
+                  
                      
                      if (fbuploadswitch.on) {
+                         HUD = [[MBProgressHUD showHUDAddedTo:self.view animated:YES] retain];
                          if (isPage) {
+                                                      NSLog(@"sharing with facebook page");
                              [self performSelector:@selector(apiGraphPagePhotosPost:) withObject:imageTaken afterDelay:0.0];
-                             HUD.labelText = @"Uploading...";
+                             HUD.labelText = @"Uploading to Facebook...";
                          }else {
-                             [self performSelector:@selector(apiGraphUserPhotosPost:) withObject:imageTaken afterDelay:0.0];
-                             HUD.labelText = @"Uploading...";
+                                                      NSLog(@"sharing with facebook self page");
+                            [self performSelector:@selector(apiGraphUserPhotosPost:) withObject:imageTaken afterDelay:0.0];
+                             HUD.labelText = @"Uploading to Facebook...";
+
                          }
                          
                      
                          
                      }else{
                          [self performSelector:@selector(saveRoute) withObject:nil afterDelay:0.0];
-                         HUD.labelText = @"Preparing...";
+
                      }
                      
                      
@@ -824,16 +854,16 @@ typedef enum apiCall {
 //        }];
         
         
-        HUD = [[MBProgressHUD showHUDAddedTo:self.view animated:YES]retain];
         
         if (fbuploadswitch.on) {
+            HUD = [[MBProgressHUD showHUDAddedTo:self.view animated:YES] retain];
             if (isPage) {
                 [self performSelector:@selector(apiGraphPagePhotosPost:) withObject:imageTaken afterDelay:0.0];
-                HUD.labelText = @"Uploading...";
+                HUD.labelText = @"Uploading to Facebook...";
                 return;                
             }else {
                 [self performSelector:@selector(apiGraphUserPhotosPost:) withObject:imageTaken afterDelay:0.0];
-                HUD.labelText = @"Uploading...";
+                HUD.labelText = @"Uploading to Facebook...";
                 return;
             }
             }
@@ -841,15 +871,15 @@ typedef enum apiCall {
                 
             NSLog(@"saving route in gym selector...");
                     [self performSelector:@selector(saveRouteInGymSelector:) withObject:selectedGymObject afterDelay:0.0];
-                    HUD.labelText = @"Preparing...";
+
                 return;
 
             }
             
         [self performSelector:@selector(saveRoute) withObject:nil afterDelay:0.0];
-        HUD.labelText = @"Preparing...";
+
         
-        //[PF_MBProgressHUD showHUDAddedTo:self.view animated:YES];
+   
         
         
     }
@@ -907,6 +937,7 @@ typedef enum apiCall {
 }
 - (void)apiGraphUserPhotosPost:(UIImage*)img
 {
+
     currentAPIcall = kAPIGraphUserPhotosPost;
     UIImage* resizedimg = [img resizedImage:CGSizeMake(960, 960) interpolationQuality:kCGInterpolationHigh];
     
@@ -952,7 +983,8 @@ typedef enum apiCall {
                 }
                 
                 [friendsArray addObjectsFromArray:FBfriendsArray];
-                [MBProgressHUD hideHUDForView:self.view animated:YES];
+                [HUD hide:YES];
+                [HUD release];
                 
                 break;
                 
@@ -961,7 +993,9 @@ typedef enum apiCall {
                 [fbphotoid retain];
                 NSLog(@"facebook photoid = %@",fbphotoid);
                 [self performSelector:@selector(saveRoute) withObject:nil afterDelay:0.0];
-                [JHNotificationManager notificationWithMessage:@"Photo uploaded successfully to Facebook!"];  
+                [JHNotificationManager notificationWithMessage:@"Photo uploaded successfully to Facebook!"];
+                [HUD hide:YES];
+                [HUD release];
                 break;
             case kAPIGraphPagePhotosPost:
                 
@@ -969,7 +1003,9 @@ typedef enum apiCall {
                 [fbphotoid retain];
                 NSLog(@"facebook photoid = %@",fbphotoid);
                 [self performSelector:@selector(saveRouteInGym) withObject:nil afterDelay:0.0];
-                [JHNotificationManager notificationWithMessage:@"Photo uploaded successfully to Facebook Page!"];  
+                [JHNotificationManager notificationWithMessage:@"Photo uploaded successfully to Facebook Page!"];
+                [HUD hide:YES];
+                [HUD release];
                 [[PFFacebookUtils facebook]setAccessToken:[NSString stringWithFormat:@"%@",oldAccessToken]];
                 NSLog(@"reverted to old access token");
                 break;

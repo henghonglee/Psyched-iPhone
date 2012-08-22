@@ -3,12 +3,12 @@
 	<data>
 		<int key="IBDocument.SystemTarget">1536</int>
 		<string key="IBDocument.SystemVersion">12A269</string>
-		<string key="IBDocument.InterfaceBuilderVersion">2818</string>
+		<string key="IBDocument.InterfaceBuilderVersion">2829</string>
 		<string key="IBDocument.AppKitVersion">1187</string>
 		<string key="IBDocument.HIToolboxVersion">624.00</string>
 		<object class="NSMutableDictionary" key="IBDocument.PluginVersions">
 			<string key="NS.key.0">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
-			<string key="NS.object.0">1900</string>
+			<string key="NS.object.0">1914</string>
 		</object>
 		<array key="IBDocument.IntegratedClassDependencies">
 			<string>IBMKMapView</string>
@@ -66,6 +66,7 @@
 								<object class="NSColor" key="IBUITextColor" id="570300061">
 									<int key="NSColorSpace">1</int>
 									<bytes key="NSRGB">MCAwIDAAA</bytes>
+									<string key="IBUIColorCocoaTouchKeyPath">darkTextColor</string>
 								</object>
 								<object class="IBUIFontDescription" key="IBUIFontDescription" id="382448301">
 									<string key="name">Helvetica-Light</string>
@@ -864,6 +865,6 @@
 			<string key="grade.png">{15, 16}</string>
 			<string key="twitter.png">{256, 256}</string>
 		</dictionary>
-		<string key="IBCocoaTouchPluginVersion">1900</string>
+		<string key="IBCocoaTouchPluginVersion">1914</string>
 	</data>
 </archive>

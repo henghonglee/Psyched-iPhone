@@ -620,6 +620,7 @@ kAPIGraphCommentPhoto,
             }];
         
     [hud hide:YES];
+    [self.navigationController popViewControllerAnimated:YES];
     }];
 }
 

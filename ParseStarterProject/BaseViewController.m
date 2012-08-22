@@ -52,7 +52,7 @@ static inline double radians (double degrees) {return degrees * M_PI/180;}
   }
     ParseStarterProjectAppDelegate* appDel = (ParseStarterProjectAppDelegate* )[[UIApplication sharedApplication]delegate];
     appDel.badgeView =
-    [[LKBadgeView alloc] initWithFrame:CGRectMake(100, 200, 50, 30)];
+    [[[LKBadgeView alloc] initWithFrame:CGRectMake(100, 200, 50, 30)]autorelease];
     appDel.badgeView.widthMode = LKBadgeViewWidthModeSmall;
     appDel.badgeView.center = CGPointMake(self.tabBar.center.x+145, self.tabBar.center.y-20);
     [appDel.badgeView addObserver:appDel.badgeView forKeyPath:@"text" options:NSKeyValueObservingOptionNew context:nil];
@@ -214,6 +214,7 @@ static inline double radians (double degrees) {return degrees * M_PI/180;}
     [picker dismissModalViewControllerAnimated:NO];
     EditImageViewController* EditImageVC = [[EditImageViewController alloc] initWithNibName:@"EditImageViewController" bundle:nil];
     UINavigationController* navCont = [[UINavigationController alloc]initWithRootViewController:EditImageVC];
+    [EditImageVC release];
     EditImageVC.imageInView = newcropped;
     NSLog(@"imageData transfered = %@",imageMetaData);
     EditImageVC.imageMetaData = imageMetaData;
@@ -274,6 +275,7 @@ static inline double radians (double degrees) {return degrees * M_PI/180;}
                         NSLog(@"reused photo saved");
                         EditImageViewController* EditImageVC = [[EditImageViewController alloc] initWithNibName:@"EditImageViewController" bundle:nil];
                         UINavigationController* navCont = [[UINavigationController alloc]initWithRootViewController:EditImageVC];
+                [EditImageVC release];
                         EditImageVC.imageInView = imagetoUse;
                         EditImageVC.reusePFObject = tempReusePFObject;
                         
@@ -413,6 +415,7 @@ static inline double radians (double degrees) {return degrees * M_PI/180;}
         [imagepicker dismissModalViewControllerAnimated:NO];
         EditImageViewController* EditImageVC = [[EditImageViewController alloc] initWithNibName:@"EditImageViewController" bundle:nil];
         UINavigationController* navCont = [[UINavigationController alloc]initWithRootViewController:EditImageVC];
+        [EditImageVC release];
         EditImageVC.imageInView = newcropped;
         NSLog(@"imageData transfered = %@",imageMetaData);
         EditImageVC.imageMetaData = imageMetaData;

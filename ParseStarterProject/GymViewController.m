@@ -584,27 +584,27 @@
         }
     }
 }
--(void)viewWillDisappear:(BOOL)animated
-{
+//-(void)viewWillDisappear:(BOOL)animated
+//{
     //set reusedata to nil
    
     
     
-    NSLog(@"canceling %d queries",[queryArray count]);
-    for (id pfobject in queryArray) {
-        if ([pfobject isKindOfClass:[PFFile class]]) {
-            NSLog(@"cancelling pffile upload/download");
-            [((PFFile*)pfobject) cancel];
-        }
-        if ([pfobject isKindOfClass:[PFQuery class]]) {
-            NSLog(@"cancelling pfquery ");
-            [((PFQuery*)pfobject) cancel];
-        }
-    }
-    [queryArray removeAllObjects];
-    
-    NSLog(@"done canceling queries");
-}
+//    NSLog(@"canceling %d queries",[queryArray count]);
+//    for (id pfobject in queryArray) {
+//        if ([pfobject isKindOfClass:[PFFile class]]) {
+//            NSLog(@"cancelling pffile upload/download");
+//            [((PFFile*)pfobject) cancel];
+//        }
+//        if ([pfobject isKindOfClass:[PFQuery class]]) {
+//            NSLog(@"cancelling pfquery ");
+//            [((PFQuery*)pfobject) cancel];
+//        }
+//    }
+//    [queryArray removeAllObjects];
+//    
+//    NSLog(@"done canceling queries");
+//}
 
 -(void)furthurinit
 {
