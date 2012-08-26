@@ -9,6 +9,7 @@
 #import "MyRoutesViewController.h"
 #import "SpecialTableCell.h"
 #import "ASIHTTPRequest.h"
+#import "JMTabView/Classes/Subviews/JMTabView.h"
 @implementation MyRoutesViewController
 @synthesize routeTableView;
 @synthesize selectedSegment;
@@ -817,7 +818,6 @@
 -(void)tabView:(JMTabView *)_tabView didSelectTabAtIndex:(NSUInteger)itemIndex;
 {
     [self cancelRequests];
-    #warning canceling requests is not enough , fetching will cause crash 
     shouldDisplayNext = 0;
     [routeTableView reloadData];
     tabView.segmentIndex = itemIndex;

@@ -8,7 +8,7 @@
 #import "UIImage+Alpha.h"
 #define degreesToRadians(x) (M_PI * x / 180.0)
 // Private helper methods
-@interface UIImage ()
+@interface UIImage (PrivateResize)
 - (UIImage *)resizedImage:(CGSize)newSize
                 transform:(CGAffineTransform)transform
            drawTransposed:(BOOL)transpose
@@ -154,7 +154,8 @@
             transform = CGAffineTransformTranslate(transform, newSize.width, newSize.height);
             transform = CGAffineTransformRotate(transform, M_PI);
             break;
-        
+
+            
         case UIImageOrientationLeft:           // EXIF = 6
         case UIImageOrientationLeftMirrored:   // EXIF = 5
             transform = CGAffineTransformTranslate(transform, newSize.width, 0);
@@ -165,6 +166,8 @@
         case UIImageOrientationRightMirrored:  // EXIF = 7
             transform = CGAffineTransformTranslate(transform, 0, newSize.height);
             transform = CGAffineTransformRotate(transform, -M_PI_2);
+            break;
+        default:
             break;
     }
     
@@ -179,6 +182,8 @@
         case UIImageOrientationRightMirrored:  // EXIF = 7
             transform = CGAffineTransformTranslate(transform, newSize.height, 0);
             transform = CGAffineTransformScale(transform, -1, 1);
+            break;
+        default:
             break;
     }
     

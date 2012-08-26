@@ -10,7 +10,7 @@
 #pragma Mark -
 #pragma Mark - JMTabViewDelegate
 
-@protocol JMTabViewDelegate
+@protocol JMTabViewDelegate <UIScrollViewDelegate>
 -(void)tabView:(JMTabView *)tabView didSelectTabAtIndex:(NSUInteger)itemIndex;
 
 
@@ -20,7 +20,7 @@
 #pragma Mark - JMTabView
 
 @interface JMTabView : UIScrollView 
-
+- (void)centraliseSubviews;
 - (void)setMomentary:(BOOL)momentary;
 - (void)didSelectItemAtIndex:(NSUInteger)itemIndex;
 - (void)addTabItem:(JMTabItem *)tabItem;

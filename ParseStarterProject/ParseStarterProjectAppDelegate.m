@@ -293,6 +293,24 @@
     
     if ([UIApplication sharedApplication].applicationState == UIApplicationStateInactive) {
         NSLog(@"inactive app state.. recieving push");
+    if([userInfo objectForKey:@"linkedgym"]){
+            PFQuery* gymQuery = [PFQuery queryWithClassName:@"Gym"];
+            [gymQuery whereKey:@"objectId" equalTo:[userInfo objectForKey:@"linkedgym"]];
+            [gymQuery getFirstObjectInBackgroundWithBlock:^(PFObject *gymobject, NSError *error) {
+                UINavigationController* target = [((InstagramViewController*)self.window.rootViewController).viewControllers objectAtIndex:0];
+                [((InstagramViewController*)self.window.rootViewController) setSelectedViewController:target];
+                [target popToRootViewControllerAnimated:NO];
+                
+                GymViewController* viewController = [[GymViewController alloc]initWithNibName:@"GymViewController" bundle:nil];
+                viewController.gymObject = gymobject;
+                [target pushViewController:viewController animated:YES];
+                [viewController release];
+                
+                
+            }];
+        }
+
+        if([userInfo objectForKey:@"linkedroute"]){
     PFQuery* routequery = [PFQuery queryWithClassName:@"Route"];
     [routequery whereKey:@"objectId" equalTo:[userInfo objectForKey:@"linkedroute"]];
     [routequery getFirstObjectInBackgroundWithBlock:^(PFObject *object, NSError *error) {
@@ -310,7 +328,9 @@
         [target pushViewController:viewController animated:YES];
         [viewController release];
         [newRouteObject release];
-    }];
+            }];
+        }
+        
     }
 }
 

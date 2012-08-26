@@ -14,7 +14,7 @@
 #import "RouteObject.h"
 #import "MKMapView+ZoomLevel.h"
 #import "RouteDetailViewController.h"
-
+//#import "DACircularProgressView.h"
 @interface GymViewController : UIViewController<UIScrollViewDelegate,UIGestureRecognizerDelegate>
 {
 	int page;
@@ -22,6 +22,7 @@
     int currentRoutePage;
 }
 - (IBAction)didChangeRoutePage:(id)sender;
+//@property (strong, nonatomic) DACircularProgressView *progressView;
 @property (retain, nonatomic) NSMutableArray* wallRoutesArrowArray;
 @property (retain, nonatomic) NSMutableArray* wallRoutesArrowTypeArray;
 @property (retain, nonatomic) NSMutableArray* wallViewArrays;

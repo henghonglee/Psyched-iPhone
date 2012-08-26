@@ -24,7 +24,7 @@
 @synthesize routePageControl;
 @synthesize gymProfileImageView;
 @synthesize ourRoutesButton;
-
+//@synthesize progressView;
 @synthesize gymNameLabel;
 @synthesize gymCoverImageView;
 @synthesize gymMapView;
@@ -132,6 +132,12 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+//    self.progressView = [[DACircularProgressView alloc] initWithFrame:CGRectMake(130.0f, 279.0f, 40.0f, 40.0f)];
+//    self.progressView.roundedCorners = YES;
+//    self.progressView.trackTintColor = [UIColor clearColor];
+//    self.progressView.progress = 0.0f;
+//    [self.view addSubview:self.progressView];
+   
     wallViewArrays = [[NSMutableArray alloc]init];
     gymTags = [[NSMutableArray alloc]init];
     gymSections = [[NSMutableDictionary alloc]init ];
@@ -268,8 +274,10 @@
                 [wallView release];
                 [wallimage release];
                 downloadedRouteCount++;
+                //progressView.progress = downloadedRouteCount/[self.gymTags count];
                 NSLog(@"retrieved 1 image, count at %d/%d",downloadedRouteCount,[self.gymTags count]);
                 if (downloadedRouteCount==[self.gymTags count]) {
+                  //  [progressView removeFromSuperview];
                     ourRoutesButton.enabled = true;
                      [loadRoutesActivityIndicator stopAnimating];
                     [self animateInView:ourRoutesButton withFinalRect:CGRectMake(100, 244, 216, 92) andBounceRect:CGRectMake(113, 244, 216, 92)];

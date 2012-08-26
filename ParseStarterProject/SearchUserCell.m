@@ -35,8 +35,8 @@
             [followButton setBackgroundImage:[UIImage imageNamed:@"following_text.png"] forState:UIControlStateNormal];
                 followButton.userInteractionEnabled = YES;
         }];
-        NSLog(@"owner.followed array = %@",owner.followedArray);
-        [owner.followedArray addObject:pfObj];
+        NSLog(@"owner.followed array = %@",((FollowFriendsViewController*)owner).followedArray);
+        [((FollowFriendsViewController*)owner).followedArray addObject:pfObj];
         
         PFObject* newFeedObject = [PFObject objectWithClassName:@"Feed"];
         [newFeedObject setObject:[NSString stringWithFormat:@"%@ started following %@",[[PFUser currentUser] objectForKey:@"name"],nameLabel.text] forKey:@"message"];
@@ -74,7 +74,7 @@
         }];
 
         
-        for (PFObject* followobj in owner.followedArray) {
+        for (PFObject* followobj in ((FollowFriendsViewController*)owner).followedArray) {
              NSLog(@"scanning object with owner = %@",[followobj objectForKey:@"followed"] );
             if([[followobj objectForKey:@"followed"] isEqualToString:nameLabel.text]){
                 NSLog(@"deleted object with owner = %@",[followobj objectForKey:@"followed"] );
@@ -83,7 +83,7 @@
               
             }
         }
-           [owner.followedArray removeObject:tobedeleted];
+           [((FollowFriendsViewController*)owner).followedArray removeObject:tobedeleted];
     }
 }
 

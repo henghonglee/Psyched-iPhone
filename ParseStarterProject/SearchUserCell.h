@@ -17,5 +17,5 @@
 @property (retain, nonatomic) IBOutlet UIImageView *userImageView;
 
 @property (retain, nonatomic) IBOutlet UIButton *followButton;
-@property (retain, nonatomic) FollowFriendsViewController *owner;
+@property (retain, nonatomic) UIViewController *owner;
 @end

@@ -337,7 +337,6 @@
          [queryArray addObject:queryForNotification];
         [queryForNotification findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
              [queryArray addObject:queryForNotification];
-#warning  not saved into feedobject here
             [userfeeds removeAllObjects];
             [userfeeds addObjectsFromArray:objects];
             [userFeedTable reloadData];

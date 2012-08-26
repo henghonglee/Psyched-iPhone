@@ -7,6 +7,7 @@
 
 @interface JMTabView()
 @property (nonatomic,retain) JMTabContainer * tabContainer;
+- (void)centraliseSubviews;
 @end
 
 @implementation JMTabView

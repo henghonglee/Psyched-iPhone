@@ -63,7 +63,7 @@ static inline double radians (double degrees) {return degrees * M_PI/180;}
     appDel.badgeView.outline = YES;
     [self.view addSubview:appDel.badgeView];
 
-#warning badgeview unreleased
+
   [self.view addSubview:button];
 }
 
