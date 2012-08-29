@@ -14,6 +14,7 @@
 #import "UIColor+Hex.h"
 #import <QuartzCore/QuartzCore.h>
 #import "GradientButton.h"
+#import "BarBackgroundLayer.h"
 @implementation MyTableController
 @synthesize routeTableView;
 @synthesize followedPosters;
@@ -852,6 +853,7 @@
 -(void)addStandardTabView
 {
     tabView = [[JMTabView alloc] init];
+    tabView.backgroundColor = [UIColor colorWithRed:69.0/255.0 green:69.0/255.0 blue:69.0/255.0 alpha:1.0];
     tabView.contentSize = CGSizeMake(430, 44);
     tabView.showsHorizontalScrollIndicator = NO;
     [tabView setDelegate:self];
@@ -1719,7 +1721,7 @@
     [emptyView release];
     [currentLocation release];
     [queryArray release];
-    
+    [tabView release];
     [routeTableView release];
     [emptyGradeView release];
     [settingsButton release];

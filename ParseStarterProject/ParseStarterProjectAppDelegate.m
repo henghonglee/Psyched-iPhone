@@ -45,72 +45,14 @@
     //sandbox
     //[Parse setApplicationId:@"IB67seVg0d1MufvXlA67zW1zHKivUW2cBkXPQ0c0" clientKey:@"Vln8htxgC4uM5ZDIqRDQ2MsJgJjM27hexeGr140i"];
     [PFFacebookUtils initializeWithApplicationId:@"200778040017319"];
-/*    ****************************************************************************
-    // Uncomment and fill in with your Parse credentials:
-    
-    
-    
-    //live
-    
-    // Override point for customization after application launch.
-    
-//    if([[NSUserDefaults standardUserDefaults] objectForKey:@"NearbyDistance"] ==nil){
-//        [[NSUserDefaults standardUserDefaults] setObject:@"5" forKey:@"NearbyDistance"];
-//    }
-    
-    //test saving array in doc directory
-    */
-/*    
-    NSDictionary *dictionary = [NSDictionary dictionaryWithObjectsAndKeys:
-                                @"array", @"array", @"Stout", @"dark", @"Hefeweizen", @"wheat", @"IPA", 
-                                @"hoppy", nil];
-    
-    // Get path to documents directory
-    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, 
-                                                         NSUserDomainMask, YES);
-    if ([paths count] > 0)
-    {
-        // Path to save array data
-        NSString  *arrayPath = [[paths objectAtIndex:0] 
-                                stringByAppendingPathComponent:@"array.out"];
-        
-            // Write array
-       // [array writeToFile:arrayPath atomically:YES];
-        
-        // Read both back in new collections
-        NSMutableArray *arrayFromFile = [NSMutableArray arrayWithContentsOfFile:arrayPath];
-     
-        
-        for (NSString *element in arrayFromFile) 
-            NSLog(@"element: %@", element);
-    }
-    
-*/
-    
-//fetch user notifications
-    /*
-   // [self apiFQLIMe];
-   //http://www.facebook.com/photo.php?fbid=10150725278230883&set=a.10150701479290883.464743.554245882&type=1
-//    NSMutableDictionary *params = [NSMutableDictionary dictionaryWithObjectsAndKeys:
-//                                   [NSString stringWithFormat:@"SELECT created_time, sender_id, title_text, body_text, href FROM notification WHERE recipient_id=554245882 AND 'http://www.facebook.com/photo.php?fbid=10150725278230883&set=a.10150701479290883.464743.554245882&type=1'IN href"], @"query",
-//                                   nil];
-//    [[PFFacebookUtils facebook] requestWithMethodName:@"fql.query"
-//                                            andParams:params
-//                                        andHttpMethod:@"POST"
-//                                          andDelegate:self];
-    */
-    
+
     
         if (![[NSUserDefaults standardUserDefaults] objectForKey:@"updater1.6"]) {
             [PFFacebookUtils facebook].accessToken = nil;
             [[NSUserDefaults standardUserDefaults] setObject:@"updated" forKey:@"updater1.6"];
         }
     
-    
-    
-    
-   
-    InstagramViewController* viewController = [[InstagramViewController alloc]initWithNibName:@"InstagramViewController" bundle:nil];
+
      LoginViewController* loginVC = [[LoginViewController alloc]initWithNibName:@"LoginViewController" bundle:nil];
 
     if ([[[UIDevice currentDevice] systemVersion] floatValue] >= 5.0)
@@ -118,7 +60,6 @@
     if ([[NSUserDefaults standardUserDefaults] objectForKey:@"updater1.1"]) {
         
      if ([PFFacebookUtils facebook].accessToken) { //if accesstoken is ok
-         NSLog(@"access token is ok");
              NSDictionary *dictionary = 
              [NSDictionary dictionaryWithObjectsAndKeys:[[PFUser currentUser] objectForKey:@"email"],@"email",[[PFUser currentUser] objectForKey:@"birthday_date"],@"birthday_date",[[PFUser currentUser] objectForKey:@"name"],@"name",[[PFUser currentUser] objectForKey:@"sex"],@"sex",[[PFUser currentUser] objectForKey:@"uid"],@"uid",[[PFUser currentUser] objectForKey:@"about_me"],@"about_me", nil];
              [FlurryAnalytics setUserID:[[PFUser currentUser] objectForKey:@"name"]];
@@ -130,73 +71,71 @@
              }
              [FlurryAnalytics logEvent:@"USER_LOGIN" withParameters:dictionary timed:YES];
                       
-                      
-                      
-                      
                       [[PFUser currentUser] setObject:[NSNumber numberWithDouble:VERSION] forKey:@"version"];
                       [[PFUser currentUser] saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
                           [PFPush subscribeToChannelInBackground:[NSString stringWithFormat:@"channel%@",[[PFUser currentUser] objectForKey:@"facebookid"]] block:^(BOOL succeeded, NSError *error) {
-                               NSLog(@"subscribed to channeluser %@",[NSString stringWithFormat:@"channel%@",[[PFUser currentUser] objectForKey:@"facebookid"]]);
+                              if (succeeded) {
+                                  [PFPush subscribeToChannelInBackground:@"" block:^(BOOL alsosucceeded, NSError *error2) {
+                                      if (alsosucceeded) {
+                                          InstagramViewController* viewController = [[InstagramViewController alloc]initWithNibName:@"InstagramViewController" bundle:nil];
+                                          self.window.rootViewController = viewController;
+                                          [viewController release];
+                                      }else{
+                                          UIAlertView* alert = [[UIAlertView alloc]initWithTitle:@"notice" message:[NSString stringWithFormat:@"error2 = %@",error2] delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil];
+                                          [alert show];
+                                          [alert release];
+                                          [MBProgressHUD hideHUDForView:self.window.rootViewController.view animated:YES];
+                                      }
+                                      
+                                  }];
+                              }else{
+                                  [MBProgressHUD hideHUDForView:self.window.rootViewController.view animated:YES];
+                              }
+                              
                           }];
                          
                            
                       }];                 
                       
-              self.window.rootViewController = viewController;
+             self.window.rootViewController = loginVC;
+         [MBProgressHUD showHUDAddedTo:self.window.rootViewController.view animated:YES];
          
          }else{
              self.window.rootViewController = loginVC; 
-             /*
-             NSArray* permissions = [[NSArray alloc]initWithObjects:@"user_about_me",@"user_videos",@"user_birthday",@"email",@"user_photos",@"publish_stream",@"offline_access",@"manage_pages",@"manage_notifications",nil];
-             [PFFacebookUtils logInWithPermissions:permissions block:^(PFUser *user, NSError *error) {
-                 [self apiFQLIMe];
-                 [[PFUser currentUser] setObject:[NSNumber numberWithDouble:VERSION] forKey:@"version"];
-                 
-                 [[PFUser currentUser] saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
-                     [PFPush subscribeToChannelInBackground:[NSString stringWithFormat:@"channel%@",[[PFUser currentUser] objectForKey:@"facebookid"]] target:self selector:@selector(subscribeFinished:error:)];
-                     NSLog(@"subscribed to channeluser %@",[NSString stringWithFormat:@"channel%@",[[PFUser currentUser] objectForKey:@"facebookid"]]);
-                 }];
-                 
-             }];
-             [permissions release];
-              */
          }
         }else{
             self.window.rootViewController = loginVC; 
      }
-    [viewController release];
+
     [loginVC release ];
-    [self.window makeKeyAndVisible];
-    [application registerForRemoteNotificationTypes:UIRemoteNotificationTypeBadge|
-     UIRemoteNotificationTypeAlert|
-     UIRemoteNotificationTypeSound];
-    if ([launchOptions objectForKey:UIApplicationLaunchOptionsRemoteNotificationKey]) {
-        NSDictionary* userInfo = [launchOptions objectForKey:UIApplicationLaunchOptionsRemoteNotificationKey];
-        
-        PFQuery* routequery = [PFQuery queryWithClassName:@"Route"];
-        [routequery whereKey:@"objectId" equalTo:[userInfo objectForKey:@"linkedroute"]];
-        [routequery getFirstObjectInBackgroundWithBlock:^(PFObject *object, NSError *error) {
-            NSLog(@"done running query");
-            RouteObject* newRouteObject = [[RouteObject alloc]init];
-            newRouteObject.pfobj = object;
-            RouteDetailViewController* viewController = [[RouteDetailViewController alloc]initWithNibName:@"RouteDetailViewController" bundle:nil];
-            
-            viewController.routeObject = newRouteObject;
-            NSLog(@"rootview = %@",self.window.rootViewController);
-            
-            UINavigationController* target = [((InstagramViewController*)self.window.rootViewController).viewControllers objectAtIndex:0];
-            [((InstagramViewController*)self.window.rootViewController) setSelectedViewController:target];
-            [target popToRootViewControllerAnimated:NO];
-            [target pushViewController:viewController animated:YES];
-            [viewController release];
-            [newRouteObject release];
-        }];
-    }
-    
-    [application registerForRemoteNotificationTypes:UIRemoteNotificationTypeBadge|
-                                                    UIRemoteNotificationTypeAlert|
-                                                    UIRemoteNotificationTypeSound];
-    return YES;
+    [self.window makeKeyAndVisible];    
+//    if ([launchOptions objectForKey:UIApplicationLaunchOptionsRemoteNotificationKey]) {
+//        NSDictionary* userInfo = [launchOptions objectForKey:UIApplicationLaunchOptionsRemoteNotificationKey];
+//        
+//        PFQuery* routequery = [PFQuery queryWithClassName:@"Route"];
+//        [routequery whereKey:@"objectId" equalTo:[userInfo objectForKey:@"linkedroute"]];
+//        [routequery getFirstObjectInBackgroundWithBlock:^(PFObject *object, NSError *error) {
+//            NSLog(@"done running query");
+//            RouteObject* newRouteObject = [[RouteObject alloc]init];
+//            newRouteObject.pfobj = object;
+//            RouteDetailViewController* viewController = [[RouteDetailViewController alloc]initWithNibName:@"RouteDetailViewController" bundle:nil];
+//            
+//            viewController.routeObject = newRouteObject;
+//            NSLog(@"rootview = %@",self.window.rootViewController);
+//            
+//            UINavigationController* target = [((InstagramViewController*)self.window.rootViewController).viewControllers objectAtIndex:0];
+//            [((InstagramViewController*)self.window.rootViewController) setSelectedViewController:target];
+//            [target popToRootViewControllerAnimated:NO];
+//            [target pushViewController:viewController animated:YES];
+//            [viewController release];
+//            [newRouteObject release];
+//        }];
+//    }
+        [application registerForRemoteNotificationTypes:UIRemoteNotificationTypeBadge|
+         UIRemoteNotificationTypeAlert|
+         UIRemoteNotificationTypeSound];
+
+        return YES;
 }
 
 #pragma mark fb methods
@@ -256,10 +195,13 @@
  */
 
 - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)newDeviceToken{
-    [PFPush storeDeviceToken:newDeviceToken];
-    [PFPush subscribeToChannelInBackground:@"" target:self selector:@selector(subscribeFinished:error:)];
     
-    [PFPush unsubscribeFromChannelInBackground:@"channelrecommend"];
+       [PFPush storeDeviceToken:newDeviceToken];
+
+    [[PFInstallation currentInstallation]saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+        [PFPush subscribeToChannelInBackground:@""];
+    }];
+    
 }
 
 - (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error{

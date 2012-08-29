@@ -796,7 +796,7 @@
 -(void)addStandardTabView
 {
     tabView = [[JMTabView alloc] initWithFrame:CGRectMake(0, 0, 320, 44.)] ;
- 
+    tabView.backgroundColor = [UIColor colorWithRed:69.0/255.0 green:69.0/255.0 blue:69.0/255.0 alpha:1.0];
     tabView.layer.shadowColor = [UIColor blackColor].CGColor;
     tabView.layer.shadowOpacity = 0.4;
     tabView.layer.shadowOffset = CGSizeMake(0, 2);
