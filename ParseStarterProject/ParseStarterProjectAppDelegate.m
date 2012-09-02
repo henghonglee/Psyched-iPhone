@@ -8,7 +8,7 @@
 #import <BugSense-iOS/BugSenseCrashController.h>
 #import "FlurryAnalytics.h"
 
-#define VERSION 1.7
+#define VERSION 1.8
 @implementation ParseStarterProjectAppDelegate
 @synthesize badgeView;
 @synthesize window=_window;
@@ -34,7 +34,12 @@
 {
 
     [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleBlackOpaque animated:YES];
-    
+    PFInstallation *currentInstallation = [PFInstallation currentInstallation];
+    if (currentInstallation.badge != 0) {
+        currentInstallation.badge = 0;
+    }
+    [currentInstallation setObject:[NSNumber numberWithDouble:VERSION ] forKey:@"Version"];
+    [currentInstallation saveEventually];
     [FlurryAnalytics startSession:@"N66I1CJV446Z75ZV8G8V"];
     NSDictionary *myStuff = [NSDictionary dictionaryWithObjectsAndKeys:@"myObject", @"myKey", nil];
     [BugSenseCrashController sharedInstanceWithBugSenseAPIKey:@"ade3c7ab" 
@@ -43,21 +48,15 @@
     [self startStandardUpdates];
     [Parse setApplicationId:@"rUk14GRi8xY6ieFQGyXcJ39iQUPuGo1ihR2dAKeh" clientKey:@"aOz04F0XOehjH9a58b95V4nKtcCZNUNUxbCoqM48"];
     //sandbox
-    //[Parse setApplicationId:@"IB67seVg0d1MufvXlA67zW1zHKivUW2cBkXPQ0c0" clientKey:@"Vln8htxgC4uM5ZDIqRDQ2MsJgJjM27hexeGr140i"];
+    //[Parse setApplicationId:@"ayrordrSISjoYKVt9hh7WjrA2lJVY3qJTLMCgPnn" clientKey:@"LA3t7cVnclnYqAe5X18sX9AJQi9WuQ3apa9FExJ7"];
     [PFFacebookUtils initializeWithApplicationId:@"200778040017319"];
 
-    
-        if (![[NSUserDefaults standardUserDefaults] objectForKey:@"updater1.6"]) {
-            [PFFacebookUtils facebook].accessToken = nil;
-            [[NSUserDefaults standardUserDefaults] setObject:@"updated" forKey:@"updater1.6"];
-        }
     
 
      LoginViewController* loginVC = [[LoginViewController alloc]initWithNibName:@"LoginViewController" bundle:nil];
 
     if ([[[UIDevice currentDevice] systemVersion] floatValue] >= 5.0)
         [[UINavigationBar appearance] setBackgroundImage:[UIImage imageNamed:@"headerview.png"] forBarMetrics:UIBarMetricsDefault];
-    if ([[NSUserDefaults standardUserDefaults] objectForKey:@"updater1.1"]) {
         
      if ([PFFacebookUtils facebook].accessToken) { //if accesstoken is ok
              NSDictionary *dictionary = 
@@ -74,24 +73,15 @@
                       [[PFUser currentUser] setObject:[NSNumber numberWithDouble:VERSION] forKey:@"version"];
                       [[PFUser currentUser] saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
                           [PFPush subscribeToChannelInBackground:[NSString stringWithFormat:@"channel%@",[[PFUser currentUser] objectForKey:@"facebookid"]] block:^(BOOL succeeded, NSError *error) {
-                              if (succeeded) {
+
                                   [PFPush subscribeToChannelInBackground:@"" block:^(BOOL alsosucceeded, NSError *error2) {
-                                      if (alsosucceeded) {
+                                      [MBProgressHUD hideHUDForView:self.window.rootViewController.view animated:YES];
                                           InstagramViewController* viewController = [[InstagramViewController alloc]initWithNibName:@"InstagramViewController" bundle:nil];
                                           self.window.rootViewController = viewController;
                                           [viewController release];
-                                      }else{
-                                          UIAlertView* alert = [[UIAlertView alloc]initWithTitle:@"notice" message:[NSString stringWithFormat:@"error2 = %@",error2] delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil];
-                                          [alert show];
-                                          [alert release];
-                                          [MBProgressHUD hideHUDForView:self.window.rootViewController.view animated:YES];
-                                      }
+
                                       
                                   }];
-                              }else{
-                                  [MBProgressHUD hideHUDForView:self.window.rootViewController.view animated:YES];
-                              }
-                              
                           }];
                          
                            
@@ -103,10 +93,7 @@
          }else{
              self.window.rootViewController = loginVC; 
          }
-        }else{
-            self.window.rootViewController = loginVC; 
-     }
-
+       
     [loginVC release ];
     [self.window makeKeyAndVisible];    
 //    if ([launchOptions objectForKey:UIApplicationLaunchOptionsRemoteNotificationKey]) {
@@ -141,12 +128,12 @@
 #pragma mark fb methods
 
 - (BOOL)application:(UIApplication *)application handleOpenURL:(NSURL *)url {
-    return [[PFFacebookUtils facebook] handleOpenURL:url];
+    return [[PFFacebookUtils session] handleOpenURL:url];
 }
 
 - (BOOL)application:(UIApplication *)application openURL:(NSURL *)url
   sourceApplication:(NSString *)sourceApplication annotation:(id)annotation {
-    return [[PFFacebookUtils facebook] handleOpenURL:url]; 
+    return [[PFFacebookUtils session] handleOpenURL:url];
 }
 
 -(void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex{
@@ -154,9 +141,10 @@
         [[UIApplication sharedApplication]openURL:[NSURL URLWithString:@"http://itunes.apple.com/app/psyched!/id511887569?mt=8"]];
     }else if ([[alertView buttonTitleAtIndex:buttonIndex]isEqualToString:@"Reauthenticate"]) {
         [PFUser logOut];
+     //   [[PFFacebookUtils facebook] closeAndClearTokenInformation];
         [[PFFacebookUtils facebook] logout];
         [[PFFacebookUtils facebook] setAccessToken:nil];
-        NSArray* permissions = [[NSArray alloc]initWithObjects:@"user_about_me",@"user_videos",@"user_birthday",@"email",@"user_photos",@"publish_stream",@"offline_access",@"manage_pages",@"manage_notifications",nil];
+        NSArray* permissions = [[NSArray alloc]initWithObjects:@"user_about_me",@"user_videos",@"user_birthday",@"email",@"user_photos",@"publish_stream",@"offline_access",nil];
         [PFFacebookUtils logInWithPermissions:permissions block:^(PFUser *user, NSError *error) {
             
         }];
@@ -219,7 +207,7 @@
    if (![[userInfo objectForKey:@"sender"] isEqualToString:[[PFUser currentUser]objectForKey:@"name"]]) {
     if ([[userInfo objectForKey:@"reciever"] isEqualToString:[[PFUser currentUser]objectForKey:@"name"]]) {
       
-     
+     // app is active
         [JHNotificationManager notificationWithMessage:
          [NSString stringWithFormat:@"%@",[[userInfo objectForKey:@"aps"] objectForKey:@"alert"]]];
         
@@ -364,11 +352,12 @@
 
 - (void)applicationDidBecomeActive:(UIApplication *)application{
     NSLog(@"app did become active");
-    if (application.applicationIconBadgeNumber != 0)
-        application.applicationIconBadgeNumber = 0;
-    
-        [[PFInstallation currentInstallation] saveEventually];
-    
+    PFInstallation *currentInstallation = [PFInstallation currentInstallation];
+    if (currentInstallation.badge != 0) {
+        currentInstallation.badge = 0;
+    }
+    [currentInstallation setObject:[NSNumber numberWithDouble:VERSION ] forKey:@"Version"];
+    [currentInstallation saveEventually];
     PFQuery* versionquery = [PFQuery queryWithClassName:@"Version"];
     [versionquery getFirstObjectInBackgroundWithBlock:^(PFObject *object, NSError *error) {
         if ([[object objectForKey:@"version"] doubleValue] > VERSION) {
@@ -414,6 +403,9 @@
     
     [locationManager startUpdatingLocation];
     CLLocation *location = locationManager.location;
+    PFGeoPoint* userGeopoint = [PFGeoPoint geoPointWithLatitude:location.coordinate.latitude longitude:location.coordinate.longitude];
+    [[PFInstallation currentInstallation]setObject:userGeopoint forKey:@"userRecentLocation"];
+    [[PFInstallation currentInstallation]saveEventually];
     [FlurryAnalytics setLatitude:location.coordinate.latitude
                        longitude:location.coordinate.longitude
               horizontalAccuracy:location.horizontalAccuracy
@@ -521,8 +513,7 @@
                         
                         [FlurryAnalytics logEvent:@"USER_LOGIN" withParameters:dictionary timed:YES];
                         InstagramViewController* viewController = [[InstagramViewController alloc]initWithNibName:@"InstagramViewController" bundle:nil];
-                        [[NSUserDefaults standardUserDefaults]setObject:@"updated" forKey:@"updater1.1"];
-                        [[NSUserDefaults standardUserDefaults] synchronize];
+                        
                         self.window.rootViewController = viewController;
                         [viewController release];
                     }];

@@ -16,7 +16,7 @@
         gradientLayer.frame = CGRectMake(0, 0, 1024, 44);
         gradientLayer.colors = [NSArray arrayWithObjects:(id)[startColor CGColor], (id)[endColor CGColor], nil];
         [self insertSublayer:gradientLayer atIndex:0];
-        [gradientLayer release];
+
     }
     return self;
 }

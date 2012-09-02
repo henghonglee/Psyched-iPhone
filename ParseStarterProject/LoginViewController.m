@@ -169,10 +169,9 @@
    
 //    if (![PFFacebookUtils facebook].accessToken) {
 
-        NSArray* permissions = [[NSArray alloc]initWithObjects:@"user_about_me",@"user_videos",@"user_birthday",@"email",@"user_photos",@"publish_stream",@"offline_access",@"manage_pages",@"manage_notifications",nil];
+        NSArray* permissions = [[NSArray alloc]initWithObjects:@"user_about_me",@"user_videos",@"user_birthday",@"email",@"user_photos",@"publish_stream",@"offline_access",nil];
         [PFFacebookUtils logInWithPermissions:permissions block:^(PFUser *user, NSError *error) {
-            [[NSUserDefaults standardUserDefaults]setObject:@"updated" forKey:@"updater1.1"];
-            [[NSUserDefaults standardUserDefaults] synchronize];
+           
             if (!user) {
                 NSLog(@"Uh oh. The user cancelled the Facebook login.");
             } else if (user.isNew) {
@@ -202,7 +201,7 @@
     // to get a 100 pixel wide version of the profile picture
 
     
-    
+    NSLog(@"runnign fqlme");
     NSURL* reqURL = [NSURL URLWithString:[NSString stringWithFormat:@"https://graph.facebook.com/fql?q=SELECT+about_me,locale,birthday,birthday_date,sex,uid,name,pic,email+FROM+user+WHERE+uid=me()&access_token=%@",[PFFacebookUtils facebook].accessToken]];
     ASIHTTPRequest* fqlRequest = [ASIHTTPRequest requestWithURL:reqURL];
     [fqlRequest setCompletionBlock:^{
@@ -260,17 +259,17 @@
                     [FlurryAnalytics logEvent:@"NEW_USER_LOGIN" withParameters:dictionary timed:YES];
                     
                     
-                    
+                    NSLog(@"saving user");
                     [[PFUser currentUser] saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
                         [PFPush subscribeToChannelInBackground:[NSString stringWithFormat:@"channel%@",[[PFUser currentUser] objectForKey:@"facebookid"]]block:^(BOOL succeeded, NSError *error) {
-                            if(succeeded){
+
                             [JHNotificationManager notificationWithMessage:[NSString stringWithFormat:@"Logged in as %@",[result objectForKey:@"name"]]];
                             InstagramViewController* viewController = [[InstagramViewController alloc]initWithNibName:@"InstagramViewController" bundle:nil];
                             viewController.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
                             ParseStarterProjectAppDelegate* applicationDelegate = ((ParseStarterProjectAppDelegate*)[[UIApplication sharedApplication]delegate]);
                             applicationDelegate.window.rootViewController = viewController;
                             [viewController release];
-                            }
+
                         }];
                         
                     }];

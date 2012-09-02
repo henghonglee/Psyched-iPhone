@@ -207,8 +207,10 @@
                 [route release];
             }
         }
-        
-        [self.gymTags addObjectsFromArray:[self.gymSections allKeys]];
+        for (NSString* gymtag in [self.gymSections allKeys]) {
+            [self.gymTags addObject:gymtag];
+        }
+
 //        [self.gymTags sortUsingSelector:@selector(localizedCaseInsensitiveCompare:)];
     
         for(int i=0; i<[self.gymTags count] ;i++)
@@ -249,6 +251,11 @@
                 [doubleTapGesture setNumberOfTapsRequired : 2];
                 [wallimage addGestureRecognizer:doubleTapGesture];
                 [doubleTapGesture release];
+                UIPinchGestureRecognizer* pinchGesture = [[UIPinchGestureRecognizer alloc]initWithTarget:self action:@selector(handleDoubleTap:)];
+                pinchGesture.delegate = self;
+                [pinchGesture setCancelsTouchesInView:NO];
+                 [wallimage addGestureRecognizer:pinchGesture];
+                [pinchGesture release];
                 [wallView addSubview:wallimage];
                 
                 
@@ -305,56 +312,101 @@
 }
 -(void)handleDoubleTap:(id)sender
 {
-    NSLog(@"page tapped on = %d",self.pageControl.currentPage);
-    currentRoutePage =0;
-    self.navigationItem.leftBarButtonItem = nil;
-    self.navigationItem.hidesBackButton = YES;
-    UIImageView* imgView = [[UIImageView alloc]initWithFrame:CGRectMake(16.5, 35, 287, 287)];
-    imgView.userInteractionEnabled = YES;
-    UITapGestureRecognizer* doubleTapGesture = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(reverseHandleDoubleTap:)];
-    
-    doubleTapGesture.delegate = self;
-    [doubleTapGesture setNumberOfTapsRequired : 2];
-    [imgView addGestureRecognizer:doubleTapGesture];
-    [doubleTapGesture release];
-    [self.view addSubview:imgView];
-    [imgView release];
-    for (UIView* view in ((UIView*)[wallViewArrays objectAtIndex:self.pageControl.currentPage]).subviews) {
-        if ([view isKindOfClass:[UIImageView class]]) {
-           [imgView setImage:((UIImageView*)view).image];
+    if ([sender isKindOfClass:[UIPinchGestureRecognizer class]]) {
+        if (((UIPinchGestureRecognizer*)sender).state == UIGestureRecognizerStateEnded) {
+            return;
+        }else if(((UIPinchGestureRecognizer*)sender).state == UIGestureRecognizerStateBegan){
+            if (((UIPinchGestureRecognizer*)sender).scale>1) { //less than on on zoom out
+                NSLog(@"page tapped on = %d",self.pageControl.currentPage);
+                currentRoutePage =0;
+                self.navigationItem.leftBarButtonItem = nil;
+                self.navigationItem.hidesBackButton = YES;
+                UIImageView* imgView = [[UIImageView alloc]initWithFrame:CGRectMake(16.5, 35, 287, 287)];
+                imgView.userInteractionEnabled = YES;
+                [self.view addSubview:imgView];
+                [imgView release];
+                for (UIView* view in ((UIView*)[wallViewArrays objectAtIndex:self.pageControl.currentPage]).subviews) {
+                    if ([view isKindOfClass:[UIImageView class]]) {
+                        [imgView setImage:((UIImageView*)view).image];
+                    }
+                }
+                
+                self.gymWallScroll.hidden = YES;
+                self.pageControl.hidden = YES;
+                RouteObject* firstRouteObj = ((RouteObject*)[[self.gymSections objectForKey:[self.gymTags objectAtIndex:self.pageControl.currentPage]]objectAtIndex:0]);
+                [self setImagesWithRouteObject:firstRouteObj];
+                footerLabel.text = [NSString stringWithFormat:@"%@",[firstRouteObj.pfobj objectForKey:@"description"]];
+                footerDifficultyLabel.text = [NSString stringWithFormat:@"%@",[firstRouteObj.pfobj objectForKey:@"difficultydescription"]];
+                footerView.hidden=NO;
+                CGRect slideViewFinalFrame = CGRectMake(0,0,320,320);
+                [UIView animateWithDuration:0.5
+                                      delay:0.0
+                                    options: UIViewAnimationCurveEaseOut
+                                 animations:^{
+                                     imgView.frame = slideViewFinalFrame;
+                                     footerView.alpha = 0.7;
+                                 }
+                                 completion:^(BOOL finished){
+                                     
+                                     [self performSelectorOnMainThread:@selector(addGymScrollToAugmentedImageView:) withObject:imgView waitUntilDone:YES];
+                                     
+                                     
+                                     [UIView animateWithDuration:0.2
+                                                           delay:0.0
+                                                         options: UIViewAnimationCurveEaseOut
+                                                      animations:^{
+                                                          gymRouteScroll.alpha=1;
+                                                          
+                                                      }completion:^(BOOL finished){}];
+                                     
+                                 }];
+            }
         }
+    }else{
+        NSLog(@"page tapped on = %d",self.pageControl.currentPage);
+        currentRoutePage =0;
+        self.navigationItem.leftBarButtonItem = nil;
+        self.navigationItem.hidesBackButton = YES;
+        UIImageView* imgView = [[UIImageView alloc]initWithFrame:CGRectMake(16.5, 35, 287, 287)];
+        imgView.userInteractionEnabled = YES;
+        [self.view addSubview:imgView];
+        [imgView release];
+        for (UIView* view in ((UIView*)[wallViewArrays objectAtIndex:self.pageControl.currentPage]).subviews) {
+            if ([view isKindOfClass:[UIImageView class]]) {
+                [imgView setImage:((UIImageView*)view).image];
+            }
+        }
+        
+        self.gymWallScroll.hidden = YES;
+        self.pageControl.hidden = YES;
+        RouteObject* firstRouteObj = ((RouteObject*)[[self.gymSections objectForKey:[self.gymTags objectAtIndex:self.pageControl.currentPage]]objectAtIndex:0]);
+        [self setImagesWithRouteObject:firstRouteObj];
+        footerLabel.text = [NSString stringWithFormat:@"%@",[firstRouteObj.pfobj objectForKey:@"description"]];
+        footerDifficultyLabel.text = [NSString stringWithFormat:@"%@",[firstRouteObj.pfobj objectForKey:@"difficultydescription"]];
+        footerView.hidden=NO;
+        CGRect slideViewFinalFrame = CGRectMake(0,0,320,320);
+        [UIView animateWithDuration:0.5
+                              delay:0.0
+                            options: UIViewAnimationCurveEaseOut
+                         animations:^{
+                             imgView.frame = slideViewFinalFrame;
+                             footerView.alpha = 0.7;
+                         }
+                         completion:^(BOOL finished){
+                             
+                             [self performSelectorOnMainThread:@selector(addGymScrollToAugmentedImageView:) withObject:imgView waitUntilDone:YES];
+                             
+                             
+                             [UIView animateWithDuration:0.2
+                                                   delay:0.0
+                                                 options: UIViewAnimationCurveEaseOut
+                                              animations:^{
+                                                  gymRouteScroll.alpha=1;
+                                                  
+                                              }completion:^(BOOL finished){}];
+                             
+                         }];
     }
-    
-    self.gymWallScroll.hidden = YES;
-    self.pageControl.hidden = YES;
-    RouteObject* firstRouteObj = ((RouteObject*)[[self.gymSections objectForKey:[self.gymTags objectAtIndex:self.pageControl.currentPage]]objectAtIndex:0]);
-    [self setImagesWithRouteObject:firstRouteObj];
-    footerLabel.text = [NSString stringWithFormat:@"%@",[firstRouteObj.pfobj objectForKey:@"description"]];
-    footerDifficultyLabel.text = [NSString stringWithFormat:@"%@",[firstRouteObj.pfobj objectForKey:@"difficultydescription"]];
-    footerView.hidden=NO;
-    CGRect slideViewFinalFrame = CGRectMake(0,0,320,320);
-    [UIView animateWithDuration:0.5
-                          delay:0.0
-                        options: UIViewAnimationCurveEaseOut
-                     animations:^{
-                         imgView.frame = slideViewFinalFrame;
-                         footerView.alpha = 0.7;
-                     } 
-                     completion:^(BOOL finished){
-                         
-                         [self performSelectorOnMainThread:@selector(addGymScrollToAugmentedImageView:) withObject:imgView waitUntilDone:YES];
-                         
-                         
-                         [UIView animateWithDuration:0.2
-                                               delay:0.0
-                                             options: UIViewAnimationCurveEaseOut
-                                          animations:^{
-                                              gymRouteScroll.alpha=1;
-                                              
-                                          }completion:^(BOOL finished){}];
-
-                     }];
-    
 }
 -(void)reverseHandleDoubleTap:(UITapGestureRecognizer*)sender
 {
@@ -393,23 +445,49 @@
 }
 -(IBAction)showRoute:(id)sender
 {
-    
+    if ([sender isKindOfClass:[UIPinchGestureRecognizer class]]) {
+
+            if (((UIPinchGestureRecognizer*)sender).state == UIGestureRecognizerStateEnded) {
+                
+                }else if(((UIPinchGestureRecognizer*)sender).state == UIGestureRecognizerStateBegan){
+                    if (((UIPinchGestureRecognizer*)sender).scale>1) { //greater than on on zoom in
+                        RouteDetailViewController* viewController = [[RouteDetailViewController alloc]initWithNibName:@"RouteDetailViewController" bundle:nil];
+                        viewController.routeObject = [[self.gymSections objectForKey:[self.gymTags objectAtIndex:self.pageControl.currentPage]]objectAtIndex:self.routePageControl.currentPage];
+                        
+                        ParseStarterProjectAppDelegate* applicationDelegate = ((ParseStarterProjectAppDelegate*)[[UIApplication sharedApplication]delegate]);
+                        viewController.routeGymObject = gymObject;
+                        viewController.routeimage = [UIImage imageWithData:((BaseViewController*)applicationDelegate.window.rootViewController).reuseImageData];
+                        [self.navigationController pushViewController:viewController animated:YES];
+                        [viewController release];
+                        return;
+                    }else{
+                        [self performSelector:@selector(reverseHandleDoubleTap:) withObject:sender afterDelay:0.0];
+                    }
+                    
+                }
+
+    }else{
     RouteDetailViewController* viewController = [[RouteDetailViewController alloc]initWithNibName:@"RouteDetailViewController" bundle:nil];
     viewController.routeObject = [[self.gymSections objectForKey:[self.gymTags objectAtIndex:self.pageControl.currentPage]]objectAtIndex:self.routePageControl.currentPage];
     
     ParseStarterProjectAppDelegate* applicationDelegate = ((ParseStarterProjectAppDelegate*)[[UIApplication sharedApplication]delegate]);
-    
+    viewController.routeGymObject = gymObject;
     viewController.routeimage = [UIImage imageWithData:((BaseViewController*)applicationDelegate.window.rootViewController).reuseImageData];
-    //   viewController.routeObject = [((NSMutableArray*)[self.userDictionary objectForKey:[[self.userDictionary allKeys]objectAtIndex:indexPath.section]]) objectAtIndex:indexPath.index];
     [self.navigationController pushViewController:viewController animated:YES];
     [viewController release];
+    }
 }
 -(UIImageView*)drawArrowsWithImageView:(UIImageView*)arrowOverlay withIndex:(int)index
 {
  arrowOverlay.image = nil;
  arrowOverlay.userInteractionEnabled = YES;
+    UIPinchGestureRecognizer* pinchGesture = [[UIPinchGestureRecognizer alloc]initWithTarget:self action:@selector(showRoute:)];
+    pinchGesture.delegate = self;
+    [pinchGesture setCancelsTouchesInView:NO];
+    
+    [arrowOverlay addGestureRecognizer:pinchGesture];
+    [pinchGesture release];
  UITapGestureRecognizer* doubleTapGesture = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(reverseHandleDoubleTap:)];
- 
  doubleTapGesture.delegate = self;
  [doubleTapGesture setNumberOfTapsRequired : 2];
  [arrowOverlay addGestureRecognizer:doubleTapGesture];

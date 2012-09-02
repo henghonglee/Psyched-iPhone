@@ -49,7 +49,7 @@
 @synthesize viewCountLabel;
 @synthesize scroll;
 @synthesize commentCountLabel;
-
+@synthesize routeGymObject;
 typedef enum apiCall {
 kAPICheckLikedComment,
 kAPICheckLikedPage,
@@ -75,6 +75,7 @@ kAPIGraphCommentPhoto,
 }
 
 #pragma mark - View lifecycle
+/*
 - (IBAction)didFlagAsOutdated:(id)sender {
     if ([self.routeObject.pfobj objectForKey:@"outdated"]==[NSNumber numberWithBool:true]) {
         // if user is the owner of the route , show the not outdated button
@@ -127,6 +128,7 @@ kAPIGraphCommentPhoto,
     }];
 
 }
+ */
 -(void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex
 {
     if (flagalert) {
@@ -174,7 +176,7 @@ kAPIGraphCommentPhoto,
     [unavailableLabel setFont:[UIFont fontWithName:@"Old Stamper" size:20.0]];
     unavailableLabel.textColor = [UIColor redColor];
     [likeButton setUserInteractionEnabled:NO];
-    approveButton = [[[GradientButton alloc]initWithFrame:CGRectMake(195, 6, 100, 40)]autorelease];
+ /*   approveButton = [[[GradientButton alloc]initWithFrame:CGRectMake(195, 6, 100, 40)]autorelease];
     [approveButton setTitle:@"Approve" forState:UIControlStateNormal];
     [approveButton useGreenConfirmStyle];
     [approveButton addTarget:self action:@selector(approveOutdate:) forControlEvents:UIControlEventTouchUpInside];
@@ -186,7 +188,7 @@ kAPIGraphCommentPhoto,
     [disapproveButton addTarget:self action:@selector(disapproveOutdate:) forControlEvents:UIControlEventTouchUpInside];
     [disapproveButton useRedDeleteStyle];
     [approvalView addSubview:disapproveButton];
-
+*/
     
     difficultyLabel.text = [routeObject.pfobj objectForKey:@"difficultydescription"];
     NSString *foo = [routeObject.pfobj objectForKey:@"description"];
@@ -218,11 +220,12 @@ kAPIGraphCommentPhoto,
     //if user is owner and is route is outdated, show unoutdate button
     //elseif route is outdated ,hide outdatebutton
 
-    if ([routeObject.pfobj objectForKey:@"outdated"]==[NSNumber numberWithBool:true]) {
+   /* if ([routeObject.pfobj objectForKey:@"outdated"]==[NSNumber numberWithBool:true]) {
         outdateButton.hidden = YES;
     }else{
         outdateButton.hidden = NO;
     }
+    */
     //if route object is near admin geopoint , add ability to delete
     
     
@@ -233,9 +236,9 @@ kAPIGraphCommentPhoto,
         self.navigationItem.rightBarButtonItem = anotherButton;
         [anotherButton release];
         
-        if ([routeObject.pfobj objectForKey:@"outdated"]==[NSNumber numberWithBool:true]) {
-            unoutdateButton.hidden = NO;
-        }
+   //     if ([routeObject.pfobj objectForKey:@"outdated"]==[NSNumber numberWithBool:true]) {
+    //        unoutdateButton.hidden = NO;
+    //    }
     }else{
         __block BOOL isNear=NO;
         PFGeoPoint* routeGP = [routeObject.pfobj objectForKey:@"routelocation"];
@@ -259,9 +262,9 @@ kAPIGraphCommentPhoto,
                         self.navigationItem.rightBarButtonItem = anotherButton;
                         [anotherButton release];
                         
-                        if ([routeObject.pfobj objectForKey:@"outdated"]==[NSNumber numberWithBool:true]) {
-                            unoutdateButton.hidden = NO;
-                            }
+            //            if ([routeObject.pfobj objectForKey:@"outdated"]==[NSNumber numberWithBool:true]) {
+              //              unoutdateButton.hidden = NO;
+                //            }
                         }
 
                     }
@@ -269,14 +272,14 @@ kAPIGraphCommentPhoto,
             }
         }];
     }
-    if ([[self.routeObject.pfobj objectForKey:@"approvalstatus"]isEqualToString:@"pending"] && [[self.routeObject.pfobj objectForKey:@"username"]isEqualToString:[[PFUser currentUser]objectForKey:@"name"]]) {
+  /*  if ([[self.routeObject.pfobj objectForKey:@"approvalstatus"]isEqualToString:@"pending"] && [[self.routeObject.pfobj objectForKey:@"username"]isEqualToString:[[PFUser currentUser]objectForKey:@"name"]]) {
         approvalView.hidden=NO;
         
         
     }else{
         approvalView.hidden=YES;
     }
-    
+    */
     
     
     UserImageView.layer.shadowPath = [self renderPaperCurlProfileImage:UserImageView];
@@ -303,7 +306,13 @@ kAPIGraphCommentPhoto,
     [self checkCommunitySendStatus];
 
     if ([routeObject.pfobj objectForKey:@"isPage"]==[NSNumber numberWithBool:YES]) {
+        if (routeGymObject) {
+            [routeObject.pfobj setObject:routeGymObject forKey:@"Gym"];
         usernameLabel.text = [[[routeObject.pfobj objectForKey:@"Gym"]fetchIfNeeded] objectForKey:@"name"];
+        }
+        else{
+            usernameLabel.text = [[[routeObject.pfobj objectForKey:@"Gym"]fetchIfNeeded] objectForKey:@"name"];
+        }
     }else{
     usernameLabel.text= [routeObject.pfobj objectForKey:@"username"];
     }
@@ -1379,8 +1388,8 @@ kAPIGraphCommentPhoto,
                 pastedimage = [UIImage imageNamed:@"start4.png"];
             if([[arrowtypearray objectAtIndex:i]isEqualToNumber:[NSNumber numberWithInt:11]])
                 pastedimage = [UIImage imageNamed:@"end4.png"];
-            
-            routeImageView.image = [self imageByDrawingImage:pastedimage OnImage:routeImageView.image inRect:routearrowrect];
+                routeImageView.image = [self imageByDrawingImage:pastedimage OnImage:routeImageView.image inRect:routearrowrect];
+               
             // [pastedimage release];
         }
         

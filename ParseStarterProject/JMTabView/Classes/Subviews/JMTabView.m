@@ -32,6 +32,7 @@
         self.autoresizingMask = UIViewAutoresizingFlexibleWidth;
         self.tabContainer = [[JMTabContainer alloc] initWithFrame:self.bounds] ;
         [self addSubview:self.tabContainer];
+        [self.tabContainer release];
     }
     return self;
 }
@@ -96,21 +97,21 @@
     JMTabItem * tabItem = [JMTabItem tabItemWithTitle:title icon:icon];
     
     [self addTabItem:tabItem];
-    [tabItem release];
+
 }
 - (void)addTabItemWithTitle:(NSString *)title icon:(UIImage *)icon badge:(LKBadgeView*)badge
 {
     JMTabItem * tabItem = [JMTabItem tabItemWithTitle:title icon:icon];
     [tabItem addSubview:badge];
     [self addTabItem:tabItem];
-    [tabItem release];
+
 }
 #if NS_BLOCKS_AVAILABLE
 - (void)addTabItemWithTitle:(NSString *)title icon:(UIImage *)icon executeBlock:(JMTabExecutionBlock)executeBlock;
 {
     JMTabItem * tabItem = [JMTabItem tabItemWithTitle:title icon:icon executeBlock:executeBlock];
     [self addTabItem:tabItem];
-    [tabItem release];
+
 }
 #endif
 

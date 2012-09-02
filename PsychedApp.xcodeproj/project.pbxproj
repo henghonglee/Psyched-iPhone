@@ -154,16 +154,6 @@
 		EF46562314BAD7B500FDDE9C /* icon3.png in Resources */ = {isa = PBXBuildFile; fileRef = EF46561B14BAD7B300FDDE9C /* icon3.png */; };
 		EF46562414BAD7B500FDDE9C /* icon3@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = EF46561C14BAD7B400FDDE9C /* icon3@2x.png */; };
 		EF46562614BADF9000FDDE9C /* MyTableController.xib in Resources */ = {isa = PBXBuildFile; fileRef = EF46562514BADF8F00FDDE9C /* MyTableController.xib */; };
-		EF4ABE7C1543CD1C00AC77D8 /* KKBlocksDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = EF4ABE691543CD1C00AC77D8 /* KKBlocksDelegate.m */; settings = {COMPILER_FLAGS = "-fobjc-arc "; }; };
-		EF4ABE7D1543CD1C00AC77D8 /* KKGridView.bundle in Resources */ = {isa = PBXBuildFile; fileRef = EF4ABE6B1543CD1C00AC77D8 /* KKGridView.bundle */; };
-		EF4ABE7E1543CD1C00AC77D8 /* KKGridView.m in Sources */ = {isa = PBXBuildFile; fileRef = EF4ABE6D1543CD1C00AC77D8 /* KKGridView.m */; settings = {COMPILER_FLAGS = "-fobjc-arc "; }; };
-		EF4ABE7F1543CD1C00AC77D8 /* KKGridViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = EF4ABE6F1543CD1C00AC77D8 /* KKGridViewCell.m */; settings = {COMPILER_FLAGS = "-fobjc-arc "; }; };
-		EF4ABE801543CD1C00AC77D8 /* KKGridViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EF4ABE711543CD1C00AC77D8 /* KKGridViewController.m */; settings = {COMPILER_FLAGS = "-fobjc-arc "; }; };
-		EF4ABE811543CD1C00AC77D8 /* KKGridViewIndexView.m in Sources */ = {isa = PBXBuildFile; fileRef = EF4ABE731543CD1C00AC77D8 /* KKGridViewIndexView.m */; settings = {COMPILER_FLAGS = "-fobjc-arc "; }; };
-		EF4ABE821543CD1C00AC77D8 /* KKGridViewSectionInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = EF4ABE751543CD1C00AC77D8 /* KKGridViewSectionInfo.m */; settings = {COMPILER_FLAGS = "-fobjc-arc "; }; };
-		EF4ABE831543CD1C00AC77D8 /* KKGridViewUpdate.m in Sources */ = {isa = PBXBuildFile; fileRef = EF4ABE771543CD1C00AC77D8 /* KKGridViewUpdate.m */; settings = {COMPILER_FLAGS = "-fobjc-arc "; }; };
-		EF4ABE841543CD1C00AC77D8 /* KKGridViewUpdateStack.m in Sources */ = {isa = PBXBuildFile; fileRef = EF4ABE791543CD1C00AC77D8 /* KKGridViewUpdateStack.m */; settings = {COMPILER_FLAGS = "-fobjc-arc "; }; };
-		EF4ABE851543CD1C00AC77D8 /* KKIndexPath.m in Sources */ = {isa = PBXBuildFile; fileRef = EF4ABE7B1543CD1C00AC77D8 /* KKIndexPath.m */; settings = {COMPILER_FLAGS = "-fobjc-arc "; }; };
 		EF544C1215A5719800545CF1 /* HomeDB@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = EF544C1115A5719800545CF1 /* HomeDB@2x.png */; };
 		EF544C1615A57F1100545CF1 /* BuildingsDB@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = EF544C1315A57F1100545CF1 /* BuildingsDB@2x.png */; };
 		EF544C1715A57F1100545CF1 /* BuildingsLB@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = EF544C1415A57F1100545CF1 /* BuildingsLB@2x.png */; };
@@ -269,6 +259,7 @@
 		EFA9F31D152A11FF004883DD /* cameraTabBarItem copy.png in Resources */ = {isa = PBXBuildFile; fileRef = EFA9F31C152A11F9004883DD /* cameraTabBarItem copy.png */; };
 		EFA9F31F152A146E004883DD /* cameraTabBarItem copy@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = EFA9F31E152A1466004883DD /* cameraTabBarItem copy@2x.png */; };
 		EFAD337F15BEA463003EEE1B /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EFAD337E15BEA463003EEE1B /* StoreKit.framework */; };
+		EFAE9A1515F0F9BB003DB569 /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = EFAE9A1415F0F9BB003DB569 /* libsqlite3.dylib */; };
 		EFB25A5615E674AA00EFBA5B /* DACircularProgressView.m in Sources */ = {isa = PBXBuildFile; fileRef = EFB25A5515E674AA00EFBA5B /* DACircularProgressView.m */; };
 		EFB25A5815E6777500EFBA5B /* DACircularProgressView.h in Sources */ = {isa = PBXBuildFile; fileRef = EFB25A5415E674AA00EFBA5B /* DACircularProgressView.h */; };
 		EFB25A5915E6777500EFBA5B /* DACircularProgressView.m in Sources */ = {isa = PBXBuildFile; fileRef = EFB25A5515E674AA00EFBA5B /* DACircularProgressView.m */; };
@@ -527,27 +518,6 @@
 		EF46561B14BAD7B300FDDE9C /* icon3.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = icon3.png; path = ../icon3.png; sourceTree = "<group>"; };
 		EF46561C14BAD7B400FDDE9C /* icon3@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "icon3@2x.png"; path = "../icon3@2x.png"; sourceTree = "<group>"; };
 		EF46562514BADF8F00FDDE9C /* MyTableController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MyTableController.xib; sourceTree = "<group>"; };
-		EF4ABE671543CD1C00AC77D8 /* Definitions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Definitions.h; sourceTree = "<group>"; };
-		EF4ABE681543CD1C00AC77D8 /* KKBlocksDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KKBlocksDelegate.h; sourceTree = "<group>"; };
-		EF4ABE691543CD1C00AC77D8 /* KKBlocksDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KKBlocksDelegate.m; sourceTree = "<group>"; };
-		EF4ABE6A1543CD1C00AC77D8 /* KKGridView-Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "KKGridView-Prefix.pch"; sourceTree = "<group>"; };
-		EF4ABE6B1543CD1C00AC77D8 /* KKGridView.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = KKGridView.bundle; sourceTree = "<group>"; };
-		EF4ABE6C1543CD1C00AC77D8 /* KKGridView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KKGridView.h; sourceTree = "<group>"; };
-		EF4ABE6D1543CD1C00AC77D8 /* KKGridView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KKGridView.m; sourceTree = "<group>"; };
-		EF4ABE6E1543CD1C00AC77D8 /* KKGridViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KKGridViewCell.h; sourceTree = "<group>"; };
-		EF4ABE6F1543CD1C00AC77D8 /* KKGridViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KKGridViewCell.m; sourceTree = "<group>"; };
-		EF4ABE701543CD1C00AC77D8 /* KKGridViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = KKGridViewController.h; path = ../KKGridView/KKGridViewController.h; sourceTree = "<group>"; };
-		EF4ABE711543CD1C00AC77D8 /* KKGridViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = KKGridViewController.m; path = ../KKGridView/KKGridViewController.m; sourceTree = "<group>"; };
-		EF4ABE721543CD1C00AC77D8 /* KKGridViewIndexView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KKGridViewIndexView.h; sourceTree = "<group>"; };
-		EF4ABE731543CD1C00AC77D8 /* KKGridViewIndexView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KKGridViewIndexView.m; sourceTree = "<group>"; };
-		EF4ABE741543CD1C00AC77D8 /* KKGridViewSectionInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KKGridViewSectionInfo.h; sourceTree = "<group>"; };
-		EF4ABE751543CD1C00AC77D8 /* KKGridViewSectionInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KKGridViewSectionInfo.m; sourceTree = "<group>"; };
-		EF4ABE761543CD1C00AC77D8 /* KKGridViewUpdate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KKGridViewUpdate.h; sourceTree = "<group>"; };
-		EF4ABE771543CD1C00AC77D8 /* KKGridViewUpdate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KKGridViewUpdate.m; sourceTree = "<group>"; };
-		EF4ABE781543CD1C00AC77D8 /* KKGridViewUpdateStack.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KKGridViewUpdateStack.h; sourceTree = "<group>"; };
-		EF4ABE791543CD1C00AC77D8 /* KKGridViewUpdateStack.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KKGridViewUpdateStack.m; sourceTree = "<group>"; };
-		EF4ABE7A1543CD1C00AC77D8 /* KKIndexPath.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KKIndexPath.h; sourceTree = "<group>"; };
-		EF4ABE7B1543CD1C00AC77D8 /* KKIndexPath.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KKIndexPath.m; sourceTree = "<group>"; };
 		EF544C1115A5719800545CF1 /* HomeDB@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "HomeDB@2x.png"; sourceTree = "<group>"; };
 		EF544C1315A57F1100545CF1 /* BuildingsDB@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "BuildingsDB@2x.png"; sourceTree = "<group>"; };
 		EF544C1415A57F1100545CF1 /* BuildingsLB@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "BuildingsLB@2x.png"; sourceTree = "<group>"; };
@@ -683,6 +653,7 @@
 		EFA9F31C152A11F9004883DD /* cameraTabBarItem copy.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "cameraTabBarItem copy.png"; sourceTree = "<group>"; };
 		EFA9F31E152A1466004883DD /* cameraTabBarItem copy@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "cameraTabBarItem copy@2x.png"; sourceTree = "<group>"; };
 		EFAD337E15BEA463003EEE1B /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
+		EFAE9A1415F0F9BB003DB569 /* libsqlite3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsqlite3.dylib; path = usr/lib/libsqlite3.dylib; sourceTree = SDKROOT; };
 		EFB25A5415E674AA00EFBA5B /* DACircularProgressView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DACircularProgressView.h; sourceTree = "<group>"; };
 		EFB25A5515E674AA00EFBA5B /* DACircularProgressView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DACircularProgressView.m; sourceTree = "<group>"; };
 		EFB25D3615254EB0002F310B /* Analytics-README.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = "Analytics-README.pdf"; sourceTree = "<group>"; };
@@ -754,6 +725,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				EFAE9A1515F0F9BB003DB569 /* libsqlite3.dylib in Frameworks */,
 				EFAD337F15BEA463003EEE1B /* StoreKit.framework in Frameworks */,
 				EF29CD2515354E8C00AB520E /* Twitter.framework in Frameworks */,
 				09ABC07413A1D52D009C3FCF /* Foundation.framework in Frameworks */,
@@ -797,6 +769,7 @@
 		09ABC06213A1D52D009C3FCF = {
 			isa = PBXGroup;
 			children = (
+				EFAE9A1415F0F9BB003DB569 /* libsqlite3.dylib */,
 				EF1177DA15DBE7BD0087C894 /* Tests */,
 				09ABC07713A1D52D009C3FCF /* ParseStarterProject */,
 				EF11780C15DBFAD80087C894 /* testbundle */,
@@ -831,7 +804,6 @@
 				EF29CD2415354E8C00AB520E /* Twitter.framework */,
 				EFB25D3515254EB0002F310B /* Flurry iPhone SDK v3.0.9 */,
 				EF39A00814BB321000A02516 /* libz.1.2.5.dylib */,
-				EF4ABE661543CD1B00AC77D8 /* KKGridView */,
 				EFFF299314EB88D400FC92B2 /* DAReload */,
 				EF292F6614E41675006D3D09 /* MBProgressHUD.h */,
 				EF292F6714E41675006D3D09 /* MBProgressHUD.m */,
@@ -1132,32 +1104,6 @@
 			path = Layers;
 			sourceTree = "<group>";
 		};
-		EF4ABE661543CD1B00AC77D8 /* KKGridView */ = {
-			isa = PBXGroup;
-			children = (
-				EF4ABE671543CD1C00AC77D8 /* Definitions.h */,
-				EF4ABE681543CD1C00AC77D8 /* KKBlocksDelegate.h */,
-				EF4ABE691543CD1C00AC77D8 /* KKBlocksDelegate.m */,
-				EF4ABE6A1543CD1C00AC77D8 /* KKGridView-Prefix.pch */,
-				EF4ABE6B1543CD1C00AC77D8 /* KKGridView.bundle */,
-				EF4ABE6C1543CD1C00AC77D8 /* KKGridView.h */,
-				EF4ABE6D1543CD1C00AC77D8 /* KKGridView.m */,
-				EF4ABE6E1543CD1C00AC77D8 /* KKGridViewCell.h */,
-				EF4ABE6F1543CD1C00AC77D8 /* KKGridViewCell.m */,
-				EF4ABE721543CD1C00AC77D8 /* KKGridViewIndexView.h */,
-				EF4ABE731543CD1C00AC77D8 /* KKGridViewIndexView.m */,
-				EF4ABE741543CD1C00AC77D8 /* KKGridViewSectionInfo.h */,
-				EF4ABE751543CD1C00AC77D8 /* KKGridViewSectionInfo.m */,
-				EF4ABE761543CD1C00AC77D8 /* KKGridViewUpdate.h */,
-				EF4ABE771543CD1C00AC77D8 /* KKGridViewUpdate.m */,
-				EF4ABE781543CD1C00AC77D8 /* KKGridViewUpdateStack.h */,
-				EF4ABE791543CD1C00AC77D8 /* KKGridViewUpdateStack.m */,
-				EF4ABE7A1543CD1C00AC77D8 /* KKIndexPath.h */,
-				EF4ABE7B1543CD1C00AC77D8 /* KKIndexPath.m */,
-			);
-			path = KKGridView;
-			sourceTree = "<group>";
-		};
 		EF6687C614F1230100609E05 /* SVWebViewController */ = {
 			isa = PBXGroup;
 			children = (
@@ -1246,8 +1192,6 @@
 		EFB728A414CD939500B43FC3 /* Popular */ = {
 			isa = PBXGroup;
 			children = (
-				EF4ABE701543CD1C00AC77D8 /* KKGridViewController.h */,
-				EF4ABE711543CD1C00AC77D8 /* KKGridViewController.m */,
 				EF24513A15C766A3002C2592 /* GymViewController.h */,
 				EF24513B15C766A3002C2592 /* GymViewController.m */,
 				EF90FD93153F2FFB0037D302 /* GymViewController.xib */,
@@ -1726,7 +1670,6 @@
 				EF798688153FB8B400635958 /* GymCell.xib in Resources */,
 				EF79869A1540599C00635958 /* GymDetailCell.xib in Resources */,
 				EF1679C81541AE8600CE757A /* CommentsViewController.xib in Resources */,
-				EF4ABE7D1543CD1C00AC77D8 /* KKGridView.bundle in Resources */,
 				EF8765391547CEEA00589622 /* SettingsViewController.xib in Resources */,
 				EF77033F15487B9400851903 /* CommentTableCell.xib in Resources */,
 				EF77034115487CC400851903 /* openInvertedComma.png in Resources */,
@@ -1887,15 +1830,6 @@
 				EF798686153FB8A400635958 /* GymCell.m in Sources */,
 				EF7986971540598C00635958 /* GymDetailCell.m in Sources */,
 				EF1679C71541AE8600CE757A /* CommentsViewController.m in Sources */,
-				EF4ABE7C1543CD1C00AC77D8 /* KKBlocksDelegate.m in Sources */,
-				EF4ABE7E1543CD1C00AC77D8 /* KKGridView.m in Sources */,
-				EF4ABE7F1543CD1C00AC77D8 /* KKGridViewCell.m in Sources */,
-				EF4ABE801543CD1C00AC77D8 /* KKGridViewController.m in Sources */,
-				EF4ABE811543CD1C00AC77D8 /* KKGridViewIndexView.m in Sources */,
-				EF4ABE821543CD1C00AC77D8 /* KKGridViewSectionInfo.m in Sources */,
-				EF4ABE831543CD1C00AC77D8 /* KKGridViewUpdate.m in Sources */,
-				EF4ABE841543CD1C00AC77D8 /* KKGridViewUpdateStack.m in Sources */,
-				EF4ABE851543CD1C00AC77D8 /* KKIndexPath.m in Sources */,
 				EF8765381547CEEA00589622 /* SettingsViewController.m in Sources */,
 				EF77033C15487B8000851903 /* CommentTableCell.m in Sources */,
 				EF27B3A01551193500FCFA2E /* myImageView.m in Sources */,

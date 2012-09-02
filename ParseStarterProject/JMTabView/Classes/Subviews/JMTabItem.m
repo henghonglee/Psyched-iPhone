@@ -130,6 +130,7 @@
 {
     JMTabItem * tabItem = [[JMTabItem alloc] initWithTitle:title icon:icon] ;
     return tabItem;
+    [tabItem release];
 }
 
 + (JMTabItem *)tabItemWithFixedWidth:(CGFloat)fixedWidth;

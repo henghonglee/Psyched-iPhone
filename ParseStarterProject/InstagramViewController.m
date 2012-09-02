@@ -30,7 +30,7 @@
 #import "NewsViewController.h"
 #import "ProfileViewController.h"
 #import "FlurryAnalytics.h"
-#import "KKGridView.h"
+
 #import <Parse/Parse.h>
 @implementation InstagramViewController
 

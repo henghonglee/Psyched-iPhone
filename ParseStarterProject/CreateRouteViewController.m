@@ -283,9 +283,7 @@ typedef enum apiCall {
                                                                 @"email",
                                                                 @"user_photos",
                                                                 @"publish_stream",
-                                                                @"offline_access",
-                                                                @"manage_pages",
-                                                                @"manage_notifications",nil];
+                                                                @"offline_access",nil];
         [PFFacebookUtils logInWithPermissions:permissions block:^(PFUser *user, NSError *error) {
             
         }];
@@ -735,28 +733,7 @@ typedef enum apiCall {
         
         
     }];
-    /*progressBlock:^(int percentDone) {
-
-        HUD.progress = percentDone/100.0f;
-        if (percentDone ==100) {
-            HUD.customView = [[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"37x-Checkmark.png"]] autorelease];
-            HUD.mode = MBProgressHUDModeCustomView;
-            HUD.labelText = @"Completed!";
-//            ParseStarterProjectAppDelegate* appDelegate = (ParseStarterProjectAppDelegate*)[[UIApplication sharedApplication]delegate];
-      //      appDelegate.wasUploading = NO;
-            UIApplication *thisApp = [UIApplication sharedApplication];
-            thisApp.idleTimerDisabled = NO;
-            [FlurryAnalytics logEvent:@"COMPLETED_SHARE"];
-            NSLog(@"share action ended");
-            [FlurryAnalytics endTimedEvent:@"SHARE_ACTION" withParameters:nil];
-            
-        }
-        if (percentDone <70 && percentDone>50) {
-            HUD.labelText = @"Halfway Done...";
-        }
-        if (percentDone<100 && percentDone>70) {
-            HUD.labelText = @"Almost Done...";
-        }*/
+ 
          }];
     }];
     [self dismissModalViewControllerAnimated:YES];
@@ -800,7 +777,6 @@ typedef enum apiCall {
                 return;
             }
             [tweetSheet addImage:imageTaken];
-            [tweetSheet addURL:[NSURL URLWithString:@"http://bit.ly/HSTcNw"]];
             [tweetSheet setCompletionHandler: 
              ^(TWTweetComposeViewControllerResult result) {
                  if (result==TWTweetComposeViewControllerResultDone) { // after saving with twitter go on to save on parse
@@ -826,7 +802,7 @@ typedef enum apiCall {
                      
                          
                      }else{
-                         [self performSelector:@selector(saveRoute) withObject:nil afterDelay:0.0];
+                         [self performSelector:@selector(saveRoute) withObject:nil afterDelay:4.0];
 
                      }
                      

@@ -133,10 +133,10 @@
     [self addStandardTabView];
  NSLog(@"done added standard tab view");
     self.navigationController.navigationBarHidden = YES;
-    self.routeArray = [[[NSMutableArray alloc]init]autorelease];
+    self.routeArray = [[[NSMutableArray alloc]init]autorelease];;
     self.queryArray = [[[NSMutableArray alloc]init]autorelease];
     self.gymFetchArray = [[[NSMutableArray alloc]init]autorelease];
-    self.followedPosters = [[[NSMutableArray alloc]init ]autorelease];
+    self.followedPosters = [[[NSMutableArray alloc]init]autorelease];
     PFQuery* followedquery = [PFQuery queryWithClassName:@"Follow"];
     [followedquery whereKey:@"follower" equalTo:[PFUser currentUser]];
     [queryArray addObject:followedquery];
@@ -147,7 +147,7 @@
             [followedPosters addObject:[follow objectForKey:@"followed"]];
             
         }
-        NSLog(@"followposters populated");
+        NSLog(@"followposters populated %@",followedPosters);
      [self tabView:tabView didSelectTabAtIndex:tabView.segmentIndex];
     
     }];
@@ -964,13 +964,12 @@
     shouldDisplayNext=1;
     switch (itemIndex) {
         case 0:
-               
-            
             [recentQuery whereKey:@"username" containedIn:followedPosters];
+            NSLog(@"followed posters = %@",followedPosters);
             [queryArray addObject:recentQuery];
             
             [recentQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
-                
+                NSLog(@"found %d objects",[objects count]);
                 [queryArray removeObject:recentQuery];
                 [routeArray removeAllObjects];
                 [routeTableView reloadData];
@@ -990,12 +989,17 @@
                         [newRouteObject release];
                     }
                 
-                
+                }
                 PFQuery* feedQuery = [PFQuery queryWithClassName:@"Feed"];
                 [feedQuery whereKey:@"sender" containedIn:followedPosters];
                 NSArray* arrayActions = [NSArray arrayWithObjects:@"added",@"approval",@"like",@"follow", nil];
                 [feedQuery whereKey:@"action" notContainedIn:arrayActions];
-                [feedQuery whereKey:@"createdAt" greaterThan:((PFObject*)[objects objectAtIndex:([objects count]-1)]).createdAt];
+                if ([objects count]>0) {
+                    [feedQuery whereKey:@"createdAt" greaterThan:((PFObject*)[objects objectAtIndex:([objects count]-1)]).createdAt];
+                    
+                }else{
+                    [feedQuery setLimit:50];
+                }
                 [queryArray addObject:feedQuery];
                 [feedQuery findObjectsInBackgroundWithBlock:^(NSArray *feedobjects, NSError *error) {
                     [queryArray removeObject:feedQuery];
@@ -1025,9 +1029,7 @@
                 
                 //find feeds that time falls between first and last route
                 
-                }else{
-                        [routeTableView reloadData];
-                }
+                
                     
             }];
             
@@ -1299,6 +1301,7 @@
             }
             [recentQuery setSkip:routecount];
             [recentQuery whereKey:@"username" containedIn:followedPosters];
+            NSLog(@"followed posters = %@",followedPosters);
             [queryArray addObject:recentQuery];
             
             [recentQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
@@ -1717,7 +1720,8 @@
 
 
 - (void)dealloc {
-
+    
+    
     [emptyView release];
     [currentLocation release];
     [queryArray release];
