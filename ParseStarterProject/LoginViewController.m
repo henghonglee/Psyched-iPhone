@@ -11,7 +11,7 @@
 #import "JHNotificationManager.h"
 #import "InstagramViewController.h"
 #import "SBJSON.h"
-#import "FlurryAnalytics.h"
+//#import "FlurryAnalytics.h"
 #import "NSObject+SBJSON.h"
 #import "NSString+SBJSON.h"
 @implementation LoginViewController
@@ -46,6 +46,7 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
     [titleLabel setFont:[UIFont fontWithName:@"Old Stamper" size:50.0]];
     titleLabel.textColor = [UIColor whiteColor];
     instructionScroll.contentSize = CGSizeMake(133,365);
@@ -75,6 +76,7 @@
 }
 
 - (void)scrollViewDidScroll:(UIScrollView *)sender {
+    [sender setContentOffset: CGPointMake(sender.contentOffset.x, oldY)];
 	if (!pageControlBeingUsed) {
 		// Switch the indicator when more than 50% of the previous/next page is visible
 		CGFloat pageWidth = self.scrollView.frame.size.width;
@@ -246,19 +248,19 @@
                     [[PFUser currentUser] setObject:[result objectForKey:@"about_me"] forKey:@"about_me"];
                     
                    
-                    [FlurryAnalytics setUserID:[[PFUser currentUser] objectForKey:@"name"]];
-                            if ([[[PFUser currentUser] objectForKey:@"sex"] isEqualToString:@"male"]) {
-                                [FlurryAnalytics setGender:@"m"];
-                            }else{
-                                [FlurryAnalytics setGender:@"f"];
-                            }
-                    [FlurryAnalytics setAge:age];
-                    NSDictionary *dictionary = 
+  //                  [FlurryAnalytics setUserID:[[PFUser currentUser] objectForKey:@"name"]];
+                  //          if ([[[PFUser currentUser] objectForKey:@"sex"] isEqualToString:@"male"]) {
+                  //              [FlurryAnalytics setGender:@"m"];
+                   //         }else{
+                     //           [FlurryAnalytics setGender:@"f"];
+                       //     }
+  //                  [FlurryAnalytics setAge:age];
+  /*                  NSDictionary *dictionary =
                     [NSDictionary dictionaryWithObjectsAndKeys:[result objectForKey:@"email"],@"email",[result objectForKey:@"birthday"],@"birthday",[result objectForKey:@"name"],@"name",[result objectForKey:@"sex"],@"sex",[result objectForKey:@"uid"],@"uid",[result objectForKey:@"about_me"],@"about_me", nil];
                     
                     [FlurryAnalytics logEvent:@"NEW_USER_LOGIN" withParameters:dictionary timed:YES];
                     
-                    
+         */
                     NSLog(@"saving user");
                     [[PFUser currentUser] saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
                         [PFPush subscribeToChannelInBackground:[NSString stringWithFormat:@"channel%@",[[PFUser currentUser] objectForKey:@"facebookid"]]block:^(BOOL succeeded, NSError *error) {

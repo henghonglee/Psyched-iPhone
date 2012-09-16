@@ -15,6 +15,7 @@
 @implementation RouteDescriptionViewController
 @synthesize descriptionTextField;
 @synthesize descriptionText;
+@synthesize instructionButton;
 @synthesize delegate;
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -43,11 +44,15 @@
     
 
 }
+- (IBAction)dismissInstruction:(id)sender {
+    [sender removeFromSuperview];
+}
 
 
 - (void)viewDidUnload
 {
     [self setDescriptionTextField:nil];
+    [self setInstructionButton:nil];
     [super viewDidUnload];
     // Release any retained subviews of the main view.
     // e.g. self.myOutlet = nil;
@@ -64,6 +69,7 @@
 
 - (void)dealloc {
     [descriptionTextField release];
+    [instructionButton release];
     [super dealloc];
 }
 @end

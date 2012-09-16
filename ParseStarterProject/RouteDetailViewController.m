@@ -308,10 +308,20 @@ kAPIGraphCommentPhoto,
     if ([routeObject.pfobj objectForKey:@"isPage"]==[NSNumber numberWithBool:YES]) {
         if (routeGymObject) {
             [routeObject.pfobj setObject:routeGymObject forKey:@"Gym"];
-        usernameLabel.text = [[[routeObject.pfobj objectForKey:@"Gym"]fetchIfNeeded] objectForKey:@"name"];
+            NSLog(@"preparing to fetch... may cause lag..");
+            [[routeObject.pfobj objectForKey:@"Gym"]fetchIfNeededInBackgroundWithBlock:^(PFObject *object, NSError *error) {
+                usernameLabel.text = [object objectForKey:@"name"];
+                NSLog(@"fetch complete");
+
+            }];
         }
         else{
-            usernameLabel.text = [[[routeObject.pfobj objectForKey:@"Gym"]fetchIfNeeded] objectForKey:@"name"];
+            NSLog(@"preparing to fetch... may cause lag..");
+            [[routeObject.pfobj objectForKey:@"Gym"]fetchIfNeededInBackgroundWithBlock:^(PFObject *object, NSError *error) {
+                usernameLabel.text = [object objectForKey:@"name"];
+                NSLog(@"fetch complete");
+                
+            }];
         }
     }else{
     usernameLabel.text= [routeObject.pfobj objectForKey:@"username"];
@@ -1265,7 +1275,9 @@ kAPIGraphCommentPhoto,
     if (!routeObject.ownerImage){
         NSString* urlstring;
         if ([routeObject.pfobj objectForKey:@"isPage"]==[NSNumber numberWithBool:YES]) {
+            NSLog(@"preparing to fetch... may cause lag..");
             urlstring=[[[routeObject.pfobj objectForKey:@"Gym"]fetchIfNeeded] objectForKey:@"imagelink"];
+            NSLog(@"fetch completed");
         }else{
         urlstring = [routeObject.pfobj objectForKey:@"userimage"];
         
@@ -1570,10 +1582,12 @@ kAPIGraphCommentPhoto,
     if ([routeObject.pfobj objectForKey:@"isPage"]==[NSNumber numberWithBool:YES] &&[routeObject.pfobj objectForKey:@"photoid"]) {
 
         [[self.routeObject.pfobj objectForKey:@"Gym"]fetchIfNeededInBackgroundWithBlock:^(PFObject *object, NSError *error) {
-        currentAPICall = kAPICheckLikedComment;            
+        currentAPICall = kAPICheckLikedComment;
+            NSLog(@"preparing to fetch... may cause lag..");
             NSMutableDictionary *params = [NSMutableDictionary dictionaryWithObjectsAndKeys:
                                            [NSString stringWithFormat:@"select uid from page_fan where uid=me() and page_id=%@",[[[self.routeObject.pfobj objectForKey:@"Gym"]fetchIfNeeded] objectForKey:@"facebookid"]], @"query",
                                            nil];
+            NSLog(@"fetch completed");
             [[PFFacebookUtils facebook] requestWithMethodName:@"fql.query"
                                                     andParams:params
                                                 andHttpMethod:@"POST"
@@ -1846,10 +1860,11 @@ commentTextField.text = @"";
 if ([routeObject.pfobj objectForKey:@"isPage"]==[NSNumber numberWithBool:YES] &&[routeObject.pfobj objectForKey:@"photoid"]) {
     currentAPICall = kAPICheckLikedPage;
     [[self.routeObject.pfobj objectForKey:@"Gym"]fetchIfNeededInBackgroundWithBlock:^(PFObject *object, NSError *error) {
-        
+        NSLog(@"preparing to fetch... may cause lag..");
         NSMutableDictionary *params = [NSMutableDictionary dictionaryWithObjectsAndKeys:
                                    [NSString stringWithFormat:@"select uid from page_fan where uid=me() and page_id=%@",[[[self.routeObject.pfobj objectForKey:@"Gym"]fetchIfNeeded] objectForKey:@"facebookid"]], @"query",
                                    nil];
+        NSLog(@"fetch complete");
     [[PFFacebookUtils facebook] requestWithMethodName:@"fql.query"
                                             andParams:params
                                         andHttpMethod:@"POST"
@@ -2025,7 +2040,6 @@ if ([routeObject.pfobj objectForKey:@"isPage"]==[NSNumber numberWithBool:YES] &&
 
 -(NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    NSLog(@"commentsArray = %d",[commentsArray count]);
     return [commentsArray count];
 }
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath

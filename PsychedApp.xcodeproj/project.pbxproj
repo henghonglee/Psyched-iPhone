@@ -52,11 +52,11 @@
 		EF2D2D35154B005200BB07DA /* Default.png in Resources */ = {isa = PBXBuildFile; fileRef = EF2D2D34154B005200BB07DA /* Default.png */; };
 		EF2D2D37154B005700BB07DA /* Default@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = EF2D2D36154B005700BB07DA /* Default@2x.png */; };
 		EF2D2D39154B862400BB07DA /* playback_mode_hint.png in Resources */ = {isa = PBXBuildFile; fileRef = EF2D2D38154B862400BB07DA /* playback_mode_hint.png */; };
+		EF308BA11602C8B800E99278 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = EF308BA01602C8B800E99278 /* Default-568h@2x.png */; };
 		EF36504214FBAF3D00C0F3DF /* tick.png in Resources */ = {isa = PBXBuildFile; fileRef = EF36504114FBAF3D00C0F3DF /* tick.png */; };
 		EF36504514FBB16F00C0F3DF /* heartcolor.png in Resources */ = {isa = PBXBuildFile; fileRef = EF36504414FBB16F00C0F3DF /* heartcolor.png */; };
 		EF36504814FBE45D00C0F3DF /* end1.png in Resources */ = {isa = PBXBuildFile; fileRef = EF36504614FBE45D00C0F3DF /* end1.png */; };
 		EF36504914FBE45D00C0F3DF /* start1.png in Resources */ = {isa = PBXBuildFile; fileRef = EF36504714FBE45D00C0F3DF /* start1.png */; };
-		EF36518614FCB19700C0F3DF /* BugSense-iOS.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EF36518514FCB19700C0F3DF /* BugSense-iOS.framework */; };
 		EF36518C14FCB4F100C0F3DF /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EF36518B14FCB4F100C0F3DF /* CoreLocation.framework */; };
 		EF36518E14FCB4F800C0F3DF /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EF36518D14FCB4F700C0F3DF /* MapKit.framework */; };
 		EF36519514FCD44600C0F3DF /* MKMapView+ZoomLevel.m in Sources */ = {isa = PBXBuildFile; fileRef = EF36519414FCD44500C0F3DF /* MKMapView+ZoomLevel.m */; };
@@ -263,14 +263,8 @@
 		EFB25A5615E674AA00EFBA5B /* DACircularProgressView.m in Sources */ = {isa = PBXBuildFile; fileRef = EFB25A5515E674AA00EFBA5B /* DACircularProgressView.m */; };
 		EFB25A5815E6777500EFBA5B /* DACircularProgressView.h in Sources */ = {isa = PBXBuildFile; fileRef = EFB25A5415E674AA00EFBA5B /* DACircularProgressView.h */; };
 		EFB25A5915E6777500EFBA5B /* DACircularProgressView.m in Sources */ = {isa = PBXBuildFile; fileRef = EFB25A5515E674AA00EFBA5B /* DACircularProgressView.m */; };
-		EFB25D4315254EB0002F310B /* Analytics-README.pdf in Resources */ = {isa = PBXBuildFile; fileRef = EFB25D3615254EB0002F310B /* Analytics-README.pdf */; };
-		EFB25D4415254EB0002F310B /* AppCircle-README.pdf in Resources */ = {isa = PBXBuildFile; fileRef = EFB25D3715254EB0002F310B /* AppCircle-README.pdf */; };
-		EFB25D4515254EB0002F310B /* libFlurryAnalytics.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EFB25D3A15254EB0002F310B /* libFlurryAnalytics.a */; };
-		EFB25D4615254EB0002F310B /* libFlurryAppCircle.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EFB25D3F15254EB0002F310B /* libFlurryAppCircle.a */; };
-		EFB25D4715254EB1002F310B /* iOS-2.xSDK-Upgrade-README.pdf in Resources */ = {isa = PBXBuildFile; fileRef = EFB25D4015254EB0002F310B /* iOS-2.xSDK-Upgrade-README.pdf */; };
-		EFB25D4815254EB1002F310B /* ProjectApiKey.txt in Resources */ = {isa = PBXBuildFile; fileRef = EFB25D4115254EB0002F310B /* ProjectApiKey.txt */; };
-		EFB25D4915254EB1002F310B /* RELEASE_NOTES.txt in Resources */ = {isa = PBXBuildFile; fileRef = EFB25D4215254EB0002F310B /* RELEASE_NOTES.txt */; };
 		EFB25D4D15258E69002F310B /* UserObject.m in Sources */ = {isa = PBXBuildFile; fileRef = EFB25D4C15258E68002F310B /* UserObject.m */; };
+		EFC6543815F3DC09005E425A /* hashtag.png in Resources */ = {isa = PBXBuildFile; fileRef = EFC6543715F3DC09005E425A /* hashtag.png */; };
 		EFC9636015072FF9005C9558 /* LoadMoreFeedCell.m in Sources */ = {isa = PBXBuildFile; fileRef = EFC9635F15072FF9005C9558 /* LoadMoreFeedCell.m */; };
 		EFC963631507300A005C9558 /* LoadMoreFeedCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = EFC963621507300A005C9558 /* LoadMoreFeedCell.xib */; };
 		EFCC2B9A14C99D2400D6C6BA /* NSObject+SBJSON.m in Sources */ = {isa = PBXBuildFile; fileRef = EFCC2B8F14C99D2300D6C6BA /* NSObject+SBJSON.m */; };
@@ -326,6 +320,7 @@
 		2F75405B14AD470900C19149 /* MyTableController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MyTableController.h; sourceTree = "<group>"; };
 		2F75405C14AD470900C19149 /* MyTableController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MyTableController.m; sourceTree = "<group>"; };
 		2FCDD6AF14A573F500295AAC /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
+		EF034ABE1602503F006E9CC0 /* libxml2.2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libxml2.2.dylib; path = usr/lib/libxml2.2.dylib; sourceTree = SDKROOT; };
 		EF046A9D15A5D8C60081879F /* paperbg.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = paperbg.png; sourceTree = "<group>"; };
 		EF079E0014E82C3300A0B12D /* profilebg.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = profilebg.jpg; sourceTree = "<group>"; };
 		EF0A655015BFE40B003BF1E5 /* step1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = step1.png; sourceTree = "<group>"; };
@@ -366,11 +361,11 @@
 		EF2D2D34154B005200BB07DA /* Default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Default.png; path = ../Default.png; sourceTree = "<group>"; };
 		EF2D2D36154B005700BB07DA /* Default@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Default@2x.png"; path = "../Default@2x.png"; sourceTree = "<group>"; };
 		EF2D2D38154B862400BB07DA /* playback_mode_hint.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = playback_mode_hint.png; sourceTree = "<group>"; };
+		EF308BA01602C8B800E99278 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = SOURCE_ROOT; };
 		EF36504114FBAF3D00C0F3DF /* tick.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = tick.png; sourceTree = "<group>"; };
 		EF36504414FBB16F00C0F3DF /* heartcolor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = heartcolor.png; sourceTree = "<group>"; };
 		EF36504614FBE45D00C0F3DF /* end1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = end1.png; sourceTree = "<group>"; };
 		EF36504714FBE45D00C0F3DF /* start1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = start1.png; sourceTree = "<group>"; };
-		EF36518514FCB19700C0F3DF /* BugSense-iOS.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = "BugSense-iOS.framework"; sourceTree = "<group>"; };
 		EF36518B14FCB4F100C0F3DF /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
 		EF36518D14FCB4F700C0F3DF /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
 		EF36519314FCD44500C0F3DF /* MKMapView+ZoomLevel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "MKMapView+ZoomLevel.h"; sourceTree = "<group>"; };
@@ -656,19 +651,9 @@
 		EFAE9A1415F0F9BB003DB569 /* libsqlite3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsqlite3.dylib; path = usr/lib/libsqlite3.dylib; sourceTree = SDKROOT; };
 		EFB25A5415E674AA00EFBA5B /* DACircularProgressView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DACircularProgressView.h; sourceTree = "<group>"; };
 		EFB25A5515E674AA00EFBA5B /* DACircularProgressView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DACircularProgressView.m; sourceTree = "<group>"; };
-		EFB25D3615254EB0002F310B /* Analytics-README.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = "Analytics-README.pdf"; sourceTree = "<group>"; };
-		EFB25D3715254EB0002F310B /* AppCircle-README.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = "AppCircle-README.pdf"; sourceTree = "<group>"; };
-		EFB25D3915254EB0002F310B /* FlurryAnalytics.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FlurryAnalytics.h; sourceTree = "<group>"; };
-		EFB25D3A15254EB0002F310B /* libFlurryAnalytics.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libFlurryAnalytics.a; sourceTree = "<group>"; };
-		EFB25D3C15254EB0002F310B /* FlurryAdDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FlurryAdDelegate.h; sourceTree = "<group>"; };
-		EFB25D3D15254EB0002F310B /* FlurryAppCircle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FlurryAppCircle.h; sourceTree = "<group>"; };
-		EFB25D3E15254EB0002F310B /* FlurryOffer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FlurryOffer.h; sourceTree = "<group>"; };
-		EFB25D3F15254EB0002F310B /* libFlurryAppCircle.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libFlurryAppCircle.a; sourceTree = "<group>"; };
-		EFB25D4015254EB0002F310B /* iOS-2.xSDK-Upgrade-README.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = "iOS-2.xSDK-Upgrade-README.pdf"; sourceTree = "<group>"; };
-		EFB25D4115254EB0002F310B /* ProjectApiKey.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = ProjectApiKey.txt; sourceTree = "<group>"; };
-		EFB25D4215254EB0002F310B /* RELEASE_NOTES.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = RELEASE_NOTES.txt; sourceTree = "<group>"; };
 		EFB25D4B15258E67002F310B /* UserObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UserObject.h; sourceTree = "<group>"; };
 		EFB25D4C15258E68002F310B /* UserObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UserObject.m; sourceTree = "<group>"; };
+		EFC6543715F3DC09005E425A /* hashtag.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = hashtag.png; sourceTree = "<group>"; };
 		EFC9635E15072FF9005C9558 /* LoadMoreFeedCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LoadMoreFeedCell.h; sourceTree = "<group>"; };
 		EFC9635F15072FF9005C9558 /* LoadMoreFeedCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LoadMoreFeedCell.m; sourceTree = "<group>"; };
 		EFC963621507300A005C9558 /* LoadMoreFeedCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = LoadMoreFeedCell.xib; sourceTree = "<group>"; };
@@ -725,6 +710,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				EF39A00D14BB327700A02516 /* libxml2.dylib in Frameworks */,
 				EFAE9A1515F0F9BB003DB569 /* libsqlite3.dylib in Frameworks */,
 				EFAD337F15BEA463003EEE1B /* StoreKit.framework in Frameworks */,
 				EF29CD2515354E8C00AB520E /* Twitter.framework in Frameworks */,
@@ -735,9 +721,7 @@
 				EF62F40B14FDB4B500933BB8 /* Parse.framework in Frameworks */,
 				EF36518E14FCB4F800C0F3DF /* MapKit.framework in Frameworks */,
 				EF36518C14FCB4F100C0F3DF /* CoreLocation.framework in Frameworks */,
-				EF36518614FCB19700C0F3DF /* BugSense-iOS.framework in Frameworks */,
 				EF6687C014F1228600609E05 /* MessageUI.framework in Frameworks */,
-				EF39A00D14BB327700A02516 /* libxml2.dylib in Frameworks */,
 				EF39A00914BB321000A02516 /* libz.1.2.5.dylib in Frameworks */,
 				2FCDD6B014A573F500295AAC /* QuartzCore.framework in Frameworks */,
 				099CCEAD13F9E3760039A464 /* libz.1.1.3.dylib in Frameworks */,
@@ -748,8 +732,6 @@
 				092354B313A1D7EB00DA740F /* CFNetwork.framework in Frameworks */,
 				09ABC07613A1D52D009C3FCF /* CoreGraphics.framework in Frameworks */,
 				09ABC07213A1D52D009C3FCF /* UIKit.framework in Frameworks */,
-				EFB25D4515254EB0002F310B /* libFlurryAnalytics.a in Frameworks */,
-				EFB25D4615254EB0002F310B /* libFlurryAppCircle.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -769,7 +751,9 @@
 		09ABC06213A1D52D009C3FCF = {
 			isa = PBXGroup;
 			children = (
+				EF034ABE1602503F006E9CC0 /* libxml2.2.dylib */,
 				EFAE9A1415F0F9BB003DB569 /* libsqlite3.dylib */,
+				EFC6543715F3DC09005E425A /* hashtag.png */,
 				EF1177DA15DBE7BD0087C894 /* Tests */,
 				09ABC07713A1D52D009C3FCF /* ParseStarterProject */,
 				EF11780C15DBFAD80087C894 /* testbundle */,
@@ -797,12 +781,10 @@
 				EF62F40A14FDB4B500933BB8 /* Parse.framework */,
 				EF36518D14FCB4F700C0F3DF /* MapKit.framework */,
 				EF36518B14FCB4F100C0F3DF /* CoreLocation.framework */,
-				EF36518514FCB19700C0F3DF /* BugSense-iOS.framework */,
 				EF6687C614F1230100609E05 /* SVWebViewController */,
 				EF6687BF14F1228600609E05 /* MessageUI.framework */,
 				EF39A00C14BB327600A02516 /* libxml2.dylib */,
 				EF29CD2415354E8C00AB520E /* Twitter.framework */,
-				EFB25D3515254EB0002F310B /* Flurry iPhone SDK v3.0.9 */,
 				EF39A00814BB321000A02516 /* libz.1.2.5.dylib */,
 				EFFF299314EB88D400FC92B2 /* DAReload */,
 				EF292F6614E41675006D3D09 /* MBProgressHUD.h */,
@@ -827,6 +809,7 @@
 		09ABC07713A1D52D009C3FCF /* ParseStarterProject */ = {
 			isa = PBXGroup;
 			children = (
+				EF308BA01602C8B800E99278 /* Default-568h@2x.png */,
 				09ABC08013A1D52D009C3FCF /* ParseStarterProjectAppDelegate.h */,
 				09ABC08113A1D52D009C3FCF /* ParseStarterProjectAppDelegate.m */,
 				09ABC08313A1D52D009C3FCF /* MainWindow.xib */,
@@ -1140,40 +1123,6 @@
 				EFA02A551533C6B7004CF6CF /* SheetButtonDestroyTouch@2x.png */,
 			);
 			name = RDactionsheet;
-			sourceTree = "<group>";
-		};
-		EFB25D3515254EB0002F310B /* Flurry iPhone SDK v3.0.9 */ = {
-			isa = PBXGroup;
-			children = (
-				EFB25D3615254EB0002F310B /* Analytics-README.pdf */,
-				EFB25D3715254EB0002F310B /* AppCircle-README.pdf */,
-				EFB25D3815254EB0002F310B /* FlurryAnalytics */,
-				EFB25D3B15254EB0002F310B /* FlurryAppCircle */,
-				EFB25D4015254EB0002F310B /* iOS-2.xSDK-Upgrade-README.pdf */,
-				EFB25D4115254EB0002F310B /* ProjectApiKey.txt */,
-				EFB25D4215254EB0002F310B /* RELEASE_NOTES.txt */,
-			);
-			path = "Flurry iPhone SDK v3.0.9";
-			sourceTree = "<group>";
-		};
-		EFB25D3815254EB0002F310B /* FlurryAnalytics */ = {
-			isa = PBXGroup;
-			children = (
-				EFB25D3915254EB0002F310B /* FlurryAnalytics.h */,
-				EFB25D3A15254EB0002F310B /* libFlurryAnalytics.a */,
-			);
-			path = FlurryAnalytics;
-			sourceTree = "<group>";
-		};
-		EFB25D3B15254EB0002F310B /* FlurryAppCircle */ = {
-			isa = PBXGroup;
-			children = (
-				EFB25D3C15254EB0002F310B /* FlurryAdDelegate.h */,
-				EFB25D3D15254EB0002F310B /* FlurryAppCircle.h */,
-				EFB25D3E15254EB0002F310B /* FlurryOffer.h */,
-				EFB25D3F15254EB0002F310B /* libFlurryAppCircle.a */,
-			);
-			path = FlurryAppCircle;
 			sourceTree = "<group>";
 		};
 		EFB728A214CD937D00B43FC3 /* Login */ = {
@@ -1628,11 +1577,6 @@
 				EF3D7E551517170C00D5395D /* field.png in Resources */,
 				EF3D7E591517213400D5395D /* Facebook-logo-2.png in Resources */,
 				EF3D7E5E151721F000D5395D /* RouteLocationViewController.xib in Resources */,
-				EFB25D4315254EB0002F310B /* Analytics-README.pdf in Resources */,
-				EFB25D4415254EB0002F310B /* AppCircle-README.pdf in Resources */,
-				EFB25D4715254EB1002F310B /* iOS-2.xSDK-Upgrade-README.pdf in Resources */,
-				EFB25D4815254EB1002F310B /* ProjectApiKey.txt in Resources */,
-				EFB25D4915254EB1002F310B /* RELEASE_NOTES.txt in Resources */,
 				EFA9F31D152A11FF004883DD /* cameraTabBarItem copy.png in Resources */,
 				EFA9F31F152A146E004883DD /* cameraTabBarItem copy@2x.png in Resources */,
 				EFA02A561533C6B7004CF6CF /* SheetButtonDestroy@2x.png in Resources */,
@@ -1696,6 +1640,8 @@
 				EF9BAB5715C30C4800FEFFF4 /* closeInvertedComma.png in Resources */,
 				EF73B48B15CAC21B0052B9B0 /* Icon.png in Resources */,
 				EF73B48D15CAC2200052B9B0 /* Icon@2x.png in Resources */,
+				EFC6543815F3DC09005E425A /* hashtag.png in Resources */,
+				EF308BA11602C8B800E99278 /* Default-568h@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1919,8 +1865,8 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
-				CODE_SIGN_IDENTITY = "iPhone Distribution: Lee Heng Hong";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: Lee Heng Hong";
+				CODE_SIGN_IDENTITY = "iPhone Developer: Lee Heng Hong (T53AB93G9J)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Lee Heng Hong (T53AB93G9J)";
 				COPY_PHASE_STRIP = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1937,22 +1883,19 @@
 				"HEADER_SEARCH_PATHS[arch=*]" = "${SDK_DIR}/usr/include/libxml2";
 				INFOPLIST_FILE = "ParseStarterProject/PsychedApp-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"$(SRCROOT)/Flurry iPhone SDK v3.0.9/FlurryAnalytics\"",
-					"\"$(SRCROOT)/Flurry iPhone SDK v3.0.9/FlurryAppCircle\"",
-				);
+				LIBRARY_SEARCH_PATHS = "";
 				OTHER_LDFLAGS = (
 					"-all_load",
 					"-ObjC",
 				);
 				PRODUCT_NAME = PsychedApp;
-				PROVISIONING_PROFILE = "6041023E-8693-4AF7-8DE2-13F02E1CEE5B";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "6041023E-8693-4AF7-8DE2-13F02E1CEE5B";
+				PROVISIONING_PROFILE = "F591337F-BE7C-4D57-98FA-28A7D9B7C5E1";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "F591337F-BE7C-4D57-98FA-28A7D9B7C5E1";
 				TARGETED_DEVICE_FAMILY = 1;
 				USER_HEADER_SEARCH_PATHS = "${SRCROOT}/**";
-				"USER_HEADER_SEARCH_PATHS[arch=*]" = "";
+				"USER_HEADER_SEARCH_PATHS[arch=*]" = "${SDK_DIR}/usr/include/libxml2";
 				VALIDATE_PRODUCT = NO;
+				VALID_ARCHS = "armv7s armv7";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -1962,8 +1905,8 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
-				CODE_SIGN_IDENTITY = "iPhone Distribution: Lee Heng Hong";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: Lee Heng Hong";
+				CODE_SIGN_IDENTITY = "iPhone Developer: Lee Heng Hong (T53AB93G9J)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Lee Heng Hong (T53AB93G9J)";
 				COPY_PHASE_STRIP = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1976,23 +1919,21 @@
 				GCC_PREFIX_HEADER = "ParseStarterProject/PsychedApp-Prefix.pch";
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				HEADER_SEARCH_PATHS = "${SDK_DIR}/usr/include/libxml2/**";
+				"HEADER_SEARCH_PATHS[arch=*]" = "${SDK_DIR}/usr/include/libxml2";
 				INFOPLIST_FILE = "ParseStarterProject/PsychedApp-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"$(SRCROOT)/Flurry iPhone SDK v3.0.9/FlurryAnalytics\"",
-					"\"$(SRCROOT)/Flurry iPhone SDK v3.0.9/FlurryAppCircle\"",
-				);
+				LIBRARY_SEARCH_PATHS = "";
 				OTHER_LDFLAGS = (
 					"-all_load",
 					"-ObjC",
 				);
 				PRODUCT_NAME = PsychedApp;
-				PROVISIONING_PROFILE = "6041023E-8693-4AF7-8DE2-13F02E1CEE5B";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "6041023E-8693-4AF7-8DE2-13F02E1CEE5B";
+				PROVISIONING_PROFILE = "F591337F-BE7C-4D57-98FA-28A7D9B7C5E1";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "F591337F-BE7C-4D57-98FA-28A7D9B7C5E1";
 				TARGETED_DEVICE_FAMILY = 1;
-				USER_HEADER_SEARCH_PATHS = "";
+				USER_HEADER_SEARCH_PATHS = "${SDK_DIR}/usr/include/libxml2";
 				VALIDATE_PRODUCT = YES;
+				VALID_ARCHS = "armv7s armv7";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;

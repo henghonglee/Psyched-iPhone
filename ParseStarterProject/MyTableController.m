@@ -93,6 +93,7 @@
     
     
     routeTableView = [[UITableView alloc]initWithFrame:CGRectMake(0,0 , 320, 411)];
+    routeTableView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     routeTableView.delegate = self;
     routeTableView.dataSource = self;
     routeTableView.separatorStyle = UITableViewCellSeparatorStyleSingleLine;

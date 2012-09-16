@@ -14,7 +14,7 @@ typedef enum apiCall {
 } apiCall;
 #import "ASIHTTPRequest.h"
 #import "UIImage+Resize.h"
-#import "FlurryAnalytics.h"
+//#import "FlurryAnalytics.h"
 #import "JSON.h"
 #import "JHNotificationManager.h"
 #import "MKMapView+ZoomLevel.h"
@@ -865,7 +865,7 @@ typedef enum apiCall {
 {
     [self dismissModalViewControllerAnimated:YES];
     NSLog(@"share action ended");
-    [FlurryAnalytics endTimedEvent:@"SHARE_ACTION" withParameters:nil];
+//    [FlurryAnalytics endTimedEvent:@"SHARE_ACTION" withParameters:nil];
 }
 - (void)dealloc
 {

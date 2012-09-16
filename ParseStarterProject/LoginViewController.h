@@ -14,6 +14,7 @@
 	UIPageControl* pageControl;
 	int page;
 	BOOL pageControlBeingUsed;
+    float oldY;
 }
 - (void)apiFQLIMe;
 - (IBAction)changePage;

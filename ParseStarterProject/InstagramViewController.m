@@ -29,7 +29,7 @@
 #import "FeedsViewController.h"
 #import "NewsViewController.h"
 #import "ProfileViewController.h"
-#import "FlurryAnalytics.h"
+//#import "FlurryAnalytics.h"
 
 #import <Parse/Parse.h>
 @implementation InstagramViewController
@@ -59,7 +59,7 @@
    // mainNav.tabBarItem = [[[UITabBarItem alloc] initWithTitle:@"" image:[UIImage imageNamed:@"29-heart.png"] tag:0] autorelease];
         [mainNav.navigationBar setBarStyle:UIBarStyleBlack];
     demoViewController.navigationController.navigationBarHidden = YES;
-    [FlurryAnalytics logAllPageViews:mainNav];
+//    [FlurryAnalytics logAllPageViews:mainNav];
     
     
     //news navigation cotnroller

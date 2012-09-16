@@ -5,10 +5,9 @@
 #import "InstagramViewController.h"
 #import "LoginViewController.h"
 #import "JHNotificationManager.h"
-#import <BugSense-iOS/BugSenseCrashController.h>
-#import "FlurryAnalytics.h"
+//#import "FlurryAnalytics.h"
 
-#define VERSION 1.8
+#define VERSION 1.9
 @implementation ParseStarterProjectAppDelegate
 @synthesize badgeView;
 @synthesize window=_window;
@@ -32,19 +31,11 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-
     [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleBlackOpaque animated:YES];
-    PFInstallation *currentInstallation = [PFInstallation currentInstallation];
-    if (currentInstallation.badge != 0) {
-        currentInstallation.badge = 0;
-    }
-    [currentInstallation setObject:[NSNumber numberWithDouble:VERSION ] forKey:@"Version"];
-    [currentInstallation saveEventually];
-    [FlurryAnalytics startSession:@"N66I1CJV446Z75ZV8G8V"];
-    NSDictionary *myStuff = [NSDictionary dictionaryWithObjectsAndKeys:@"myObject", @"myKey", nil];
-    [BugSenseCrashController sharedInstanceWithBugSenseAPIKey:@"ade3c7ab" 
-                                               userDictionary:myStuff 
-                                              sendImmediately:YES];
+//    application.applicationIconBadgeNumber = 0;
+//    [[PFInstallation currentInstallation]setBadge:0];
+ //   [[PFInstallation currentInstallation] saveEventually];
+//    [FlurryAnalytics startSession:@"N66I1CJV446Z75ZV8G8V"];
     [self startStandardUpdates];
     [Parse setApplicationId:@"rUk14GRi8xY6ieFQGyXcJ39iQUPuGo1ihR2dAKeh" clientKey:@"aOz04F0XOehjH9a58b95V4nKtcCZNUNUxbCoqM48"];
     //sandbox
@@ -59,7 +50,7 @@
         [[UINavigationBar appearance] setBackgroundImage:[UIImage imageNamed:@"headerview.png"] forBarMetrics:UIBarMetricsDefault];
         
      if ([PFFacebookUtils facebook].accessToken) { //if accesstoken is ok
-             NSDictionary *dictionary = 
+     /*        NSDictionary *dictionary =
              [NSDictionary dictionaryWithObjectsAndKeys:[[PFUser currentUser] objectForKey:@"email"],@"email",[[PFUser currentUser] objectForKey:@"birthday_date"],@"birthday_date",[[PFUser currentUser] objectForKey:@"name"],@"name",[[PFUser currentUser] objectForKey:@"sex"],@"sex",[[PFUser currentUser] objectForKey:@"uid"],@"uid",[[PFUser currentUser] objectForKey:@"about_me"],@"about_me", nil];
              [FlurryAnalytics setUserID:[[PFUser currentUser] objectForKey:@"name"]];
              [FlurryAnalytics setAge:[[[PFUser currentUser] objectForKey:@"age"]intValue]];
@@ -69,27 +60,18 @@
                  [FlurryAnalytics setGender:@"f"];
              }
              [FlurryAnalytics logEvent:@"USER_LOGIN" withParameters:dictionary timed:YES];
-                      
+       */
+         
+
+
+         InstagramViewController* viewController = [[InstagramViewController alloc]initWithNibName:@"InstagramViewController" bundle:nil];
+         self.window.rootViewController = viewController;
+         [viewController release];
+
                       [[PFUser currentUser] setObject:[NSNumber numberWithDouble:VERSION] forKey:@"version"];
                       [[PFUser currentUser] saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
-                          [PFPush subscribeToChannelInBackground:[NSString stringWithFormat:@"channel%@",[[PFUser currentUser] objectForKey:@"facebookid"]] block:^(BOOL succeeded, NSError *error) {
-
-                                  [PFPush subscribeToChannelInBackground:@"" block:^(BOOL alsosucceeded, NSError *error2) {
-                                      [MBProgressHUD hideHUDForView:self.window.rootViewController.view animated:YES];
-                                          InstagramViewController* viewController = [[InstagramViewController alloc]initWithNibName:@"InstagramViewController" bundle:nil];
-                                          self.window.rootViewController = viewController;
-                                          [viewController release];
-
-                                      
-                                  }];
-                          }];
-                         
-                           
-                      }];                 
-                      
-             self.window.rootViewController = loginVC;
-         [MBProgressHUD showHUDAddedTo:self.window.rootViewController.view animated:YES];
-         
+                          
+                      }];
          }else{
              self.window.rootViewController = loginVC; 
          }
@@ -185,13 +167,23 @@
 - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)newDeviceToken{
     
        [PFPush storeDeviceToken:newDeviceToken];
+    NSLog(@"registering for broadcast channel");
 
-    [[PFInstallation currentInstallation]saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
-        [PFPush subscribeToChannelInBackground:@""];
-    }];
+    [PFPush subscribeToChannelInBackground:@"" target:self selector:@selector(subscribeFinished:error:)];
+
     
 }
-
+- (void)subscribeFinished:(NSNumber *)result error:(NSError *)error {
+    if ([result boolValue]) {
+        NSLog(@"ParseStarterProject successfully subscribed to push notifications on the broadcast channel.");
+       
+        [[PFInstallation currentInstallation]saveEventually:^(BOOL succeeded, NSError *error) {
+            NSLog(@"installation saved");
+        }];
+    } else {
+        NSLog(@"ParseStarterProject failed to subscribe to push notifications on the broadcast channel.");
+    }
+}
 - (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error{
 	NSLog(@"application:didFailToRegisterForRemoteNotificationsWithError: %@", error);
 	if ([error code] != 3010) // 3010 is for the iPhone Simulator
@@ -203,7 +195,19 @@
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo {
     
     NSLog(@"userInfo = %@",userInfo);
-    
+    if([userInfo objectForKey:@"pushid"]){ //if analytics is on acknowledge it
+        ASIHTTPRequest* pushAck = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"http://www.psychedapp.com/push/%@?user[objectId]=%@",[userInfo objectForKey:@"pushid"],[PFUser currentUser].objectId]]];
+        [pushAck setRequestMethod:@"PUT"];
+        [pushAck setCompletionBlock:^{
+            // no action needed, its fire and forget mode
+        }];
+        [pushAck setFailedBlock:^{
+            // no action needed, its fire and forget mode
+        }];
+        [pushAck startAsynchronous];
+        //send webservice to rails server at psychedapp.herokuapp.com to set viewed flag for push
+        //track time opened also
+    }
    if (![[userInfo objectForKey:@"sender"] isEqualToString:[[PFUser currentUser]objectForKey:@"name"]]) {
     if ([[userInfo objectForKey:@"reciever"] isEqualToString:[[PFUser currentUser]objectForKey:@"name"]]) {
       
@@ -223,6 +227,19 @@
     
     if ([UIApplication sharedApplication].applicationState == UIApplicationStateInactive) {
         NSLog(@"inactive app state.. recieving push");
+        if([userInfo objectForKey:@"pushid"]){ //if analytics is on acknowledge it
+            ASIHTTPRequest* pushAck = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"http://www.psychedapp.com/push/%@?user[objectId]=%@",[userInfo objectForKey:@"pushid"],[PFUser currentUser].objectId]]];
+            [pushAck setRequestMethod:@"PUT"];
+            [pushAck setCompletionBlock:^{
+                // no action needed, its fire and forget mode
+            }];
+            [pushAck setFailedBlock:^{
+                // no action needed, its fire and forget mode
+            }];
+            [pushAck startAsynchronous];
+            //send webservice to rails server at psychedapp.herokuapp.com to set viewed flag for push
+            //track time opened also
+        }
     if([userInfo objectForKey:@"linkedgym"]){
             PFQuery* gymQuery = [PFQuery queryWithClassName:@"Gym"];
             [gymQuery whereKey:@"objectId" equalTo:[userInfo objectForKey:@"linkedgym"]];
@@ -265,61 +282,25 @@
 }
 
 - (void)applicationWillResignActive:(UIApplication *)application{
-    /*
-     Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
-     Use this method to pause ongoing tasks, disable timers, and throttle down OpenGL ES frame rates. Games should use this method to pause the game.
-     */
+  
 }
 
 - (void)applicationDidEnterBackground:(UIApplication *)application{
-    //bguploading
-    /*
-//    UIApplication  *app = [UIApplication sharedApplication];
-//    bgTask = [app beginBackgroundTaskWithExpirationHandler:^{ 
-//        [app endBackgroundTask:bgTask]; 
-//        bgTask = UIBackgroundTaskInvalid;
-//    }];
-//    
-//    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-//        if(wasUploading){
-//            wasUploading = NO;
-//                NSLog(@"begining background ....");
-//            [self saveRoute];
-//        }
-//    });
-//    
-//    [app endBackgroundTask:bgTask]; bgTask = UIBackgroundTaskInvalid;
-    */
+ 
 }
 
 - (void)applicationWillEnterForeground:(UIApplication *)application{
-        application.applicationIconBadgeNumber = 0;
-        [[PFInstallation currentInstallation]setBadge:0];
-    [[PFInstallation currentInstallation] saveEventually];
-
+//        application.applicationIconBadgeNumber = 0;
+//        [[PFInstallation currentInstallation]setBadge:0];
+//    [[PFInstallation currentInstallation] saveEventually];
+    CLLocation *location = locationManager.location;
+    PFGeoPoint* userGeopoint = [PFGeoPoint geoPointWithLatitude:location.coordinate.latitude longitude:location.coordinate.longitude];
+    [[PFInstallation currentInstallation]setObject:userGeopoint forKey:@"userRecentLocation"];
+    [[PFInstallation currentInstallation]setObject:[NSNumber numberWithDouble:VERSION] forKey:@"Version"];
+    [[PFInstallation currentInstallation]saveEventually];
     NSLog(@"application will enter foreground");
-    //GYM NEARBY CHECK
-    /*
-    NSLog(@"current user = %@",[PFUser currentUser]);
-    if ([PFUser currentUser]) {
-        PFGeoPoint* mypoint = [PFGeoPoint geoPointWithLatitude:currentLocation.coordinate.latitude longitude:currentLocation.coordinate.longitude];
-        PFQuery* nearestGymQuery = [PFQuery queryWithClassName:@"Gym"];
-        [nearestGymQuery whereKey:@"gymlocation" nearGeoPoint:mypoint withinKilometers:2.0f];
-        [nearestGymQuery getFirstObjectInBackgroundWithBlock:^(PFObject *object, NSError *error) {
-            if (object){
-                
-                nearbyGymObject = object;
-                [nearbyGymObject retain];
-                
-                UIAlertView* gymAlert = [[UIAlertView alloc]initWithTitle:@"Hey there!" message:[NSString stringWithFormat:@"We realised you are near %@! \n would you like to go to their page?",[object objectForKey:@"name"]] delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:@"Show Me!",nil];
-                [gymAlert show];
-                [gymAlert release];
-            }
-        }];
-        */
-    
-    [self performSelector:@selector(fbOAuthCheck) withObject:nil afterDelay:7];
-        
+  
+       [self performSelector:@selector(fbOAuthCheck) withObject:nil afterDelay:7];
     }
 
     /*
@@ -352,12 +333,12 @@
 
 - (void)applicationDidBecomeActive:(UIApplication *)application{
     NSLog(@"app did become active");
-    PFInstallation *currentInstallation = [PFInstallation currentInstallation];
-    if (currentInstallation.badge != 0) {
-        currentInstallation.badge = 0;
-    }
-    [currentInstallation setObject:[NSNumber numberWithDouble:VERSION ] forKey:@"Version"];
-    [currentInstallation saveEventually];
+//    PFInstallation *currentInstallation = [PFInstallation currentInstallation];
+//    if (currentInstallation.badge != 0) {
+//        currentInstallation.badge = 0;
+//    }
+//    [currentInstallation setObject:[NSNumber numberWithDouble:VERSION ] forKey:@"Version"];
+//    [currentInstallation saveEventually];
     PFQuery* versionquery = [PFQuery queryWithClassName:@"Version"];
     [versionquery getFirstObjectInBackgroundWithBlock:^(PFObject *object, NSError *error) {
         if ([[object objectForKey:@"version"] doubleValue] > VERSION) {
@@ -382,13 +363,7 @@
      */
 }
 
-- (void)subscribeFinished:(NSNumber *)result error:(NSError *)error {
-    if ([result boolValue]) {
-        NSLog(@"ParseStarterProject successfully subscribed to push notifications on the broadcast channel.");
-    } else {
-        NSLog(@"ParseStarterProject failed to subscribe to push notifications on the broadcast channel.");
-    }
-}
+
 - (void)startStandardUpdates{
     // Create the location manager if this object does not
     // already have one.
@@ -402,14 +377,11 @@
     locationManager.distanceFilter = 500;
     
     [locationManager startUpdatingLocation];
-    CLLocation *location = locationManager.location;
-    PFGeoPoint* userGeopoint = [PFGeoPoint geoPointWithLatitude:location.coordinate.latitude longitude:location.coordinate.longitude];
-    [[PFInstallation currentInstallation]setObject:userGeopoint forKey:@"userRecentLocation"];
-    [[PFInstallation currentInstallation]saveEventually];
-    [FlurryAnalytics setLatitude:location.coordinate.latitude
+   
+ /*   [FlurryAnalytics setLatitude:location.coordinate.latitude
                        longitude:location.coordinate.longitude
               horizontalAccuracy:location.horizontalAccuracy
-                verticalAccuracy:location.verticalAccuracy];
+                verticalAccuracy:location.verticalAccuracy];*/
 }
 // Delegate method from the CLLocationManagerDelegate protocol.
 - (void)locationManager:(CLLocationManager *)manager
@@ -501,7 +473,7 @@
                     [[PFUser currentUser] saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
                         [PFPush subscribeToChannelInBackground:[NSString stringWithFormat:@"channel%@",[[PFUser currentUser] objectForKey:@"facebookid"]] target:self selector:@selector(subscribeFinished:error:)];
                         NSLog(@"subscribed to channeluser %@",[NSString stringWithFormat:@"channel%@",[[PFUser currentUser] objectForKey:@"facebookid"]]);
-                        [FlurryAnalytics setUserID:[[PFUser currentUser] objectForKey:@"name"]];
+                 /*       [FlurryAnalytics setUserID:[[PFUser currentUser] objectForKey:@"name"]];
                         if ([[[PFUser currentUser] objectForKey:@"sex"] isEqualToString:@"male"]) {
                             [FlurryAnalytics setGender:@"m"];
                         }else{
@@ -511,15 +483,15 @@
                         NSDictionary *dictionary = 
                         [NSDictionary dictionaryWithObjectsAndKeys:[result objectForKey:@"email"],@"email",[result objectForKey:@"birthday"],@"birthday",[result objectForKey:@"name"],@"name",[result objectForKey:@"sex"],@"sex",[result objectForKey:@"uid"],@"uid",[result objectForKey:@"about_me"],@"about_me", nil];
                         
-                        [FlurryAnalytics logEvent:@"USER_LOGIN" withParameters:dictionary timed:YES];
-                        InstagramViewController* viewController = [[InstagramViewController alloc]initWithNibName:@"InstagramViewController" bundle:nil];
-                        
-                        self.window.rootViewController = viewController;
-                        [viewController release];
+                        [FlurryAnalytics logEvent:@"USER_LOGIN" withParameters:dictionary timed:YES];*/
+                                                            NSLog(@"subscription commpleted");  
                     }];
                     
                     
+                    InstagramViewController* viewController = [[InstagramViewController alloc]initWithNibName:@"InstagramViewController" bundle:nil];
                     
+                    self.window.rootViewController = viewController;
+                    [viewController release];
                 }
             }
         }
@@ -550,156 +522,4 @@
 
 
 
-
-
-
-#pragma mark saveroute methods for bg saving
-/*
--(void)saveRoute
-{
-    PFObject* newRoute = [PFObject objectWithClassName:@"Route"];
-    if (isFacebookUpload) {
-        [newRoute setObject:fbphotoid forKey:@"photoid"];  
-        
-    }
-    [newRoute setObject:uploadLocation forKey:@"location"];
-    if ([usersrecommended count]>0) {
-        uploadDescription = [uploadDescription stringByAppendingFormat:@"(%@)  ",difficultyint];
-        
-        for (NSString*user in usersrecommended) {
-            uploadDescription = [uploadDescription stringByAppendingFormat:@"@%@ ",user];
-        }
-        
-    }
-    [newRoute setObject:uploadDescription forKey:@"description"];
-    [newRoute setObject:uploadGeopoint forKey:@"routelocation"];
-    [newRoute setObject:uploadDifficultydesc forKey:@"difficultydescription"];
-    [newRoute setObject:[NSNumber numberWithInt:difficultyint] forKey:@"difficulty"];
-    [newRoute setObject:[[PFUser currentUser] objectForKey:@"name"] forKey:@"username"];
-    [newRoute setObject:[[PFUser currentUser] objectForKey:@"profilepicture"] forKey:@"userimage"];
-    [newRoute setObject:[[PFUser currentUser] objectForKey:@"email"] forKey:@"useremail"];
-    [newRoute setObject:[NSNumber numberWithInt:0] forKey:@"commentcount"];
-    [newRoute setObject:[NSNumber numberWithInt:0] forKey:@"likecount"];
-    [newRoute setObject:[NSNumber numberWithInt:0] forKey:@"viewcount"];
-    [newRoute setObject:[NSNumber numberWithBool:false] forKey:@"outdated"];
-    [newRoute setObject:[NSNumber numberWithBool:false] forKey:@"isPage"];
-    
-    [newRoute setObject:usersrecommended forKey:@"usersrecommended"];
-    
-    [usersrecommended release];
-    NSLog(@"saving thumb in background...");            
-    PFFile *thumbImageFile = [PFFile fileWithName:@"thumbImage.jpeg" data:thumbImageData];
-    [thumbImageFile saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
-        [newRoute setObject:thumbImageFile forKey:@"thumbImageFile"];  
-        
-        
-        
-        PFFile *imageFile = [PFFile fileWithName:@"image.jpeg" data:imageData];
-        NSLog(@"saving in background...");
-        
-        //   [PF_MBProgressHUD showHUDAddedTo:self.view animated:YES];
-        [imageFile saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error){
-            NSLog(@"done saving image");
-            [newRoute setObject:imageFile forKey:@"imageFile"];
-            
-            [newRoute saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
-                
-                PFObject* feedObject = [PFObject objectWithClassName:@"Feed"];
-                [feedObject setObject:[[PFUser currentUser] objectForKey:@"name"] forKey:@"sender"];
-                [feedObject setObject:[[PFUser currentUser] objectForKey:@"profilepicture"] forKey:@"senderimagelink"];
-                [feedObject setObject:newRoute forKey:@"linkedroute"];
-                [feedObject setObject:imageFile forKey:@"imagefile"];
-                [feedObject setObject:@"added" forKey:@"action"];
-                if (![[newRoute objectForKey:@"location"] isEqualToString:@""]) {
-                    [feedObject setObject:[NSString stringWithFormat:@"%@ added a new route at %@",[[PFUser currentUser] objectForKey:@"name"],[newRoute objectForKey:@"location"]] forKey:@"message"];
-                }else{
-                    [feedObject setObject:[NSString stringWithFormat:@"%@ added a new route",[[PFUser currentUser] objectForKey:@"name"]] forKey:@"message"];
-                }
-                
-                [feedObject saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
-                    NSLog(@"done saving add feed");
-                }];
-                if ([recommendArray count]>0) {
-                    for (FBfriend* user in recommendArray) {
-                        NSMutableDictionary *data = [NSMutableDictionary dictionary];
-                        [data setObject:newRoute.objectId forKey:@"linkedroute"];
-                        [data setObject:[NSNumber numberWithInt:1] forKey:@"badge"];
-                        [data setObject:[NSString stringWithFormat:@"%@ tagged you in a route",[[PFUser currentUser] objectForKey:@"name"],[newRoute objectForKey:@"username"]] forKey:@"alert"];
-                        [data setObject:[NSString stringWithFormat:@"%@",[[PFUser currentUser] objectForKey:@"name"]] forKey:@"sender"];
-                        [data setObject:[NSString stringWithFormat:@"%@",user.name] forKey:@"reciever"];
-                        
-                        [PFPush sendPushDataToChannelInBackground:[NSString stringWithFormat:@"channel%@",user.uid] withData:data];
-                       
-                        
-                        
-                        
-                    }
-                    if ([recommendArray count]==1) {
-                        FBfriend*user = [recommendArray objectAtIndex:0];                
-                        PFObject* feedObject = [PFObject objectWithClassName:@"Feed"];
-                        [feedObject setObject:[[PFUser currentUser] objectForKey:@"name"] forKey:@"sender"];
-                        [feedObject setObject:[[PFUser currentUser] objectForKey:@"profilepicture"] forKey:@"senderimagelink"];
-                        [feedObject setObject:newRoute forKey:@"linkedroute"];
-                        [feedObject setObject:imageFile forKey:@"imagefile"];
-                        [feedObject setObject:@"tag" forKey:@"action"];
-                        [feedObject setObject:[NSString stringWithFormat:@"%@ tagged %@ in a route",[[PFUser currentUser] objectForKey:@"name"],user.name] forKey:@"message"];
-                        
-                        [feedObject saveInBackground];
-                        
-                    }else if ([recommendArray count]==2){
-                        FBfriend*user = [recommendArray objectAtIndex:0];
-                        PFObject* feedObject = [PFObject objectWithClassName:@"Feed"];
-                        [feedObject setObject:[[PFUser currentUser] objectForKey:@"name"] forKey:@"sender"];
-                        [feedObject setObject:[[PFUser currentUser] objectForKey:@"profilepicture"] forKey:@"senderimagelink"];
-                        [feedObject setObject:newRoute forKey:@"linkedroute"];
-                        [feedObject setObject:imageFile forKey:@"imagefile"];
-                        [feedObject setObject:@"tag" forKey:@"action"];
-                        [feedObject setObject:[NSString stringWithFormat:@"%@ tagged %@ and %d other in a route",[[PFUser currentUser] objectForKey:@"name"],user.name,1] forKey:@"message"];
-                        
-                        [feedObject saveInBackground];   
-                    }else{
-                        FBfriend*user = [recommendArray objectAtIndex:0];
-                        PFObject* feedObject = [PFObject objectWithClassName:@"Feed"];
-                        [feedObject setObject:[[PFUser currentUser] objectForKey:@"name"] forKey:@"sender"];
-                        [feedObject setObject:[[PFUser currentUser] objectForKey:@"profilepicture"] forKey:@"senderimagelink"];
-                        [feedObject setObject:newRoute forKey:@"linkedroute"];
-                        [feedObject setObject:imageFile forKey:@"imagefile"];
-                        [feedObject setObject:@"tag" forKey:@"action"];
-                        [feedObject setObject:[NSString stringWithFormat:@"%@ tagged %@ and %d others in a route",[[PFUser currentUser] objectForKey:@"name"],user.name,[recommendArray count]-1] forKey:@"message"];
-                        
-                        [feedObject saveInBackground];
-                    }
-                    
-                    
-                    
-                    
-                }
-                
-                
-                
-                [PFPush subscribeToChannelInBackground:[NSString stringWithFormat:@"channel%@",newRoute.objectId] block:^(BOOL succeeded, NSError *error) {
-                    NSMutableDictionary *data = [NSMutableDictionary dictionary];
-                    [data setObject:newRoute.objectId forKey:@"linkedroute"];
-                    [data setObject:[NSNumber numberWithInt:1] forKey:@"badge"];
-                    [data setObject:[NSString stringWithFormat:@"Upload Complete!"] forKey:@"alert"];
-                    [data setObject:[NSString stringWithFormat:@"%@",[[PFUser currentUser] objectForKey:@"name"]] forKey:@"sender"];
-                    [data setObject:[NSString stringWithFormat:@"%@",[[PFUser currentUser] objectForKey:@"name"]] forKey:@"reciever"];
-                    
-                    [PFPush sendPushDataToChannelInBackground:[NSString stringWithFormat:@"channel%@",[[PFUser currentUser] objectForKey:@"facebookid"]] withData:data]; 
-                }];
-                
-                
-                
-            }];
-            
-            
-            
-            
-            
-        }];
-        
-        
-    }];
-}
-*/
 @end

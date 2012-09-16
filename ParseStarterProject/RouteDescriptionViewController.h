@@ -12,6 +12,7 @@
 @property (retain, nonatomic) IBOutlet UITextView *descriptionTextField;
 @property (retain,nonatomic) id<RouteDescriptionDelegate> delegate;
 @property (retain,nonatomic) NSString* descriptionText;
+@property (retain, nonatomic) IBOutlet UIButton *instructionButton;
 @end
 
 @protocol RouteDescriptionDelegate <NSObject>

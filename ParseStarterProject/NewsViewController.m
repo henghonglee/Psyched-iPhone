@@ -11,7 +11,7 @@
 #import <Parse/Parse.h>
 #import "SVModalWebViewController.h"
 #import "SVWebViewController.h"
-#import "FlurryAnalytics.h"
+//#import "FlurryAnalytics.h"
 #import "ParseStarterProjectAppDelegate.h"
 @implementation NewsViewController
 @synthesize newsTable;
@@ -181,7 +181,7 @@ if (cell == nil) {
         if (!selectedNewsObject.newsImage) {
     ASIHTTPRequest* imageReq = [ASIHTTPRequest requestWithURL:[NSURL URLWithString: selectedNewsObject.newsImageURL]];
         [imageReq setCompletionBlock:^{
-            [FlurryAnalytics logEvent:[NSString stringWithFormat:@"%@ viewed",selectedNewsObject.newsId]];            
+    //        [FlurryAnalytics logEvent:[NSString stringWithFormat:@"%@ viewed",selectedNewsObject.newsId]];
             selectedNewsObject.newsImage = [UIImage imageWithData:[imageReq responseData]];
             cell.newsImage.alpha = 0.0;
             cell.newsImage.image = selectedNewsObject.newsImage;
@@ -200,7 +200,7 @@ if (cell == nil) {
         [imageReq setFailedBlock:^{}];
         [imageReq startAsynchronous];
         }else{
-        [FlurryAnalytics logEvent:[NSString stringWithFormat:@"%@ viewed",selectedNewsObject.newsId]];
+      //  [FlurryAnalytics logEvent:[NSString stringWithFormat:@"%@ viewed",selectedNewsObject.newsId]];
          cell.newsImage.image = selectedNewsObject.newsImage;
         }
     
@@ -216,7 +216,7 @@ if (cell == nil) {
      NSDictionary *dictionary = 
      [NSDictionary dictionaryWithObjectsAndKeys:[[PFUser currentUser] objectForKey:@"sex"],@"sex",[[[PFUser currentUser] objectForKey:@"age"]stringValue],@"age",latlon,@"latlon",nil];
     
-    [FlurryAnalytics logEvent:[NSString stringWithFormat:@"%@ clicked",selectedNewsObject.newsId] withParameters:dictionary timed:YES];
+  //  [FlurryAnalytics logEvent:[NSString stringWithFormat:@"%@ clicked",selectedNewsObject.newsId] withParameters:dictionary timed:YES];
     
     
     

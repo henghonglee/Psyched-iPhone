@@ -9,7 +9,7 @@
 #import "EditImageViewController.h"
 #import "AssetsLibrary/ALAssetsLibrary.h"
 #import "NSMutableDictionary+ImageMetadata.h"
-#import "FlurryAnalytics.h"
+//#import "FlurryAnalytics.h"
 #import "ArrowChangeCell.h"
 @implementation EditImageViewController
 @synthesize draggableImageView;
@@ -176,7 +176,7 @@
 - (IBAction)cancelButton:(id)sender {
     [self dismissModalViewControllerAnimated:YES];
     NSLog(@"share action ended");
-    [FlurryAnalytics endTimedEvent:@"SHARE_ACTION" withParameters:nil];
+//    [FlurryAnalytics endTimedEvent:@"SHARE_ACTION" withParameters:nil];
 }
 - (CGRect)zoomRectForScale:(float)scale withCenter:(CGPoint)center {
     
@@ -454,14 +454,14 @@ draggableImageView.frame = CGRectMake(0, 0, 320, 320);
     if (buttonIndex) {
     // Request to save the image to camera roll
     ALAssetsLibrary* library = [[ALAssetsLibrary alloc] init];
-    [FlurryAnalytics logEvent:@"USED_SAVE_BUTTON"];
+ //   [FlurryAnalytics logEvent:@"USED_SAVE_BUTTON"];
     
     
     
     // [imageMetaData setObject:[self updateExif:myCurrentLocation] forKey:(NSString*)kCGImagePropertyGPSDictionary];          
     
     
-    [library writeImageToSavedPhotosAlbum:[[imageStack objectAtIndex:imageStack.count-1] CGImage] metadata:imageMetaData completionBlock:^(NSURL *assetURL, NSError *error) {
+    [library writeImageToSavedPhotosAlbum:[[imageStack objectAtIndex:0] CGImage] metadata:imageMetaData completionBlock:^(NSURL *assetURL, NSError *error) {
         if (error) {
             NSLog(@"error is %@",error);
         }
