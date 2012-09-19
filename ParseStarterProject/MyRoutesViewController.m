@@ -1066,8 +1066,8 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    [tableView deselectRowAtIndexPath:indexPath animated:YES];
-    
+
+    [self cancelRequests];
     RouteDetailViewController* viewController = [[RouteDetailViewController alloc]initWithNibName:@"RouteDetailViewController" bundle:nil];
     
     
@@ -1076,9 +1076,19 @@
             if (indexPath.row==([self.flashArray count])){
                 [self lastCellTapped];        
             }else{
-                viewController.routeObject = [self.flashArray objectAtIndex:indexPath.row];
-                [self.navigationController pushViewController:viewController animated:YES];
-                
+                RouteObject* selectedRouteObject = [self.flashArray objectAtIndex:indexPath.row];
+                if ([selectedRouteObject.pfobj objectForKey:@"Gym"]) {
+                    PFObject* gymObject = [selectedRouteObject.pfobj objectForKey:@"Gym"];
+                    [gymObject fetchInBackgroundWithBlock:^(PFObject *object, NSError *error) {
+                        viewController.routeObject = [self.flashArray objectAtIndex:indexPath.row];
+                        [self.navigationController pushViewController:viewController animated:YES];
+                        [tableView deselectRowAtIndexPath:indexPath animated:YES];
+                    }];
+                }else{
+                    viewController.routeObject = [self.flashArray objectAtIndex:indexPath.row];
+                    [self.navigationController pushViewController:viewController animated:YES];
+                    [tableView deselectRowAtIndexPath:indexPath animated:YES];
+                }
             }
             
             break;
@@ -1086,8 +1096,21 @@
             if (indexPath.row==([self.sentArray count])){
                 [self lastCellTapped];        
             }else{
-                viewController.routeObject = [self.sentArray objectAtIndex:indexPath.row];
-                [self.navigationController pushViewController:viewController animated:YES];
+                RouteObject* selectedRouteObject = [self.sentArray objectAtIndex:indexPath.row];
+                if ([selectedRouteObject.pfobj objectForKey:@"Gym"]) {
+                    PFObject* gymObject = [selectedRouteObject.pfobj objectForKey:@"Gym"];
+                    [gymObject fetchInBackgroundWithBlock:^(PFObject *object, NSError *error) {
+                        viewController.routeObject = [self.sentArray objectAtIndex:indexPath.row];
+                        [self.navigationController pushViewController:viewController animated:YES];
+                        [tableView deselectRowAtIndexPath:indexPath animated:YES];
+                    }];
+                }else{
+                    viewController.routeObject = [self.sentArray objectAtIndex:indexPath.row];
+                    [self.navigationController pushViewController:viewController animated:YES];
+                    [tableView deselectRowAtIndexPath:indexPath animated:YES];
+                }
+                
+                
               
             }
             break;
@@ -1095,8 +1118,19 @@
             if (indexPath.row==([self.projectArray count])){
                 [self lastCellTapped];        
             }else{
-                viewController.routeObject = [self.projectArray objectAtIndex:indexPath.row];
-                [self.navigationController pushViewController:viewController animated:YES];
+                RouteObject* selectedRouteObject = [self.projectArray objectAtIndex:indexPath.row];
+                if ([selectedRouteObject.pfobj objectForKey:@"Gym"]) {
+                    PFObject* gymObject = [selectedRouteObject.pfobj objectForKey:@"Gym"];
+                    [gymObject fetchInBackgroundWithBlock:^(PFObject *object, NSError *error) {
+                        viewController.routeObject = [self.projectArray objectAtIndex:indexPath.row];
+                        [self.navigationController pushViewController:viewController animated:YES];
+                        [tableView deselectRowAtIndexPath:indexPath animated:YES];
+                    }];
+                }else{
+                    viewController.routeObject = [self.projectArray objectAtIndex:indexPath.row];
+                    [self.navigationController pushViewController:viewController animated:YES];
+                    [tableView deselectRowAtIndexPath:indexPath animated:YES];
+                }
                 
             }
             break;
@@ -1104,8 +1138,20 @@
             if (indexPath.row==([self.likedArray count])){
                 [self lastCellTapped];        
             }else{
-                viewController.routeObject = [self.likedArray objectAtIndex:indexPath.row];
-                [self.navigationController pushViewController:viewController animated:YES];
+                RouteObject* selectedRouteObject = [self.likedArray objectAtIndex:indexPath.row];
+                if ([selectedRouteObject.pfobj objectForKey:@"Gym"]) {
+                    PFObject* gymObject = [selectedRouteObject.pfobj objectForKey:@"Gym"];
+                    [gymObject fetchInBackgroundWithBlock:^(PFObject *object, NSError *error) {
+                        viewController.routeObject = [self.likedArray objectAtIndex:indexPath.row];
+                        [self.navigationController pushViewController:viewController animated:YES];
+                        [tableView deselectRowAtIndexPath:indexPath animated:YES];
+                    }];
+                }else{
+                    viewController.routeObject = [self.likedArray objectAtIndex:indexPath.row];
+                    [self.navigationController pushViewController:viewController animated:YES];
+                    [tableView deselectRowAtIndexPath:indexPath animated:YES];
+                }
+                
                 
             }
             break;

@@ -1,13 +1,7 @@
-//
-//  EditImageViewController.m
-//  ParseStarterProject
-//
-//  Created by Shaun Tan on 11/1/12.
-//  Copyright (c) 2012 __MyCompanyName__. All rights reserved.
-//
 
 #import "EditImageViewController.h"
 #import "AssetsLibrary/ALAssetsLibrary.h"
+#import "HRColorPickerViewController.h"
 #import "NSMutableDictionary+ImageMetadata.h"
 //#import "FlurryAnalytics.h"
 #import "ArrowChangeCell.h"
@@ -19,6 +13,7 @@
 @synthesize confButton;
 @synthesize CGPointsArray;
 @synthesize arrowTypeArray;
+@synthesize arrowColorArray;
 @synthesize moreArrowsView;
 @synthesize arrowImageView;
 @synthesize startImageView;
@@ -31,6 +26,7 @@
 @synthesize sliderView;
 @synthesize imageStack;
 @synthesize reusePFObject;
+@synthesize selectColor;
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
@@ -54,6 +50,7 @@
 {
     [super viewDidLoad];
     [self selectArrow:button1];
+    selectColor = [UIColor redColor];
     UIBarButtonItem* rightButton = [[UIBarButtonItem alloc] initWithTitle:@"Done" style:UIBarButtonSystemItemDone target:self action:@selector(DoneButton:)];
     self.navigationItem.rightBarButtonItem = rightButton;
         [self.navigationItem.rightBarButtonItem setEnabled:NO];
@@ -150,6 +147,7 @@
      [tapGesture requireGestureRecognizerToFail:longpressGesture];
             CGPointsArray = [[NSMutableArray alloc]init ];
                 arrowTypeArray = [[NSMutableArray alloc]init ];
+    arrowColorArray = [[NSMutableArray alloc]init ];
     imageStack = [[NSMutableArray alloc]init ];
     
 
@@ -240,9 +238,14 @@ draggableImageView.frame = CGRectMake(0, 0, 320, 320);
                      }
                      draggableImageView.frame = CGRectMake(presspoint.x- (imageToEdit.bounds.size.width/imagePercentOfRealImage), presspoint.y, (imageToEdit.bounds.size.width/imagePercentOfRealImage), (imageToEdit.bounds.size.height/imagePercentOfRealImage));
                      imageToEdit.image = [self imageByDrawingCircleOnImage:imageToEdit.image];
+                     //[self clipImageViewWithMask:imageToEdit];
+                     
                      [imageToEdit setNeedsDisplay];
                      [CGPointsArray addObject: NSStringFromCGRect(draggableImageView.frame)];
                      [arrowTypeArray addObject:selectedArrowType];
+                     CGColorRef colorRef = selectColor.CGColor;
+                     NSString *colorString = [CIColor colorWithCGColor:colorRef].stringRepresentation;
+                     [arrowColorArray addObject:colorString];
                      draggableImageView.frame = originalArrowFrame;
                     
                  }];
@@ -303,38 +306,17 @@ draggableImageView.frame = CGRectMake(0, 0, 320, 320);
     switch (sender.tag) {
         case 0:
             draggableImageView.image = arrowImageView.image;
-            if (arrowImageView.image ==[UIImage imageNamed:@"arrow1.png"])
                 selectedArrowType = [NSNumber numberWithInt:0];
-            if (arrowImageView.image ==[UIImage imageNamed:@"arrow2"])
-                selectedArrowType = [NSNumber numberWithInt:3];
-            if (arrowImageView.image ==[UIImage imageNamed:@"arrow3"])
-                selectedArrowType = [NSNumber numberWithInt:6];
-            if (arrowImageView.image ==[UIImage imageNamed:@"arrow4"])
-                selectedArrowType = [NSNumber numberWithInt:9];
             
             break;
         case 1:
             draggableImageView.image = startImageView.image;
-            if (draggableImageView.image ==[UIImage imageNamed:@"start1.png"])
                 selectedArrowType = [NSNumber numberWithInt:1];
-            if (draggableImageView.image ==[UIImage imageNamed:@"start2"])
-                selectedArrowType = [NSNumber numberWithInt:4];
-            if (draggableImageView.image ==[UIImage imageNamed:@"start3"])
-                selectedArrowType = [NSNumber numberWithInt:7];
-            if (draggableImageView.image ==[UIImage imageNamed:@"start4"])
-                selectedArrowType = [NSNumber numberWithInt:10];
             
             break;
         case 2:
             draggableImageView.image = endImageView.image;
-            if (draggableImageView.image ==[UIImage imageNamed:@"end1.png"])
                 selectedArrowType = [NSNumber numberWithInt:2];
-            if (draggableImageView.image ==[UIImage imageNamed:@"end2"])
-                selectedArrowType = [NSNumber numberWithInt:5];
-            if (draggableImageView.image ==[UIImage imageNamed:@"end3"])
-                selectedArrowType = [NSNumber numberWithInt:8];
-            if (draggableImageView.image ==[UIImage imageNamed:@"end4"])
-                selectedArrowType = [NSNumber numberWithInt:11];
             break;
         default:
             break;
@@ -354,6 +336,7 @@ draggableImageView.frame = CGRectMake(0, 0, 320, 320);
     if([CGPointsArray count]){
     [CGPointsArray removeLastObject];
     [arrowTypeArray removeLastObject];
+        [arrowColorArray removeLastObject];
     }
     if( [imageStack objectAtIndex:[imageStack count]-1]==imageInView) {
         
@@ -373,29 +356,55 @@ draggableImageView.frame = CGRectMake(0, 0, 320, 320);
 - (UIView *)viewForZoomingInScrollView:(UIScrollView *)_scrollView {
   	return imageToEdit;
 }
+- (void)setSelectedColor:(UIColor*)color
+{
+    [self setSelectColor:color];
+    
+        UIGraphicsBeginImageContext(arrowImageView.image.size);
+        [arrowImageView.image drawAtPoint:CGPointZero];
+        CGContextRef context = UIGraphicsGetCurrentContext();
+        CGRect rect = CGRectMake(0, 0, arrowImageView.image.size.width, arrowImageView.image.size.height);
+	     CGContextClipToMask(context, rect , [UIImage imageNamed:@"arrow3flip"].CGImage);
 
+   
+        
+        [arrowImageView.image drawInRect:arrowImageView.frame blendMode:kCGBlendModeNormal alpha:1.0];
+        CGContextSetBlendMode(context, kCGBlendModeNormal);
+        [selectColor setFill];
+        CGContextFillRect(context, rect);
+        // make image out of bitmap context
+        UIImage *retImage = UIGraphicsGetImageFromCurrentImageContext();
+        
+        // free the context
+        UIGraphicsEndImageContext();
+    arrowImageView.image = retImage;
+    
+}
 - (IBAction)moreArrows:(id)sender {
-    if (CGRectEqualToRect(moreArrowsView.frame, CGRectMake(17, 106, 211, 237))) {
-        CGRect slideFinalFrame = CGRectMake(17, 320, 211, 237);
-        [UIView animateWithDuration:0.3
-                              delay:0.0
-                            options: UIViewAnimationCurveEaseIn
-                         animations:^{
-                             moreArrowsView.frame = slideFinalFrame;
-                         } 
-                         completion:^(BOOL finished){
-                         }];  
-    }else{
-    CGRect slideFinalFrame = CGRectMake(17, 106, 211, 237);
-    [UIView animateWithDuration:0.3
-                          delay:0.0
-                        options: UIViewAnimationCurveEaseIn
-                     animations:^{
-                         moreArrowsView.frame = slideFinalFrame;
-                     } 
-                     completion:^(BOOL finished){
-                     }];
-    }
+    HRColorPickerViewController* controller = [HRColorPickerViewController fullColorPickerViewControllerWithColor:selectColor];
+    controller.delegate = self;
+    [self.navigationController pushViewController:controller animated:YES];
+//    if (CGRectEqualToRect(moreArrowsView.frame, CGRectMake(17, 106, 211, 237))) {
+//        CGRect slideFinalFrame = CGRectMake(17, 320, 211, 237);
+//        [UIView animateWithDuration:0.3
+//                              delay:0.0
+//                            options: UIViewAnimationCurveEaseIn
+//                         animations:^{
+//                             moreArrowsView.frame = slideFinalFrame;
+//                         } 
+//                         completion:^(BOOL finished){
+//                         }];  
+//    }else{
+//    CGRect slideFinalFrame = CGRectMake(17, 106, 211, 237);
+//    [UIView animateWithDuration:0.3
+//                          delay:0.0
+//                        options: UIViewAnimationCurveEaseIn
+//                     animations:^{
+//                         moreArrowsView.frame = slideFinalFrame;
+//                     } 
+//                     completion:^(BOOL finished){
+//                     }];
+//    }
     
 }
 
@@ -540,12 +549,13 @@ draggableImageView.frame = CGRectMake(0, 0, 320, 320);
 */
 - (IBAction)DoneButton:(id)sender {
     CreateRouteViewController* viewController= [[CreateRouteViewController alloc]initWithNibName:@"CreateRouteViewController" bundle:nil];
-
+    NSLog(@"color array = %@",arrowColorArray);
     viewController.reusePFObject = reusePFObject;
 	viewController.imageTaken = imageToEdit.image;
     viewController.originalImage = [imageStack objectAtIndex:0];
     viewController.CGPointsArray = CGPointsArray;
     viewController.arrowTypeArray = arrowTypeArray;
+    viewController.arrowColorArray = arrowColorArray;
     viewController.imageMetaData = self.imageMetaData;
     [imageStack removeAllObjects];
     [imageStack addObject:viewController.originalImage];
@@ -555,32 +565,53 @@ draggableImageView.frame = CGRectMake(0, 0, 320, 320);
 	[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault animated:YES];
 }
 
+
 - (UIImage *)imageByDrawingCircleOnImage:(UIImage *)image
 {
 
-        
+    
 	// begin a graphics context of sufficient size
     [imageStack addObject:image];
     
 	UIGraphicsBeginImageContext(image.size);
-    
 	// draw original image into the context
 	[image drawAtPoint:CGPointZero];
     
 	// get the context for CoreGraphics
 	
-    CGRect newrect = CGRectMake((draggableImageView.frame.origin.x/imageToEdit.bounds.size.width)*image.size.width, (draggableImageView.frame.origin.y/imageToEdit.bounds.size.height)*image.size.height, (draggableImageView.frame.size.width/imageToEdit.bounds.size.width)*image.size.width, (draggableImageView.frame.size.height/imageToEdit.bounds.size.height)*image.size.height);
-                    NSLog(@"still alive here2");
-    NSLog(@"newrect = %@",NSStringFromCGRect(newrect));
-    [draggableImageView.image drawInRect:newrect];
-
+    CGContextRef context = UIGraphicsGetCurrentContext();
+    
+     CGRect newrect = CGRectMake((draggableImageView.frame.origin.x/imageToEdit.bounds.size.width)*image.size.width, (draggableImageView.frame.origin.y/imageToEdit.bounds.size.height)*image.size.height, (draggableImageView.frame.size.width/imageToEdit.bounds.size.width)*image.size.width, (draggableImageView.frame.size.height/imageToEdit.bounds.size.height)*image.size.height);
+     
+    //set the clipping area to the image
+    if (selectedArrowType==[NSNumber numberWithInt:0]) {
+    CGContextClipToMask(context, newrect, [UIImage imageNamed:@"arrow3flip"].CGImage);
+        
+        [draggableImageView.image drawInRect:newrect blendMode:kCGBlendModeNormal alpha:1.0];
+        CGContextSetBlendMode(context, kCGBlendModeNormal);
+        [selectColor setFill];
+        CGContextFillRect(context, newrect);
+    }else if(selectedArrowType==[NSNumber numberWithInt:1]) {
+        CGContextSetFillColorWithColor(context, selectColor.CGColor);
+        NSString* text = @"START";
+        [text drawInRect:newrect withFont:[UIFont boldSystemFontOfSize:25]];
+//        CGContextClipToMask(context, newrect, [UIImage imageNamed:@"start1flip"].CGImage);
+    }else if(selectedArrowType==[NSNumber numberWithInt:2]) {
+        CGContextSetFillColorWithColor(context, selectColor.CGColor);
+        NSString* text = @"END";
+        [text drawInRect:newrect withFont:[UIFont boldSystemFontOfSize:25]];
+    }
+    
+        
+    
+    
 	// make image out of bitmap context
 	UIImage *retImage = UIGraphicsGetImageFromCurrentImageContext();
    
 	// free the context
 	UIGraphicsEndImageContext();
     
-	return retImage; 
+	return retImage;
 }
 
 
@@ -649,6 +680,7 @@ draggableImageView.frame = CGRectMake(0, 0, 320, 320);
     if([CGPointsArray count]){
         [CGPointsArray removeAllObjects];
         [arrowTypeArray removeAllObjects];
+        [arrowColorArray removeAllObjects];
     }
     [imageStack removeAllObjects];
     int imgorientation = 0 ;
@@ -693,8 +725,9 @@ draggableImageView.frame = CGRectMake(0, 0, 320, 320);
     [startImageView release];
     [endImageView release];
     [arrowTable release];
-
-    [moreArrowsView release];
+    [arrowTypeArray release];
+    [arrowColorArray release];
+    [CGPointsArray release];
     [super dealloc];
     [imageToEdit release];
 }

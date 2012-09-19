@@ -1363,6 +1363,36 @@ kAPIGraphCommentPhoto,
     scrollView.maximumZoomScale = 4;
     scrollView.minimumZoomScale = 1;
     [scrollView setZoomScale:1.0f];
+    if([[routeObject.pfobj objectForKey:@"routeVersion"] isEqualToString:@"3"]){
+        NSLog(@"route is version 3, attach overlay here");
+        ParseStarterProjectAppDelegate* applicationDelegate = ((ParseStarterProjectAppDelegate*)[[UIApplication sharedApplication]delegate]);
+        ((BaseViewController*)applicationDelegate.window.rootViewController).reuseImageData = imageData;
+        ((BaseViewController*)applicationDelegate.window.rootViewController).reusePFObject = routeObject.pfobj;
+        NSArray* routearrowarray = [routeObject.pfobj objectForKey:@"arrowarray"];
+        NSArray* arrowtypearray = [routeObject.pfobj objectForKey:@"arrowtypearray"];
+        NSArray* arrowcolorarray = [routeObject.pfobj objectForKey:@"arrowcolorarray"];
+        UIImage* pastedimage = nil;
+        for (int i=0; i<[routearrowarray count]; i++) {
+            
+            
+            CGRect routearrowrect = CGRectFromString([routearrowarray objectAtIndex:i]);
+                        
+            if([[arrowtypearray objectAtIndex:i]isEqualToNumber:[NSNumber numberWithInt:0]]){
+              routeImageView.image =  [self imageByDrawingClippedImage:[UIImage imageNamed:@"arrow3.png"] OnImage:routeImageView.image inRect:routearrowrect withColorString:[arrowcolorarray objectAtIndex:i]];
+                continue;
+            }
+            if([[arrowtypearray objectAtIndex:i]isEqualToNumber:[NSNumber numberWithInt:1]]){
+                routeImageView.image =  [self imageByDrawingClippedText:@"START" OnImage:routeImageView.image inRect:routearrowrect withColorString:[arrowcolorarray objectAtIndex:i]];
+                continue;}
+            if([[arrowtypearray objectAtIndex:i]isEqualToNumber:[NSNumber numberWithInt:2]]){
+               routeImageView.image =[self imageByDrawingClippedText:@"END" OnImage:routeImageView.image inRect:routearrowrect withColorString:[arrowcolorarray objectAtIndex:i]];}
+            continue;
+        }
+        
+        
+        
+    }
+
     if([[routeObject.pfobj objectForKey:@"routeVersion"] isEqualToString:@"2"]){
         NSLog(@"route is version 2, attach overlay here");
         ParseStarterProjectAppDelegate* applicationDelegate = ((ParseStarterProjectAppDelegate*)[[UIApplication sharedApplication]delegate]);
@@ -1376,12 +1406,19 @@ kAPIGraphCommentPhoto,
             
             
             CGRect routearrowrect = CGRectFromString([routearrowarray objectAtIndex:i]);
+            
+            
+            
             if([[arrowtypearray objectAtIndex:i]isEqualToNumber:[NSNumber numberWithInt:0]])
                 pastedimage = [UIImage imageNamed:@"arrow1.png"];
             if([[arrowtypearray objectAtIndex:i]isEqualToNumber:[NSNumber numberWithInt:1]])
                 pastedimage = [UIImage imageNamed:@"start1.png"];
             if([[arrowtypearray objectAtIndex:i]isEqualToNumber:[NSNumber numberWithInt:2]])
                 pastedimage = [UIImage imageNamed:@"end1.png"];
+            
+            
+            
+            
             if([[arrowtypearray objectAtIndex:i]isEqualToNumber:[NSNumber numberWithInt:3]])
                 pastedimage = [UIImage imageNamed:@"arrow2.png"];
             if([[arrowtypearray objectAtIndex:i]isEqualToNumber:[NSNumber numberWithInt:4]])
@@ -1400,6 +1437,7 @@ kAPIGraphCommentPhoto,
                 pastedimage = [UIImage imageNamed:@"start4.png"];
             if([[arrowtypearray objectAtIndex:i]isEqualToNumber:[NSNumber numberWithInt:11]])
                 pastedimage = [UIImage imageNamed:@"end4.png"];
+            
                 routeImageView.image = [self imageByDrawingImage:pastedimage OnImage:routeImageView.image inRect:routearrowrect];
                
             // [pastedimage release];
@@ -1410,6 +1448,66 @@ kAPIGraphCommentPhoto,
     }
 
 }
+
+- (UIImage *)imageByDrawingClippedImage:(UIImage*)pastedImage OnImage:(UIImage *)image inRect:(CGRect)rect withColorString:(NSString*)colorstring
+{
+    
+    
+    
+	UIGraphicsBeginImageContext(image.size);
+    
+	// draw original image into the context
+	[image drawAtPoint:CGPointZero];
+    
+	// get the context for CoreGraphics
+    CGContextRef context = UIGraphicsGetCurrentContext();
+    
+	CGContextClipToMask(context, rect, [UIImage imageNamed:@"arrow3flip"].CGImage);
+    
+    [pastedImage drawInRect:rect blendMode:kCGBlendModeColor alpha:1.0];
+    CGContextSetBlendMode(context, kCGBlendModeNormal);
+    CIColor *coreColor = [CIColor colorWithString:colorstring];
+    UIColor *color = [UIColor colorWithCIColor:coreColor];
+    [color setFill];
+    CGContextFillRect(context, rect);
+    
+	// make image out of bitmap context
+	UIImage *retImage = UIGraphicsGetImageFromCurrentImageContext();
+    
+	// free the context
+	UIGraphicsEndImageContext();
+    
+	return retImage;
+}
+- (UIImage *)imageByDrawingClippedText:(NSString*)pastedText OnImage:(UIImage *)image inRect:(CGRect)rect withColorString:(NSString*)colorstring
+{
+    
+    
+    
+	UIGraphicsBeginImageContext(image.size);
+    
+	// draw original image into the context
+	[image drawAtPoint:CGPointZero];
+    
+	// get the context for CoreGraphics
+    CGContextRef context = UIGraphicsGetCurrentContext();
+
+    CIColor *coreColor = [CIColor colorWithString:colorstring];
+    UIColor *color = [UIColor colorWithCIColor:coreColor];
+    CGContextSetFillColorWithColor(context, color.CGColor);
+    [pastedText drawInRect:rect withFont:[UIFont boldSystemFontOfSize:25]];
+
+    
+    
+	// make image out of bitmap context
+	UIImage *retImage = UIGraphicsGetImageFromCurrentImageContext();
+    
+	// free the context
+	UIGraphicsEndImageContext();
+    
+	return retImage;
+}
+
 - (UIImage *)imageByDrawingImage:(UIImage*)pastedImage OnImage:(UIImage *)image inRect:(CGRect)rect
 {
     

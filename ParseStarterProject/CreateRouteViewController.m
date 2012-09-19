@@ -44,6 +44,7 @@ typedef enum apiCall {
 @synthesize imageView,imageTaken;
 @synthesize segControl;
 @synthesize arrowTypeArray;
+@synthesize arrowColorArray;
 @synthesize locationTextField;
 @synthesize descriptionTextField;
 @synthesize scroll;
@@ -439,9 +440,10 @@ typedef enum apiCall {
     [thumbImageFile saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
         [queryArray removeObject:thumbImageFile];
         [newRoute setObject:thumbImageFile forKey:@"thumbImageFile"];
-        [newRoute setObject:@"2" forKey:@"routeVersion"];
+        [newRoute setObject:@"3" forKey:@"routeVersion"];
         [newRoute setObject:CGPointsArray forKey:@"arrowarray"];
         [newRoute setObject:arrowTypeArray forKey:@"arrowtypearray"];
+        [newRoute setObject:arrowColorArray forKey:@"arrowcolorarray"];
         NSData *imageData = UIImageJPEGRepresentation(originalImage, 1.0);
         NSData *imageWithArrowsData = UIImageJPEGRepresentation(imageTaken, 1.0);
         
@@ -657,9 +659,10 @@ typedef enum apiCall {
     [queryArray removeObject:thumbImageFile];
         NSLog(@"after uploading thumb");
     [newRoute setObject:thumbImageFile forKey:@"thumbImageFile"];
-    [newRoute setObject:@"2" forKey:@"routeVersion"];
+    [newRoute setObject:@"3" forKey:@"routeVersion"];
     [newRoute setObject:CGPointsArray forKey:@"arrowarray"];
         [newRoute setObject:arrowTypeArray forKey:@"arrowtypearray"];
+         [newRoute setObject:arrowColorArray forKey:@"arrowcolorarray"];
     NSData *imageData = UIImageJPEGRepresentation(originalImage, 1.0);
     NSData *imageWithArrowsData = UIImageJPEGRepresentation(imageTaken, 1.0);
     PFFile *imageFile = [PFFile fileWithName:@"noArrows.jpeg" data:imageData];
@@ -721,6 +724,25 @@ typedef enum apiCall {
             [PFPush subscribeToChannelInBackground:[NSString stringWithFormat:@"channel%@",newRoute.objectId]];
             [JHNotificationManager notificationWithMessage:@"Successfully uploaded your route!"];
             NSLog(@"upload completed successfully in background!");
+//            ASIHTTPRequest* routeUpdater = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"http://www.psychedapp.com/routepost/%@",newRoute.objectId]]];
+//            [routeUpdater setRequestMethod:@"PUT"];
+//            [routeUpdater setCompletionBlock:^{
+//                NSLog(@"done adding route to rails backend, now go add OG");
+//                ASIHTTPRequest* postOG = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"http://psychedsupport.herokuapp.com/support/%@?og=true&access_token=%@",newRoute.objectId,[PFFacebookUtils facebook].accessToken]]];
+//                [postOG setCompletionBlock:^{
+//                    NSLog(@"done adding route to rails backend, lets see if its there \n %@",postOG.responseString);
+//                }];
+//                [postOG setFailedBlock:^{
+//                    NSLog(@"faillleddddd =( with error %@",postOG.error);
+//                }];
+//                [postOG startAsynchronous];
+//            }];
+//            [routeUpdater setFailedBlock:^{
+//            }];
+//            [routeUpdater startAsynchronous];
+            
+            
+            
             [[UIApplication sharedApplication] endBackgroundTask:self.fileUploadBackgroundTaskId];
                  
             
@@ -738,6 +760,13 @@ typedef enum apiCall {
     }];
     [self dismissModalViewControllerAnimated:YES];
 }
+-(void)postOG:(PFObject*)newRoute
+{
+    
+    
+    
+        // no action needed, its fire and forget mode
+   }
 - (IBAction)saveAction:(id)sender
 {
     if ([locationTextField.text isEqualToString:@""]) {

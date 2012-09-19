@@ -561,7 +561,7 @@
                 PFObject* selectedPFObj = selectedFeedObj.pfobj;
                 cell.userNameLabel.text = [selectedPFObj objectForKey:@"sender"];
                 cell.commentTextLabel.text = [selectedPFObj objectForKey:@"commenttext"];
-               
+                cell.selectionStyle = UITableViewCellSelectionStyleGray;
                 if (!selectedFeedObj.routeImage && !((FeedObject*)[self.routeArray objectAtIndex:indexPath.row]).isLoading) {
                     ((FeedObject*)[self.routeArray objectAtIndex:indexPath.row]).isLoading = YES;
                     [[selectedFeedObj.pfobj objectForKey:@"linkedroute"]fetchIfNeededInBackgroundWithBlock:^(PFObject *object, NSError *error) {
@@ -1555,7 +1555,7 @@
 }
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    [tableView deselectRowAtIndexPath:indexPath animated:YES];
+ 
     [self cancelRequests];
 
     
@@ -1564,11 +1564,26 @@
         
     }else{
     if ([[routeArray objectAtIndex:indexPath.row] isKindOfClass:[RouteObject class]]) {
-    RouteDetailViewController* viewController = [[RouteDetailViewController alloc]initWithNibName:@"RouteDetailViewController" bundle:nil];
-   
-    viewController.routeObject = [routeArray objectAtIndex:indexPath.row];
-    [self.navigationController pushViewController:viewController animated:YES];
-    [viewController release];
+
+        RouteObject* selectedRouteObject = [self.routeArray objectAtIndex:indexPath.row];
+        PFObject* gymObject = [selectedRouteObject.pfobj objectForKey:@"Gym"];
+        if (gymObject){
+        [gymObject fetchInBackgroundWithBlock:^(PFObject *object, NSError *error) {
+            RouteDetailViewController* viewController = [[RouteDetailViewController alloc]initWithNibName:@"RouteDetailViewController" bundle:nil];
+            viewController.routeObject = [self.routeArray objectAtIndex:indexPath.row];
+            [self.navigationController pushViewController:viewController animated:YES];
+               [tableView deselectRowAtIndexPath:indexPath animated:YES];
+                [viewController release];
+        }];
+        }else{
+            RouteDetailViewController* viewController = [[RouteDetailViewController alloc]initWithNibName:@"RouteDetailViewController" bundle:nil];
+            viewController.routeObject = [self.routeArray objectAtIndex:indexPath.row];
+            [self.navigationController pushViewController:viewController animated:YES];
+            [tableView deselectRowAtIndexPath:indexPath animated:YES];
+            [viewController release];
+        }
+        
+        
     }else if([[routeArray objectAtIndex:indexPath.row] isKindOfClass:[FeedObject class]]){
         PFObject* followfeedobj = ((FeedObject*)[routeArray objectAtIndex:indexPath.row]).pfobj;
       
@@ -1576,17 +1591,31 @@
             RouteDetailViewController* viewController = [[RouteDetailViewController alloc]initWithNibName:@"RouteDetailViewController" bundle:nil];
             RouteObject* newRouteObject = [[RouteObject alloc]init];
             [[((FeedObject*)[routeArray objectAtIndex:indexPath.row]).pfobj objectForKey:@"linkedroute"]fetchIfNeededInBackgroundWithBlock:^(PFObject *object, NSError *error) {
+                if ([object objectForKey:@"Gym"]) {
+                [[object objectForKey:@"Gym"]fetchIfNeededInBackgroundWithBlock:^(PFObject *object, NSError *error) {
+                    newRouteObject.pfobj = object;
+                    viewController.routeObject = newRouteObject;
+                    [self.navigationController pushViewController:viewController animated:YES];
+                    [tableView deselectRowAtIndexPath:indexPath animated:YES];
+                    [viewController release];
+                    [newRouteObject release];
+                }];
+                }else{
+                
                 newRouteObject.pfobj = object;
                 viewController.routeObject = newRouteObject;
                 [self.navigationController pushViewController:viewController animated:YES];
+                [tableView deselectRowAtIndexPath:indexPath animated:YES];
                 [viewController release];
                 [newRouteObject release];
+                }
             }];
 
         }else{
             ProfileViewController* viewController = [[ProfileViewController alloc]initWithNibName:@"ProfileViewController" bundle:nil];
             viewController.username= [followfeedobj objectForKey:@"sender"]; 
             [self.navigationController pushViewController:viewController animated:YES];
+            [tableView deselectRowAtIndexPath:indexPath animated:YES];                         
             [viewController release];
         }
 
@@ -1595,6 +1624,7 @@
          [((GymObject*)[routeArray objectAtIndex:indexPath.row]).pfobj fetchIfNeededInBackgroundWithBlock:^(PFObject *object, NSError *error) {
              viewController.gymObject = object; 
              [self.navigationController pushViewController:viewController animated:YES];
+            [tableView deselectRowAtIndexPath:indexPath animated:YES];
              [viewController release];
         }];
         
@@ -1716,6 +1746,7 @@
     viewController.selectedUser = [PFUser currentUser];
     
     [self.navigationController pushViewController:viewController animated:YES];
+    
     [viewController release];
 }
 

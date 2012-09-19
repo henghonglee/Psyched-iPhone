@@ -63,6 +63,7 @@
 @property (retain, nonatomic) NSMutableArray* recommendArray;
 @property (retain, nonatomic) NSMutableArray* CGPointsArray;
 @property (retain, nonatomic) NSMutableArray* arrowTypeArray;
+@property (retain, nonatomic) NSMutableArray* arrowColorArray;
 @property (retain, nonatomic) PFObject* selectedGymObject;
 @property (retain, nonatomic) IBOutlet UITextField *difficultyTextField;
 @property (retain,nonatomic) NSArray* gymlist;

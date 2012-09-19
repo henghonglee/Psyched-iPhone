@@ -55,8 +55,6 @@
 		EF308BA11602C8B800E99278 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = EF308BA01602C8B800E99278 /* Default-568h@2x.png */; };
 		EF36504214FBAF3D00C0F3DF /* tick.png in Resources */ = {isa = PBXBuildFile; fileRef = EF36504114FBAF3D00C0F3DF /* tick.png */; };
 		EF36504514FBB16F00C0F3DF /* heartcolor.png in Resources */ = {isa = PBXBuildFile; fileRef = EF36504414FBB16F00C0F3DF /* heartcolor.png */; };
-		EF36504814FBE45D00C0F3DF /* end1.png in Resources */ = {isa = PBXBuildFile; fileRef = EF36504614FBE45D00C0F3DF /* end1.png */; };
-		EF36504914FBE45D00C0F3DF /* start1.png in Resources */ = {isa = PBXBuildFile; fileRef = EF36504714FBE45D00C0F3DF /* start1.png */; };
 		EF36518C14FCB4F100C0F3DF /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EF36518B14FCB4F100C0F3DF /* CoreLocation.framework */; };
 		EF36518E14FCB4F800C0F3DF /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EF36518D14FCB4F700C0F3DF /* MapKit.framework */; };
 		EF36519514FCD44600C0F3DF /* MKMapView+ZoomLevel.m in Sources */ = {isa = PBXBuildFile; fileRef = EF36519414FCD44500C0F3DF /* MKMapView+ZoomLevel.m */; };
@@ -210,6 +208,13 @@
 		EF8765341547AFCA00589622 /* GradientButton.m in Sources */ = {isa = PBXBuildFile; fileRef = EF8765321547AD2400589622 /* GradientButton.m */; };
 		EF8765381547CEEA00589622 /* SettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EF8765361547CEE700589622 /* SettingsViewController.m */; };
 		EF8765391547CEEA00589622 /* SettingsViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = EF8765371547CEE800589622 /* SettingsViewController.xib */; };
+		EF87E10F16097CA100637600 /* arrow3flip.png in Resources */ = {isa = PBXBuildFile; fileRef = EF87E10E16097CA100637600 /* arrow3flip.png */; };
+		EF87E121160980AD00637600 /* HRColorPickerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EF87E116160980AD00637600 /* HRColorPickerViewController.m */; };
+		EF87E122160980AD00637600 /* HRCgUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = EF87E118160980AD00637600 /* HRCgUtil.m */; };
+		EF87E123160980AD00637600 /* HRColorPickerView.m in Sources */ = {isa = PBXBuildFile; fileRef = EF87E11A160980AD00637600 /* HRColorPickerView.m */; };
+		EF87E124160980AD00637600 /* HRColorUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = EF87E11C160980AD00637600 /* HRColorUtil.m */; };
+		EF87E125160980AD00637600 /* HRBrightnessCursor.m in Sources */ = {isa = PBXBuildFile; fileRef = EF87E11E160980AD00637600 /* HRBrightnessCursor.m */; };
+		EF87E126160980AD00637600 /* HRColorCursor.m in Sources */ = {isa = PBXBuildFile; fileRef = EF87E120160980AD00637600 /* HRColorCursor.m */; };
 		EF8BFBB8150149A600146ABD /* FollowingViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EF8BFBB6150149A500146ABD /* FollowingViewController.m */; };
 		EF8BFBB9150149A600146ABD /* FollowingViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = EF8BFBB7150149A600146ABD /* FollowingViewController.xib */; };
 		EF90FD8D153ECD9E0037D302 /* LKBadgeView.m in Sources */ = {isa = PBXBuildFile; fileRef = EF90FD8A153ECBBF0037D302 /* LKBadgeView.m */; };
@@ -249,6 +254,7 @@
 		EFA02A9B153439F9004CF6CF /* arrow4.png in Resources */ = {isa = PBXBuildFile; fileRef = EFA02A9A153439F8004CF6CF /* arrow4.png */; };
 		EFA02ABB1534A25E004CF6CF /* old_stamper.ttf in Resources */ = {isa = PBXBuildFile; fileRef = EFA02ABA1534A25E004CF6CF /* old_stamper.ttf */; };
 		EFA02AC31534A9C6004CF6CF /* red_flag.png in Resources */ = {isa = PBXBuildFile; fileRef = EFA02AC21534A9C6004CF6CF /* red_flag.png */; };
+		EFA5214016099FCA0095E4D2 /* arrow3white.png in Resources */ = {isa = PBXBuildFile; fileRef = EFA5213F16099FCA0095E4D2 /* arrow3white.png */; };
 		EFA648A614FF6CEB00B15CE6 /* LoadMoreCell.m in Sources */ = {isa = PBXBuildFile; fileRef = EFA648A514FF6CEB00B15CE6 /* LoadMoreCell.m */; };
 		EFA648A914FF6CF900B15CE6 /* LoadMoreCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = EFA648A814FF6CF900B15CE6 /* LoadMoreCell.xib */; };
 		EFA7E99814C1F32500776236 /* FeedsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EFA7E99614C1F32200776236 /* FeedsViewController.m */; };
@@ -258,6 +264,9 @@
 		EFA7E9A814C2C86A00776236 /* fb-connect-large 2.png in Resources */ = {isa = PBXBuildFile; fileRef = EFA7E9A714C2C86900776236 /* fb-connect-large 2.png */; };
 		EFA9F31D152A11FF004883DD /* cameraTabBarItem copy.png in Resources */ = {isa = PBXBuildFile; fileRef = EFA9F31C152A11F9004883DD /* cameraTabBarItem copy.png */; };
 		EFA9F31F152A146E004883DD /* cameraTabBarItem copy@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = EFA9F31E152A1466004883DD /* cameraTabBarItem copy@2x.png */; };
+		EFAB68B71609B833000BCC01 /* CoreImage.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EFAB68B61609B833000BCC01 /* CoreImage.framework */; };
+		EFAB68BA1609BA94000BCC01 /* start1.png in Resources */ = {isa = PBXBuildFile; fileRef = EFAB68B91609BA94000BCC01 /* start1.png */; };
+		EFAB68BC1609BAB9000BCC01 /* end1.png in Resources */ = {isa = PBXBuildFile; fileRef = EFAB68BB1609BAB9000BCC01 /* end1.png */; };
 		EFAD337F15BEA463003EEE1B /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EFAD337E15BEA463003EEE1B /* StoreKit.framework */; };
 		EFAE9A1515F0F9BB003DB569 /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = EFAE9A1415F0F9BB003DB569 /* libsqlite3.dylib */; };
 		EFB25A5615E674AA00EFBA5B /* DACircularProgressView.m in Sources */ = {isa = PBXBuildFile; fileRef = EFB25A5515E674AA00EFBA5B /* DACircularProgressView.m */; };
@@ -364,8 +373,6 @@
 		EF308BA01602C8B800E99278 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = SOURCE_ROOT; };
 		EF36504114FBAF3D00C0F3DF /* tick.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = tick.png; sourceTree = "<group>"; };
 		EF36504414FBB16F00C0F3DF /* heartcolor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = heartcolor.png; sourceTree = "<group>"; };
-		EF36504614FBE45D00C0F3DF /* end1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = end1.png; sourceTree = "<group>"; };
-		EF36504714FBE45D00C0F3DF /* start1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = start1.png; sourceTree = "<group>"; };
 		EF36518B14FCB4F100C0F3DF /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
 		EF36518D14FCB4F700C0F3DF /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
 		EF36519314FCD44500C0F3DF /* MKMapView+ZoomLevel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "MKMapView+ZoomLevel.h"; sourceTree = "<group>"; };
@@ -588,6 +595,19 @@
 		EF8765351547CEE600589622 /* SettingsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SettingsViewController.h; sourceTree = "<group>"; };
 		EF8765361547CEE700589622 /* SettingsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SettingsViewController.m; sourceTree = "<group>"; };
 		EF8765371547CEE800589622 /* SettingsViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SettingsViewController.xib; sourceTree = "<group>"; };
+		EF87E10E16097CA100637600 /* arrow3flip.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = arrow3flip.png; sourceTree = "<group>"; };
+		EF87E115160980AD00637600 /* HRColorPickerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HRColorPickerViewController.h; sourceTree = "<group>"; };
+		EF87E116160980AD00637600 /* HRColorPickerViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HRColorPickerViewController.m; sourceTree = "<group>"; };
+		EF87E117160980AD00637600 /* HRCgUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HRCgUtil.h; sourceTree = "<group>"; };
+		EF87E118160980AD00637600 /* HRCgUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HRCgUtil.m; sourceTree = "<group>"; };
+		EF87E119160980AD00637600 /* HRColorPickerView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HRColorPickerView.h; sourceTree = "<group>"; };
+		EF87E11A160980AD00637600 /* HRColorPickerView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HRColorPickerView.m; sourceTree = "<group>"; };
+		EF87E11B160980AD00637600 /* HRColorUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HRColorUtil.h; sourceTree = "<group>"; };
+		EF87E11C160980AD00637600 /* HRColorUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HRColorUtil.m; sourceTree = "<group>"; };
+		EF87E11D160980AD00637600 /* HRBrightnessCursor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HRBrightnessCursor.h; sourceTree = "<group>"; };
+		EF87E11E160980AD00637600 /* HRBrightnessCursor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HRBrightnessCursor.m; sourceTree = "<group>"; };
+		EF87E11F160980AD00637600 /* HRColorCursor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HRColorCursor.h; sourceTree = "<group>"; };
+		EF87E120160980AD00637600 /* HRColorCursor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HRColorCursor.m; sourceTree = "<group>"; };
 		EF8BFBB5150149A500146ABD /* FollowingViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FollowingViewController.h; sourceTree = "<group>"; };
 		EF8BFBB6150149A500146ABD /* FollowingViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FollowingViewController.m; sourceTree = "<group>"; };
 		EF8BFBB7150149A600146ABD /* FollowingViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = FollowingViewController.xib; sourceTree = "<group>"; };
@@ -635,6 +655,7 @@
 		EFA02A9A153439F8004CF6CF /* arrow4.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = arrow4.png; sourceTree = "<group>"; };
 		EFA02ABA1534A25E004CF6CF /* old_stamper.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = old_stamper.ttf; sourceTree = "<group>"; };
 		EFA02AC21534A9C6004CF6CF /* red_flag.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = red_flag.png; sourceTree = "<group>"; };
+		EFA5213F16099FCA0095E4D2 /* arrow3white.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = arrow3white.png; sourceTree = "<group>"; };
 		EFA648A414FF6CEB00B15CE6 /* LoadMoreCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LoadMoreCell.h; sourceTree = "<group>"; };
 		EFA648A514FF6CEB00B15CE6 /* LoadMoreCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LoadMoreCell.m; sourceTree = "<group>"; };
 		EFA648A814FF6CF900B15CE6 /* LoadMoreCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = LoadMoreCell.xib; sourceTree = "<group>"; };
@@ -647,13 +668,16 @@
 		EFA7E9A714C2C86900776236 /* fb-connect-large 2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "fb-connect-large 2.png"; path = "../fb-connect-large 2.png"; sourceTree = "<group>"; };
 		EFA9F31C152A11F9004883DD /* cameraTabBarItem copy.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "cameraTabBarItem copy.png"; sourceTree = "<group>"; };
 		EFA9F31E152A1466004883DD /* cameraTabBarItem copy@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "cameraTabBarItem copy@2x.png"; sourceTree = "<group>"; };
+		EFAB68B61609B833000BCC01 /* CoreImage.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreImage.framework; path = System/Library/Frameworks/CoreImage.framework; sourceTree = SDKROOT; };
+		EFAB68B91609BA94000BCC01 /* start1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = start1.png; path = ../start1.png; sourceTree = "<group>"; };
+		EFAB68BB1609BAB9000BCC01 /* end1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = end1.png; path = ../end1.png; sourceTree = "<group>"; };
 		EFAD337E15BEA463003EEE1B /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		EFAE9A1415F0F9BB003DB569 /* libsqlite3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsqlite3.dylib; path = usr/lib/libsqlite3.dylib; sourceTree = SDKROOT; };
 		EFB25A5415E674AA00EFBA5B /* DACircularProgressView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DACircularProgressView.h; sourceTree = "<group>"; };
 		EFB25A5515E674AA00EFBA5B /* DACircularProgressView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DACircularProgressView.m; sourceTree = "<group>"; };
 		EFB25D4B15258E67002F310B /* UserObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UserObject.h; sourceTree = "<group>"; };
 		EFB25D4C15258E68002F310B /* UserObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UserObject.m; sourceTree = "<group>"; };
-		EFC6543715F3DC09005E425A /* hashtag.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = hashtag.png; sourceTree = "<group>"; };
+		EFC6543715F3DC09005E425A /* hashtag.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = hashtag.png; path = ../hashtag.png; sourceTree = "<group>"; };
 		EFC9635E15072FF9005C9558 /* LoadMoreFeedCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LoadMoreFeedCell.h; sourceTree = "<group>"; };
 		EFC9635F15072FF9005C9558 /* LoadMoreFeedCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LoadMoreFeedCell.m; sourceTree = "<group>"; };
 		EFC963621507300A005C9558 /* LoadMoreFeedCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = LoadMoreFeedCell.xib; sourceTree = "<group>"; };
@@ -710,6 +734,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				EFAB68B71609B833000BCC01 /* CoreImage.framework in Frameworks */,
 				EF39A00D14BB327700A02516 /* libxml2.dylib in Frameworks */,
 				EFAE9A1515F0F9BB003DB569 /* libsqlite3.dylib in Frameworks */,
 				EFAD337F15BEA463003EEE1B /* StoreKit.framework in Frameworks */,
@@ -751,9 +776,6 @@
 		09ABC06213A1D52D009C3FCF = {
 			isa = PBXGroup;
 			children = (
-				EF034ABE1602503F006E9CC0 /* libxml2.2.dylib */,
-				EFAE9A1415F0F9BB003DB569 /* libsqlite3.dylib */,
-				EFC6543715F3DC09005E425A /* hashtag.png */,
 				EF1177DA15DBE7BD0087C894 /* Tests */,
 				09ABC07713A1D52D009C3FCF /* ParseStarterProject */,
 				EF11780C15DBFAD80087C894 /* testbundle */,
@@ -774,6 +796,9 @@
 		09ABC07013A1D52D009C3FCF /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				EFAB68B61609B833000BCC01 /* CoreImage.framework */,
+				EF034ABE1602503F006E9CC0 /* libxml2.2.dylib */,
+				EFAE9A1415F0F9BB003DB569 /* libsqlite3.dylib */,
 				EFAD337E15BEA463003EEE1B /* StoreKit.framework */,
 				EF62F41314FDC20300933BB8 /* CoreMedia.framework */,
 				EF62F40E14FDBD7500933BB8 /* ImageIO.framework */,
@@ -1100,6 +1125,26 @@
 			path = ParseStarterProject/SVWebViewController;
 			sourceTree = "<group>";
 		};
+		EF87E127160980B300637600 /* Color Picker */ = {
+			isa = PBXGroup;
+			children = (
+				EF87E115160980AD00637600 /* HRColorPickerViewController.h */,
+				EF87E116160980AD00637600 /* HRColorPickerViewController.m */,
+				EF87E117160980AD00637600 /* HRCgUtil.h */,
+				EF87E118160980AD00637600 /* HRCgUtil.m */,
+				EF87E119160980AD00637600 /* HRColorPickerView.h */,
+				EF87E11A160980AD00637600 /* HRColorPickerView.m */,
+				EF87E11B160980AD00637600 /* HRColorUtil.h */,
+				EF87E11C160980AD00637600 /* HRColorUtil.m */,
+				EF87E11D160980AD00637600 /* HRBrightnessCursor.h */,
+				EF87E11E160980AD00637600 /* HRBrightnessCursor.m */,
+				EF87E11F160980AD00637600 /* HRColorCursor.h */,
+				EF87E120160980AD00637600 /* HRColorCursor.m */,
+			);
+			name = "Color Picker";
+			path = ..;
+			sourceTree = "<group>";
+		};
 		EFA02A661533C6C0004CF6CF /* RDactionsheet */ = {
 			isa = PBXGroup;
 			children = (
@@ -1288,6 +1333,10 @@
 		EFD4A2A814BA9BC7008A583F /* Images */ = {
 			isa = PBXGroup;
 			children = (
+				EFAB68BB1609BAB9000BCC01 /* end1.png */,
+				EFAB68B91609BA94000BCC01 /* start1.png */,
+				EF87E10E16097CA100637600 /* arrow3flip.png */,
+				EFC6543715F3DC09005E425A /* hashtag.png */,
 				EF73B48C15CAC2200052B9B0 /* Icon@2x.png */,
 				EF73B48A15CAC21A0052B9B0 /* Icon.png */,
 				EF0A655515BFE626003BF1E5 /* step3.png */,
@@ -1340,7 +1389,7 @@
 				EFFF299614EBDBF200FC92B2 /* headerview2.png */,
 				EF775EA114EC08D100235D96 /* buttonbg.png */,
 				EF3BC05C14D323610027F06F /* arrow1.png */,
-				EF36504614FBE45D00C0F3DF /* end1.png */,
+				EFA5213F16099FCA0095E4D2 /* arrow3white.png */,
 				EF3D7E48151644C000D5395D /* flash_white.png */,
 				EF3D7E49151644C200D5395D /* flash_white@2x.png */,
 				EF29CD271535836900AB520E /* twitter.png */,
@@ -1366,7 +1415,6 @@
 				EF3D7E2515163D8B00D5395D /* flash@2x.png */,
 				EF3D7E3E15163F5F00D5395D /* locationpin.png */,
 				EF3D7E3F15163F6000D5395D /* locationpin@2x.png */,
-				EF36504714FBE45D00C0F3DF /* start1.png */,
 				EF292F4D14E37343006D3D09 /* UIImage-categories */,
 				EF775EA614EC902B00235D96 /* comment.png */,
 				EF775EA714EC902B00235D96 /* location.png */,
@@ -1387,6 +1435,7 @@
 		EFD4A2A914BA9BD7008A583F /* CustomObjectsandPlugins */ = {
 			isa = PBXGroup;
 			children = (
+				EF87E127160980B300637600 /* Color Picker */,
 				EFB25A5415E674AA00EFBA5B /* DACircularProgressView.h */,
 				EFB25A5515E674AA00EFBA5B /* DACircularProgressView.m */,
 				EF27B39E1551193500FCFA2E /* myImageView.h */,
@@ -1536,8 +1585,6 @@
 				EF25231614F80CA700D0F717 /* EditInstruction.png in Resources */,
 				EF36504214FBAF3D00C0F3DF /* tick.png in Resources */,
 				EF36504514FBB16F00C0F3DF /* heartcolor.png in Resources */,
-				EF36504814FBE45D00C0F3DF /* end1.png in Resources */,
-				EF36504914FBE45D00C0F3DF /* start1.png in Resources */,
 				EFA648A914FF6CF900B15CE6 /* LoadMoreCell.xib in Resources */,
 				EFE6E07F15013D6600F4EC8A /* SearchFriendsViewController.xib in Resources */,
 				EF8BFBB9150149A600146ABD /* FollowingViewController.xib in Resources */,
@@ -1642,6 +1689,10 @@
 				EF73B48D15CAC2200052B9B0 /* Icon@2x.png in Resources */,
 				EFC6543815F3DC09005E425A /* hashtag.png in Resources */,
 				EF308BA11602C8B800E99278 /* Default-568h@2x.png in Resources */,
+				EF87E10F16097CA100637600 /* arrow3flip.png in Resources */,
+				EFA5214016099FCA0095E4D2 /* arrow3white.png in Resources */,
+				EFAB68BA1609BA94000BCC01 /* start1.png in Resources */,
+				EFAB68BC1609BAB9000BCC01 /* end1.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1780,6 +1831,12 @@
 				EF77033C15487B8000851903 /* CommentTableCell.m in Sources */,
 				EF27B3A01551193500FCFA2E /* myImageView.m in Sources */,
 				EF24513C15C766A4002C2592 /* GymViewController.m in Sources */,
+				EF87E121160980AD00637600 /* HRColorPickerViewController.m in Sources */,
+				EF87E122160980AD00637600 /* HRCgUtil.m in Sources */,
+				EF87E123160980AD00637600 /* HRColorPickerView.m in Sources */,
+				EF87E124160980AD00637600 /* HRColorUtil.m in Sources */,
+				EF87E125160980AD00637600 /* HRBrightnessCursor.m in Sources */,
+				EF87E126160980AD00637600 /* HRColorCursor.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

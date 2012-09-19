@@ -580,13 +580,15 @@
  arrowOverlay.contentMode =UIViewContentModeScaleAspectFit;
  arrowOverlay.backgroundColor = [UIColor clearColor];
  
- UIImage* pastedimage = nil;
+
     
     NSArray*gymsection =[self.gymSections objectForKey:[[self.gymSections allKeys]objectAtIndex:self.pageControl.currentPage]];
     //get the route and its arrows
     RouteObject* route = [gymsection objectAtIndex:self.routePageControl.currentPage];
+    if ([[route.pfobj objectForKey:@"routeVersion"] isEqualToString:@"2"]){
         NSArray* routearrowarray = [route.pfobj objectForKey:@"arrowarray"];
         NSArray* arrowtypearray = [route.pfobj objectForKey:@"arrowtypearray"];
+        UIImage* pastedimage = nil;
  for (int i=0; i<[routearrowarray count]; i++) {
  CGRect routearrowrect = CGRectFromString([routearrowarray objectAtIndex:i]);
  if([[arrowtypearray objectAtIndex:i]isEqualToNumber:[NSNumber numberWithInt:0]])
@@ -613,13 +615,59 @@
  pastedimage = [UIImage imageNamed:@"start4.png"];
  if([[arrowtypearray objectAtIndex:i]isEqualToNumber:[NSNumber numberWithInt:11]])
  pastedimage = [UIImage imageNamed:@"end4.png"];
- //draw arrow by arrow
+     
  if (i==0) {
  arrowOverlay.image = [self blankImageByDrawingImage:pastedimage OnImage:arrowOverlay.image inRect:routearrowrect ];
  }else{
  arrowOverlay.image = [self imageByDrawingImage:pastedimage OnImage:arrowOverlay.image inRect:routearrowrect ];
   }
  }
+}
+    
+    
+    if ([[route.pfobj objectForKey:@"routeVersion"] isEqualToString:@"3"]){
+        NSArray* routearrowarray = [route.pfobj objectForKey:@"arrowarray"];
+        NSArray* arrowtypearray = [route.pfobj objectForKey:@"arrowtypearray"];
+        NSArray* arrowcolorarray = [route.pfobj objectForKey:@"arrowcolorarray"];
+        UIImage* pastedimage = nil;
+        for (int i=0; i<[routearrowarray count]; i++) {
+            CGRect routearrowrect = CGRectFromString([routearrowarray objectAtIndex:i]);
+            if([[arrowtypearray objectAtIndex:i]isEqualToNumber:[NSNumber numberWithInt:0]]){
+                if (i==0) {
+                arrowOverlay.image =  [self blankImageByDrawingClippedImage:[UIImage imageNamed:@"arrow3.png"] OnImage:arrowOverlay.image inRect:routearrowrect withColorString:[arrowcolorarray objectAtIndex:i]];
+                    continue;
+                }else{
+                    arrowOverlay.image =  [self imageByDrawingClippedImage:[UIImage imageNamed:@"arrow3.png"] OnImage:arrowOverlay.image inRect:routearrowrect withColorString:[arrowcolorarray objectAtIndex:i]];
+                    continue;
+                    }
+            }
+            if([[arrowtypearray objectAtIndex:i]isEqualToNumber:[NSNumber numberWithInt:1]]){
+                if (i==0) {
+                    arrowOverlay.image =  [self blankImageByDrawingClippedText:@"START" OnImage:arrowOverlay.image inRect:routearrowrect withColorString:[arrowcolorarray objectAtIndex:i]];
+                    continue;
+                }else{
+                    arrowOverlay.image =  [self imageByDrawingClippedText:@"START" OnImage:arrowOverlay.image inRect:routearrowrect withColorString:[arrowcolorarray objectAtIndex:i]];
+                    continue;
+                }
+            }
+            if([[arrowtypearray objectAtIndex:i]isEqualToNumber:[NSNumber numberWithInt:2]]){
+                if (i==0) {
+                    arrowOverlay.image =  [self blankImageByDrawingClippedText:@"END" OnImage:arrowOverlay.image inRect:routearrowrect withColorString:[arrowcolorarray objectAtIndex:i]];
+                    continue;
+                }else{
+                    arrowOverlay.image =  [self imageByDrawingClippedText:@"END" OnImage:arrowOverlay.image inRect:routearrowrect withColorString:[arrowcolorarray objectAtIndex:i]];
+                    continue;
+                }
+            }
+            
+           
+        }
+    }
+    
+    
+    
+    
+    
     return arrowOverlay;
 }
 -(void)addGymScrollToAugmentedImageView:(UIImageView*)imgView
@@ -664,7 +712,7 @@
     
     
     UIGraphicsBeginImageContextWithOptions(image.size, NO, 1);
-//	UIGraphicsBeginImageContext(image.size);
+    //	UIGraphicsBeginImageContext(image.size);
     
 	// draw original image into the context
 	[image drawAtPoint:CGPointZero];
@@ -705,6 +753,119 @@
     
 	return retImage;
 }
+
+- (UIImage *)imageByDrawingClippedImage:(UIImage*)pastedImage OnImage:(UIImage *)image inRect:(CGRect)rect withColorString:(NSString*)colorstring
+{
+    
+    UIGraphicsBeginImageContext(image.size);
+    
+	// draw original image into the context
+	[image drawAtPoint:CGPointZero];
+    
+	// get the context for CoreGraphics
+    CGContextRef context = UIGraphicsGetCurrentContext();
+    
+	CGContextClipToMask(context, rect, [UIImage imageNamed:@"arrow3flip"].CGImage);
+    
+    [pastedImage drawInRect:rect blendMode:kCGBlendModeColor alpha:1.0];
+    CGContextSetBlendMode(context, kCGBlendModeNormal);
+    CIColor *coreColor = [CIColor colorWithString:colorstring];
+    UIColor *color = [UIColor colorWithCIColor:coreColor];
+    [color setFill];
+    CGContextFillRect(context, rect);
+    
+	// make image out of bitmap context
+	UIImage *retImage = UIGraphicsGetImageFromCurrentImageContext();
+    
+	// free the context
+	UIGraphicsEndImageContext();
+    
+	return retImage;
+}
+- (UIImage *)blankImageByDrawingClippedImage:(UIImage*)pastedImage OnImage:(UIImage *)image inRect:(CGRect)rect withColorString:(NSString*)colorstring
+{
+    
+    
+    UIGraphicsBeginImageContext(image.size);
+    
+	// draw original image into the context
+	//[image drawAtPoint:CGPointZero];
+    
+	// get the context for CoreGraphics
+    CGContextRef context = UIGraphicsGetCurrentContext();
+    
+	CGContextClipToMask(context, rect, [UIImage imageNamed:@"arrow3flip"].CGImage);
+    
+    [pastedImage drawInRect:rect blendMode:kCGBlendModeColor alpha:1.0];
+    CGContextSetBlendMode(context, kCGBlendModeNormal);
+    CIColor *coreColor = [CIColor colorWithString:colorstring];
+    UIColor *color = [UIColor colorWithCIColor:coreColor];
+    [color setFill];
+    CGContextFillRect(context, rect);
+    
+	// make image out of bitmap context
+	UIImage *retImage = UIGraphicsGetImageFromCurrentImageContext();
+    
+	// free the context
+	UIGraphicsEndImageContext();
+    
+	return retImage;}
+
+- (UIImage *)imageByDrawingClippedText:(NSString*)pastedText OnImage:(UIImage *)image inRect:(CGRect)rect withColorString:(NSString*)colorstring
+{
+    
+    UIGraphicsBeginImageContext(image.size);
+    
+	// draw original image into the context
+	[image drawAtPoint:CGPointZero];
+    
+	// get the context for CoreGraphics
+    CGContextRef context = UIGraphicsGetCurrentContext();
+    
+    CIColor *coreColor = [CIColor colorWithString:colorstring];
+    UIColor *color = [UIColor colorWithCIColor:coreColor];
+    CGContextSetFillColorWithColor(context, color.CGColor);
+    [pastedText drawInRect:rect withFont:[UIFont boldSystemFontOfSize:25]];
+    
+    
+    
+	// make image out of bitmap context
+	UIImage *retImage = UIGraphicsGetImageFromCurrentImageContext();
+    
+	// free the context
+	UIGraphicsEndImageContext();
+    
+	return retImage;
+
+}
+- (UIImage *)blankImageByDrawingClippedText:(NSString*)pastedText OnImage:(UIImage *)image inRect:(CGRect)rect withColorString:(NSString*)colorstring
+{
+    
+    
+    UIGraphicsBeginImageContext(image.size);
+    
+	// draw original image into the context
+	//[image drawAtPoint:CGPointZero];
+    
+	// get the context for CoreGraphics
+    CGContextRef context = UIGraphicsGetCurrentContext();
+    
+    CIColor *coreColor = [CIColor colorWithString:colorstring];
+    UIColor *color = [UIColor colorWithCIColor:coreColor];
+    CGContextSetFillColorWithColor(context, color.CGColor);
+    [pastedText drawInRect:rect withFont:[UIFont boldSystemFontOfSize:25]];
+    
+    
+    
+	// make image out of bitmap context
+	UIImage *retImage = UIGraphicsGetImageFromCurrentImageContext();
+    
+	// free the context
+	UIGraphicsEndImageContext();
+    
+	return retImage;
+}
+
 -(void)viewWillAppear:(BOOL)animated
 {
     self.navigationController.navigationBarHidden = NO;

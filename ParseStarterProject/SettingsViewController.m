@@ -29,7 +29,7 @@
 }
 -(IBAction)dismissSettings:(id)sender
 {
-    [self dismissModalViewControllerAnimated:YES];
+    [self dismissModalViewControllerAnimated:NO];
 }
 - (void)viewDidLoad
 {
@@ -47,7 +47,8 @@
     
     ParseStarterProjectAppDelegate* applicationDelegate = ((ParseStarterProjectAppDelegate*)[[UIApplication sharedApplication]delegate]);
     applicationDelegate.badgeView.text = @"0";
-   
+   ((UIButton*) sender).hidden = true;
+    LoggedInUser.text = @"";
         [self dismissViewControllerAnimated:YES completion:^{
             
             

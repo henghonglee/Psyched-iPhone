@@ -8,12 +8,13 @@
 #import "CreateRouteViewController.h"
 #import <UIKit/UIKit.h>
 #import "JHNotificationManager.h"
+#import "HRColorPickerViewController.h"
 #import "UIImage+Resize.h"
 #import <ImageIO/ImageIO.h>
 
 @protocol EditImageDelegate;
 
-@interface EditImageViewController : UIViewController<UIScrollViewDelegate,UIGestureRecognizerDelegate,UITableViewDataSource,UITableViewDelegate,UIAlertViewDelegate>
+@interface EditImageViewController : UIViewController<UIScrollViewDelegate,UIGestureRecognizerDelegate,UITableViewDataSource,UITableViewDelegate,UIAlertViewDelegate,HRColorPickerViewControllerDelegate>
 {
     id <EditImageDelegate> delegate;
     CGRect originalArrowFrame;
@@ -21,10 +22,13 @@
     CGPoint locationinscroll;
     NSMutableDictionary* imageMetaData;
     NSNumber* selectedArrowType;
+
 }
+@property (retain, nonatomic)UIColor* selectColor;
 @property (retain, nonatomic)PFObject* reusePFObject;
 @property (retain, nonatomic) NSMutableArray* CGPointsArray;
 @property (retain, nonatomic) NSMutableArray* arrowTypeArray;
+@property (retain, nonatomic) NSMutableArray* arrowColorArray;
 @property (retain, nonatomic) IBOutlet UIView *moreArrowsView;
 @property (retain, nonatomic) IBOutlet UIImageView *arrowImageView;
 @property (retain, nonatomic) IBOutlet UIImageView *startImageView;
