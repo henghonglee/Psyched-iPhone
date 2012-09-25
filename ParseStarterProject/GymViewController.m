@@ -757,7 +757,8 @@
 - (UIImage *)imageByDrawingClippedImage:(UIImage*)pastedImage OnImage:(UIImage *)image inRect:(CGRect)rect withColorString:(NSString*)colorstring
 {
     
-    UIGraphicsBeginImageContext(image.size);
+    
+	UIGraphicsBeginImageContext(image.size);
     
 	// draw original image into the context
 	[image drawAtPoint:CGPointZero];
@@ -765,28 +766,52 @@
 	// get the context for CoreGraphics
     CGContextRef context = UIGraphicsGetCurrentContext();
     
-	CGContextClipToMask(context, rect, [UIImage imageNamed:@"arrow3flip"].CGImage);
+	CGContextClipToMask(context, rect, [UIImage imageNamed:@"arrowbgflip"].CGImage);
     
     [pastedImage drawInRect:rect blendMode:kCGBlendModeColor alpha:1.0];
     CGContextSetBlendMode(context, kCGBlendModeNormal);
-    CIColor *coreColor = [CIColor colorWithString:colorstring];
-    UIColor *color = [UIColor colorWithCIColor:coreColor];
-    [color setFill];
+    [[UIColor blackColor] setFill];
     CGContextFillRect(context, rect);
+    
+    
+    
     
 	// make image out of bitmap context
 	UIImage *retImage = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    UIGraphicsBeginImageContext(retImage.size);
     
+	// draw original image into the context
+	[retImage drawAtPoint:CGPointZero];
+    
+	// get the context for CoreGraphics
+    CGContextRef newcontext = UIGraphicsGetCurrentContext();
+    
+	CGContextClipToMask(newcontext, rect, [UIImage imageNamed:@"arrow3flip"].CGImage);
+    
+    [pastedImage drawInRect:rect blendMode:kCGBlendModeColor alpha:1.0];
+    CGContextSetBlendMode(newcontext, kCGBlendModeNormal);
+    NSArray *components = [colorstring componentsSeparatedByString:@","];
+    CGFloat r = [[components objectAtIndex:0] floatValue];
+    CGFloat g = [[components objectAtIndex:1] floatValue];
+    CGFloat b = [[components objectAtIndex:2] floatValue];
+    CGFloat a = [[components objectAtIndex:3] floatValue];
+    UIColor *color = [UIColor colorWithRed:r green:g blue:b alpha:a];
+    [color setFill];
+    CGContextFillRect(newcontext, rect);
+    
+    
+    UIImage *newretImage = UIGraphicsGetImageFromCurrentImageContext();
 	// free the context
 	UIGraphicsEndImageContext();
     
-	return retImage;
+	return newretImage;
 }
 - (UIImage *)blankImageByDrawingClippedImage:(UIImage*)pastedImage OnImage:(UIImage *)image inRect:(CGRect)rect withColorString:(NSString*)colorstring
 {
     
     
-    UIGraphicsBeginImageContext(image.size);
+	UIGraphicsBeginImageContext(image.size);
     
 	// draw original image into the context
 	//[image drawAtPoint:CGPointZero];
@@ -794,22 +819,50 @@
 	// get the context for CoreGraphics
     CGContextRef context = UIGraphicsGetCurrentContext();
     
-	CGContextClipToMask(context, rect, [UIImage imageNamed:@"arrow3flip"].CGImage);
+	CGContextClipToMask(context, rect, [UIImage imageNamed:@"arrowbgflip"].CGImage);
     
     [pastedImage drawInRect:rect blendMode:kCGBlendModeColor alpha:1.0];
     CGContextSetBlendMode(context, kCGBlendModeNormal);
-    CIColor *coreColor = [CIColor colorWithString:colorstring];
-    UIColor *color = [UIColor colorWithCIColor:coreColor];
-    [color setFill];
+    [[UIColor blackColor] setFill];
     CGContextFillRect(context, rect);
+    
+    
+    
     
 	// make image out of bitmap context
 	UIImage *retImage = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    UIGraphicsBeginImageContext(retImage.size);
     
+	// draw original image into the context
+	[retImage drawAtPoint:CGPointZero];
+    
+	// get the context for CoreGraphics
+    CGContextRef newcontext = UIGraphicsGetCurrentContext();
+    
+	CGContextClipToMask(newcontext, rect, [UIImage imageNamed:@"arrow3flip"].CGImage);
+    
+    [pastedImage drawInRect:rect blendMode:kCGBlendModeColor alpha:1.0];
+    CGContextSetBlendMode(newcontext, kCGBlendModeNormal);
+    NSArray *components = [colorstring componentsSeparatedByString:@","];
+    CGFloat r = [[components objectAtIndex:0] floatValue];
+    CGFloat g = [[components objectAtIndex:1] floatValue];
+    CGFloat b = [[components objectAtIndex:2] floatValue];
+    CGFloat a = [[components objectAtIndex:3] floatValue];
+    UIColor *color = [UIColor colorWithRed:r green:g blue:b alpha:a];
+    [color setFill];
+    CGContextFillRect(newcontext, rect);
+    
+    
+    UIImage *newretImage = UIGraphicsGetImageFromCurrentImageContext();
 	// free the context
 	UIGraphicsEndImageContext();
     
-	return retImage;}
+	return newretImage;
+    
+    
+
+}
 
 - (UIImage *)imageByDrawingClippedText:(NSString*)pastedText OnImage:(UIImage *)image inRect:(CGRect)rect withColorString:(NSString*)colorstring
 {
@@ -822,11 +875,16 @@
 	// get the context for CoreGraphics
     CGContextRef context = UIGraphicsGetCurrentContext();
     
-    CIColor *coreColor = [CIColor colorWithString:colorstring];
-    UIColor *color = [UIColor colorWithCIColor:coreColor];
+    NSArray *components = [colorstring componentsSeparatedByString:@","];
+    CGFloat r = [[components objectAtIndex:0] floatValue];
+    CGFloat g = [[components objectAtIndex:1] floatValue];
+    CGFloat b = [[components objectAtIndex:2] floatValue];
+    CGFloat a = [[components objectAtIndex:3] floatValue];
+    UIColor *color = [UIColor colorWithRed:r green:g blue:b alpha:a];
     CGContextSetFillColorWithColor(context, color.CGColor);
-    [pastedText drawInRect:rect withFont:[UIFont boldSystemFontOfSize:25]];
-    
+    CGContextSetRGBStrokeColor(context, 0.0, 0.0, 0.0, 1.0);
+    CGContextSetTextDrawingMode(context, kCGTextFillStroke);
+    [pastedText drawInRect:rect withFont:[UIFont boldSystemFontOfSize:25] lineBreakMode:UILineBreakModeClip alignment:UITextAlignmentRight];
     
     
 	// make image out of bitmap context
@@ -850,11 +908,16 @@
 	// get the context for CoreGraphics
     CGContextRef context = UIGraphicsGetCurrentContext();
     
-    CIColor *coreColor = [CIColor colorWithString:colorstring];
-    UIColor *color = [UIColor colorWithCIColor:coreColor];
+    NSArray *components = [colorstring componentsSeparatedByString:@","];
+    CGFloat r = [[components objectAtIndex:0] floatValue];
+    CGFloat g = [[components objectAtIndex:1] floatValue];
+    CGFloat b = [[components objectAtIndex:2] floatValue];
+    CGFloat a = [[components objectAtIndex:3] floatValue];
+    UIColor *color = [UIColor colorWithRed:r green:g blue:b alpha:a];
     CGContextSetFillColorWithColor(context, color.CGColor);
-    [pastedText drawInRect:rect withFont:[UIFont boldSystemFontOfSize:25]];
-    
+    CGContextSetRGBStrokeColor(context, 0.0, 0.0, 0.0, 1.0);
+    CGContextSetTextDrawingMode(context, kCGTextFillStroke);
+    [pastedText drawInRect:rect withFont:[UIFont boldSystemFontOfSize:25] lineBreakMode:UILineBreakModeClip alignment:UITextAlignmentRight];    
     
     
 	// make image out of bitmap context

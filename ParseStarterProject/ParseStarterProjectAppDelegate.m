@@ -39,9 +39,9 @@
     [self startStandardUpdates];
     [Parse setApplicationId:@"rUk14GRi8xY6ieFQGyXcJ39iQUPuGo1ihR2dAKeh" clientKey:@"aOz04F0XOehjH9a58b95V4nKtcCZNUNUxbCoqM48"];
     //sandbox
-    //[Parse setApplicationId:@"ayrordrSISjoYKVt9hh7WjrA2lJVY3qJTLMCgPnn" clientKey:@"LA3t7cVnclnYqAe5X18sX9AJQi9WuQ3apa9FExJ7"];
+   // [Parse setApplicationId:@"ayrordrSISjoYKVt9hh7WjrA2lJVY3qJTLMCgPnn" clientKey:@"LA3t7cVnclnYqAe5X18sX9AJQi9WuQ3apa9FExJ7"];
     [PFFacebookUtils initializeWithApplicationId:@"200778040017319"];
-
+    [[NSUserDefaults standardUserDefaults]setBool:YES forKey:@"ogshare"];
     
 
      LoginViewController* loginVC = [[LoginViewController alloc]initWithNibName:@"LoginViewController" bundle:nil];

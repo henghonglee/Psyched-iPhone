@@ -264,7 +264,6 @@
 		EFA7E9A814C2C86A00776236 /* fb-connect-large 2.png in Resources */ = {isa = PBXBuildFile; fileRef = EFA7E9A714C2C86900776236 /* fb-connect-large 2.png */; };
 		EFA9F31D152A11FF004883DD /* cameraTabBarItem copy.png in Resources */ = {isa = PBXBuildFile; fileRef = EFA9F31C152A11F9004883DD /* cameraTabBarItem copy.png */; };
 		EFA9F31F152A146E004883DD /* cameraTabBarItem copy@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = EFA9F31E152A1466004883DD /* cameraTabBarItem copy@2x.png */; };
-		EFAB68B71609B833000BCC01 /* CoreImage.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EFAB68B61609B833000BCC01 /* CoreImage.framework */; };
 		EFAB68BA1609BA94000BCC01 /* start1.png in Resources */ = {isa = PBXBuildFile; fileRef = EFAB68B91609BA94000BCC01 /* start1.png */; };
 		EFAB68BC1609BAB9000BCC01 /* end1.png in Resources */ = {isa = PBXBuildFile; fileRef = EFAB68BB1609BAB9000BCC01 /* end1.png */; };
 		EFAD337F15BEA463003EEE1B /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EFAD337E15BEA463003EEE1B /* StoreKit.framework */; };
@@ -273,6 +272,7 @@
 		EFB25A5815E6777500EFBA5B /* DACircularProgressView.h in Sources */ = {isa = PBXBuildFile; fileRef = EFB25A5415E674AA00EFBA5B /* DACircularProgressView.h */; };
 		EFB25A5915E6777500EFBA5B /* DACircularProgressView.m in Sources */ = {isa = PBXBuildFile; fileRef = EFB25A5515E674AA00EFBA5B /* DACircularProgressView.m */; };
 		EFB25D4D15258E69002F310B /* UserObject.m in Sources */ = {isa = PBXBuildFile; fileRef = EFB25D4C15258E68002F310B /* UserObject.m */; };
+		EFB6773B160AAA9900621509 /* arrowbgflip.png in Resources */ = {isa = PBXBuildFile; fileRef = EFB6773A160AAA9900621509 /* arrowbgflip.png */; };
 		EFC6543815F3DC09005E425A /* hashtag.png in Resources */ = {isa = PBXBuildFile; fileRef = EFC6543715F3DC09005E425A /* hashtag.png */; };
 		EFC9636015072FF9005C9558 /* LoadMoreFeedCell.m in Sources */ = {isa = PBXBuildFile; fileRef = EFC9635F15072FF9005C9558 /* LoadMoreFeedCell.m */; };
 		EFC963631507300A005C9558 /* LoadMoreFeedCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = EFC963621507300A005C9558 /* LoadMoreFeedCell.xib */; };
@@ -677,6 +677,7 @@
 		EFB25A5515E674AA00EFBA5B /* DACircularProgressView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DACircularProgressView.m; sourceTree = "<group>"; };
 		EFB25D4B15258E67002F310B /* UserObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UserObject.h; sourceTree = "<group>"; };
 		EFB25D4C15258E68002F310B /* UserObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UserObject.m; sourceTree = "<group>"; };
+		EFB6773A160AAA9900621509 /* arrowbgflip.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = arrowbgflip.png; sourceTree = "<group>"; };
 		EFC6543715F3DC09005E425A /* hashtag.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = hashtag.png; path = ../hashtag.png; sourceTree = "<group>"; };
 		EFC9635E15072FF9005C9558 /* LoadMoreFeedCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LoadMoreFeedCell.h; sourceTree = "<group>"; };
 		EFC9635F15072FF9005C9558 /* LoadMoreFeedCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LoadMoreFeedCell.m; sourceTree = "<group>"; };
@@ -734,7 +735,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				EFAB68B71609B833000BCC01 /* CoreImage.framework in Frameworks */,
 				EF39A00D14BB327700A02516 /* libxml2.dylib in Frameworks */,
 				EFAE9A1515F0F9BB003DB569 /* libsqlite3.dylib in Frameworks */,
 				EFAD337F15BEA463003EEE1B /* StoreKit.framework in Frameworks */,
@@ -835,6 +835,7 @@
 			isa = PBXGroup;
 			children = (
 				EF308BA01602C8B800E99278 /* Default-568h@2x.png */,
+				EFB6773A160AAA9900621509 /* arrowbgflip.png */,
 				09ABC08013A1D52D009C3FCF /* ParseStarterProjectAppDelegate.h */,
 				09ABC08113A1D52D009C3FCF /* ParseStarterProjectAppDelegate.m */,
 				09ABC08313A1D52D009C3FCF /* MainWindow.xib */,
@@ -1693,6 +1694,7 @@
 				EFA5214016099FCA0095E4D2 /* arrow3white.png in Resources */,
 				EFAB68BA1609BA94000BCC01 /* start1.png in Resources */,
 				EFAB68BC1609BAB9000BCC01 /* end1.png in Resources */,
+				EFB6773B160AAA9900621509 /* arrowbgflip.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -243,9 +243,10 @@ draggableImageView.frame = CGRectMake(0, 0, 320, 320);
                      [imageToEdit setNeedsDisplay];
                      [CGPointsArray addObject: NSStringFromCGRect(draggableImageView.frame)];
                      [arrowTypeArray addObject:selectedArrowType];
-                     CGColorRef colorRef = selectColor.CGColor;
-                     NSString *colorString = [CIColor colorWithCGColor:colorRef].stringRepresentation;
-                     [arrowColorArray addObject:colorString];
+                     
+                     const CGFloat *components = CGColorGetComponents(selectColor.CGColor);
+                     NSString *colorAsString = [NSString stringWithFormat:@"%f,%f,%f,%f", components[0], components[1], components[2], components[3]];
+                     [arrowColorArray addObject:colorAsString];
                      draggableImageView.frame = originalArrowFrame;
                     
                  }];
@@ -360,24 +361,41 @@ draggableImageView.frame = CGRectMake(0, 0, 320, 320);
 {
     [self setSelectColor:color];
     
+    
+    
+    
         UIGraphicsBeginImageContext(arrowImageView.image.size);
         [arrowImageView.image drawAtPoint:CGPointZero];
         CGContextRef context = UIGraphicsGetCurrentContext();
         CGRect rect = CGRectMake(0, 0, arrowImageView.image.size.width, arrowImageView.image.size.height);
-	     CGContextClipToMask(context, rect , [UIImage imageNamed:@"arrow3flip"].CGImage);
-
-   
-        
-        [arrowImageView.image drawInRect:arrowImageView.frame blendMode:kCGBlendModeNormal alpha:1.0];
+        CGContextClipToMask(context, rect, [UIImage imageNamed:@"arrowbgflip"].CGImage);
+        [arrowImageView.image drawInRect:rect blendMode:kCGBlendModeColor alpha:1.0];
         CGContextSetBlendMode(context, kCGBlendModeNormal);
-        [selectColor setFill];
+        [[UIColor blackColor] setFill];
         CGContextFillRect(context, rect);
-        // make image out of bitmap context
+        
         UIImage *retImage = UIGraphicsGetImageFromCurrentImageContext();
+        UIGraphicsEndImageContext();
+        UIGraphicsBeginImageContext(retImage.size);
+    
+        // draw original image into the context
+        [retImage drawAtPoint:CGPointZero];
+    
+        // get the context for CoreGraphics
+        CGContextRef newcontext = UIGraphicsGetCurrentContext();
+        
+        CGContextClipToMask(newcontext, rect, [UIImage imageNamed:@"arrow3flip"].CGImage);
+        
+        [arrowImageView.image drawInRect:rect blendMode:kCGBlendModeColor alpha:1.0];
+        CGContextSetBlendMode(newcontext, kCGBlendModeNormal);
+        [selectColor setFill];
+        CGContextFillRect(newcontext, rect);
+
+        UIImage *newRetImage = UIGraphicsGetImageFromCurrentImageContext();
         
         // free the context
         UIGraphicsEndImageContext();
-    arrowImageView.image = retImage;
+    arrowImageView.image = newRetImage;
     
 }
 - (IBAction)moreArrows:(id)sender {
@@ -585,22 +603,45 @@ draggableImageView.frame = CGRectMake(0, 0, 320, 320);
      
     //set the clipping area to the image
     if (selectedArrowType==[NSNumber numberWithInt:0]) {
-    CGContextClipToMask(context, newrect, [UIImage imageNamed:@"arrow3flip"].CGImage);
         
-        [draggableImageView.image drawInRect:newrect blendMode:kCGBlendModeNormal alpha:1.0];
+        CGContextClipToMask(context, newrect, [UIImage imageNamed:@"arrowbgflip"].CGImage);
+        
+        [draggableImageView.image drawInRect:newrect blendMode:kCGBlendModeColor alpha:1.0];
         CGContextSetBlendMode(context, kCGBlendModeNormal);
-        [selectColor setFill];
+        [[UIColor blackColor] setFill];
         CGContextFillRect(context, newrect);
+        
+        UIImage *retImage = UIGraphicsGetImageFromCurrentImageContext();
+        UIGraphicsEndImageContext();
+        UIGraphicsBeginImageContext(retImage.size);
+        
+        // draw original image into the context
+        [retImage drawAtPoint:CGPointZero];
+        
+        // get the context for CoreGraphics
+        CGContextRef newcontext = UIGraphicsGetCurrentContext();
+        
+        CGContextClipToMask(newcontext, newrect, [UIImage imageNamed:@"arrow3flip"].CGImage);
+        
+        [draggableImageView.image drawInRect:newrect blendMode:kCGBlendModeColor alpha:1.0];
+        CGContextSetBlendMode(newcontext, kCGBlendModeNormal);
+        [selectColor setFill];
+        CGContextFillRect(newcontext, newrect);
+        
     }else if(selectedArrowType==[NSNumber numberWithInt:1]) {
         CGContextSetFillColorWithColor(context, selectColor.CGColor);
         NSString* text = @"START";
-        [text drawInRect:newrect withFont:[UIFont boldSystemFontOfSize:25]];
-//        CGContextClipToMask(context, newrect, [UIImage imageNamed:@"start1flip"].CGImage);
+        CGContextSetRGBStrokeColor(context, 0.0, 0.0, 0.0, 1.0);
+        CGContextSetTextDrawingMode(context, kCGTextFillStroke);
+        [text drawInRect:newrect withFont:[UIFont boldSystemFontOfSize:25]lineBreakMode:UILineBreakModeClip alignment:UITextAlignmentRight];
+         
+         //        CGContextClipToMask(context, newrect, [UIImage imageNamed:@"start1flip"].CGImage);
     }else if(selectedArrowType==[NSNumber numberWithInt:2]) {
         CGContextSetFillColorWithColor(context, selectColor.CGColor);
         NSString* text = @"END";
-        [text drawInRect:newrect withFont:[UIFont boldSystemFontOfSize:25]];
-    }
+        CGContextSetRGBStrokeColor(context, 0.0, 0.0, 0.0, 1.0);
+        CGContextSetTextDrawingMode(context, kCGTextFillStroke);
+        [text drawInRect:newrect withFont:[UIFont boldSystemFontOfSize:25] lineBreakMode:UILineBreakModeClip alignment:UITextAlignmentRight];    }
     
         
     

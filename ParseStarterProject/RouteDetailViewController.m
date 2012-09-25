@@ -6,6 +6,7 @@
 #import "CommentsCell.h"
 #import "ASIHTTPRequest.h"
 #import "MKMapView+ZoomLevel.h"
+#import "ASIFormDataRequest.h"
 #import <QuartzCore/QuartzCore.h>
 #import "MapViewController.h"
 @implementation RouteDetailViewController
@@ -637,6 +638,17 @@ kAPIGraphCommentPhoto,
                     }];
                 }
             }];
+//            
+//            NSLog(@"deleting %@...",[fspObject objectForKey:@"facebookid"]);
+//            ASIHTTPRequest* newOGDelete = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"https://graph.facebook.com/%@?access_token=%@",[fspObject objectForKey:@"facebookid"],[PFFacebookUtils facebook].accessToken]]];
+//            [newOGDelete setRequestMethod:@"DELETE"];
+//            [newOGDelete setCompletionBlock:^{
+//                NSLog(@"newOGDelete posted, %@",[newOGDelete responseString]);
+//            }];
+//            [newOGDelete setFailedBlock:^{
+//                NSLog(@"newOGDelete failed");
+//            }];
+//            [newOGDelete startAsynchronous];
         
     [hud hide:YES];
     [self.navigationController popViewControllerAnimated:YES];
@@ -647,7 +659,8 @@ kAPIGraphCommentPhoto,
     [flashbutton setUserInteractionEnabled:NO];
     [sentbutton setUserInteractionEnabled:NO];
     [projbutton setUserInteractionEnabled:NO];
-    if (sender.tag==0) {
+    if (sender.tag==0)
+    {
         //clear all flashes
         NSArray* tempFlashArray = [routeObject.pfobj objectForKey:@"usersflashed"];
         NSMutableArray* routeFlashArray = [[NSMutableArray alloc]init ];
@@ -697,15 +710,32 @@ kAPIGraphCommentPhoto,
         
         //clear flashes deprecated
         PFQuery* query1 = [PFQuery queryWithClassName:@"Flash"];
-                query1.cachePolicy = kPFCachePolicyNetworkElseCache;
         [query1 whereKey:@"username" equalTo:[[PFUser currentUser]objectForKey:@"name"]];
         [query1 whereKey:@"route" equalTo:routeObject.pfobj];
         [queryArray addObject:query1];
         [query1 findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
-            NSArray* fetchedFlash = [NSArray arrayWithArray:objects];
             [queryArray removeObject:query1];
+            
+            NSArray* fetchedFlash = [NSArray arrayWithArray:objects];
+
             if ([fetchedFlash count]>0){
-                [((PFObject*)[fetchedFlash objectAtIndex:0]) deleteInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+                PFObject* fspObject = [fetchedFlash objectAtIndex:0];
+                if ([fspObject objectForKey:@"facebookid"])
+                {
+                    NSLog(@"deleting %@...",[fspObject objectForKey:@"facebookid"]);
+                    ASIHTTPRequest* newOGDelete = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"https://graph.facebook.com/%@?access_token=%@",[fspObject objectForKey:@"facebookid"],[PFFacebookUtils facebook].accessToken]]];
+                    [newOGDelete setRequestMethod:@"DELETE"];
+                    [newOGDelete setCompletionBlock:^{
+                            NSLog(@"newOGDelete posted, %@",[newOGDelete responseString]);
+                    }];
+                    [newOGDelete setFailedBlock:^{
+                        NSLog(@"newOGDelete failed");
+                    }];
+                    [newOGDelete startAsynchronous];
+
+ 
+                }
+                [fspObject deleteInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
                     if (succeeded) {
                         //should clear flash feed also
                         PFQuery* flashFeedQuery = [PFQuery queryWithClassName:@"Feed"];
@@ -727,45 +757,38 @@ kAPIGraphCommentPhoto,
                 }];
             }else{
                
-                
-                PFObject* newFlash = [PFObject objectWithClassName:@"Flash"];
-                [newFlash setObject:[[PFUser currentUser] objectForKey:@"name"] forKey:@"username"];
-                [newFlash setObject:[[PFUser currentUser] objectForKey:@"profilepicture"] forKey:@"userimage"];
-                [newFlash setObject:[[PFUser currentUser] objectForKey:@"email"] forKey:@"useremail"];
-                [newFlash setObject:[PFUser currentUser] forKey:@"user"];
-                [newFlash setObject:routeObject.pfobj forKey:@"route"];
-                
-                [newFlash saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
-                    if (succeeded) {
-                        //add flash feed here
-                        PFObject* flashFeed = [PFObject objectWithClassName:@"Feed"];
-                        [flashFeed setObject:routeObject.pfobj forKey:@"linkedroute"];
-                        [flashFeed setObject:[[PFUser currentUser]objectForKey:@"name"] forKey:@"sender"];
-                        [flashFeed setObject:[[PFUser currentUser]objectForKey:@"profilepicture"] forKey:@"senderimagelink"];
-                        [flashFeed setObject:@"flash" forKey:@"action"];
- 
-                        if (![[[PFUser currentUser]objectForKey:@"name"] isEqualToString:usernameLabel.text]){
-                        [flashFeed setObject:[NSString stringWithFormat:@"%@ flashed %@'s route",[[PFUser currentUser]objectForKey:@"name"],usernameLabel.text] forKey:@"message"];
-                       
+                if ([[NSUserDefaults standardUserDefaults]boolForKey:@"ogshare"]) {
+                    ASIFormDataRequest* newOGPost = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:@"https://graph.facebook.com/me/climbing_:flash"]];
+                    [newOGPost setPostValue:[PFFacebookUtils facebook].accessToken forKey:@"access_token"];
+                    [newOGPost setPostValue:[NSString stringWithFormat:@"http://www.psychedapp.com/home/%@",routeObject.pfobj.objectId] forKey:@"route"];
+                    [newOGPost setRequestMethod:@"POST"];
+                    [newOGPost setCompletionBlock:^{
+                        SBJsonParser *jsonParser = [[SBJsonParser alloc] init];
+                        NSDictionary *jsonObjects = [jsonParser objectWithString:[newOGPost responseString]];
+                        [jsonParser release];
+                        jsonParser = nil;
+                        if ([jsonObjects objectForKey:@"id"]) {
+                            NSLog(@"posted, %@",[newOGPost responseString]);
+                            [self postNewFlashWithOG:[jsonObjects objectForKey:@"id"]];
                         }else{
-                            if ([[[PFUser currentUser]objectForKey:@"sex"] isEqualToString:@"female"]) {
-                                [flashFeed setObject:[NSString stringWithFormat:@"%@ flashed her route",[[PFUser currentUser] objectForKey:@"name"]] forKey:@"message"];
-                                
-                            }else if([[[PFUser currentUser]objectForKey:@"sex"] isEqualToString:@"male"]) {
-                                [flashFeed setObject:[NSString stringWithFormat:@"%@ flashed his route",[[PFUser currentUser] objectForKey:@"name"]] forKey:@"message"];
-                            }else{
-                                [flashFeed setObject:[NSString stringWithFormat:@"%@ flashed his/her route",[[PFUser currentUser] objectForKey:@"name"]] forKey:@"message"];
-                            }
-                            
+                            NSLog(@"most likely authentication failed , %@",[newOGPost responseString]);
                         }
-                    [flashFeed saveInBackground];
-                    [flashbutton setImage:[UIImage imageNamed:@"tick.png"] forState:UIControlStateNormal];
-                    flashCountLabel.text = [NSString stringWithFormat:@"%d",[flashCountLabel.text intValue]+1];
-                        [flashbutton setUserInteractionEnabled:YES];
-                        [sentbutton setUserInteractionEnabled:YES];
-                        [projbutton setUserInteractionEnabled:YES];
-                    }
-                }];
+                        
+                    }];
+                    
+                    
+                    [newOGPost setFailedBlock:^{
+                        NSLog(@"failed");
+                    }];
+                    [newOGPost startAsynchronous];
+                    NSLog(@"finished posting");
+
+                }else{
+                    [self postNewFlashWithOG:nil];
+
+                }
+                // post here to facebook OG
+                
             }
             
         }];
@@ -779,7 +802,24 @@ kAPIGraphCommentPhoto,
             NSArray* fetchedSent = [NSArray arrayWithArray:objects];
             [queryArray removeObject:query2];
             if ([fetchedSent count]>0){
-                [((PFObject*)[fetchedSent objectAtIndex:0]) deleteInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+                PFObject* fspObject = [fetchedSent objectAtIndex:0];
+                if ([fspObject objectForKey:@"facebookid"])
+                {
+                    NSLog(@"deleting %@...",[fspObject objectForKey:@"facebookid"]);
+                    ASIHTTPRequest* newOGDelete = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"https://graph.facebook.com/%@?access_token=%@",[fspObject objectForKey:@"facebookid"],[PFFacebookUtils facebook].accessToken]]];
+                    [newOGDelete setRequestMethod:@"DELETE"];
+                    [newOGDelete setCompletionBlock:^{
+                        NSLog(@"newOGDelete posted, %@",[newOGDelete responseString]);
+                    }];
+                    [newOGDelete setFailedBlock:^{
+                        NSLog(@"newOGDelete failed");
+                    }];
+                    [newOGDelete startAsynchronous];
+                    
+                    
+                }
+                [fspObject deleteInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+
                     if (succeeded) {
                         PFQuery* sendFeedQuery = [PFQuery queryWithClassName:@"Feed"];
                         [sendFeedQuery whereKey:@"sender" equalTo:[[PFUser currentUser]objectForKey:@"name"]];
@@ -809,7 +849,24 @@ kAPIGraphCommentPhoto,
             NSArray* fetchedProject = [NSArray arrayWithArray:objects];
             [queryArray removeObject:query3];
                 if ([fetchedProject count]>0){
-                    [((PFObject*)[fetchedProject objectAtIndex:0]) deleteInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+                    PFObject* fspObject = [fetchedProject objectAtIndex:0];
+                    if ([fspObject objectForKey:@"facebookid"])
+                    {
+                        NSLog(@"deleting %@...",[fspObject objectForKey:@"facebookid"]);
+                        ASIHTTPRequest* newOGDelete = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"https://graph.facebook.com/%@?access_token=%@",[fspObject objectForKey:@"facebookid"],[PFFacebookUtils facebook].accessToken]]];
+                        [newOGDelete setRequestMethod:@"DELETE"];
+                        [newOGDelete setCompletionBlock:^{
+                            NSLog(@"newOGDelete posted, %@",[newOGDelete responseString]);
+                        }];
+                        [newOGDelete setFailedBlock:^{
+                            NSLog(@"newOGDelete failed");
+                        }];
+                        [newOGDelete startAsynchronous];
+                        
+                        
+                    }
+                    [fspObject deleteInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+
                         if (succeeded) {
                             PFQuery* projFeedQuery = [PFQuery queryWithClassName:@"Feed"];
                             [projFeedQuery whereKey:@"sender" equalTo:[[PFUser currentUser]objectForKey:@"name"]];
@@ -830,7 +887,8 @@ kAPIGraphCommentPhoto,
             }
          }];
         
-    }else if(sender.tag==1){
+    }else if(sender.tag==1)
+    {
         //clear all flashes
         NSArray* tempFlashArray = [routeObject.pfobj objectForKey:@"usersflashed"];
         NSMutableArray* routeFlashArray = [[NSMutableArray alloc]init ];
@@ -885,7 +943,7 @@ kAPIGraphCommentPhoto,
         
         
         PFQuery* query1 = [PFQuery queryWithClassName:@"Flash"];
-                query1.cachePolicy = kPFCachePolicyNetworkElseCache;
+        query1.cachePolicy = kPFCachePolicyNetworkElseCache;
         [query1 whereKey:@"username" equalTo:[[PFUser currentUser]objectForKey:@"name"]];
         [query1 whereKey:@"route" equalTo:routeObject.pfobj];
         [queryArray addObject:query1];
@@ -893,7 +951,23 @@ kAPIGraphCommentPhoto,
             NSArray* fetchedFlash = [NSArray arrayWithArray:objects];
             [queryArray removeObject:query1];
             if ([fetchedFlash count]>0){
-                [((PFObject*)[fetchedFlash objectAtIndex:0]) deleteInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+                PFObject* fspObject = [fetchedFlash  objectAtIndex:0];
+                if ([fspObject objectForKey:@"facebookid"])
+                {
+                    NSLog(@"deleting %@...",[fspObject objectForKey:@"facebookid"]);
+                    ASIHTTPRequest* newOGDelete = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"https://graph.facebook.com/%@?access_token=%@",[fspObject objectForKey:@"facebookid"],[PFFacebookUtils facebook].accessToken]]];
+                    [newOGDelete setRequestMethod:@"DELETE"];
+                    [newOGDelete setCompletionBlock:^{
+                        NSLog(@"newOGDelete posted, %@",[newOGDelete responseString]);
+                    }];
+                    [newOGDelete setFailedBlock:^{
+                        NSLog(@"newOGDelete failed");
+                    }];
+                    [newOGDelete startAsynchronous];
+                    
+                    
+                }
+                [fspObject deleteInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
                     if (succeeded) {
                         PFQuery* flashFeedQuery = [PFQuery queryWithClassName:@"Feed"];
                         [flashFeedQuery whereKey:@"sender" equalTo:[[PFUser currentUser]objectForKey:@"name"]];
@@ -923,7 +997,23 @@ kAPIGraphCommentPhoto,
         NSArray* fetchedSent = objects;
             [queryArray removeObject:query2];
         if ([fetchedSent count]>0){
-            [((PFObject*)[fetchedSent objectAtIndex:0]) deleteInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+            PFObject* fspObject = [fetchedSent  objectAtIndex:0];
+            if ([fspObject objectForKey:@"facebookid"])
+            {
+                NSLog(@"deleting %@...",[fspObject objectForKey:@"facebookid"]);
+                ASIHTTPRequest* newOGDelete = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"https://graph.facebook.com/%@?access_token=%@",[fspObject objectForKey:@"facebookid"],[PFFacebookUtils facebook].accessToken]]];
+                [newOGDelete setRequestMethod:@"DELETE"];
+                [newOGDelete setCompletionBlock:^{
+                    NSLog(@"newOGDelete posted, %@",[newOGDelete responseString]);
+                }];
+                [newOGDelete setFailedBlock:^{
+                    NSLog(@"newOGDelete failed");
+                }];
+                [newOGDelete startAsynchronous];
+                
+                
+            }
+            [fspObject deleteInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
                 if (succeeded) {
                     PFQuery* sendFeedQuery = [PFQuery queryWithClassName:@"Feed"];
                     [sendFeedQuery whereKey:@"sender" equalTo:[[PFUser currentUser]objectForKey:@"name"]];
@@ -942,42 +1032,36 @@ kAPIGraphCommentPhoto,
                 }
             }];
         }else{
-            PFObject* newSent = [PFObject objectWithClassName:@"Sent"];
-            [newSent setObject:[[PFUser currentUser] objectForKey:@"name"] forKey:@"username"];
-            [newSent setObject:[[PFUser currentUser] objectForKey:@"profilepicture"] forKey:@"userimage"];
-            [newSent setObject:[[PFUser currentUser] objectForKey:@"email"] forKey:@"useremail"];
-            [newSent setObject:routeObject.pfobj forKey:@"route"];
-            [newSent setObject:[PFUser currentUser] forKey:@"user"];
-
-            [newSent saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
-                if (succeeded) {
-                    PFObject* sendFeed = [PFObject objectWithClassName:@"Feed"];
-                    [sendFeed setObject:routeObject.pfobj forKey:@"linkedroute"];
-                    if (![[[PFUser currentUser]objectForKey:@"name"] isEqualToString:usernameLabel.text]){
-                        [sendFeed setObject:[NSString stringWithFormat:@"%@ sent %@'s route",[[PFUser currentUser]objectForKey:@"name"],usernameLabel.text] forKey:@"message"];
-                        
+            if ([[NSUserDefaults standardUserDefaults]boolForKey:@"ogshare"]) {
+                ASIFormDataRequest* newOGPost = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:@"https://graph.facebook.com/me/climbing_:climb"]];
+                [newOGPost setPostValue:[PFFacebookUtils facebook].accessToken forKey:@"access_token"];
+                [newOGPost setPostValue:[NSString stringWithFormat:@"http://www.psychedapp.com/home/%@",routeObject.pfobj.objectId] forKey:@"route"];
+                [newOGPost setRequestMethod:@"POST"];
+                [newOGPost setCompletionBlock:^{
+                    SBJsonParser *jsonParser = [[SBJsonParser alloc] init];
+                    NSDictionary *jsonObjects = [jsonParser objectWithString:[newOGPost responseString]];
+                    [jsonParser release];
+                    jsonParser = nil;
+                    if ([jsonObjects objectForKey:@"id"]) {
+                        NSLog(@"posted, %@",[newOGPost responseString]);
+                        [self postNewSendWithOG:[jsonObjects objectForKey:@"id"]];
                     }else{
-                        if ([[[PFUser currentUser]objectForKey:@"sex"] isEqualToString:@"female"]) {
-                            [sendFeed setObject:[NSString stringWithFormat:@"%@ sent her route",[[PFUser currentUser] objectForKey:@"name"]] forKey:@"message"];
-                            
-                        }else if([[[PFUser currentUser]objectForKey:@"sex"] isEqualToString:@"male"]) {
-                            [sendFeed setObject:[NSString stringWithFormat:@"%@ sent his route",[[PFUser currentUser] objectForKey:@"name"]] forKey:@"message"];
-                        }else{
-                            [sendFeed setObject:[NSString stringWithFormat:@"%@ sent his/her route",[[PFUser currentUser] objectForKey:@"name"]] forKey:@"message"];
-                        }
-                        
+                        NSLog(@"most likely authentication failed , %@",[newOGPost responseString]);
                     }
-                    [sendFeed setObject:[[PFUser currentUser]objectForKey:@"name"] forKey:@"sender"];
-                    [sendFeed setObject:[[PFUser currentUser]objectForKey:@"profilepicture"] forKey:@"senderimagelink"];
-                    [sendFeed setObject:@"sent" forKey:@"action"];
-                    [sendFeed saveInBackground];
-                [sentbutton setImage:[UIImage imageNamed:@"tick.png"] forState:UIControlStateNormal];
-                sendCountLabel.text = [NSString stringWithFormat:@"%d",[sendCountLabel.text intValue]+1];
-                    [flashbutton setUserInteractionEnabled:YES];
-                    [sentbutton setUserInteractionEnabled:YES];
-                    [projbutton setUserInteractionEnabled:YES];
-                }
-            }];
+                    
+                }];
+                
+                
+                [newOGPost setFailedBlock:^{
+                    NSLog(@"failed");
+                }];
+                [newOGPost startAsynchronous];
+                NSLog(@"finished posting");
+                
+            }else{
+                [self postNewSendWithOG:nil];
+                
+            }
 
         }
         }];
@@ -992,7 +1076,23 @@ kAPIGraphCommentPhoto,
             [queryArray removeObject:query3];
         NSArray* fetchedProject = objects;
         if ([fetchedProject count]>0){
-            [((PFObject*)[fetchedProject objectAtIndex:0]) deleteInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+            PFObject* fspObject = [fetchedProject  objectAtIndex:0];
+            if ([fspObject objectForKey:@"facebookid"])
+            {
+                NSLog(@"deleting %@...",[fspObject objectForKey:@"facebookid"]);
+                ASIHTTPRequest* newOGDelete = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"https://graph.facebook.com/%@?access_token=%@",[fspObject objectForKey:@"facebookid"],[PFFacebookUtils facebook].accessToken]]];
+                [newOGDelete setRequestMethod:@"DELETE"];
+                [newOGDelete setCompletionBlock:^{
+                    NSLog(@"newOGDelete posted, %@",[newOGDelete responseString]);
+                }];
+                [newOGDelete setFailedBlock:^{
+                    NSLog(@"newOGDelete failed");
+                }];
+                [newOGDelete startAsynchronous];
+                
+                
+            }
+            [fspObject deleteInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
                 if (succeeded) {
                     PFQuery* projFeedQuery = [PFQuery queryWithClassName:@"Feed"];
                     
@@ -1014,7 +1114,8 @@ kAPIGraphCommentPhoto,
         }
         }];
        
-    }else if(sender.tag == 2){
+    }else if(sender.tag == 2)
+    {
         
         //clear all flashes
         NSArray* tempFlashArray = [routeObject.pfobj objectForKey:@"usersflashed"];
@@ -1072,7 +1173,23 @@ kAPIGraphCommentPhoto,
             NSArray* fetchedFlash = [NSArray arrayWithArray:objects];
             [queryArray removeObject:query1];
             if ([fetchedFlash count]>0){
-                [((PFObject*)[fetchedFlash objectAtIndex:0]) deleteInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+                PFObject* fspObject = [fetchedFlash  objectAtIndex:0];
+                if ([fspObject objectForKey:@"facebookid"])
+                {
+                    NSLog(@"deleting %@...",[fspObject objectForKey:@"facebookid"]);
+                    ASIHTTPRequest* newOGDelete = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"https://graph.facebook.com/%@?access_token=%@",[fspObject objectForKey:@"facebookid"],[PFFacebookUtils facebook].accessToken]]];
+                    [newOGDelete setRequestMethod:@"DELETE"];
+                    [newOGDelete setCompletionBlock:^{
+                        NSLog(@"newOGDelete posted, %@",[newOGDelete responseString]);
+                    }];
+                    [newOGDelete setFailedBlock:^{
+                        NSLog(@"newOGDelete failed");
+                    }];
+                    [newOGDelete startAsynchronous];
+                    
+                    
+                }
+                [fspObject deleteInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
                     if (succeeded) {
                         PFQuery* flashFeedQuery = [PFQuery queryWithClassName:@"Feed"];
                         [flashFeedQuery whereKey:@"sender" equalTo:[[PFUser currentUser]objectForKey:@"name"]];
@@ -1102,7 +1219,23 @@ kAPIGraphCommentPhoto,
             NSArray* fetchedSent = [NSArray arrayWithArray:objects];
             [queryArray removeObject:query2];
             if ([fetchedSent count]>0){
-                [((PFObject*)[fetchedSent objectAtIndex:0]) deleteInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+                PFObject* fspObject = [fetchedSent  objectAtIndex:0];
+                if ([fspObject objectForKey:@"facebookid"])
+                {
+                    NSLog(@"deleting %@...",[fspObject objectForKey:@"facebookid"]);
+                    ASIHTTPRequest* newOGDelete = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"https://graph.facebook.com/%@?access_token=%@",[fspObject objectForKey:@"facebookid"],[PFFacebookUtils facebook].accessToken]]];
+                    [newOGDelete setRequestMethod:@"DELETE"];
+                    [newOGDelete setCompletionBlock:^{
+                        NSLog(@"newOGDelete posted, %@",[newOGDelete responseString]);
+                    }];
+                    [newOGDelete setFailedBlock:^{
+                        NSLog(@"newOGDelete failed");
+                    }];
+                    [newOGDelete startAsynchronous];
+                    
+                    
+                }
+                [fspObject deleteInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
                     if (succeeded) {
                         PFQuery* sendFeedQuery = [PFQuery queryWithClassName:@"Feed"];
                         [sendFeedQuery whereKey:@"sender" equalTo:[[PFUser currentUser]objectForKey:@"name"]];
@@ -1132,7 +1265,23 @@ kAPIGraphCommentPhoto,
             [queryArray removeObject:query3];
             NSArray* fetchedProject = objects;
             if ([fetchedProject count]>0){
-                [((PFObject*)[fetchedProject objectAtIndex:0]) deleteInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+                PFObject* fspObject = [fetchedProject  objectAtIndex:0];
+                if ([fspObject objectForKey:@"facebookid"])
+                {
+                    NSLog(@"deleting %@...",[fspObject objectForKey:@"facebookid"]);
+                    ASIHTTPRequest* newOGDelete = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"https://graph.facebook.com/%@?access_token=%@",[fspObject objectForKey:@"facebookid"],[PFFacebookUtils facebook].accessToken]]];
+                    [newOGDelete setRequestMethod:@"DELETE"];
+                    [newOGDelete setCompletionBlock:^{
+                        NSLog(@"newOGDelete posted, %@",[newOGDelete responseString]);
+                    }];
+                    [newOGDelete setFailedBlock:^{
+                        NSLog(@"newOGDelete failed");
+                    }];
+                    [newOGDelete startAsynchronous];
+                    
+                    
+                }
+                [fspObject deleteInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
                     if (succeeded) {
                         PFQuery* projFeedQuery = [PFQuery queryWithClassName:@"Feed"];
                         [projFeedQuery whereKey:@"sender" equalTo:[[PFUser currentUser]objectForKey:@"name"]];
@@ -1151,42 +1300,37 @@ kAPIGraphCommentPhoto,
                     }
                 }];
             }else{
-                PFObject* newProj = [PFObject objectWithClassName:@"Project"];
-                [newProj setObject:[[PFUser currentUser] objectForKey:@"name"] forKey:@"username"];
-                [newProj setObject:[[PFUser currentUser] objectForKey:@"profilepicture"] forKey:@"userimage"];
-                [newProj setObject:[[PFUser currentUser] objectForKey:@"email"] forKey:@"useremail"];
-                [newProj setObject:routeObject.pfobj forKey:@"route"];
-                [newProj setObject:[PFUser currentUser] forKey:@"user"];
-                [newProj saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
-                    PFObject* projFeed = [PFObject objectWithClassName:@"Feed"];
-                    [projFeed setObject:routeObject.pfobj forKey:@"linkedroute"];
-                    if (![[[PFUser currentUser]objectForKey:@"name"] isEqualToString:usernameLabel.text]){
-                        [projFeed setObject:[NSString stringWithFormat:@"%@ started projecting %@'s route",[[PFUser currentUser]objectForKey:@"name"],usernameLabel.text] forKey:@"message"];
-                        
-                    }else{
-                        if ([[[PFUser currentUser]objectForKey:@"sex"] isEqualToString:@"female"]) {
-                            [projFeed setObject:[NSString stringWithFormat:@"%@ started projecting her route",[[PFUser currentUser] objectForKey:@"name"]] forKey:@"message"];
-                            
-                        }else if([[[PFUser currentUser]objectForKey:@"sex"] isEqualToString:@"male"]) {
-                            [projFeed setObject:[NSString stringWithFormat:@"%@ started projecting his route",[[PFUser currentUser] objectForKey:@"name"]] forKey:@"message"];
+                if ([[NSUserDefaults standardUserDefaults]boolForKey:@"ogshare"]) {
+                    ASIFormDataRequest* newOGPost = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:@"https://graph.facebook.com/me/climbing_:project"]];
+                    [newOGPost setPostValue:[PFFacebookUtils facebook].accessToken forKey:@"access_token"];
+                    [newOGPost setPostValue:[NSString stringWithFormat:@"http://www.psychedapp.com/home/%@",routeObject.pfobj.objectId] forKey:@"route"];
+                    [newOGPost setRequestMethod:@"POST"];
+                    [newOGPost setCompletionBlock:^{
+                        SBJsonParser *jsonParser = [[SBJsonParser alloc] init];
+                        NSDictionary *jsonObjects = [jsonParser objectWithString:[newOGPost responseString]];
+                        [jsonParser release];
+                        jsonParser = nil;
+                        if ([jsonObjects objectForKey:@"id"]) {
+                            NSLog(@"posted, %@",[newOGPost responseString]);
+                            [self postNewProjWithOG:[jsonObjects objectForKey:@"id"]];
                         }else{
-                            [projFeed setObject:[NSString stringWithFormat:@"%@ started projecting his/her route",[[PFUser currentUser] objectForKey:@"name"]] forKey:@"message"];
+                            NSLog(@"most likely authentication failed , %@",[newOGPost responseString]);
                         }
                         
-                    }
-                    [projFeed setObject:[[PFUser currentUser]objectForKey:@"name"] forKey:@"sender"];
-                    [projFeed setObject:[[PFUser currentUser]objectForKey:@"profilepicture"] forKey:@"senderimagelink"];
-                    [projFeed setObject:@"project" forKey:@"action"];
-                    [projFeed saveInBackground];
-                    if (succeeded) {
-                    [projbutton setImage:[UIImage imageNamed:@"tick.png"] forState:UIControlStateNormal];
-                    projectCountLabel.text = [NSString stringWithFormat:@"%d",[projectCountLabel.text intValue]+1];
-                        [flashbutton setUserInteractionEnabled:YES];
-                        [sentbutton setUserInteractionEnabled:YES];
-                        [projbutton setUserInteractionEnabled:YES];
-                        
-                    }
-                }];
+                    }];
+                    
+                    
+                    [newOGPost setFailedBlock:^{
+                        NSLog(@"failed");
+                    }];
+                    [newOGPost startAsynchronous];
+                    NSLog(@"finished posting");
+                    
+                }else{
+                    [self postNewProjWithOG:nil];
+                    
+                }
+                // post here to facebook OG
             }
         }];
 
@@ -1197,13 +1341,144 @@ kAPIGraphCommentPhoto,
        
 }
 
+-(void)postNewFlashWithOG:(NSString*)idstring
+{
+    PFObject* newFlash = [PFObject objectWithClassName:@"Flash"];
+    [newFlash setObject:[[PFUser currentUser] objectForKey:@"name"] forKey:@"username"];
+    [newFlash setObject:[[PFUser currentUser] objectForKey:@"profilepicture"] forKey:@"userimage"];
+    [newFlash setObject:[[PFUser currentUser] objectForKey:@"email"] forKey:@"useremail"];
+    [newFlash setObject:[PFUser currentUser] forKey:@"user"];
+    [newFlash setObject:routeObject.pfobj forKey:@"route"];
+    if(idstring)
+        [newFlash setObject:idstring forKey:@"facebookid"];
+    [newFlash saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+        if (succeeded) {
+            //add flash feed here
+            PFObject* flashFeed = [PFObject objectWithClassName:@"Feed"];
+            [flashFeed setObject:routeObject.pfobj forKey:@"linkedroute"];
+            [flashFeed setObject:[[PFUser currentUser]objectForKey:@"name"] forKey:@"sender"];
+            [flashFeed setObject:[[PFUser currentUser]objectForKey:@"profilepicture"] forKey:@"senderimagelink"];
+            
+            
+            [flashFeed setObject:@"flash" forKey:@"action"];
+            
+            if (![[[PFUser currentUser]objectForKey:@"name"] isEqualToString:usernameLabel.text]){
+                [flashFeed setObject:[NSString stringWithFormat:@"%@ flashed %@'s route",[[PFUser currentUser]objectForKey:@"name"],usernameLabel.text] forKey:@"message"];
+                
+            }else{
+                if ([[[PFUser currentUser]objectForKey:@"sex"] isEqualToString:@"female"]) {
+                    [flashFeed setObject:[NSString stringWithFormat:@"%@ flashed her route",[[PFUser currentUser] objectForKey:@"name"]] forKey:@"message"];
+                    
+                }else if([[[PFUser currentUser]objectForKey:@"sex"] isEqualToString:@"male"]) {
+                    [flashFeed setObject:[NSString stringWithFormat:@"%@ flashed his route",[[PFUser currentUser] objectForKey:@"name"]] forKey:@"message"];
+                }else{
+                    [flashFeed setObject:[NSString stringWithFormat:@"%@ flashed his/her route",[[PFUser currentUser] objectForKey:@"name"]] forKey:@"message"];
+                }
+                
+            }
+            [flashFeed saveInBackground];
+            [flashbutton setImage:[UIImage imageNamed:@"tick.png"] forState:UIControlStateNormal];
+            flashCountLabel.text = [NSString stringWithFormat:@"%d",[flashCountLabel.text intValue]+1];
+            [flashbutton setUserInteractionEnabled:YES];
+            [sentbutton setUserInteractionEnabled:YES];
+            [projbutton setUserInteractionEnabled:YES];
+        }
+    }];
+}
+-(void)postNewSendWithOG:(NSString*)idstring
+{
+    
+    PFObject* newSent = [PFObject objectWithClassName:@"Sent"];
+    [newSent setObject:[[PFUser currentUser] objectForKey:@"name"] forKey:@"username"];
+    [newSent setObject:[[PFUser currentUser] objectForKey:@"profilepicture"] forKey:@"userimage"];
+    [newSent setObject:[[PFUser currentUser] objectForKey:@"email"] forKey:@"useremail"];
+    [newSent setObject:routeObject.pfobj forKey:@"route"];
+    if(idstring)
+        [newSent setObject:idstring forKey:@"facebookid"];
+    [newSent setObject:[PFUser currentUser] forKey:@"user"];
+    
+    [newSent saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+        if (succeeded) {
+            PFObject* sendFeed = [PFObject objectWithClassName:@"Feed"];
+            [sendFeed setObject:routeObject.pfobj forKey:@"linkedroute"];
+            if (![[[PFUser currentUser]objectForKey:@"name"] isEqualToString:usernameLabel.text]){
+                [sendFeed setObject:[NSString stringWithFormat:@"%@ sent %@'s route",[[PFUser currentUser]objectForKey:@"name"],usernameLabel.text] forKey:@"message"];
+                
+            }else{
+                if ([[[PFUser currentUser]objectForKey:@"sex"] isEqualToString:@"female"]) {
+                    [sendFeed setObject:[NSString stringWithFormat:@"%@ sent her route",[[PFUser currentUser] objectForKey:@"name"]] forKey:@"message"];
+                    
+                }else if([[[PFUser currentUser]objectForKey:@"sex"] isEqualToString:@"male"]) {
+                    [sendFeed setObject:[NSString stringWithFormat:@"%@ sent his route",[[PFUser currentUser] objectForKey:@"name"]] forKey:@"message"];
+                }else{
+                    [sendFeed setObject:[NSString stringWithFormat:@"%@ sent his/her route",[[PFUser currentUser] objectForKey:@"name"]] forKey:@"message"];
+                }
+                
+            }
+            [sendFeed setObject:[[PFUser currentUser]objectForKey:@"name"] forKey:@"sender"];
+            [sendFeed setObject:[[PFUser currentUser]objectForKey:@"profilepicture"] forKey:@"senderimagelink"];
+            [sendFeed setObject:@"sent" forKey:@"action"];
+            [sendFeed saveInBackground];
+            [sentbutton setImage:[UIImage imageNamed:@"tick.png"] forState:UIControlStateNormal];
+            sendCountLabel.text = [NSString stringWithFormat:@"%d",[sendCountLabel.text intValue]+1];
+            [flashbutton setUserInteractionEnabled:YES];
+            [sentbutton setUserInteractionEnabled:YES];
+            [projbutton setUserInteractionEnabled:YES];
+        }
+    }];
+
+    
+    
+    }
+-(void)postNewProjWithOG:(NSString*)idstring
+{
+    PFObject* newProj = [PFObject objectWithClassName:@"Project"];
+    [newProj setObject:[[PFUser currentUser] objectForKey:@"name"] forKey:@"username"];
+    [newProj setObject:[[PFUser currentUser] objectForKey:@"profilepicture"] forKey:@"userimage"];
+    [newProj setObject:[[PFUser currentUser] objectForKey:@"email"] forKey:@"useremail"];
+    [newProj setObject:routeObject.pfobj forKey:@"route"];
+    if(idstring)
+        [newProj setObject:idstring forKey:@"facebookid"];
+    [newProj setObject:[PFUser currentUser] forKey:@"user"];
+    [newProj saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+        PFObject* projFeed = [PFObject objectWithClassName:@"Feed"];
+        [projFeed setObject:routeObject.pfobj forKey:@"linkedroute"];
+        if (![[[PFUser currentUser]objectForKey:@"name"] isEqualToString:usernameLabel.text]){
+            [projFeed setObject:[NSString stringWithFormat:@"%@ started projecting %@'s route",[[PFUser currentUser]objectForKey:@"name"],usernameLabel.text] forKey:@"message"];
+            
+        }else{
+            if ([[[PFUser currentUser]objectForKey:@"sex"] isEqualToString:@"female"]) {
+                [projFeed setObject:[NSString stringWithFormat:@"%@ started projecting her route",[[PFUser currentUser] objectForKey:@"name"]] forKey:@"message"];
+                
+            }else if([[[PFUser currentUser]objectForKey:@"sex"] isEqualToString:@"male"]) {
+                [projFeed setObject:[NSString stringWithFormat:@"%@ started projecting his route",[[PFUser currentUser] objectForKey:@"name"]] forKey:@"message"];
+            }else{
+                [projFeed setObject:[NSString stringWithFormat:@"%@ started projecting his/her route",[[PFUser currentUser] objectForKey:@"name"]] forKey:@"message"];
+            }
+            
+        }
+        [projFeed setObject:[[PFUser currentUser]objectForKey:@"name"] forKey:@"sender"];
+        [projFeed setObject:[[PFUser currentUser]objectForKey:@"profilepicture"] forKey:@"senderimagelink"];
+        [projFeed setObject:@"project" forKey:@"action"];
+        [projFeed saveInBackground];
+        if (succeeded) {
+            [projbutton setImage:[UIImage imageNamed:@"tick.png"] forState:UIControlStateNormal];
+            projectCountLabel.text = [NSString stringWithFormat:@"%d",[projectCountLabel.text intValue]+1];
+            [flashbutton setUserInteractionEnabled:YES];
+            [sentbutton setUserInteractionEnabled:YES];
+            [projbutton setUserInteractionEnabled:YES];
+            
+        }
+    }];
+}
+
 -(void)getFacebookRouteDetails{
     
     NSString* fbphotoid = [routeObject.pfobj objectForKey:@"photoid"];
     ASIHTTPRequest* request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"https://graph.facebook.com/%@?access_token=%@",fbphotoid,[PFFacebookUtils facebook].accessToken]]];
     NSLog(@"url = %@",[request url]);
     [request setCompletionBlock:^{
-            NSLog(@"request response = %@",[request responseString]);       
+            NSLog(@"request response = %@",[request responseString]);
         if(![[request responseString] isEqualToString:@"false"]){
         SBJSON *parser = [[SBJSON alloc] init];
 
@@ -1462,22 +1737,46 @@ kAPIGraphCommentPhoto,
 	// get the context for CoreGraphics
     CGContextRef context = UIGraphicsGetCurrentContext();
     
-	CGContextClipToMask(context, rect, [UIImage imageNamed:@"arrow3flip"].CGImage);
+	CGContextClipToMask(context, rect, [UIImage imageNamed:@"arrowbgflip"].CGImage);
     
     [pastedImage drawInRect:rect blendMode:kCGBlendModeColor alpha:1.0];
     CGContextSetBlendMode(context, kCGBlendModeNormal);
-    CIColor *coreColor = [CIColor colorWithString:colorstring];
-    UIColor *color = [UIColor colorWithCIColor:coreColor];
-    [color setFill];
+    [[UIColor blackColor] setFill];
     CGContextFillRect(context, rect);
+    
+    
+    
     
 	// make image out of bitmap context
 	UIImage *retImage = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    UIGraphicsBeginImageContext(retImage.size);
     
+	// draw original image into the context
+	[retImage drawAtPoint:CGPointZero];
+    
+	// get the context for CoreGraphics
+    CGContextRef newcontext = UIGraphicsGetCurrentContext();
+    
+	CGContextClipToMask(newcontext, rect, [UIImage imageNamed:@"arrow3flip"].CGImage);
+    
+    [pastedImage drawInRect:rect blendMode:kCGBlendModeColor alpha:1.0];
+    CGContextSetBlendMode(newcontext, kCGBlendModeNormal);
+    NSArray *components = [colorstring componentsSeparatedByString:@","];
+    CGFloat r = [[components objectAtIndex:0] floatValue];
+    CGFloat g = [[components objectAtIndex:1] floatValue];
+    CGFloat b = [[components objectAtIndex:2] floatValue];
+    CGFloat a = [[components objectAtIndex:3] floatValue];
+    UIColor *color = [UIColor colorWithRed:r green:g blue:b alpha:a];
+    [color setFill];
+    CGContextFillRect(newcontext, rect);
+
+    
+    UIImage *newretImage = UIGraphicsGetImageFromCurrentImageContext();
 	// free the context
 	UIGraphicsEndImageContext();
     
-	return retImage;
+	return newretImage;
 }
 - (UIImage *)imageByDrawingClippedText:(NSString*)pastedText OnImage:(UIImage *)image inRect:(CGRect)rect withColorString:(NSString*)colorstring
 {
@@ -1492,11 +1791,16 @@ kAPIGraphCommentPhoto,
 	// get the context for CoreGraphics
     CGContextRef context = UIGraphicsGetCurrentContext();
 
-    CIColor *coreColor = [CIColor colorWithString:colorstring];
-    UIColor *color = [UIColor colorWithCIColor:coreColor];
+    NSArray *components = [colorstring componentsSeparatedByString:@","];
+    CGFloat r = [[components objectAtIndex:0] floatValue];
+    CGFloat g = [[components objectAtIndex:1] floatValue];
+    CGFloat b = [[components objectAtIndex:2] floatValue];
+    CGFloat a = [[components objectAtIndex:3] floatValue];
+    UIColor *color = [UIColor colorWithRed:r green:g blue:b alpha:a];
     CGContextSetFillColorWithColor(context, color.CGColor);
-    [pastedText drawInRect:rect withFont:[UIFont boldSystemFontOfSize:25]];
-
+    CGContextSetRGBStrokeColor(context, 0.0, 0.0, 0.0, 1.0);
+    CGContextSetTextDrawingMode(context, kCGTextFillStroke);
+    [pastedText drawInRect:rect withFont:[UIFont boldSystemFontOfSize:25] lineBreakMode:UILineBreakModeClip alignment:UITextAlignmentRight];
     
     
 	// make image out of bitmap context
@@ -1705,23 +2009,23 @@ kAPIGraphCommentPhoto,
         
         
         //save photoid in array in docs directory
-        NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, 
-                                                            NSUserDomainMask, YES);
-        if ([paths count] > 0)
-        {
-            // Path to save array data
-            NSString  *arrayPath = [[paths objectAtIndex:0] 
-                                    stringByAppendingPathComponent:@"array.out"];
-            NSMutableArray *arrayFromFile = [NSMutableArray arrayWithContentsOfFile:arrayPath];
-            if (![arrayFromFile containsObject:[routeObject.pfobj objectForKey:@"photoid"]]) {
-                [arrayFromFile addObject:[routeObject.pfobj objectForKey:@"photoid"]];
-
-            }
-            [arrayFromFile writeToFile:arrayPath atomically:YES];
-
-            
-        }
-            
+//        NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, 
+//                                                            NSUserDomainMask, YES);
+//        if ([paths count] > 0)
+//        {
+//            // Path to save array data
+//            NSString  *arrayPath = [[paths objectAtIndex:0] 
+//                                    stringByAppendingPathComponent:@"array.out"];
+//            NSMutableArray *arrayFromFile = [NSMutableArray arrayWithContentsOfFile:arrayPath];
+//            if (![arrayFromFile containsObject:[routeObject.pfobj objectForKey:@"photoid"]]) {
+//                [arrayFromFile addObject:[routeObject.pfobj objectForKey:@"photoid"]];
+//
+//            }
+//            [arrayFromFile writeToFile:arrayPath atomically:YES];
+//
+//            
+//        }
+        
             
             
         currentAPICall = kAPIGraphCommentPhoto;

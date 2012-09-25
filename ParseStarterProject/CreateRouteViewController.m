@@ -724,24 +724,22 @@ typedef enum apiCall {
             [PFPush subscribeToChannelInBackground:[NSString stringWithFormat:@"channel%@",newRoute.objectId]];
             [JHNotificationManager notificationWithMessage:@"Successfully uploaded your route!"];
             NSLog(@"upload completed successfully in background!");
-//            ASIHTTPRequest* routeUpdater = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"http://www.psychedapp.com/routepost/%@",newRoute.objectId]]];
-//            [routeUpdater setRequestMethod:@"PUT"];
-//            [routeUpdater setCompletionBlock:^{
-//                NSLog(@"done adding route to rails backend, now go add OG");
-//                ASIHTTPRequest* postOG = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"http://psychedsupport.herokuapp.com/support/%@?og=true&access_token=%@",newRoute.objectId,[PFFacebookUtils facebook].accessToken]]];
-//                [postOG setCompletionBlock:^{
-//                    NSLog(@"done adding route to rails backend, lets see if its there \n %@",postOG.responseString);
-//                }];
-//                [postOG setFailedBlock:^{
-//                    NSLog(@"faillleddddd =( with error %@",postOG.error);
-//                }];
-//                [postOG startAsynchronous];
-//            }];
-//            [routeUpdater setFailedBlock:^{
-//            }];
-//            [routeUpdater startAsynchronous];
+            //FIXME: to do here
             
+            if ([[NSUserDefaults standardUserDefaults] boolForKey:@"ogshare"]) {
+                
             
+            ASIHTTPRequest* routeUpdater = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"http://www.psychedapp.com/routepost/%@",newRoute.objectId]]];
+            [routeUpdater setRequestMethod:@"PUT"];
+            [routeUpdater setCompletionBlock:^{
+                NSLog(@"done adding route to rails backend, now go add OG");
+                [self performSelector:@selector(postOG:) withObject:newRoute afterDelay:3.0];
+            }];
+            [routeUpdater setFailedBlock:^{
+            }];
+            [routeUpdater startAsynchronous];
+            
+            }
             
             [[UIApplication sharedApplication] endBackgroundTask:self.fileUploadBackgroundTaskId];
                  
@@ -762,7 +760,17 @@ typedef enum apiCall {
 }
 -(void)postOG:(PFObject*)newRoute
 {
-    
+    ASIHTTPRequest* postOG = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"http://psychedsupport.herokuapp.com/support/%@?og=true&access_token=%@",newRoute.objectId,[PFFacebookUtils facebook].accessToken]]];
+    [postOG setCompletionBlock:^{
+        NSLog(@"done adding route to rails backend, lets see if its there \n %@",postOG.responseString);
+    }];
+    [postOG setFailedBlock:^{
+        NSLog(@"faillleddddd =( with error %@",postOG.error);
+        ASIHTTPRequest *newRequest = [[postOG copy] autorelease];
+        [newRequest startAsynchronous];
+    }];
+    [postOG startAsynchronous];
+
     
     
         // no action needed, its fire and forget mode

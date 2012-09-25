@@ -39,6 +39,13 @@
     LoggedInUser.text = [NSString stringWithFormat:@"Signed in as:%@",[[PFUser currentUser]objectForKey:@"name"]];
     // Do any additional setup after loading the view from its nib.
 }
+- (IBAction)OGswitchDidChange:(UISwitch*)sender {
+    NSLog(@"setting ogshare");
+    [[NSUserDefaults standardUserDefaults]setBool:sender.on forKey:@"ogshare"];
+    
+    [[NSUserDefaults standardUserDefaults] synchronize];
+    
+}
 -(IBAction)LogOut:(id)sender
 {
     [PFUser logOut];
@@ -70,6 +77,7 @@
     [self setDistanceSlider:nil];
     [self setDistanceLabel:nil];
     [self setLoggedInUser:nil];
+    [self setOGswitch:nil];
     [super viewDidUnload];
     // Release any retained subviews of the main view.
     // e.g. self.myOutlet = nil;
@@ -84,6 +92,7 @@
     [distanceSlider release];
     [distanceLabel release];
     [LoggedInUser release];
+    [_OGswitch release];
     [super dealloc];
 }
 @end
