@@ -64,6 +64,8 @@
 		EF384E4415BD8B16008A8B77 /* BuildingsDB.png in Resources */ = {isa = PBXBuildFile; fileRef = EF384E4215BD8B15008A8B77 /* BuildingsDB.png */; };
 		EF38ADDC14BA7C840037DB10 /* SpecialTableCell.m in Sources */ = {isa = PBXBuildFile; fileRef = EF38ADDB14BA7C840037DB10 /* SpecialTableCell.m */; };
 		EF38ADDE14BA7C960037DB10 /* SpecialTableCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = EF38ADDD14BA7C960037DB10 /* SpecialTableCell.xib */; };
+		EF38CF1C1612FA99002A930D /* libFlurryAnalytics.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EF38CF1B1612FA99002A930D /* libFlurryAnalytics.a */; };
+		EF38CF1F1612FDD2002A930D /* BugSense-iOS.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EF38CF1E1612FDD2002A930D /* BugSense-iOS.framework */; };
 		EF399F8214BB035200A02516 /* RouteDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EF399F8014BB035200A02516 /* RouteDetailViewController.m */; };
 		EF399F8314BB035200A02516 /* RouteDetailViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = EF399F8114BB035200A02516 /* RouteDetailViewController.xib */; };
 		EF399FE114BB31AB00A02516 /* ASIAuthenticationDialog.m in Sources */ = {isa = PBXBuildFile; fileRef = EF399F8A14BB31A900A02516 /* ASIAuthenticationDialog.m */; };
@@ -384,6 +386,9 @@
 		EF38ADDA14BA7C840037DB10 /* SpecialTableCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SpecialTableCell.h; sourceTree = "<group>"; };
 		EF38ADDB14BA7C840037DB10 /* SpecialTableCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SpecialTableCell.m; sourceTree = "<group>"; };
 		EF38ADDD14BA7C960037DB10 /* SpecialTableCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SpecialTableCell.xib; sourceTree = "<group>"; };
+		EF38CF1A1612FA99002A930D /* FlurryAnalytics.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FlurryAnalytics.h; sourceTree = "<group>"; };
+		EF38CF1B1612FA99002A930D /* libFlurryAnalytics.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libFlurryAnalytics.a; sourceTree = "<group>"; };
+		EF38CF1E1612FDD2002A930D /* BugSense-iOS.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = "BugSense-iOS.framework"; path = "../../Downloads/BugSense-iOS.framework"; sourceTree = "<group>"; };
 		EF399F7F14BB035100A02516 /* RouteDetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RouteDetailViewController.h; sourceTree = "<group>"; };
 		EF399F8014BB035200A02516 /* RouteDetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RouteDetailViewController.m; sourceTree = "<group>"; };
 		EF399F8114BB035200A02516 /* RouteDetailViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = RouteDetailViewController.xib; sourceTree = "<group>"; };
@@ -735,6 +740,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				EF38CF1F1612FDD2002A930D /* BugSense-iOS.framework in Frameworks */,
 				EF39A00D14BB327700A02516 /* libxml2.dylib in Frameworks */,
 				EFAE9A1515F0F9BB003DB569 /* libsqlite3.dylib in Frameworks */,
 				EFAD337F15BEA463003EEE1B /* StoreKit.framework in Frameworks */,
@@ -757,6 +763,7 @@
 				092354B313A1D7EB00DA740F /* CFNetwork.framework in Frameworks */,
 				09ABC07613A1D52D009C3FCF /* CoreGraphics.framework in Frameworks */,
 				09ABC07213A1D52D009C3FCF /* UIKit.framework in Frameworks */,
+				EF38CF1C1612FA99002A930D /* libFlurryAnalytics.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -776,7 +783,6 @@
 		09ABC06213A1D52D009C3FCF = {
 			isa = PBXGroup;
 			children = (
-				EF1177DA15DBE7BD0087C894 /* Tests */,
 				09ABC07713A1D52D009C3FCF /* ParseStarterProject */,
 				EF11780C15DBFAD80087C894 /* testbundle */,
 				09ABC07013A1D52D009C3FCF /* Frameworks */,
@@ -796,6 +802,9 @@
 		09ABC07013A1D52D009C3FCF /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				EF38CF1E1612FDD2002A930D /* BugSense-iOS.framework */,
+				EF38CF191612FA99002A930D /* FlurryAnalytics */,
+				EF1177DA15DBE7BD0087C894 /* Tests */,
 				EFAB68B61609B833000BCC01 /* CoreImage.framework */,
 				EF034ABE1602503F006E9CC0 /* libxml2.2.dylib */,
 				EFAE9A1415F0F9BB003DB569 /* libsqlite3.dylib */,
@@ -947,6 +956,15 @@
 				EF292F5314E37343006D3D09 /* UIImage+RoundedCorner.m */,
 			);
 			path = "UIImage-categories";
+			sourceTree = "<group>";
+		};
+		EF38CF191612FA99002A930D /* FlurryAnalytics */ = {
+			isa = PBXGroup;
+			children = (
+				EF38CF1A1612FA99002A930D /* FlurryAnalytics.h */,
+				EF38CF1B1612FA99002A930D /* libFlurryAnalytics.a */,
+			);
+			path = FlurryAnalytics;
 			sourceTree = "<group>";
 		};
 		EF399F8814BB31A800A02516 /* Classes */ = {
@@ -1942,7 +1960,10 @@
 				"HEADER_SEARCH_PATHS[arch=*]" = "${SDK_DIR}/usr/include/libxml2";
 				INFOPLIST_FILE = "ParseStarterProject/PsychedApp-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
-				LIBRARY_SEARCH_PATHS = "";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/FlurryAnalytics\"",
+				);
 				OTHER_LDFLAGS = (
 					"-all_load",
 					"-ObjC",
@@ -1981,7 +2002,10 @@
 				"HEADER_SEARCH_PATHS[arch=*]" = "${SDK_DIR}/usr/include/libxml2";
 				INFOPLIST_FILE = "ParseStarterProject/PsychedApp-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
-				LIBRARY_SEARCH_PATHS = "";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/FlurryAnalytics\"",
+				);
 				OTHER_LDFLAGS = (
 					"-all_load",
 					"-ObjC",

@@ -1,10 +1,4 @@
-//
-//  CreateRouteViewController.m
-//  ParseStarterProject
-//
-//  Created by Shaun Tan on 9/1/12.
-//  Copyright (c) 2012 __MyCompanyName__. All rights reserved.
-//
+
 
 typedef enum apiCall {
     kAPIGetAppUsersFriendsUsing,
@@ -14,7 +8,7 @@ typedef enum apiCall {
 } apiCall;
 #import "ASIHTTPRequest.h"
 #import "UIImage+Resize.h"
-//#import "FlurryAnalytics.h"
+#import "FlurryAnalytics.h"
 #import "JSON.h"
 #import "JHNotificationManager.h"
 #import "MKMapView+ZoomLevel.h"
@@ -384,21 +378,29 @@ typedef enum apiCall {
     NSLog(@"Requested background expiration task with id %d for photo upload", self.fileUploadBackgroundTaskId);
         
     PFObject* newRoute = [PFObject objectWithClassName:@"Route"];
-    if (fbuploadswitch.on) {
-        ASIHTTPRequest* accountRequest = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"https://graph.facebook.com/%@?access_token=%@",fbphotoid,[PFFacebookUtils facebook].accessToken]]];
-        [accountRequest setCompletionBlock:^{
-            SBJsonParser *jsonParser = [[SBJsonParser alloc] init];
-            NSDictionary *jsonObjects = [jsonParser objectWithString:[accountRequest responseString]];
-            [jsonParser release];
-            jsonParser = nil;
-            [newRoute setObject:[jsonObjects objectForKey:@"source"] forKey:@"fbimagelink"];
-            [newRoute setObject:fbphotoid forKey:@"photoid"];  
-            [fbphotoid release];
-        }];
-        [accountRequest setFailedBlock:^{}];
-        [accountRequest startAsynchronous];
-       
-    }
+    
+    ///////////////////////////////////////////////////////////
+    //////////////                                /////////////
+    ////////////// setting fb photoid deprecated  /////////////
+    //////////////                                /////////////
+    ///////////////////////////////////////////////////////////
+    
+    /*    if (fbuploadswitch.on) {
+//        ASIHTTPRequest* accountRequest = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"https://graph.facebook.com/%@?access_token=%@",fbphotoid,[PFFacebookUtils facebook].accessToken]]];
+//        [accountRequest setCompletionBlock:^{
+//            SBJsonParser *jsonParser = [[SBJsonParser alloc] init];
+//            NSDictionary *jsonObjects = [jsonParser objectWithString:[accountRequest responseString]];
+//            [jsonParser release];
+//            jsonParser = nil;
+//            [newRoute setObject:[jsonObjects objectForKey:@"source"] forKey:@"fbimagelink"];
+//            [newRoute setObject:fbphotoid forKey:@"photoid"];  
+//            [fbphotoid release];
+//        }];
+//        [accountRequest setFailedBlock:^{}];
+//        [accountRequest startAsynchronous];
+//       
+//    }*/
+    
     [newRoute setObject:locationTextField.text forKey:@"location"];
   
     NSString* hashtag;
@@ -533,7 +535,8 @@ typedef enum apiCall {
                     
                     [PFPush subscribeToChannelInBackground:[NSString stringWithFormat:@"channel%@",newRoute.objectId]];
                     [HUD hide:YES afterDelay:0];
-                    
+                    [FlurryAnalytics logEvent:@"COMPLETED_SHARE"];
+                    [FlurryAnalytics endTimedEvent:@"SHARE_ACTION" withParameters:nil];
                     [[UIApplication sharedApplication] endBackgroundTask:self.fileUploadBackgroundTaskId];
                     
                     
@@ -544,6 +547,7 @@ typedef enum apiCall {
                 
                 
             }
+             
              /*progressBlock:^(int percentDone) {
               
               HUD.progress = percentDone/100.0f;
@@ -554,9 +558,8 @@ typedef enum apiCall {
               
               UIApplication *thisApp = [UIApplication sharedApplication];
               thisApp.idleTimerDisabled = NO;
-              [FlurryAnalytics logEvent:@"COMPLETED_SHARE"];
-              NSLog(@"share action ended");
-              [FlurryAnalytics endTimedEvent:@"SHARE_ACTION" withParameters:nil];
+                           NSLog(@"share action ended");
+             
               
               }
               if (percentDone <70 && percentDone>50) {
@@ -586,24 +589,30 @@ typedef enum apiCall {
    //
     
     PFObject* newRoute = [PFObject objectWithClassName:@"Route"];
-    if (fbuploadswitch.on) {
-        ASIHTTPRequest* accountRequest = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"https://graph.facebook.com/%@?access_token=%@",fbphotoid,[PFFacebookUtils facebook].accessToken]]];
-        [accountRequest setCompletionBlock:^{
-            SBJsonParser *jsonParser = [[SBJsonParser alloc] init];
-            NSDictionary *jsonObjects = [jsonParser objectWithString:[accountRequest responseString]];
-            [jsonParser release];
-            jsonParser = nil;
-            [newRoute setObject:[jsonObjects objectForKey:@"source"] forKey:@"fbimagelink"];
-            [newRoute setObject:fbphotoid forKey:@"photoid"];
-            [newRoute saveEventually:^(BOOL succeeded, NSError *error) {
-                NSLog(@"uploaded to facebook and updated newroute pfobj");
-            }];
-            [fbphotoid release];
-                   }];
-        [accountRequest setFailedBlock:^{}];
-        [accountRequest startAsynchronous];
-        
-    }
+    ///////////////////////////////////////////////////////////
+    //////////////                                /////////////
+    ////////////// setting fb photoid deprecated  /////////////
+    //////////////                                /////////////
+    ///////////////////////////////////////////////////////////
+    
+/*    if (fbuploadswitch.on) {
+//        ASIHTTPRequest* accountRequest = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"https://graph.facebook.com/%@?access_token=%@",fbphotoid,[PFFacebookUtils facebook].accessToken]]];
+//        [accountRequest setCompletionBlock:^{
+//            SBJsonParser *jsonParser = [[SBJsonParser alloc] init];
+//            NSDictionary *jsonObjects = [jsonParser objectWithString:[accountRequest responseString]];
+//            [jsonParser release];
+//            jsonParser = nil;
+//            [newRoute setObject:[jsonObjects objectForKey:@"source"] forKey:@"fbimagelink"];
+//            [newRoute setObject:fbphotoid forKey:@"photoid"];
+//            [newRoute saveEventually:^(BOOL succeeded, NSError *error) {
+//                NSLog(@"uploaded to facebook and updated newroute pfobj");
+//            }];
+//            [fbphotoid release];
+//                   }];
+//        [accountRequest setFailedBlock:^{}];
+//        [accountRequest startAsynchronous];
+//        
+//    }*/
 
     [newRoute setObject:locationTextField.text forKey:@"location"];
     NSString* hashtag;
@@ -732,7 +741,6 @@ typedef enum apiCall {
             ASIHTTPRequest* routeUpdater = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"http://www.psychedapp.com/routepost/%@",newRoute.objectId]]];
             [routeUpdater setRequestMethod:@"PUT"];
             [routeUpdater setCompletionBlock:^{
-                NSLog(@"done adding route to rails backend, now go add OG");
                 [self performSelector:@selector(postOG:) withObject:newRoute afterDelay:3.0];
             }];
             [routeUpdater setFailedBlock:^{
@@ -763,6 +771,13 @@ typedef enum apiCall {
     ASIHTTPRequest* postOG = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"http://psychedsupport.herokuapp.com/support/%@?og=true&access_token=%@",newRoute.objectId,[PFFacebookUtils facebook].accessToken]]];
     [postOG setCompletionBlock:^{
         NSLog(@"done adding route to rails backend, lets see if its there \n %@",postOG.responseString);
+        SBJsonParser *jsonParser = [[SBJsonParser alloc] init];
+        NSDictionary *jsonObjects = [jsonParser objectWithString:[postOG responseString]];
+        [jsonParser release];
+        jsonParser = nil;
+        [newRoute setObject:[jsonObjects objectForKey:@"id"] forKey:@"opengraphid"];
+        [newRoute saveEventually];
+
     }];
     [postOG setFailedBlock:^{
         NSLog(@"faillleddddd =( with error %@",postOG.error);
@@ -823,30 +838,30 @@ typedef enum apiCall {
                      thisApp.idleTimerDisabled = YES;
                   
                      
-                     if (fbuploadswitch.on) {
-                         HUD = [[MBProgressHUD showHUDAddedTo:self.view animated:YES] retain];
-                         if (isPage) {
-                                                      NSLog(@"sharing with facebook page");
-                             [self performSelector:@selector(apiGraphPagePhotosPost:) withObject:imageTaken afterDelay:0.0];
-                             HUD.labelText = @"Uploading to Facebook...";
-                         }else {
-                                                      NSLog(@"sharing with facebook self page");
-                            [self performSelector:@selector(apiGraphUserPhotosPost:) withObject:imageTaken afterDelay:0.0];
-                             HUD.labelText = @"Uploading to Facebook...";
-
-                         }
-                         
-                     
-                         
-                     }else{
+//                     if (fbuploadswitch.on) {
+//                         HUD = [[MBProgressHUD showHUDAddedTo:self.view animated:YES] retain];
+//                         if (isPage) {
+//                                                      NSLog(@"sharing with facebook page");
+//                             [self performSelector:@selector(apiGraphPagePhotosPost:) withObject:imageTaken afterDelay:0.0];
+//                             HUD.labelText = @"Uploading to Facebook...";
+//                         }else {
+//                                                      NSLog(@"sharing with facebook self page");
+//                            [self performSelector:@selector(apiGraphUserPhotosPost:) withObject:imageTaken afterDelay:0.0];
+//                             HUD.labelText = @"Uploading to Facebook...";
+//
+//                         }
+//                         
+//                     
+//                         
+//                     }else{
                          [self performSelector:@selector(saveRoute) withObject:nil afterDelay:4.0];
 
-                     }
+//                     }
                      
                      
                      
                  }else{
-                     
+                     NSLog(@"twitter result is something else other than done");
                  }
              }];
             [self presentModalViewController:tweetSheet animated:YES];
@@ -858,28 +873,32 @@ typedef enum apiCall {
         }
     }
     else{
-        //twitter off
+
+        ///////////////////////////////////////////////////////////
+        //////////////                                /////////////
+        //////////////      If Twitter is off         /////////////
+        //////////////                                /////////////
+        ///////////////////////////////////////////////////////////
+        
+        
         ((UIButton*)sender).enabled =NO;
         UIApplication *thisApp = [UIApplication sharedApplication];
         thisApp.idleTimerDisabled = YES;
-//        self.fileUploadBackgroundTaskId = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:^{
-//            [[UIApplication sharedApplication] endBackgroundTask:self.fileUploadBackgroundTaskId];
-//        }];
         
         
         
-        if (fbuploadswitch.on) {
-            HUD = [[MBProgressHUD showHUDAddedTo:self.view animated:YES] retain];
-            if (isPage) {
-                [self performSelector:@selector(apiGraphPagePhotosPost:) withObject:imageTaken afterDelay:0.0];
-                HUD.labelText = @"Uploading to Facebook...";
-                return;                
-            }else {
-                [self performSelector:@selector(apiGraphUserPhotosPost:) withObject:imageTaken afterDelay:0.0];
-                HUD.labelText = @"Uploading to Facebook...";
-                return;
-            }
-            }
+/*        if (fbuploadswitch.on) {
+//            HUD = [[MBProgressHUD showHUDAddedTo:self.view animated:YES] retain];
+//            if (isPage) {
+//                [self performSelector:@selector(apiGraphPagePhotosPost:) withObject:imageTaken afterDelay:0.0];
+//                HUD.labelText = @"Uploading to Facebook...";
+//                return;                
+//            }else {
+//                [self performSelector:@selector(apiGraphUserPhotosPost:) withObject:imageTaken afterDelay:0.0];
+//                HUD.labelText = @"Uploading to Facebook...";
+//                return;
+//            }
+//            }*/
         if(gymSwitch.on){
                 
             NSLog(@"saving route in gym selector...");
@@ -902,7 +921,7 @@ typedef enum apiCall {
 {
     [self dismissModalViewControllerAnimated:YES];
     NSLog(@"share action ended");
-//    [FlurryAnalytics endTimedEvent:@"SHARE_ACTION" withParameters:nil];
+    [FlurryAnalytics endTimedEvent:@"SHARE_ACTION" withParameters:nil];
 }
 - (void)dealloc
 {

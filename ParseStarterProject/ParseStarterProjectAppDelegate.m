@@ -5,8 +5,8 @@
 #import "InstagramViewController.h"
 #import "LoginViewController.h"
 #import "JHNotificationManager.h"
-//#import "FlurryAnalytics.h"
-
+#import "FlurryAnalytics.h"
+#import <BugSense-iOS/BugSenseCrashController.h>
 #define VERSION 1.9
 @implementation ParseStarterProjectAppDelegate
 @synthesize badgeView;
@@ -35,7 +35,8 @@
 //    application.applicationIconBadgeNumber = 0;
 //    [[PFInstallation currentInstallation]setBadge:0];
  //   [[PFInstallation currentInstallation] saveEventually];
-//    [FlurryAnalytics startSession:@"N66I1CJV446Z75ZV8G8V"];
+    [BugSenseCrashController sharedInstanceWithBugSenseAPIKey:@"ade3c7ab"];
+    [FlurryAnalytics startSession:@"N66I1CJV446Z75ZV8G8V"];
     [self startStandardUpdates];
     [Parse setApplicationId:@"rUk14GRi8xY6ieFQGyXcJ39iQUPuGo1ihR2dAKeh" clientKey:@"aOz04F0XOehjH9a58b95V4nKtcCZNUNUxbCoqM48"];
     //sandbox
@@ -50,7 +51,7 @@
         [[UINavigationBar appearance] setBackgroundImage:[UIImage imageNamed:@"headerview.png"] forBarMetrics:UIBarMetricsDefault];
         
      if ([PFFacebookUtils facebook].accessToken) { //if accesstoken is ok
-     /*        NSDictionary *dictionary =
+             NSDictionary *dictionary =
              [NSDictionary dictionaryWithObjectsAndKeys:[[PFUser currentUser] objectForKey:@"email"],@"email",[[PFUser currentUser] objectForKey:@"birthday_date"],@"birthday_date",[[PFUser currentUser] objectForKey:@"name"],@"name",[[PFUser currentUser] objectForKey:@"sex"],@"sex",[[PFUser currentUser] objectForKey:@"uid"],@"uid",[[PFUser currentUser] objectForKey:@"about_me"],@"about_me", nil];
              [FlurryAnalytics setUserID:[[PFUser currentUser] objectForKey:@"name"]];
              [FlurryAnalytics setAge:[[[PFUser currentUser] objectForKey:@"age"]intValue]];
@@ -60,7 +61,7 @@
                  [FlurryAnalytics setGender:@"f"];
              }
              [FlurryAnalytics logEvent:@"USER_LOGIN" withParameters:dictionary timed:YES];
-       */
+       
          
 
 
@@ -378,10 +379,10 @@
     
     [locationManager startUpdatingLocation];
    
- /*   [FlurryAnalytics setLatitude:location.coordinate.latitude
-                       longitude:location.coordinate.longitude
-              horizontalAccuracy:location.horizontalAccuracy
-                verticalAccuracy:location.verticalAccuracy];*/
+   [FlurryAnalytics setLatitude:locationManager.location.coordinate.latitude
+                       longitude:locationManager.location.coordinate.longitude
+              horizontalAccuracy:locationManager.location.horizontalAccuracy
+                verticalAccuracy:locationManager.location.verticalAccuracy];
 }
 // Delegate method from the CLLocationManagerDelegate protocol.
 - (void)locationManager:(CLLocationManager *)manager
@@ -473,7 +474,7 @@
                     [[PFUser currentUser] saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
                         [PFPush subscribeToChannelInBackground:[NSString stringWithFormat:@"channel%@",[[PFUser currentUser] objectForKey:@"facebookid"]] target:self selector:@selector(subscribeFinished:error:)];
                         NSLog(@"subscribed to channeluser %@",[NSString stringWithFormat:@"channel%@",[[PFUser currentUser] objectForKey:@"facebookid"]]);
-                 /*       [FlurryAnalytics setUserID:[[PFUser currentUser] objectForKey:@"name"]];
+                        [FlurryAnalytics setUserID:[[PFUser currentUser] objectForKey:@"name"]];
                         if ([[[PFUser currentUser] objectForKey:@"sex"] isEqualToString:@"male"]) {
                             [FlurryAnalytics setGender:@"m"];
                         }else{
@@ -483,7 +484,7 @@
                         NSDictionary *dictionary = 
                         [NSDictionary dictionaryWithObjectsAndKeys:[result objectForKey:@"email"],@"email",[result objectForKey:@"birthday"],@"birthday",[result objectForKey:@"name"],@"name",[result objectForKey:@"sex"],@"sex",[result objectForKey:@"uid"],@"uid",[result objectForKey:@"about_me"],@"about_me", nil];
                         
-                        [FlurryAnalytics logEvent:@"USER_LOGIN" withParameters:dictionary timed:YES];*/
+                        [FlurryAnalytics logEvent:@"USER_LOGIN" withParameters:dictionary timed:YES];
                                                             NSLog(@"subscription commpleted");  
                     }];
                     

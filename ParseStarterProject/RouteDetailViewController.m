@@ -596,6 +596,7 @@ kAPIGraphCommentPhoto,
         [deleteQueryFeed whereKey:@"linkedroute" equalTo:routeObject.pfobj];
         [deleteQueryFeed findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
             for (PFObject* obj in objects) {
+                [self deleteOGwithId:[obj objectForKey:@"facebookid"]];
                 [obj deleteInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
                     NSLog(@"deleted 1 feed");
                 }];
@@ -605,6 +606,7 @@ kAPIGraphCommentPhoto,
         [deleteQueryFlash whereKey:@"route" equalTo:routeObject.pfobj];
         [deleteQueryFlash findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
             for (PFObject* obj in objects) {
+                [self deleteOGwithId:[obj objectForKey:@"facebookid"]];
                 [obj deleteInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
                     NSLog(@"deleted 1 flash");
                 }];
@@ -614,8 +616,9 @@ kAPIGraphCommentPhoto,
         [deleteQuerySent whereKey:@"route" equalTo:routeObject.pfobj];
         [deleteQuerySent findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
             for (PFObject* obj in objects) {
+                [self deleteOGwithId:[obj objectForKey:@"facebookid"]];
                 [obj deleteInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
-                    NSLog(@"deleted 1 send");
+
                 }];
             }
         }];
@@ -623,6 +626,7 @@ kAPIGraphCommentPhoto,
         [deleteQueryProj whereKey:@"route" equalTo:routeObject.pfobj];
         [deleteQueryProj findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
             for (PFObject* obj in objects) {
+                [self deleteOGwithId:[obj objectForKey:@"facebookid"]];
                 [obj deleteInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
                     NSLog(@"deleted 1 proj");
                 }];
@@ -633,23 +637,23 @@ kAPIGraphCommentPhoto,
             [deleteQueryComments whereKey:@"route" equalTo:routeObject.pfobj];
             [deleteQueryComments findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
                 for (PFObject* obj in objects) {
+                    [self deleteOGwithId:[obj objectForKey:@"facebookid"]];
                     [obj deleteInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
                         NSLog(@"deleted 1 comment");
                     }];
                 }
             }];
-//            
-//            NSLog(@"deleting %@...",[fspObject objectForKey:@"facebookid"]);
-//            ASIHTTPRequest* newOGDelete = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"https://graph.facebook.com/%@?access_token=%@",[fspObject objectForKey:@"facebookid"],[PFFacebookUtils facebook].accessToken]]];
-//            [newOGDelete setRequestMethod:@"DELETE"];
-//            [newOGDelete setCompletionBlock:^{
-//                NSLog(@"newOGDelete posted, %@",[newOGDelete responseString]);
-//            }];
-//            [newOGDelete setFailedBlock:^{
-//                NSLog(@"newOGDelete failed");
-//            }];
-//            [newOGDelete startAsynchronous];
-        
+            [self deleteOGwithId:[routeObject.pfobj objectForKey:@"opengraphid"]];
+            ASIHTTPRequest* routeDelete = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"http://www.psychedapp.com/routepost/%@",routeObject.pfobj.objectId]]];
+            [routeDelete setRequestMethod:@"DELETE"];
+
+            [routeDelete setCompletionBlock:^{
+                NSLog(@"routeDelete posted, %@",[routeDelete responseString]);
+            }];
+            [routeDelete setFailedBlock:^{
+                NSLog(@"routeDelete failed");
+            }];
+            [routeDelete startAsynchronous];
     [hud hide:YES];
     [self.navigationController popViewControllerAnimated:YES];
     }];
@@ -1470,6 +1474,23 @@ kAPIGraphCommentPhoto,
             
         }
     }];
+}
+
+-(void)deleteOGwithId:(NSString*)idstring
+{
+    if (idstring) {
+    ASIHTTPRequest* newOGDelete = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"https://graph.facebook.com/%@?access_token=%@",idstring,[PFFacebookUtils facebook].accessToken]]];
+    [newOGDelete setRequestMethod:@"DELETE"];
+        NSLog(@"deleting %@",newOGDelete.url);
+    [newOGDelete setCompletionBlock:^{
+        NSLog(@"newOGDelete posted, %@",[newOGDelete responseString]);
+    }];
+    [newOGDelete setFailedBlock:^{
+        NSLog(@"newOGDelete failed");
+    }];
+    [newOGDelete startAsynchronous];
+        
+    }
 }
 
 -(void)getFacebookRouteDetails{

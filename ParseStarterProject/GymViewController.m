@@ -1042,7 +1042,11 @@
 */
      
     }];
-    [request setFailedBlock:^{}];
+    [request setFailedBlock:^{
+        ASIHTTPRequest* newCoverReq = [[coverrequest copy]autorelease];
+        [newCoverReq startAsynchronous];
+    
+    }];
     [request startAsynchronous];
     
 }

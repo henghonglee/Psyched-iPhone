@@ -29,7 +29,7 @@
 #import "FeedsViewController.h"
 #import "NewsViewController.h"
 #import "ProfileViewController.h"
-//#import "FlurryAnalytics.h"
+#import "FlurryAnalytics.h"
 
 #import <Parse/Parse.h>
 @implementation InstagramViewController
@@ -48,7 +48,7 @@
 //    feedsViewController.gridView.dataSource = self;
 //    UINavigationController* feedsNav = [[UINavigationController alloc] initWithRootViewController:feedsViewController];
 //  //  feedsViewController.tabBarItem = [[[UITabBarItem alloc] initWithTitle:@"Popular" image:[UIImage imageNamed:@"star.png"] tag:0] autorelease];
-//    [FlurryAnalytics logAllPageViews:feedsNav];
+//   [FlurryAnalytics logAllPageViews:feedsNav];
     
     // get all popular routes
  
@@ -59,7 +59,7 @@
    // mainNav.tabBarItem = [[[UITabBarItem alloc] initWithTitle:@"" image:[UIImage imageNamed:@"29-heart.png"] tag:0] autorelease];
         [mainNav.navigationBar setBarStyle:UIBarStyleBlack];
     demoViewController.navigationController.navigationBarHidden = YES;
-//    [FlurryAnalytics logAllPageViews:mainNav];
+    [FlurryAnalytics logAllPageViews:mainNav];
     
     
     //news navigation cotnroller

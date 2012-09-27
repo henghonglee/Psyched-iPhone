@@ -6,7 +6,7 @@
 #import "AssetsLibrary/ALAssetsLibrary.h"
 #import "UIImagePickerController+NoRotate.h"
 
-//#import "FlurryAnalytics.h"
+#import "FlurryAnalytics.h"
 #import "RDActionSheet.h"
 #import "LKBadgeView.h"
 #import "RouteDetailViewController.h"
@@ -80,7 +80,7 @@ static inline double radians (double degrees) {return degrees * M_PI/180;}
 -(void)CreateRoute:(id)sender
 {
 // [self startStandardUpdates];
-//    [FlurryAnalytics logEvent:@"SHARE_ACTION" timed:YES];
+    [FlurryAnalytics logEvent:@"SHARE_ACTION" timed:YES];
     
     
     if(reuseImageData != nil){
@@ -296,13 +296,13 @@ static inline double radians (double degrees) {return degrees * M_PI/180;}
                 
             }else{
                 NSLog(@"share action ended");
- //               [FlurryAnalytics endTimedEvent:@"SHARE_ACTION" withParameters:nil];
+               [FlurryAnalytics endTimedEvent:@"SHARE_ACTION" withParameters:nil];
             }
             
             break;
         default:
             NSLog(@"share action ended");
- //           [FlurryAnalytics endTimedEvent:@"SHARE_ACTION" withParameters:nil];
+            [FlurryAnalytics endTimedEvent:@"SHARE_ACTION" withParameters:nil];
             break;
     }
 }
@@ -360,7 +360,7 @@ static inline double radians (double degrees) {return degrees * M_PI/180;}
 	//[picker.view removeFromSuperview];
 	[picker dismissModalViewControllerAnimated:YES];
     NSLog(@"share action ended");
- //   [FlurryAnalytics endTimedEvent:@"SHARE_ACTION" withParameters:nil];
+    [FlurryAnalytics endTimedEvent:@"SHARE_ACTION" withParameters:nil];
 }
 
 // Delegate method from the CLLocationManagerDelegate protocol.
@@ -399,7 +399,7 @@ static inline double radians (double degrees) {return degrees * M_PI/180;}
     if (buttonIndex == 0) {
         // Request to save the image to camera roll
         ALAssetsLibrary* library = [[ALAssetsLibrary alloc] init];
-//        [FlurryAnalytics logEvent:@"USED_SAVE_BUTTON"];
+        [FlurryAnalytics logEvent:@"USED_SAVE_BUTTON"];
         
         [library writeImageToSavedPhotosAlbum:[newcropped CGImage] metadata:imageMetaData completionBlock:^(NSURL *assetURL, NSError *error) {
             if (error) {
@@ -410,7 +410,7 @@ static inline double radians (double degrees) {return degrees * M_PI/180;}
         }];
         
         [library release];
- //       [FlurryAnalytics endTimedEvent:@"SHARE_ACTION" withParameters:nil];
+        [FlurryAnalytics endTimedEvent:@"SHARE_ACTION" withParameters:nil];
         [imagepicker dismissModalViewControllerAnimated:YES];
     }else{
         [imagepicker dismissModalViewControllerAnimated:NO];
