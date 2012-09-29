@@ -37,6 +37,7 @@
 		EF11781415DBFAD80087C894 /* testbundle.m in Sources */ = {isa = PBXBuildFile; fileRef = EF11781315DBFAD80087C894 /* testbundle.m */; };
 		EF1679C71541AE8600CE757A /* CommentsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EF1679C51541AE8600CE757A /* CommentsViewController.m */; };
 		EF1679C81541AE8600CE757A /* CommentsViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = EF1679C61541AE8600CE757A /* CommentsViewController.xib */; };
+		EF17AA3516174DCA00F356C6 /* BugSense-iOS.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EF17AA3416174DCA00F356C6 /* BugSense-iOS.framework */; };
 		EF1B4B4114BEB7450048E8B2 /* RouteObject.m in Sources */ = {isa = PBXBuildFile; fileRef = EF1B4B4014BEB7450048E8B2 /* RouteObject.m */; };
 		EF24513C15C766A4002C2592 /* GymViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EF24513B15C766A3002C2592 /* GymViewController.m */; };
 		EF25231614F80CA700D0F717 /* EditInstruction.png in Resources */ = {isa = PBXBuildFile; fileRef = EF25231514F80CA700D0F717 /* EditInstruction.png */; };
@@ -65,7 +66,6 @@
 		EF38ADDC14BA7C840037DB10 /* SpecialTableCell.m in Sources */ = {isa = PBXBuildFile; fileRef = EF38ADDB14BA7C840037DB10 /* SpecialTableCell.m */; };
 		EF38ADDE14BA7C960037DB10 /* SpecialTableCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = EF38ADDD14BA7C960037DB10 /* SpecialTableCell.xib */; };
 		EF38CF1C1612FA99002A930D /* libFlurryAnalytics.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EF38CF1B1612FA99002A930D /* libFlurryAnalytics.a */; };
-		EF38CF1F1612FDD2002A930D /* BugSense-iOS.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EF38CF1E1612FDD2002A930D /* BugSense-iOS.framework */; };
 		EF399F8214BB035200A02516 /* RouteDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EF399F8014BB035200A02516 /* RouteDetailViewController.m */; };
 		EF399F8314BB035200A02516 /* RouteDetailViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = EF399F8114BB035200A02516 /* RouteDetailViewController.xib */; };
 		EF399FE114BB31AB00A02516 /* ASIAuthenticationDialog.m in Sources */ = {isa = PBXBuildFile; fileRef = EF399F8A14BB31A900A02516 /* ASIAuthenticationDialog.m */; };
@@ -350,6 +350,7 @@
 		EF1679C41541AE8600CE757A /* CommentsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CommentsViewController.h; sourceTree = "<group>"; };
 		EF1679C51541AE8600CE757A /* CommentsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CommentsViewController.m; sourceTree = "<group>"; };
 		EF1679C61541AE8600CE757A /* CommentsViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CommentsViewController.xib; sourceTree = "<group>"; };
+		EF17AA3416174DCA00F356C6 /* BugSense-iOS.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = "BugSense-iOS.framework"; sourceTree = "<group>"; };
 		EF1B4B3F14BEB7450048E8B2 /* RouteObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RouteObject.h; sourceTree = "<group>"; };
 		EF1B4B4014BEB7450048E8B2 /* RouteObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RouteObject.m; sourceTree = "<group>"; };
 		EF24513A15C766A3002C2592 /* GymViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GymViewController.h; sourceTree = "<group>"; };
@@ -740,7 +741,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				EF38CF1F1612FDD2002A930D /* BugSense-iOS.framework in Frameworks */,
+				EF17AA3516174DCA00F356C6 /* BugSense-iOS.framework in Frameworks */,
 				EF39A00D14BB327700A02516 /* libxml2.dylib in Frameworks */,
 				EFAE9A1515F0F9BB003DB569 /* libsqlite3.dylib in Frameworks */,
 				EFAD337F15BEA463003EEE1B /* StoreKit.framework in Frameworks */,
@@ -783,6 +784,7 @@
 		09ABC06213A1D52D009C3FCF = {
 			isa = PBXGroup;
 			children = (
+				EF17AA3416174DCA00F356C6 /* BugSense-iOS.framework */,
 				09ABC07713A1D52D009C3FCF /* ParseStarterProject */,
 				EF11780C15DBFAD80087C894 /* testbundle */,
 				09ABC07013A1D52D009C3FCF /* Frameworks */,
