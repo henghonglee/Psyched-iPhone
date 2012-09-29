@@ -270,9 +270,6 @@
 		EFAB68BC1609BAB9000BCC01 /* end1.png in Resources */ = {isa = PBXBuildFile; fileRef = EFAB68BB1609BAB9000BCC01 /* end1.png */; };
 		EFAD337F15BEA463003EEE1B /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EFAD337E15BEA463003EEE1B /* StoreKit.framework */; };
 		EFAE9A1515F0F9BB003DB569 /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = EFAE9A1415F0F9BB003DB569 /* libsqlite3.dylib */; };
-		EFB25A5615E674AA00EFBA5B /* DACircularProgressView.m in Sources */ = {isa = PBXBuildFile; fileRef = EFB25A5515E674AA00EFBA5B /* DACircularProgressView.m */; };
-		EFB25A5815E6777500EFBA5B /* DACircularProgressView.h in Sources */ = {isa = PBXBuildFile; fileRef = EFB25A5415E674AA00EFBA5B /* DACircularProgressView.h */; };
-		EFB25A5915E6777500EFBA5B /* DACircularProgressView.m in Sources */ = {isa = PBXBuildFile; fileRef = EFB25A5515E674AA00EFBA5B /* DACircularProgressView.m */; };
 		EFB25D4D15258E69002F310B /* UserObject.m in Sources */ = {isa = PBXBuildFile; fileRef = EFB25D4C15258E68002F310B /* UserObject.m */; };
 		EFB6773B160AAA9900621509 /* arrowbgflip.png in Resources */ = {isa = PBXBuildFile; fileRef = EFB6773A160AAA9900621509 /* arrowbgflip.png */; };
 		EFC6543815F3DC09005E425A /* hashtag.png in Resources */ = {isa = PBXBuildFile; fileRef = EFC6543715F3DC09005E425A /* hashtag.png */; };
@@ -679,8 +676,6 @@
 		EFAB68BB1609BAB9000BCC01 /* end1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = end1.png; path = ../end1.png; sourceTree = "<group>"; };
 		EFAD337E15BEA463003EEE1B /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		EFAE9A1415F0F9BB003DB569 /* libsqlite3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsqlite3.dylib; path = usr/lib/libsqlite3.dylib; sourceTree = SDKROOT; };
-		EFB25A5415E674AA00EFBA5B /* DACircularProgressView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DACircularProgressView.h; sourceTree = "<group>"; };
-		EFB25A5515E674AA00EFBA5B /* DACircularProgressView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DACircularProgressView.m; sourceTree = "<group>"; };
 		EFB25D4B15258E67002F310B /* UserObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UserObject.h; sourceTree = "<group>"; };
 		EFB25D4C15258E68002F310B /* UserObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UserObject.m; sourceTree = "<group>"; };
 		EFB6773A160AAA9900621509 /* arrowbgflip.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = arrowbgflip.png; sourceTree = "<group>"; };
@@ -1457,8 +1452,6 @@
 			isa = PBXGroup;
 			children = (
 				EF87E127160980B300637600 /* Color Picker */,
-				EFB25A5415E674AA00EFBA5B /* DACircularProgressView.h */,
-				EFB25A5515E674AA00EFBA5B /* DACircularProgressView.m */,
 				EF27B39E1551193500FCFA2E /* myImageView.h */,
 				EF27B39F1551193500FCFA2E /* myImageView.m */,
 				EF399F8814BB31A800A02516 /* Classes */,
@@ -1749,8 +1742,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				EFB25A5815E6777500EFBA5B /* DACircularProgressView.h in Sources */,
-				EFB25A5915E6777500EFBA5B /* DACircularProgressView.m in Sources */,
 				EF8765341547AFCA00589622 /* GradientButton.m in Sources */,
 				EF90FD8D153ECD9E0037D302 /* LKBadgeView.m in Sources */,
 				09ABC07F13A1D52D009C3FCF /* main.m in Sources */,
@@ -1867,7 +1858,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				EF11781415DBFAD80087C894 /* testbundle.m in Sources */,
-				EFB25A5615E674AA00EFBA5B /* DACircularProgressView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
