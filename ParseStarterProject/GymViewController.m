@@ -526,8 +526,10 @@
                 viewController.routeimage = [UIImage imageWithData:((BaseViewController*)applicationDelegate.window.rootViewController).reuseImageData];
                 [self.navigationController pushViewController:viewController animated:YES];
                 [viewController release];
+                    [MBProgressHUD hideHUDForView:self.view animated:YES];
                 return;
             }else{
+                    [MBProgressHUD hideHUDForView:self.view animated:YES];
                 [self performSelector:@selector(reverseHandleDoubleTap:) withObject:sender afterDelay:0.0];
             }
             

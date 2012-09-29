@@ -736,14 +736,18 @@ typedef enum apiCall {
             //FIXME: to do here
             
             if ([[NSUserDefaults standardUserDefaults] boolForKey:@"ogshare"]) {
-                
-            
+                NSLog(@"og share enabled!");
             ASIHTTPRequest* routeUpdater = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"http://www.psychedapp.com/routepost/%@",newRoute.objectId]]];
             [routeUpdater setRequestMethod:@"PUT"];
             [routeUpdater setCompletionBlock:^{
+                NSLog(@"route created on heroku ... now posting og");
                 [self performSelector:@selector(postOG:) withObject:newRoute afterDelay:3.0];
             }];
             [routeUpdater setFailedBlock:^{
+                NSLog(@"failed to create route, trying again");
+                ASIHTTPRequest* newReq = [[routeUpdater copy]autorelease];
+                [newReq startAsynchronous];
+                
             }];
             [routeUpdater startAsynchronous];
             
@@ -770,7 +774,7 @@ typedef enum apiCall {
 {
     ASIHTTPRequest* postOG = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"http://psychedsupport.herokuapp.com/support/%@?og=true&access_token=%@",newRoute.objectId,[PFFacebookUtils facebook].accessToken]]];
     [postOG setCompletionBlock:^{
-        NSLog(@"done adding route to rails backend, lets see if its there \n %@",postOG.responseString);
+        NSLog(@"added og with response \n %@",postOG.responseString);
         SBJsonParser *jsonParser = [[SBJsonParser alloc] init];
         NSDictionary *jsonObjects = [jsonParser objectWithString:[postOG responseString]];
         [jsonParser release];
@@ -780,7 +784,7 @@ typedef enum apiCall {
 
     }];
     [postOG setFailedBlock:^{
-        NSLog(@"faillleddddd =( with error %@",postOG.error);
+        NSLog(@"adding og faillleddddd =( with error %@ , trying again",postOG.error);
         ASIHTTPRequest *newRequest = [[postOG copy] autorelease];
         [newRequest startAsynchronous];
     }];
