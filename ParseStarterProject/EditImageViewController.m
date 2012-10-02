@@ -52,11 +52,14 @@
     [self selectArrow:button1];
     selectColor = [UIColor redColor];
     UIBarButtonItem* rightButton = [[UIBarButtonItem alloc] initWithTitle:@"Done" style:UIBarButtonSystemItemDone target:self action:@selector(DoneButton:)];
+    [rightButton setTintColor:[UIColor darkGrayColor]];
     self.navigationItem.rightBarButtonItem = rightButton;
         [self.navigationItem.rightBarButtonItem setEnabled:NO];
     [rightButton release];
     UIBarButtonItem* leftButton = [[UIBarButtonItem alloc] initWithTitle:@"Cancel" style:UIBarButtonSystemItemDone target:self action:@selector(cancelButton:)];
+    [leftButton setTintColor:[UIColor darkGrayColor]];
     self.navigationItem.leftBarButtonItem = leftButton;
+    
     [leftButton release];
     self.navigationItem.title = @"Add Arrows";
     originalArrowFrame = CGRectMake(9, 327, 28, 28);

@@ -75,7 +75,8 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    
+    [[UIBarButtonItem appearance] setTintColor:[UIColor darkGrayColor]];
+
     HRRGBColor rgbColor;
     RGBColorFromUIColor(_color, &rgbColor);
     

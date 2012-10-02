@@ -30,9 +30,8 @@
         segmentIndex =0;
         self.backgroundColor = [UIColor clearColor];
         self.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-        self.tabContainer = [[JMTabContainer alloc] initWithFrame:self.bounds] ;
+        self.tabContainer = [[[JMTabContainer alloc] initWithFrame:self.bounds]autorelease] ;
         [self addSubview:self.tabContainer];
-        [self.tabContainer release];
     }
     return self;
 }

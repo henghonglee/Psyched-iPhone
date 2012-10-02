@@ -15,6 +15,7 @@
 @synthesize pageControl;
 @synthesize gymWallScroll;
 @synthesize footerView;
+@synthesize progress;
 @synthesize footerUserImageView;
 @synthesize footerLabel;
 @synthesize footerDifficultyLabel;
@@ -331,6 +332,10 @@
                     downloadedRouteCount++;
                     //progressView.progress = downloadedRouteCount/[self.gymTags count];
                     NSLog(@"retrieved 1 image, count at %d/%d",downloadedRouteCount,[self.gymTags count]);
+                    float progress_to_set = ((float)downloadedRouteCount)/((float)[self.gymTags count]);
+                    
+                    [self performSelector:@selector(progressSet:) withObject:[NSNumber numberWithFloat:progress_to_set] afterDelay:0.0];
+                    
                     if (downloadedRouteCount==[self.gymTags count]) {
                         //  [progressView removeFromSuperview];
                         ourRoutesButton.enabled = true;
@@ -361,6 +366,10 @@
             
         }
     }];
+}
+-(void)progressSet:(NSNumber*)number
+{
+    [progress setProgress:[number floatValue]];
 }
 -(void)handleDoubleTap:(id)sender
 {
@@ -1384,6 +1393,7 @@
     [loadRoutesActivityIndicator release];
     [_bluepin release];
     [loadingLabel release];
+    [progress release];
     [super dealloc];
 }
 - (void)viewDidUnload
@@ -1407,6 +1417,7 @@
     [self setLoadRoutesActivityIndicator:nil];
     [self setBluepin:nil];
     [self setLoadingLabel:nil];
+    [self setProgress:nil];
     [super viewDidUnload];
 }
 @end

@@ -1,9 +1,9 @@
 //
 //  FriendTaggerViewController.m
-//  ParseStarterProject
+//  PsychedApp
 //
-//  Created by Shaun Tan on 21/2/12.
-//  Copyright (c) 2012 __MyCompanyName__. All rights reserved.
+//  Created by HengHong Lee on 21/2/12.
+//  Copyright (c) 2012 Psyched!. All rights reserved.
 //
 
 #import "FriendTaggerViewController.h"
@@ -53,29 +53,9 @@
 -(void)dismissView:(id)sender
 {
     
-
-    if([self.delegate isKindOfClass:[RouteDetailViewController class]]){
-        if ([recommendArray count]){
-            if ([recommendArray count]>1) {
-                FBfriend* friendname = [recommendArray objectAtIndex:0];
-                NSString* str = [NSString stringWithFormat:@"Recommend %@ and %d other friends?",friendname.name,([recommendArray count]-1)];
-                UIAlertView* alert = [[UIAlertView alloc]initWithTitle:@"Recommend Friends" message:str delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:@"OK",nil];
-                [alert show];
-                [alert release];
-            }else{
-                FBfriend* friendname = [recommendArray objectAtIndex:0];
-                NSString* str = [NSString stringWithFormat:@"Recommend route to %@?",friendname.name];
-                UIAlertView* alert = [[UIAlertView alloc]initWithTitle:@"Recommend Friends" message:str delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:@"OK",nil];
-                [alert show];
-                [alert release];
-            }
-        }else{
-             [self.navigationController popViewControllerAnimated:YES]; 
-        }
-    }else{
     [self.delegate TaggerDidReturnWithRecommendedArray:recommendArray];
     [self.navigationController popViewControllerAnimated:YES];
-    }
+    
     
 }
 -(void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex

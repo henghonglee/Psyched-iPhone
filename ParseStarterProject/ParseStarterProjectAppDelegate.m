@@ -7,7 +7,7 @@
 #import "JHNotificationManager.h"
 #import "FlurryAnalytics.h"
 #import <BugSense-iOS/BugSenseCrashController.h>
-#define VERSION 1.9
+#define VERSION 2.0
 @implementation ParseStarterProjectAppDelegate
 @synthesize badgeView;
 @synthesize window=_window;
@@ -47,9 +47,13 @@
 
      LoginViewController* loginVC = [[LoginViewController alloc]initWithNibName:@"LoginViewController" bundle:nil];
 
-    if ([[[UIDevice currentDevice] systemVersion] floatValue] >= 5.0)
-        [[UINavigationBar appearance] setBackgroundImage:[UIImage imageNamed:@"headerview.png"] forBarMetrics:UIBarMetricsDefault];
+    if ([[[UIDevice currentDevice] systemVersion] floatValue] >= 5.0){
+        [[UINavigationBar appearance] setBackgroundImage:[UIImage imageNamed:@"headerimgbg@2x.png"] forBarMetrics:UIBarMetricsDefault];
+        NSDictionary *textTitleOptions = [NSDictionary dictionaryWithObjectsAndKeys:[UIColor colorWithRed:229.0/255.0 green:182.0/255.0 blue:3.0/255.0 alpha:1.0], UITextAttributeTextColor,nil, UITextAttributeTextShadowColor,[UIFont fontWithName:@"Helvetica-Light" size:10.0],UITextAttributeFont,nil];
+        [[UINavigationBar appearance] setTitleTextAttributes:textTitleOptions];
         
+    }
+    
      if ([PFFacebookUtils facebook].accessToken) { //if accesstoken is ok
              NSDictionary *dictionary =
              [NSDictionary dictionaryWithObjectsAndKeys:[[PFUser currentUser] objectForKey:@"email"],@"email",[[PFUser currentUser] objectForKey:@"birthday_date"],@"birthday_date",[[PFUser currentUser] objectForKey:@"name"],@"name",[[PFUser currentUser] objectForKey:@"sex"],@"sex",[[PFUser currentUser] objectForKey:@"uid"],@"uid",[[PFUser currentUser] objectForKey:@"about_me"],@"about_me", nil];

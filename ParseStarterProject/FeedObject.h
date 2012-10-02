@@ -1,9 +1,9 @@
 //
 //  FeedObject.h
-//  ParseStarterProject
+//  PsychedApp
 //
-//  Created by Shaun Tan on 17/1/12.
-//  Copyright (c) 2012 __MyCompanyName__. All rights reserved.
+//  Created by HengHong Lee on 17/1/12.
+//  Copyright (c) 2012 Psyched!. All rights reserved.
 //
 
 #import <Foundation/Foundation.h>

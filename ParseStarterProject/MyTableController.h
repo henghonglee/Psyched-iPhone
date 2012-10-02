@@ -1,6 +1,6 @@
 //
 //  MyTableController.h
-//  ParseStarterProject
+//  PsychedApp
 //
 //  Created by James Yu on 12/29/11.
 //  Copyright (c) 2011 Parse Inc. All rights reserved.

@@ -1,6 +1,6 @@
 //
 //  MyTableController.m
-//  ParseStarterProject
+//  PsychedApp
 //
 //  Created by James Yu on 12/29/11.
 //  Copyright (c) 2011 Parse Inc. All rights reserved.
@@ -102,17 +102,17 @@
     routeTableView.showsVerticalScrollIndicator = NO;
     routeTableView.bounces = YES;
     headerView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, 320, 44)];
-    headerView.backgroundColor = [UIColor darkGrayColor];
+    headerView.backgroundColor = [UIColor colorWithRed:229.0/255.0 green:182.0/255.0 blue:3.0/255.0 alpha:1.0];
     UIImageView* headerviewimage = [[UIImageView alloc]initWithFrame:CGRectMake(0, 0, 320, 44 )];
-    headerviewimage.image = [UIImage imageNamed:@"headerview.png"];
+    headerviewimage.image = [UIImage imageNamed:@"headerimg@2x.png"];
     [headerView addSubview:headerviewimage];
     [headerviewimage release];
-    UILabel* headerLabel = [[UILabel alloc]initWithFrame:CGRectMake(60, 0, 200, 44)];
-    headerLabel.font = [UIFont boldSystemFontOfSize:23.0f];
-    headerLabel.textAlignment = UITextAlignmentCenter;
-    headerLabel.textColor = [UIColor whiteColor];
-    headerLabel.text = @"Psyched!";
-    headerLabel.backgroundColor = [UIColor clearColor];
+//    UILabel* headerLabel = [[UILabel alloc]initWithFrame:CGRectMake(60, 0, 200, 44)];
+//    headerLabel.font = [UIFont boldSystemFontOfSize:23.0f];
+//    headerLabel.textAlignment = UITextAlignmentCenter;
+//    headerLabel.textColor = [UIColor whiteColor];
+//    headerLabel.text = @"Psyched!";
+//    headerLabel.backgroundColor = [UIColor clearColor];
     
     [settingsButton addTarget:self action:@selector(Settings:) forControlEvents:UIControlEventTouchUpInside];
     [headerView addSubview:settingsButton];
@@ -128,8 +128,8 @@
 //    [buttonBgImage release];
     [headerView addSubview:refreshButton];
     [refreshButton release];
-    [headerView addSubview:headerLabel];
-    [headerLabel release];
+//    [headerView addSubview:headerLabel];
+//    [headerLabel release];
     [self.view addSubview:routeTableView];
     [self addStandardTabView];
  NSLog(@"done added standard tab view");
@@ -316,7 +316,7 @@
     }else{
         if ([[routeArray objectAtIndex:indexPath.row] isKindOfClass:[RouteObject class]]) {
         static NSString *CellIdentifier = @"Cell";
-    SpecialTableCell* cell = (SpecialTableCell*) [tableView dequeueReusableCellWithIdentifier:CellIdentifier]; 
+    SpecialTableCell* cell = (SpecialTableCell*) [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
     if (cell == nil) {
         NSArray *topLevelObjects = [[NSBundle mainBundle] loadNibNamed:@"SpecialTableCell" owner:nil options:nil];
         for(id currentObject in topLevelObjects){
@@ -350,10 +350,12 @@
                         if (!cell.isFetchingGym) {
                             cell.isFetchingGym = YES;
                           
-                        [[object objectForKey:@"Gym"]fetchIfNeededInBackgroundWithBlock:^(PFObject *object, NSError *error) {
+                        [[object objectForKey:@"Gym"]fetchIfNeededInBackgroundWithBlock:^(PFObject *gym, NSError *error) {
                             cell.isFetchingGym = NO;
-                            imagelink=[object objectForKey:@"imagelink"];  
-                            cell.ownerNameLabel.text = [object objectForKey:@"name"]; 
+                            imagelink=[gym objectForKey:@"imagelink"];  
+                            cell.ownerNameLabel.text = [NSString stringWithFormat:@"%@ added a new %@ route",[gym objectForKey:@"name"],[object objectForKey:@"difficultydescription"]];
+                            
+                            
                             if (((RouteObject*)[self.routeArray objectAtIndex:indexPath.row]).ownerImage) {
                                 cell.ownerImage.image = ((RouteObject*)[self.routeArray objectAtIndex:indexPath.row]).ownerImage;
                             }else{
@@ -387,7 +389,8 @@
                         }
                     }else{
                         imagelink = [object objectForKey:@"userimage"];
-                        cell.ownerNameLabel.text = [object objectForKey:@"username"];
+                        cell.ownerNameLabel.text = [NSString stringWithFormat:@"%@ added a new %@ route",[object objectForKey:@"username"],[object objectForKey:@"difficultydescription"]];
+                        
                         if (((RouteObject*)[self.routeArray objectAtIndex:indexPath.row]).ownerImage) {
                             
                             cell.ownerImage.image = ((RouteObject*)[self.routeArray objectAtIndex:indexPath.row]).ownerImage;
@@ -826,7 +829,7 @@
     if ([routeArray count] && indexPath.row < [routeArray count]) {
         
         if ([[routeArray objectAtIndex:indexPath.row]isKindOfClass:[RouteObject class]]) {
-            return 120;
+            return 194;
         }else  if ([[routeArray objectAtIndex:indexPath.row]isKindOfClass:[FeedObject class]]){
                if ([[((FeedObject*)[routeArray objectAtIndex:indexPath.row]).pfobj objectForKey:@"action"] isEqualToString:@"comment"]) {
                    return 64;

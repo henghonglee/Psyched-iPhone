@@ -1,9 +1,9 @@
 //
 //  CommentsViewController.h
-//  ParseStarterProject
+//  PsychedApp
 //
-//  Created by Shaun Tan on 20/4/12.
-//  Copyright (c) 2012 __MyCompanyName__. All rights reserved.
+//  Created by HengHong Lee on 20/4/12.
+//  Copyright (c) 2012 Psyched!. All rights reserved.
 //
 
 #import <UIKit/UIKit.h>

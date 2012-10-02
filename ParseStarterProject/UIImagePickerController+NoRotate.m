@@ -1,9 +1,9 @@
 //
 //  UIImagePickerController+NoRotate.m
-//  ParseStarterProject
+//  PsychedApp
 //
-//  Created by Shaun Tan on 19/3/12.
-//  Copyright (c) 2012 __MyCompanyName__. All rights reserved.
+//  Created by HengHong Lee on 19/3/12.
+//  Copyright (c) 2012 Psyched!. All rights reserved.
 //
 
 #import "UIImagePickerController+NoRotate.h"

@@ -1,9 +1,9 @@
 //
 //  FollowFriendsViewController.m
-//  ParseStarterProject
+//  PsychedApp
 //
-//  Created by Shaun Tan on 18/1/12.
-//  Copyright (c) 2012 __MyCompanyName__. All rights reserved.
+//  Created by HengHong Lee on 18/1/12.
+//  Copyright (c) 2012 Psyched!. All rights reserved.
 //
 
 #import "FollowFriendsViewController.h"
@@ -38,6 +38,7 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    [searchBar setTintColor:[UIColor darkGrayColor]];
     self.navigationItem.title = @"Following";
     tempArray = [[NSMutableArray alloc]init];
     searchArray = [[NSMutableArray alloc]init];

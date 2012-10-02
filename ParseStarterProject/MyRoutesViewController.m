@@ -1,6 +1,6 @@
 //
 //  MyTableController.m
-//  ParseStarterProject
+//  PsychedApp
 //
 //  Created by James Yu on 12/29/11.
 //  Copyright (c) 2011 Parse Inc. All rights reserved.
@@ -8,6 +8,8 @@
 
 #import "MyRoutesViewController.h"
 #import "SpecialTableCell.h"
+#import "RouteCell.h"
+
 #import "ASIHTTPRequest.h"
 #import "JMTabView/Classes/Subviews/JMTabView.h"
 @implementation MyRoutesViewController
@@ -34,13 +36,13 @@
     headerView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, 320, 44)];
     headerView.backgroundColor = [UIColor darkGrayColor];
     UIImageView* headerviewimage = [[UIImageView alloc]initWithFrame:CGRectMake(0, 0, 320, 44 )];
-    headerviewimage.image = [UIImage imageNamed:@"headerview.png"];
+    headerviewimage.image = [UIImage imageNamed:@"headerimgbg@2x.png"];
     [headerView addSubview:headerviewimage];
     [headerviewimage release];
     UILabel* headerLabel = [[UILabel alloc]initWithFrame:CGRectMake(60, 0, 200, 44)];
     headerLabel.font = [UIFont boldSystemFontOfSize:20.0f];
     headerLabel.textAlignment = UITextAlignmentCenter;
-    headerLabel.textColor = [UIColor whiteColor];
+    headerLabel.textColor = [UIColor colorWithRed:229.0/255.0 green:182.0/255.0 blue:3.0/255.0 alpha:1.0];
     headerLabel.text = @"My Routes";
     headerLabel.backgroundColor = [UIColor clearColor];
     refreshButton = [[DAReloadActivityButton alloc]initWithFrame:CGRectMake(276, 0, 44, 44)];
@@ -165,12 +167,12 @@
 {
    
     static NSString *CellIdentifier = @"Cell";
-    SpecialTableCell* cell = (SpecialTableCell*) [tableView dequeueReusableCellWithIdentifier:CellIdentifier]; 
+    RouteCell* cell = (RouteCell*) [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
     if (cell == nil) {
-        NSArray *topLevelObjects = [[NSBundle mainBundle] loadNibNamed:@"SpecialTableCell" owner:nil options:nil];
+        NSArray *topLevelObjects = [[NSBundle mainBundle] loadNibNamed:@"RouteCell" owner:nil options:nil];
         for(id currentObject in topLevelObjects){
             if([currentObject isKindOfClass:[UITableViewCell class]]){
-                cell = (SpecialTableCell*)currentObject;
+                cell = (RouteCell*)currentObject;
                 cell.selectionStyle = UITableViewCellSelectionStyleGray;
                 // cell.routeImageView.layer.cornerRadius = 5;
                 //     cell.routeImageView.layer.borderColor = [UIColor blackColor].CGColor;
@@ -736,7 +738,7 @@
                 cell.todoTextLabel.text = [object objectForKey:@"description"];
                 
                 // cell.routeImageView.image = [UIImage imageWithData:[NSData dataWithContentsOfURL:[NSURL URLWithString:imagelink]]];
-                
+               /*
                 if ([[object objectForKey:@"approvalstatus"]isEqualToString:@"pending"]) {
                     cell.approvalView.hidden=NO;
                     cell.routePFObject = object;
@@ -756,9 +758,10 @@
                     
                 }else{
                     cell.approvalView.hidden=YES;
-                }
+                }*/
                 //  cell.priorityLabel.text = [NSString stringWithFormat:@"%@", [object objectForKey:@"priority"]];
             }
+                
             break;
 
         default:
@@ -771,7 +774,7 @@
 
 -(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    return 120;
+    return 125;
 }
 
 -(void)cancelRequests
@@ -1486,7 +1489,6 @@
     [((DAReloadActivityButton*)refreshButton) stopAnimating];
 	
 }
-
 
 
 

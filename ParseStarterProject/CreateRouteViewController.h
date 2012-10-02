@@ -1,9 +1,9 @@
 //
 //  CreateRouteViewController.h
-//  ParseStarterProject
+//  PsychedApp
 //
-//  Created by Shaun Tan on 9/1/12.
-//  Copyright (c) 2012 __MyCompanyName__. All rights reserved.
+//  Created by HengHong Lee on 9/1/12.
+//  Copyright (c) 2012 Psyched!. All rights reserved.
 //
 #import <CoreLocation/CoreLocation.h>
 #import <UIKit/UIKit.h>
@@ -31,7 +31,7 @@
     UITableView* searchTable;
     int currentAPIcall;
     NSString* fbphotoid;
-   
+
     int difficultyint;
     CLLocationManager *locationManager;
     CLLocationCoordinate2D routeLoc;
@@ -42,6 +42,7 @@
 @property (retain, nonatomic) IBOutletCollection(UIView) NSArray *socialControls;
 @property (retain, nonatomic) IBOutletCollection(UIView) NSArray *gymControls;
 @property (retain, nonatomic) IBOutlet UILabel *gymShareLabel;
+@property (retain, nonatomic) NSMutableArray* taggedUsers;
 
 -(void)tagPhoto:(NSString*)photoid withUser:(NSString*)facebookid;
 @property (nonatomic,retain) PFObject* reusePFObject;

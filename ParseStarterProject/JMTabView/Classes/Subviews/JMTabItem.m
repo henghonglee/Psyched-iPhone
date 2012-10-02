@@ -128,9 +128,8 @@
 
 + (JMTabItem *)tabItemWithTitle:(NSString *)title icon:(UIImage *)icon;
 {
-    JMTabItem * tabItem = [[JMTabItem alloc] initWithTitle:title icon:icon] ;
+    JMTabItem * tabItem = [[[JMTabItem alloc] initWithTitle:title icon:icon]autorelease] ;
     return tabItem;
-    [tabItem release];
 }
 
 + (JMTabItem *)tabItemWithFixedWidth:(CGFloat)fixedWidth;

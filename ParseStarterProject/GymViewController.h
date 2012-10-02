@@ -24,6 +24,7 @@
 }
 - (IBAction)didChangeRoutePage:(id)sender;
 //@property (strong, nonatomic) DACircularProgressView *progressView;
+@property (retain, nonatomic) IBOutlet UIProgressView *progress;
 @property (retain, nonatomic) NSMutableArray* wallRoutesArrowArray;
 @property (retain, nonatomic) IBOutlet UILabel *loadingLabel;
 @property (retain, nonatomic) NSMutableArray* wallRoutesArrowTypeArray;

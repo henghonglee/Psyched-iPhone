@@ -1,9 +1,9 @@
 //
 //  RouteDetailViewController.h
-//  ParseStarterProject
+//  PsychedApp
 //
-//  Created by Shaun Tan on 9/1/12.
-//  Copyright (c) 2012 __MyCompanyName__. All rights reserved.
+//  Created by HengHong Lee on 9/1/12.
+//  Copyright (c) 2012 Psyched!. All rights reserved.
 //
 
 #import <UIKit/UIKit.h>
@@ -35,7 +35,9 @@
 @property (retain, nonatomic) IBOutlet UIView *approvalView;
 @property (retain, nonatomic) IBOutlet UIButton *outdateButton;
 @property (retain, nonatomic) IBOutlet UILabel *difficultyLabel;
+@property (retain, nonatomic) IBOutlet UITextView *recommendTextView;
 @property (retain, nonatomic) IBOutlet UIButton *unoutdateButton;
+@property (retain, nonatomic) IBOutlet UIView *recommendView;
 @property (retain, nonatomic) IBOutlet UIButton *postButton;
 @property (retain, nonatomic) IBOutlet MKMapView *routeMapView;
 @property (retain, nonatomic) IBOutlet UIProgressView *progressBar;
@@ -51,6 +53,7 @@
 @property (retain, nonatomic) NSMutableArray* commentsArray;
 @property (retain, nonatomic) NSMutableArray* queryArray;
 @property (retain, nonatomic) NSMutableArray* savedArray;
+@property (retain, nonatomic) NSMutableArray* recommendedFBFriends;
 @property (retain, nonatomic) IBOutlet UILabel *viewCountLabel;
 @property (retain, nonatomic) IBOutlet UIScrollView *scroll;
 @property (retain, nonatomic) IBOutlet UILabel *commentCountLabel;

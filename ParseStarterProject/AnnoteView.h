@@ -2,8 +2,8 @@
 //  MapAnnotationView.h
 //  DynastyTravel
 //
-//  Created by Shaun Tan on 30/11/11.
-//  Copyright (c) 2011 __MyCompanyName__. All rights reserved.
+//  Created by HengHong Lee on 30/11/11.
+//  Copyright (c) 2011 Psyched!. All rights reserved.
 //
 
 #import <Foundation/Foundation.h>

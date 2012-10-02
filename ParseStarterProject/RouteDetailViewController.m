@@ -10,6 +10,7 @@
 #import <QuartzCore/QuartzCore.h>
 #import "MapViewController.h"
 @implementation RouteDetailViewController
+@synthesize recommendView;
 @synthesize topView;
 @synthesize btmView;
 @synthesize mapContainer;
@@ -20,6 +21,7 @@
 @synthesize postButton;
 @synthesize routeMapView;
 @synthesize routeimage;
+@synthesize recommendedFBFriends;
 //@synthesize rawImageData;
 @synthesize progressBar;
 @synthesize routeLocationLabel;
@@ -602,6 +604,16 @@ kAPIGraphCommentPhoto,
                 }];
             }
         }];
+        PFQuery* deleteQueryLike = [PFQuery queryWithClassName:@"Like"];
+        [deleteQueryLike whereKey:@"linkedroute" equalTo:routeObject.pfobj];
+        [deleteQueryLike findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+            for (PFObject* obj in objects) {
+                [self deleteOGwithId:[obj objectForKey:@"facebookid"]];
+                [obj deleteInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+                    NSLog(@"deleted 1 like");
+                }];
+            }
+        }];
         PFQuery* deleteQueryFlash = [PFQuery queryWithClassName:@"Flash"];
         [deleteQueryFlash whereKey:@"route" equalTo:routeObject.pfobj];
         [deleteQueryFlash findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
@@ -776,6 +788,7 @@ kAPIGraphCommentPhoto,
                             [self postNewFlashWithOG:[jsonObjects objectForKey:@"id"]];
                         }else{
                             NSLog(@"most likely authentication failed , %@",[newOGPost responseString]);
+                            [self postNewFlashWithOG:nil];
                         }
                         
                     }];
@@ -1051,6 +1064,7 @@ kAPIGraphCommentPhoto,
                         [self postNewSendWithOG:[jsonObjects objectForKey:@"id"]];
                     }else{
                         NSLog(@"most likely authentication failed , %@",[newOGPost responseString]);
+                        [self postNewSendWithOG:nil];
                     }
                     
                 }];
@@ -1319,6 +1333,7 @@ kAPIGraphCommentPhoto,
                             [self postNewProjWithOG:[jsonObjects objectForKey:@"id"]];
                         }else{
                             NSLog(@"most likely authentication failed , %@",[newOGPost responseString]);
+                            [self postNewProjWithOG:nil];
                         }
                         
                     }];
@@ -1344,6 +1359,59 @@ kAPIGraphCommentPhoto,
     }
        
 }
+
+-(void)postNewLikeWithOG:(NSString*)idstring  andLikeCounter:(NSInteger)likecounter
+{
+    PFObject* newLike = [PFObject objectWithClassName:@"Like"];
+    [newLike setObject:[[PFUser currentUser]objectForKey:@"name"] forKey:@"owner"];
+    [newLike setObject:routeObject.pfobj forKey:@"linkedroute"];
+    [newLike setObject:routeObject.pfobj.objectId forKey:@"linkedrouteID"];
+    if(idstring)
+        [newLike setObject:idstring forKey:@"facebookid"];
+    
+    [newLike saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+        if (succeeded){
+            likecount = likecounter + 1;
+            [routeObject.pfobj setObject:[NSNumber numberWithInt:likecount] forKey:@"likecount"];
+            [routeObject.pfobj saveInBackground];
+            likeCountLabel.text = [NSString stringWithFormat:@"%d likes",likecount];
+            [likeButton setImage:[UIImage imageNamed:@"heartcolor.png"] forState:UIControlStateNormal];
+            [PFPush subscribeToChannelInBackground:[NSString stringWithFormat:@"channel%@",routeObject.pfobj.objectId] block:^(BOOL succeeded, NSError *error) {
+                NSLog(@"subscribed to channel %@",routeObject.pfobj.objectId);
+                likeCountLabel.text = [NSString stringWithFormat:@"%d likes",likecount];
+                
+                
+                PFObject* feedObject = [PFObject objectWithClassName:@"Feed"];
+                [feedObject setObject:[[PFUser currentUser] objectForKey:@"name"] forKey:@"sender"];
+                [feedObject setObject:[[PFUser currentUser] objectForKey:@"profilepicture"] forKey:@"senderimagelink"];
+                [feedObject setObject:routeObject.pfobj forKey:@"linkedroute"];
+                [feedObject setObject:@"like" forKey:@"action"];
+                if (![[[PFUser currentUser] objectForKey:@"name"] isEqualToString:[routeObject.pfobj objectForKey:@"username"]]) {
+                    [feedObject  setObject:[NSString stringWithFormat:@"%@ liked %@'s route",[[PFUser currentUser] objectForKey:@"name"],[routeObject.pfobj objectForKey:@"username"]] forKey:@"message"];
+                }else{
+                    if ([[[PFUser currentUser]objectForKey:@"sex"] isEqualToString:@"female"]) {
+                        [feedObject setObject:[NSString stringWithFormat:@"%@ liked her route",[[PFUser currentUser] objectForKey:@"name"]] forKey:@"message"];
+                        
+                    }else if([[[PFUser currentUser]objectForKey:@"sex"] isEqualToString:@"male"]) {
+                        [feedObject setObject:[NSString stringWithFormat:@"%@ liked his route",[[PFUser currentUser] objectForKey:@"name"]] forKey:@"message"];
+                    }else{
+                        [feedObject setObject:[NSString stringWithFormat:@"%@ liked his/her route",[[PFUser currentUser] objectForKey:@"name"]] forKey:@"message"];
+                    }
+                    
+                }
+                
+                [feedObject saveInBackground];
+                
+            }];
+        }else{
+            NSLog(@"failed with error = %@",error);
+            [newLike saveInBackground];
+        }
+    }];
+}
+
+
+
 
 -(void)postNewFlashWithOG:(NSString*)idstring
 {
@@ -1944,6 +2012,8 @@ kAPIGraphCommentPhoto,
     [self setQueryArray:nil];
     [self setSavedArray:nil];
     [self setRouteObject:nil];
+    [self setRecommendView:nil];
+    [self setRecommendTextView:nil];
     [super viewDidUnload];
     // Release any retained subviews of the main view.
     // e.g. self.myOutlet = nil;
@@ -2342,7 +2412,9 @@ if ([routeObject.pfobj objectForKey:@"isPage"]==[NSNumber numberWithBool:YES] &&
             for (PFObject* likeobj in objects) {
                 if ([[likeobj objectForKey:@"owner"]isEqualToString:[[PFUser currentUser]objectForKey:@"name"]]) {
                     didLike = YES;
+                    [self deleteOGwithId:[likeobj objectForKey:@"facebookid"]];
                     [likeobj deleteInBackgroundWithBlock:^(BOOL succeeded, NSError *error){
+
                         [routeObject.pfobj setObject:[NSNumber numberWithInt:([objects count]-1)] forKey:@"likecount"];
                         [routeObject.pfobj saveInBackground];
                         likeCountLabel.text = [NSString stringWithFormat:@"%d likes",([objects count]-1)];
@@ -2380,72 +2452,41 @@ if ([routeObject.pfobj objectForKey:@"isPage"]==[NSNumber numberWithBool:YES] &&
 
 -(void)LikeOperation:(NSInteger)likecounter
 {
+    if ([[NSUserDefaults standardUserDefaults]boolForKey:@"ogshare"]) {
+        ASIFormDataRequest* newOGPost = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:@"https://graph.facebook.com/me/og.likes"]];
+        [newOGPost setPostValue:[PFFacebookUtils facebook].accessToken forKey:@"access_token"];
+        [newOGPost setPostValue:[NSString stringWithFormat:@"http://www.psychedapp.com/home/%@",routeObject.pfobj.objectId] forKey:@"object"];
+        [newOGPost setRequestMethod:@"POST"];
+        [newOGPost setCompletionBlock:^{
+            SBJsonParser *jsonParser = [[SBJsonParser alloc] init];
+            NSDictionary *jsonObjects = [jsonParser objectWithString:[newOGPost responseString]];
+            [jsonParser release];
+            jsonParser = nil;
+            if ([jsonObjects objectForKey:@"id"]) {
+                NSLog(@"posted, %@",[newOGPost responseString]);
+                [self postNewLikeWithOG:[jsonObjects objectForKey:@"id"] andLikeCounter:likecounter];
+            }else{
+                NSLog(@"most likely authentication failed , %@",[newOGPost responseString]);
+                [self postNewLikeWithOG:nil andLikeCounter:likecounter];
+            }
+            
+        }];
+        
+        
+        [newOGPost setFailedBlock:^{
+            NSLog(@"failed");
+        }];
+        [newOGPost startAsynchronous];
+        NSLog(@"finished posting");
+        
+    }else{
+        [self postNewLikeWithOG:nil andLikeCounter:likecounter];
+        
+    }
     
-    PFObject* newLike = [PFObject objectWithClassName:@"Like"];
-    [newLike setObject:[[PFUser currentUser]objectForKey:@"name"] forKey:@"owner"];
-    [newLike setObject:routeObject.pfobj forKey:@"linkedroute"];
-    [newLike setObject:routeObject.pfobj.objectId forKey:@"linkedrouteID"];
     
-    [newLike saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
-        if (succeeded){
-            likecount = likecounter + 1;
-            [routeObject.pfobj setObject:[NSNumber numberWithInt:likecount] forKey:@"likecount"];
-            [routeObject.pfobj saveInBackground];
-            likeCountLabel.text = [NSString stringWithFormat:@"%d likes",likecount];
-            [likeButton setImage:[UIImage imageNamed:@"heartcolor.png"] forState:UIControlStateNormal];
-                    [PFPush subscribeToChannelInBackground:[NSString stringWithFormat:@"channel%@",routeObject.pfobj.objectId] block:^(BOOL succeeded, NSError *error) {
-            NSLog(@"subscribed to channel %@",routeObject.pfobj.objectId);
-           
-                
-            likeCountLabel.text = [NSString stringWithFormat:@"%d likes",likecount];
-            
-            
-            // send notification ///
-                     /*   NSMutableDictionary *data = [NSMutableDictionary dictionary];
-                        [data setObject:routeObject.pfobj.objectId forKey:@"linkedroute"];
-                        [data setObject:[NSNumber numberWithInt:1] forKey:@"badge"];
-                        if ([[[PFUser currentUser] objectForKey:@"name"] isEqualToString:[routeObject.pfobj objectForKey:@"username"]]) {
-                            NSLog(@"sent his/her notification");
-                      
-                            [data setObject:[NSString stringWithFormat:@"%@ liked his/her route",[[PFUser currentUser] objectForKey:@"name"],[routeObject.pfobj objectForKey:@"username"]] forKey:@"alert"];
-                        }else{
-                           
-                            [data setObject:[NSString stringWithFormat:@"%@ liked %@'s route",[[PFUser currentUser] objectForKey:@"name"],[routeObject.pfobj objectForKey:@"username"]] forKey:@"alert"];
-                        }
-                        [data setObject:[NSString stringWithFormat:@"%@",[[PFUser currentUser] objectForKey:@"name"]] forKey:@"sender"];
-                        
-                        [PFPush sendPushDataToChannelInBackground:[NSString stringWithFormat:@"channel%@",routeObject.pfobj.objectId] withData:data];*/
-            //done sending notifications ///////
-                        
-                        
-                
-            PFObject* feedObject = [PFObject objectWithClassName:@"Feed"];
-            [feedObject setObject:[[PFUser currentUser] objectForKey:@"name"] forKey:@"sender"];
-            [feedObject setObject:[[PFUser currentUser] objectForKey:@"profilepicture"] forKey:@"senderimagelink"];
-            [feedObject setObject:routeObject.pfobj forKey:@"linkedroute"];
-                         [feedObject setObject:@"like" forKey:@"action"];
-                        if (![[[PFUser currentUser] objectForKey:@"name"] isEqualToString:[routeObject.pfobj objectForKey:@"username"]]) {
-                            [feedObject  setObject:[NSString stringWithFormat:@"%@ liked %@'s route",[[PFUser currentUser] objectForKey:@"name"],[routeObject.pfobj objectForKey:@"username"]] forKey:@"message"];
-                        }else{
-                            if ([[[PFUser currentUser]objectForKey:@"sex"] isEqualToString:@"female"]) {
-                                [feedObject setObject:[NSString stringWithFormat:@"%@ liked her route",[[PFUser currentUser] objectForKey:@"name"]] forKey:@"message"];
-                                
-                            }else if([[[PFUser currentUser]objectForKey:@"sex"] isEqualToString:@"male"]) {
-                                [feedObject setObject:[NSString stringWithFormat:@"%@ liked his route",[[PFUser currentUser] objectForKey:@"name"]] forKey:@"message"];
-                            }else{
-                                [feedObject setObject:[NSString stringWithFormat:@"%@ liked his/her route",[[PFUser currentUser] objectForKey:@"name"]] forKey:@"message"];
-                            }
-                            
-                        }
-            
-            [feedObject saveInBackground];
-                        
-                    }];
-        }else{
-            NSLog(@"failed with error = %@",error);
-            [newLike saveInBackground];
-        }
-    }];
+    
+    
     
 }
 
@@ -2531,17 +2572,90 @@ if (cell == nil) {
     return cell;  
 }
 - (IBAction)recommendButton:(id)sender {
-    
-    FriendTaggerViewController* viewController = [[FriendTaggerViewController alloc]initWithNibName:@"FriendTaggerViewController" bundle:nil];
-        viewController.delegate = self;
-    [self.navigationController pushViewController:viewController animated:YES];
-    [viewController release];
+
+    self.scroll.scrollEnabled = NO;
+    [self.scroll scrollRectToVisible:CGRectMake(0, 0, 320, 200) animated:YES];
+    [_recommendTextView becomeFirstResponder];
+    recommendView.alpha = 0;
+    [self.scroll addSubview:recommendView];
+    [UIView animateWithDuration:0.3
+                          delay:0.2
+                        options: UIViewAnimationCurveEaseOut
+                     animations:^{
+                         recommendView.alpha = 1;
+                     }
+                     completion:^(BOOL finished){
+                     }];
     
 }
--(void)TaggerDidReturnWithRecommendedArray:(NSMutableArray *)recommendedArray
-{
-
-    for (FBfriend* friend in recommendedArray) {
+- (IBAction)dismissRecommend:(id)sender {
+    [UIView animateWithDuration:0.3
+                          delay:0.2
+                        options: UIViewAnimationCurveEaseOut
+                     animations:^{
+                         recommendView.alpha = 0;
+                     } 
+                     completion:^(BOOL finished){
+                        [recommendView removeFromSuperview];
+                          [self.scroll setScrollEnabled:YES];
+                         if(recommendedFBFriends){
+                             [recommendedFBFriends release];
+                         }
+                         _recommendTextView.text =@"";
+                         recommendView.alpha = 1;
+                     }];
+    
+}
+- (IBAction)addFriend:(id)sender {
+        FriendTaggerViewController* viewController = [[FriendTaggerViewController alloc]initWithNibName:@"FriendTaggerViewController" bundle:nil];
+            viewController.delegate = self;
+        [self.navigationController pushViewController:viewController animated:YES];
+        [viewController release];
+}
+- (IBAction)PostRecommend:(id)sender {
+    if (recommendedFBFriends) {
+        NSMutableArray *discardedItems = [NSMutableArray array];
+        for (FBfriend* friend in recommendedFBFriends) {
+        if ([_recommendTextView.text rangeOfString:friend.name].location == NSNotFound) {
+            [discardedItems addObject:friend];
+        }else{
+            _recommendTextView.text = [_recommendTextView.text stringByReplacingOccurrencesOfString:friend.name withString:[NSString stringWithFormat:@"@[%@]",friend.uid]];
+        }
+        }
+        
+        [recommendedFBFriends removeObjectsInArray:discardedItems];
+        
+        if ([[NSUserDefaults standardUserDefaults]boolForKey:@"ogshare"]) {
+            ASIFormDataRequest* newOGPost = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:@"https://graph.facebook.com/me/climbing_:recommend"]];
+            [newOGPost setPostValue:[PFFacebookUtils facebook].accessToken forKey:@"access_token"];
+            [newOGPost setPostValue:[NSString stringWithFormat:@"http://www.psychedapp.com/home/%@",routeObject.pfobj.objectId] forKey:@"route"];
+            [newOGPost setPostValue:[NSString stringWithFormat:@"%@",_recommendTextView.text] forKey:@"message"];
+            [newOGPost setRequestMethod:@"POST"];
+            [newOGPost setCompletionBlock:^{
+                SBJsonParser *jsonParser = [[SBJsonParser alloc] init];
+                NSDictionary *jsonObjects = [jsonParser objectWithString:[newOGPost responseString]];
+                [jsonParser release];
+                jsonParser = nil;
+                if ([jsonObjects objectForKey:@"id"]) {
+                    NSLog(@"posted og recommendation, %@",[newOGPost responseString]);
+                 //   [self postNewLikeWithOG:[jsonObjects objectForKey:@"id"] andLikeCounter:likecounter];
+                }else{
+                    NSLog(@"most likely authentication failed , %@",[newOGPost responseString]);
+                   // [self postNewLikeWithOG:nil andLikeCounter:likecounter];
+                }
+                
+            }];
+            
+            
+            [newOGPost setFailedBlock:^{
+                NSLog(@"failed");
+            }];
+            [newOGPost startAsynchronous];
+            NSLog(@"finished posting");
+            
+        }
+        
+    for (FBfriend* friend in recommendedFBFriends) {
         NSMutableDictionary *data = [NSMutableDictionary dictionary];
         [data setObject:routeObject.pfobj.objectId forKey:@"linkedroute"];
         [data setObject:[NSNumber numberWithInt:1] forKey:@"badge"];
@@ -2556,12 +2670,11 @@ if (cell == nil) {
         if (![recommendedUsersArray containsObject:friend.name]) {
             [recommendedUsersArray addObject:friend.name];
             [routeObject.pfobj setObject:recommendedUsersArray forKey:@"usersrecommended"];
-
         }
         [recommendedUsersArray release];
-       
-}
         
+    }
+    
     
     PFObject* feedObject = [PFObject objectWithClassName:@"Feed"];
     [feedObject setObject:[[PFUser currentUser] objectForKey:@"name"] forKey:@"sender"];
@@ -2570,22 +2683,36 @@ if (cell == nil) {
     [feedObject setObject:@"recommend" forKey:@"action"];
     
     
-    if ([recommendedArray count]==0) {
+    if ([recommendedFBFriends count]==0) {
         
-    }else if([recommendedArray count]==1){
-    [feedObject setObject:[NSString stringWithFormat:@"%@ recommended %@'s route to %@",[[PFUser currentUser]objectForKey:@"name"],usernameLabel.text,((FBfriend*)[recommendedArray objectAtIndex:0]).name] forKey:@"message"];    
-    }else if([recommendedArray count]==2){
-    [feedObject setObject:[NSString stringWithFormat:@"%@ recommended %@'s route to %@ and 1 other",[[PFUser currentUser]objectForKey:@"name"],usernameLabel.text,((FBfriend*)[recommendedArray objectAtIndex:0]).name] forKey:@"message"];    
+    }else if([recommendedFBFriends count]==1){
+        [feedObject setObject:[NSString stringWithFormat:@"%@ recommended %@'s route to %@",[[PFUser currentUser]objectForKey:@"name"],usernameLabel.text,((FBfriend*)[recommendedFBFriends objectAtIndex:0]).name] forKey:@"message"];
+    }else if([recommendedFBFriends count]==2){
+        [feedObject setObject:[NSString stringWithFormat:@"%@ recommended %@'s route to %@ and 1 other",[[PFUser currentUser]objectForKey:@"name"],usernameLabel.text,((FBfriend*)[recommendedFBFriends objectAtIndex:0]).name] forKey:@"message"];
     }else{
-     [feedObject setObject:[NSString stringWithFormat:@"%@ recommended %@'s route to %@ and %d others",[[PFUser currentUser]objectForKey:@"name"],usernameLabel.text,((FBfriend*)[recommendedArray objectAtIndex:0]).name,[recommendedArray count]-1] forKey:@"message"];   
+        [feedObject setObject:[NSString stringWithFormat:@"%@ recommended %@'s route to %@ and %d others",[[PFUser currentUser]objectForKey:@"name"],usernameLabel.text,((FBfriend*)[recommendedFBFriends objectAtIndex:0]).name,[recommendedFBFriends count]-1] forKey:@"message"];
     }
     
     
-        
+    
     
     [feedObject saveInBackground];
-            [routeObject.pfobj saveEventually]; 
+    [routeObject.pfobj saveEventually];
+    [recommendedFBFriends release];
+    }
+    [recommendView removeFromSuperview];
+    _recommendTextView.text = @"";
+    [self.scroll setScrollEnabled:YES];
 }
+-(void)TaggerDidReturnWithRecommendedArray:(NSMutableArray *)recommendedArray
+{
+    recommendedFBFriends = [[NSMutableArray alloc]init];
+        recommendedFBFriends = recommendedArray;
+     for (FBfriend* friend in recommendedArray) {
+         _recommendTextView.text = [NSString stringWithFormat:@"%@ %@",_recommendTextView.text,friend.name];
+     }
+}
+
 
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
@@ -2635,7 +2762,8 @@ if (cell == nil) {
     [approvalView release];
     [routeObject release];
     [postButton release];
-    
+    [recommendView release];
+    [_recommendTextView release];
     [super dealloc];
 
 }

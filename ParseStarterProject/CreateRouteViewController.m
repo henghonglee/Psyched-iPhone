@@ -19,6 +19,7 @@ typedef enum apiCall {
 #import <Twitter/Twitter.h>
 @implementation CreateRouteViewController
 @synthesize gymSwitch;
+@synthesize taggedUsers;
 @synthesize socialControls;
 @synthesize gymControls;
 @synthesize gymShareLabel;
@@ -78,6 +79,8 @@ typedef enum apiCall {
 {
     
     [super viewDidLoad];
+
+    
 #if !(TARGET_IPHONE_SIMULATOR)
     [[PFUser currentUser]refreshInBackgroundWithBlock:^(PFObject *object, NSError *error) {
         if ([[[PFUser currentUser]objectForKey:@"isAdmin"]isEqualToNumber:[NSNumber numberWithBool:true]]) {for (UIView* view in gymControls) {
@@ -102,6 +105,8 @@ typedef enum apiCall {
     routeLocMapView.layer.borderWidth = 3;
     routeLoc = CLLocationCoordinate2DMake([[[imageMetaData objectForKey:@"{GPS}"] objectForKey:@"Latitude"] doubleValue], [[[imageMetaData objectForKey:@"{GPS}"] objectForKey:@"Longitude"] doubleValue]);
     UIBarButtonItem* rightButton = [[UIBarButtonItem alloc] initWithTitle:@"Upload" style:UIBarButtonSystemItemDone target:self action:@selector(saveAction:)];
+    [rightButton setTintColor:[UIColor darkGrayColor]];
+    [[UIBarButtonItem appearance] setTintColor:[UIColor darkGrayColor]];
     self.navigationItem.rightBarButtonItem = rightButton;
     [rightButton release];
     [routeLocMapView setCenterCoordinate:routeLoc zoomLevel:14 animated:NO];
@@ -627,7 +632,7 @@ typedef enum apiCall {
         NSLog(@"sethashtag to %@",hashtag);
     }
     if ([recommendArray count]>0) {
-        descriptionTextField.text = [descriptionTextField.text stringByAppendingFormat:@"(%@)  ",[gymlist objectAtIndex:difficultyint]];
+       
         
         for (FBfriend*user in recommendArray) {
             descriptionTextField.text = [descriptionTextField.text stringByAppendingFormat:@"@%@ ",user.name];
@@ -731,29 +736,29 @@ typedef enum apiCall {
             
             
             [PFPush subscribeToChannelInBackground:[NSString stringWithFormat:@"channel%@",newRoute.objectId]];
-            [JHNotificationManager notificationWithMessage:@"Successfully uploaded your route!"];
             NSLog(@"upload completed successfully in background!");
             //FIXME: to do here
             
-            if ([[NSUserDefaults standardUserDefaults] boolForKey:@"ogshare"]) {
-                NSLog(@"og share enabled!");
             ASIHTTPRequest* routeUpdater = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"http://www.psychedapp.com/routepost/%@",newRoute.objectId]]];
+            [routeUpdater setShouldContinueWhenAppEntersBackground:YES];
+            [routeUpdater setTimeOutSeconds:30];
             [routeUpdater setRequestMethod:@"PUT"];
             [routeUpdater setCompletionBlock:^{
-                NSLog(@"route created on heroku ... now posting og");
+                
+                if ([[NSUserDefaults standardUserDefaults] boolForKey:@"ogshare"]) {
+                    NSLog(@"og share enabled!");
+                    NSLog(@"route created on heroku ... now posting og");
                 [self performSelector:@selector(postOG:) withObject:newRoute afterDelay:3.0];
+                }
             }];
             [routeUpdater setFailedBlock:^{
                 NSLog(@"failed to create route, trying again");
-                ASIHTTPRequest* newReq = [[routeUpdater copy]autorelease];
-                [newReq startAsynchronous];
-                
+            [[UIApplication sharedApplication] endBackgroundTask:self.fileUploadBackgroundTaskId];
             }];
             [routeUpdater startAsynchronous];
             
-            }
             
-            [[UIApplication sharedApplication] endBackgroundTask:self.fileUploadBackgroundTaskId];
+            
                  
             
             
@@ -772,7 +777,27 @@ typedef enum apiCall {
 }
 -(void)postOG:(PFObject*)newRoute
 {
-    ASIHTTPRequest* postOG = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"http://psychedsupport.herokuapp.com/support/%@?og=true&access_token=%@",newRoute.objectId,[PFFacebookUtils facebook].accessToken]]];
+    ASIHTTPRequest* postOG;
+    NSString* tagString = [[[NSString alloc]init]autorelease];
+    PFFile* arrowed = [newRoute objectForKey:@"imageFileWithArrows"];
+    if (taggedUsers) {
+        for (FBfriend* user in taggedUsers) {
+            if ([tagString isEqualToString:@""]) {
+                tagString = [NSString stringWithFormat:@"%@",user.uid];
+                
+            }else{
+                tagString = [tagString stringByAppendingFormat:@",%@",user.uid];
+                
+            }
+        }
+    
+    }
+    if(fbuploadswitch.on){
+        postOG = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"http://psychedsupport.herokuapp.com/support/%@?og=true&access_token=%@&explicit=true&imageurl=%@&user_generated=true&tag=%@",newRoute.objectId,[PFFacebookUtils facebook].accessToken,arrowed.url,tagString]]];
+        NSLog(@"postog url = %@",postOG.url);
+    }else{
+        postOG = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"http://psychedsupport.herokuapp.com/support/%@?og=true&access_token=%@&explicit=false&tag=%@",newRoute.objectId,[PFFacebookUtils facebook].accessToken,tagString]]];
+    }
     [postOG setCompletionBlock:^{
         NSLog(@"added og with response \n %@",postOG.responseString);
         SBJsonParser *jsonParser = [[SBJsonParser alloc] init];
@@ -781,13 +806,13 @@ typedef enum apiCall {
         jsonParser = nil;
         [newRoute setObject:[jsonObjects objectForKey:@"id"] forKey:@"opengraphid"];
         [newRoute saveEventually];
-
+        [JHNotificationManager notificationWithMessage:@"Successfully uploaded your route!"];
+        [[UIApplication sharedApplication] endBackgroundTask:self.fileUploadBackgroundTaskId];
     }];
     [postOG setFailedBlock:^{
-        NSLog(@"adding og faillleddddd =( with error %@ , trying again",postOG.error);
-        ASIHTTPRequest *newRequest = [[postOG copy] autorelease];
-        [newRequest startAsynchronous];
+        [[UIApplication sharedApplication] endBackgroundTask:self.fileUploadBackgroundTaskId];
     }];
+    [postOG setTimeOutSeconds:30];
     [postOG startAsynchronous];
 
     
@@ -933,6 +958,7 @@ typedef enum apiCall {
         [[myRequest connection] cancel];
         [myRequest release];
          }
+     [taggedUsers release];
     [selectedGymObject release];
     [gymlist release];
     [oldAccessToken release];
@@ -963,11 +989,17 @@ typedef enum apiCall {
 {
 
     recommendTextField.text = @"";
+    if(!taggedUsers)
+    taggedUsers = [[NSMutableArray alloc]init ];
+    [taggedUsers removeAllObjects];
     for (FBfriend* user in recommendedArray) {
+        [taggedUsers addObject:user];
         if ([recommendTextField.text isEqualToString:@""]) {
             recommendTextField.text = [NSString stringWithFormat:@"%@",user.name];
+            
         }else{
-        recommendTextField.text = [recommendTextField.text stringByAppendingFormat:@",%@",user.name];   
+        recommendTextField.text = [recommendTextField.text stringByAppendingFormat:@",%@",user.name];
+
         }
     }
 }
@@ -1105,6 +1137,9 @@ typedef enum apiCall {
     if (sender.on) {
         [fbuploadswitch setOn:NO];
         [twuploadswitch setOn:NO];
+        if (taggedUsers) {
+            [taggedUsers removeAllObjects];
+        }
         for (UIView* view in socialControls) {
             
             view.hidden = YES;
@@ -1113,13 +1148,22 @@ typedef enum apiCall {
         PFQuery* queryForGym = [PFQuery queryWithClassName:@"Gym"];
         [queryForGym whereKey:@"admin" containsString:[PFUser currentUser].objectId];
         [queryForGym findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+            if ([objects count]==0) {
+                for (UIView* view in socialControls) {
+                    view.hidden = NO;
+                }
+                for (UIView* view in gymControls) {
+                    view.hidden = YES;
+                }
+            }else{
             if ([objects count]>1) {
                 #warning multiple gyms not supported yet!
+                selectedGymObject = [[objects objectAtIndex:0]retain];
+                gymShareLabel.text = [NSString stringWithFormat:@"Share as %@",[selectedGymObject objectForKey:@"name"]];
+                }else{
                 selectedGymObject = [[objects objectAtIndex:0] retain];
                 gymShareLabel.text = [NSString stringWithFormat:@"Share as %@",[selectedGymObject objectForKey:@"name"]];
-            }else{
-                selectedGymObject = [[objects objectAtIndex:0] retain];
-                gymShareLabel.text = [NSString stringWithFormat:@"Share as %@",[selectedGymObject objectForKey:@"name"]];
+                }
             }
         }];
     }else{
@@ -1133,7 +1177,7 @@ typedef enum apiCall {
     [arrayOfAccounts removeAllObjects];
     for (NSDictionary* obj in fetchedAccounts) {
         ASIHTTPRequest* request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"https://graph.facebook.com/%@&access_token=%@",[NSString stringWithFormat:@"%@",[obj objectForKey:@"id"] ],[obj objectForKey:@"access_token"]]]];
-        [request startSynchronous];   
+        [request startSynchronous];
         NSDictionary *contentDictionary = [[request responseString]JSONValue];
         NSLog(@"canpost = %@",[contentDictionary objectForKey:@"can_post"]);    
         [obj setValue:[contentDictionary objectForKey:@"likes"] forKey:@"likes"];

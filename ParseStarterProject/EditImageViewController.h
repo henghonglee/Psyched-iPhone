@@ -1,9 +1,9 @@
 //
 //  EditImageViewController.h
-//  ParseStarterProject
+//  PsychedApp
 //
-//  Created by Shaun Tan on 11/1/12.
-//  Copyright (c) 2012 __MyCompanyName__. All rights reserved.
+//  Created by HengHong Lee on 11/1/12.
+//  Copyright (c) 2012 Psyched!. All rights reserved.
 //
 #import "CreateRouteViewController.h"
 #import <UIKit/UIKit.h>
