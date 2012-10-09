@@ -7,16 +7,17 @@
 //
 
 #import "RouteDescriptionViewController.h"
-
+#import "FriendTaggerViewController.h"
 @interface RouteDescriptionViewController ()
 
 @end
 
-@implementation RouteDescriptionViewController
+@implementation RouteDescriptionViewController 
 @synthesize descriptionTextField;
 @synthesize descriptionText;
 @synthesize instructionButton;
 @synthesize delegate;
+@synthesize taggedFriends;
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
@@ -28,6 +29,7 @@
 
 - (void)viewDidLoad
 {
+    
     [super viewDidLoad];
     self.navigationItem.title = @"Route Description";
     descriptionTextField.text = descriptionText;
@@ -37,10 +39,34 @@
     [rightButton release];   
     // Do any additional setup after loading the view from its nib.
 }
+
+- (IBAction)addFriendAction:(id)sender {
+    FriendTaggerViewController* viewController= [[FriendTaggerViewController alloc]initWithNibName:@"FriendTaggerViewController" bundle:nil];
+    viewController.delegate = self;
+    [self.navigationController pushViewController:viewController animated:YES];
+    [viewController release];
+}
+-(void)TaggerDidReturnWithRecommendedArray:(NSMutableArray *)recommendedArray
+{
+    if (!taggedFriends) {
+        taggedFriends = [[NSMutableArray alloc]init];
+    }
+    taggedFriends = recommendedArray;
+    for (FBfriend* friend in recommendedArray) {
+        descriptionTextField.text = [NSString stringWithFormat:@"%@ %@",descriptionTextField.text,friend.name];
+    }
+}
 -(void)dismissView:(id)sender
 {
-    [self.delegate DescriptionDidReturnWithText:descriptionTextField.text];
-    [self.navigationController popViewControllerAnimated:YES];
+       if (taggedFriends) {
+        [self.delegate DescriptionDidReturnWithText:descriptionTextField.text andTaggedUsers:taggedFriends];
+        [self.navigationController popViewControllerAnimated:YES];
+    }else{
+        [self.delegate DescriptionDidReturnWithText:descriptionTextField.text andTaggedUsers:nil];
+        [self.navigationController popViewControllerAnimated:YES];
+
+    }
+    
     
 
 }

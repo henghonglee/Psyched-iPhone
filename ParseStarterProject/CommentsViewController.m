@@ -1,10 +1,4 @@
-//
-//  CommentsViewController.m
-//  PsychedApp
-//
-//  Created by HengHong Lee on 20/4/12.
-//  Copyright (c) 2012 Psyched!. All rights reserved.
-//
+
 
 #import "CommentsViewController.h"
 

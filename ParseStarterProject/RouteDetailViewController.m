@@ -167,7 +167,10 @@ kAPIGraphCommentPhoto,
         }
     }
 }
-
+-(void)viewDidAppear:(BOOL)animated
+{
+    
+}
 - (void)viewDidLoad
 {
     [super viewDidLoad];
@@ -302,7 +305,7 @@ kAPIGraphCommentPhoto,
     routeLocationLabel.text = [routeObject.pfobj objectForKey:@"location"]; 
     
     [self getImageIfUnavailable];
-    //scroll.contentSize = CGSizeMake(320, 566);
+    
     self.navigationController.navigationBarHidden = NO;
 
     [self checksendstatus];
@@ -339,7 +342,6 @@ kAPIGraphCommentPhoto,
          [self getFacebookRouteDetails];
       }else{
                  [self checkLikedWithoutFacebook];
-          NSLog(@"getting comments");
           PFQuery* query = [PFQuery queryWithClassName:@"Comment"];
                   query.cachePolicy = kPFCachePolicyNetworkElseCache;
           [query whereKey:@"route" equalTo:routeObject.pfobj];
@@ -751,6 +753,8 @@ kAPIGraphCommentPhoto,
 
  
                 }
+                [flashbutton setImage:nil forState:UIControlStateNormal];
+                flashCountLabel.text = [NSString stringWithFormat:@"%d",[flashCountLabel.text intValue]-1];
                 [fspObject deleteInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
                     if (succeeded) {
                         //should clear flash feed also
@@ -763,8 +767,7 @@ kAPIGraphCommentPhoto,
                                 [feed deleteInBackground];
                             }
                         }];
-                        [flashbutton setImage:nil forState:UIControlStateNormal];
-                        flashCountLabel.text = [NSString stringWithFormat:@"%d",[flashCountLabel.text intValue]-1];
+                        
                         [flashbutton setUserInteractionEnabled:YES];
                         [sentbutton setUserInteractionEnabled:YES];
                         [projbutton setUserInteractionEnabled:YES];
@@ -835,6 +838,8 @@ kAPIGraphCommentPhoto,
                     
                     
                 }
+                [sentbutton setImage:nil forState:UIControlStateNormal];
+                sendCountLabel.text = [NSString stringWithFormat:@"%d",[sendCountLabel.text intValue]-1];
                 [fspObject deleteInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
 
                     if (succeeded) {
@@ -847,8 +852,7 @@ kAPIGraphCommentPhoto,
                                 [feed deleteInBackground];
                             }
                         }];
-                    [sentbutton setImage:nil forState:UIControlStateNormal];
-                    sendCountLabel.text = [NSString stringWithFormat:@"%d",[sendCountLabel.text intValue]-1];
+                    
                         [flashbutton setUserInteractionEnabled:YES];
                         [sentbutton setUserInteractionEnabled:YES];
                         [projbutton setUserInteractionEnabled:YES];
@@ -882,6 +886,8 @@ kAPIGraphCommentPhoto,
                         
                         
                     }
+                    [projbutton setImage:nil forState:UIControlStateNormal];
+                    projectCountLabel.text = [NSString stringWithFormat:@"%d",[projectCountLabel.text intValue]-1];
                     [fspObject deleteInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
 
                         if (succeeded) {
@@ -894,8 +900,7 @@ kAPIGraphCommentPhoto,
                                     [feed deleteInBackground];
                                 }
                             }];
-                        [projbutton setImage:nil forState:UIControlStateNormal];
-                        projectCountLabel.text = [NSString stringWithFormat:@"%d",[projectCountLabel.text intValue]-1];
+                       
                             [flashbutton setUserInteractionEnabled:YES];
                             [sentbutton setUserInteractionEnabled:YES];
                             [projbutton setUserInteractionEnabled:YES];
@@ -984,6 +989,8 @@ kAPIGraphCommentPhoto,
                     
                     
                 }
+                [flashbutton setImage:nil forState:UIControlStateNormal];
+                flashCountLabel.text = [NSString stringWithFormat:@"%d",[flashCountLabel.text intValue]-1];
                 [fspObject deleteInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
                     if (succeeded) {
                         PFQuery* flashFeedQuery = [PFQuery queryWithClassName:@"Feed"];
@@ -995,8 +1002,7 @@ kAPIGraphCommentPhoto,
                                 [feed deleteInBackground];
                             }
                         }];
-                   [flashbutton setImage:nil forState:UIControlStateNormal];
-                    flashCountLabel.text = [NSString stringWithFormat:@"%d",[flashCountLabel.text intValue]-1];
+                   
                         [flashbutton setUserInteractionEnabled:YES];
                         [sentbutton setUserInteractionEnabled:YES];
                         [projbutton setUserInteractionEnabled:YES];
@@ -1030,6 +1036,8 @@ kAPIGraphCommentPhoto,
                 
                 
             }
+            [sentbutton setImage:nil forState:UIControlStateNormal];
+            sendCountLabel.text = [NSString stringWithFormat:@"%d",[sendCountLabel.text intValue]-1];
             [fspObject deleteInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
                 if (succeeded) {
                     PFQuery* sendFeedQuery = [PFQuery queryWithClassName:@"Feed"];
@@ -1041,8 +1049,7 @@ kAPIGraphCommentPhoto,
                             [feed deleteInBackground];
                         }
                     }];
-               [sentbutton setImage:nil forState:UIControlStateNormal];
-                sendCountLabel.text = [NSString stringWithFormat:@"%d",[sendCountLabel.text intValue]-1];
+               
                     [flashbutton setUserInteractionEnabled:YES];
                     [sentbutton setUserInteractionEnabled:YES];
                     [projbutton setUserInteractionEnabled:YES];
@@ -1110,6 +1117,8 @@ kAPIGraphCommentPhoto,
                 
                 
             }
+            [projbutton setImage:nil forState:UIControlStateNormal];
+            projectCountLabel.text = [NSString stringWithFormat:@"%d",[projectCountLabel.text intValue]-1];
             [fspObject deleteInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
                 if (succeeded) {
                     PFQuery* projFeedQuery = [PFQuery queryWithClassName:@"Feed"];
@@ -1122,8 +1131,7 @@ kAPIGraphCommentPhoto,
                             [feed deleteInBackground];
                         }
                     }];
-                [projbutton setImage:nil forState:UIControlStateNormal];
-                projectCountLabel.text = [NSString stringWithFormat:@"%d",[projectCountLabel.text intValue]-1];
+                
                     [flashbutton setUserInteractionEnabled:YES];
                     [sentbutton setUserInteractionEnabled:YES];
                     [projbutton setUserInteractionEnabled:YES];
@@ -1207,6 +1215,8 @@ kAPIGraphCommentPhoto,
                     
                     
                 }
+                [flashbutton setImage:nil forState:UIControlStateNormal];
+                flashCountLabel.text = [NSString stringWithFormat:@"%d",[flashCountLabel.text intValue]-1];
                 [fspObject deleteInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
                     if (succeeded) {
                         PFQuery* flashFeedQuery = [PFQuery queryWithClassName:@"Feed"];
@@ -1218,8 +1228,7 @@ kAPIGraphCommentPhoto,
                                 [feed deleteInBackground];
                             }
                         }];
-                    [flashbutton setImage:nil forState:UIControlStateNormal];
-                    flashCountLabel.text = [NSString stringWithFormat:@"%d",[flashCountLabel.text intValue]-1];
+                    
                         [flashbutton setUserInteractionEnabled:YES];
                         [sentbutton setUserInteractionEnabled:YES];
                         [projbutton setUserInteractionEnabled:YES];
@@ -1253,6 +1262,8 @@ kAPIGraphCommentPhoto,
                     
                     
                 }
+                [sentbutton setImage:nil forState:UIControlStateNormal];
+                sendCountLabel.text = [NSString stringWithFormat:@"%d",[sendCountLabel.text intValue]-1];
                 [fspObject deleteInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
                     if (succeeded) {
                         PFQuery* sendFeedQuery = [PFQuery queryWithClassName:@"Feed"];
@@ -1264,8 +1275,7 @@ kAPIGraphCommentPhoto,
                                 [feed deleteInBackground];
                             }
                         }];
-                    [sentbutton setImage:nil forState:UIControlStateNormal];
-                    sendCountLabel.text = [NSString stringWithFormat:@"%d",[sendCountLabel.text intValue]-1];
+                    
                         [flashbutton setUserInteractionEnabled:YES];
                         [sentbutton setUserInteractionEnabled:YES];
                         [projbutton setUserInteractionEnabled:YES];
@@ -1299,6 +1309,8 @@ kAPIGraphCommentPhoto,
                     
                     
                 }
+                [projbutton setImage:nil forState:UIControlStateNormal];
+                projectCountLabel.text = [NSString stringWithFormat:@"%d",[projectCountLabel.text intValue]-1];
                 [fspObject deleteInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
                     if (succeeded) {
                         PFQuery* projFeedQuery = [PFQuery queryWithClassName:@"Feed"];
@@ -1310,8 +1322,7 @@ kAPIGraphCommentPhoto,
                                 [feed deleteInBackground];
                             }
                         }];
-                    [projbutton setImage:nil forState:UIControlStateNormal];
-                    projectCountLabel.text = [NSString stringWithFormat:@"%d",[projectCountLabel.text intValue]-1];
+                    
                         [flashbutton setUserInteractionEnabled:YES];
                         [sentbutton setUserInteractionEnabled:YES];
                         [projbutton setUserInteractionEnabled:YES];
@@ -1423,6 +1434,8 @@ kAPIGraphCommentPhoto,
     [newFlash setObject:routeObject.pfobj forKey:@"route"];
     if(idstring)
         [newFlash setObject:idstring forKey:@"facebookid"];
+    [flashbutton setImage:[UIImage imageNamed:@"tick.png"] forState:UIControlStateNormal];
+    flashCountLabel.text = [NSString stringWithFormat:@"%d",[flashCountLabel.text intValue]+1];
     [newFlash saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
         if (succeeded) {
             //add flash feed here
@@ -1449,12 +1462,15 @@ kAPIGraphCommentPhoto,
                 
             }
             [flashFeed saveInBackground];
-            [flashbutton setImage:[UIImage imageNamed:@"tick.png"] forState:UIControlStateNormal];
-            flashCountLabel.text = [NSString stringWithFormat:@"%d",[flashCountLabel.text intValue]+1];
+            
             [flashbutton setUserInteractionEnabled:YES];
             [sentbutton setUserInteractionEnabled:YES];
             [projbutton setUserInteractionEnabled:YES];
+        }else{
+            [flashbutton setImage:nil forState:UIControlStateNormal];
+            flashCountLabel.text = [NSString stringWithFormat:@"%d",[flashCountLabel.text intValue]-1];
         }
+     
     }];
 }
 -(void)postNewSendWithOG:(NSString*)idstring
@@ -1468,7 +1484,8 @@ kAPIGraphCommentPhoto,
     if(idstring)
         [newSent setObject:idstring forKey:@"facebookid"];
     [newSent setObject:[PFUser currentUser] forKey:@"user"];
-    
+    [sentbutton setImage:[UIImage imageNamed:@"tick.png"] forState:UIControlStateNormal];
+    sendCountLabel.text = [NSString stringWithFormat:@"%d",[sendCountLabel.text intValue]+1];
     [newSent saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
         if (succeeded) {
             PFObject* sendFeed = [PFObject objectWithClassName:@"Feed"];
@@ -1491,11 +1508,13 @@ kAPIGraphCommentPhoto,
             [sendFeed setObject:[[PFUser currentUser]objectForKey:@"profilepicture"] forKey:@"senderimagelink"];
             [sendFeed setObject:@"sent" forKey:@"action"];
             [sendFeed saveInBackground];
-            [sentbutton setImage:[UIImage imageNamed:@"tick.png"] forState:UIControlStateNormal];
-            sendCountLabel.text = [NSString stringWithFormat:@"%d",[sendCountLabel.text intValue]+1];
+            
             [flashbutton setUserInteractionEnabled:YES];
             [sentbutton setUserInteractionEnabled:YES];
             [projbutton setUserInteractionEnabled:YES];
+        }else{
+            [sentbutton setImage:nil forState:UIControlStateNormal];
+            sendCountLabel.text = [NSString stringWithFormat:@"%d",[sendCountLabel.text intValue]-1];
         }
     }];
 
@@ -1512,7 +1531,10 @@ kAPIGraphCommentPhoto,
     if(idstring)
         [newProj setObject:idstring forKey:@"facebookid"];
     [newProj setObject:[PFUser currentUser] forKey:@"user"];
+    [projbutton setImage:[UIImage imageNamed:@"tick.png"] forState:UIControlStateNormal];
+    projectCountLabel.text = [NSString stringWithFormat:@"%d",[projectCountLabel.text intValue]+1];
     [newProj saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+        if (succeeded) {
         PFObject* projFeed = [PFObject objectWithClassName:@"Feed"];
         [projFeed setObject:routeObject.pfobj forKey:@"linkedroute"];
         if (![[[PFUser currentUser]objectForKey:@"name"] isEqualToString:usernameLabel.text]){
@@ -1533,13 +1555,15 @@ kAPIGraphCommentPhoto,
         [projFeed setObject:[[PFUser currentUser]objectForKey:@"profilepicture"] forKey:@"senderimagelink"];
         [projFeed setObject:@"project" forKey:@"action"];
         [projFeed saveInBackground];
-        if (succeeded) {
-            [projbutton setImage:[UIImage imageNamed:@"tick.png"] forState:UIControlStateNormal];
-            projectCountLabel.text = [NSString stringWithFormat:@"%d",[projectCountLabel.text intValue]+1];
+        
+            
             [flashbutton setUserInteractionEnabled:YES];
             [sentbutton setUserInteractionEnabled:YES];
             [projbutton setUserInteractionEnabled:YES];
             
+        }else{
+            [projbutton setImage:nil forState:UIControlStateNormal];
+            projectCountLabel.text = [NSString stringWithFormat:@"%d",[projectCountLabel.text intValue]-1];
         }
     }];
 }
@@ -1679,12 +1703,10 @@ kAPIGraphCommentPhoto,
     }else{
     PFFile *imagefile = [routeObject.pfobj objectForKey:@"imageFile"];
     if(!imagefile.isDataAvailable){
-    [queryArray addObject:imagefile];
     [imagefile getDataInBackgroundWithBlock:^(NSData* imageData,NSError *error){
         NSLog(@"image recieved");
         [progressBar removeFromSuperview];
         self.navigationItem.title = @"Route Details";
-        [queryArray removeObject:imagefile];
         //rawImageData = imageData;
         //[rawImageData retain];
         UIImage* retrievedImage = [UIImage imageWithData:imageData];
@@ -1735,7 +1757,7 @@ kAPIGraphCommentPhoto,
         NSArray* routearrowarray = [routeObject.pfobj objectForKey:@"arrowarray"];
         NSArray* arrowtypearray = [routeObject.pfobj objectForKey:@"arrowtypearray"];
         NSArray* arrowcolorarray = [routeObject.pfobj objectForKey:@"arrowcolorarray"];
-        UIImage* pastedimage = nil;
+
         for (int i=0; i<[routearrowarray count]; i++) {
             
             
@@ -2627,6 +2649,7 @@ if (cell == nil) {
         
         if ([[NSUserDefaults standardUserDefaults]boolForKey:@"ogshare"]) {
             ASIFormDataRequest* newOGPost = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:@"https://graph.facebook.com/me/climbing_:recommend"]];
+//            [newOGPost setPostValue:@"true" forKey:@"fb:explicitly_shared"];
             [newOGPost setPostValue:[PFFacebookUtils facebook].accessToken forKey:@"access_token"];
             [newOGPost setPostValue:[NSString stringWithFormat:@"http://www.psychedapp.com/home/%@",routeObject.pfobj.objectId] forKey:@"route"];
             [newOGPost setPostValue:[NSString stringWithFormat:@"%@",_recommendTextView.text] forKey:@"message"];
@@ -2706,7 +2729,9 @@ if (cell == nil) {
 }
 -(void)TaggerDidReturnWithRecommendedArray:(NSMutableArray *)recommendedArray
 {
-    recommendedFBFriends = [[NSMutableArray alloc]init];
+    if (!recommendedFBFriends) {
+        recommendedFBFriends = [[NSMutableArray alloc]init];
+    }
         recommendedFBFriends = recommendedArray;
      for (FBfriend* friend in recommendedArray) {
          _recommendTextView.text = [NSString stringWithFormat:@"%@ %@",_recommendTextView.text,friend.name];

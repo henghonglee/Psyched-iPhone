@@ -11,11 +11,14 @@
 #import "FollowFriendsViewController.h"
 #import "MyRoutesViewController.h"
 #import "DAReloadActivityButton.h"
-@interface ProfileViewController : UIViewController <UITableViewDelegate,UITableViewDataSource>
+@interface ProfileViewController : UIViewController <UITableViewDelegate,UITableViewDataSource,UIAlertViewDelegate>
 {
     PFUser* selectedUser;
     NSMutableArray* followedArray;
 }
+@property (retain, nonatomic) IBOutlet UILabel *levelPercentLabel;
+@property (retain, nonatomic) IBOutlet UILabel *levelLabel;
+@property (retain, nonatomic) IBOutlet UIProgressView *levelProgressBar;
 @property (retain, nonatomic) IBOutlet UIButton *addedButton;
 @property (retain, nonatomic) IBOutlet UIButton *projectsButton;
 @property (retain, nonatomic) IBOutlet UIButton *sendsButton;

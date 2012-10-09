@@ -44,9 +44,18 @@
     [PFFacebookUtils initializeWithApplicationId:@"200778040017319"];
     [[NSUserDefaults standardUserDefaults]setBool:YES forKey:@"ogshare"];
     
-
-     LoginViewController* loginVC = [[LoginViewController alloc]initWithNibName:@"LoginViewController" bundle:nil];
-
+   
+    
+    
+    LoginViewController* loginVC;
+    if ([[[UIDevice currentDevice]systemVersion] floatValue]< 6.0) {
+            loginVC = [[LoginViewController alloc]initWithNibName:@"LoginViewController" bundle:nil];
+   
+    }else{
+            loginVC = [[LoginViewController alloc]initWithNibName:@"LoginViewController" bundle:nil];
+        
+    }
+    
     if ([[[UIDevice currentDevice] systemVersion] floatValue] >= 5.0){
         [[UINavigationBar appearance] setBackgroundImage:[UIImage imageNamed:@"headerimgbg@2x.png"] forBarMetrics:UIBarMetricsDefault];
         NSDictionary *textTitleOptions = [NSDictionary dictionaryWithObjectsAndKeys:[UIColor colorWithRed:229.0/255.0 green:182.0/255.0 blue:3.0/255.0 alpha:1.0], UITextAttributeTextColor,nil, UITextAttributeTextShadowColor,[UIFont fontWithName:@"Helvetica-Light" size:10.0],UITextAttributeFont,nil];
@@ -314,7 +323,7 @@
 -(void)fbOAuthCheck{
     NSLog(@"facebook oauth check when entering foreground %@",[PFFacebookUtils facebook].accessToken);
     if (![self.window.rootViewController isKindOfClass:[LoginViewController class]]) {
-    ASIHTTPRequest* accountRequest = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"https://graph.facebook.com/me/picture?access_token=%@",[PFFacebookUtils facebook].accessToken]]];
+    ASIHTTPRequest* accountRequest = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"https://graph.facebook.com/me/picture?type=large&access_token=%@",[PFFacebookUtils facebook].accessToken]]];
     accountRequest.shouldRedirect = YES;
     [accountRequest setCompletionBlock:^{
         
@@ -438,7 +447,7 @@
 //                                        andHttpMethod:@"POST"
 //                                          andDelegate:self];
     
-    NSURL* reqURL = [NSURL URLWithString:[NSString stringWithFormat:@"https://graph.facebook.com/fql?q=SELECT+about_me,locale,birthday,birthday_date,sex,uid,name,pic,email+FROM+user+WHERE+uid=me()&access_token=%@",[PFFacebookUtils facebook].accessToken]];
+    NSURL* reqURL = [NSURL URLWithString:[NSString stringWithFormat:@"https://graph.facebook.com/fql?q=SELECT+about_me,locale,birthday,birthday_date,sex,uid,name,pic_big,email+FROM+user+WHERE+uid=me()&access_token=%@",[PFFacebookUtils facebook].accessToken]];
     ASIHTTPRequest* fqlRequest = [ASIHTTPRequest requestWithURL:reqURL];
     [fqlRequest setCompletionBlock:^{
         SBJsonParser *jsonParser = [[SBJsonParser alloc] init];

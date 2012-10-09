@@ -64,8 +64,17 @@
         }];
         
     }else{
+        UIAlertView* alert = [[UIAlertView alloc]initWithTitle:@"Confirm" message:[NSString stringWithFormat:@"Stop Following %@?",nameLabel.text] delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:@"Yes",nil];
+        alert.delegate = self;
+        [alert show];
+        [alert release];
         
-        NSLog(@"stopped following %@",nameLabel.text);    
+    }
+}
+-(void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex
+{
+    if (alertView.cancelButtonIndex != buttonIndex) {
+        NSLog(@"stopped following %@",nameLabel.text);
         PFQuery* query = [PFQuery queryWithClassName:@"Follow"];
         [query whereKey:@"followed" equalTo:nameLabel.text];
         [query whereKey:@"follower" equalTo:[PFUser currentUser]];
@@ -73,19 +82,19 @@
         [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error){
             for (PFObject* obj in objects) {
                 if([obj objectForKey:@"subscriptionid"])
-                [self deleteOGwithId:[obj objectForKey:@"subscriptionid"]];
+                    [self deleteOGwithId:[obj objectForKey:@"subscriptionid"]];
                 [obj deleteInBackground];
-          [followButton setBackgroundImage:[UIImage imageNamed:@"follow_text.png"] forState:UIControlStateNormal];      
+                [followButton setBackgroundImage:[UIImage imageNamed:@"follow_text.png"] forState:UIControlStateNormal];
                 
             }
-             followButton.userInteractionEnabled = YES;
-            }];
-            PFQuery* followfeedquery = [PFQuery queryWithClassName:@"Feed"];
-            [followfeedquery whereKey:@"message" equalTo:[NSString stringWithFormat:@"%@ started following %@",[[PFUser currentUser] objectForKey:@"name"],nameLabel.text]];
-            [followfeedquery whereKey:@"sender" equalTo:[[PFUser currentUser] objectForKey:@"name"]];
-            [followfeedquery findObjectsInBackgroundWithBlock:^(NSArray *retrievedobjects, NSError *error) {
-                for (PFObject* pfobject in retrievedobjects) {
-                    [pfobject deleteInBackground];
+            followButton.userInteractionEnabled = YES;
+        }];
+        PFQuery* followfeedquery = [PFQuery queryWithClassName:@"Feed"];
+        [followfeedquery whereKey:@"message" equalTo:[NSString stringWithFormat:@"%@ started following %@",[[PFUser currentUser] objectForKey:@"name"],nameLabel.text]];
+        [followfeedquery whereKey:@"sender" equalTo:[[PFUser currentUser] objectForKey:@"name"]];
+        [followfeedquery findObjectsInBackgroundWithBlock:^(NSArray *retrievedobjects, NSError *error) {
+            for (PFObject* pfobject in retrievedobjects) {
+                [pfobject deleteInBackground];
             }
             
             
@@ -93,18 +102,18 @@
             
             
         }];
-
+        
         
         for (PFObject* followobj in ((FollowFriendsViewController*)owner).followedArray) {
-             NSLog(@"scanning object with owner = %@",[followobj objectForKey:@"followed"] );
+            NSLog(@"scanning object with owner = %@",[followobj objectForKey:@"followed"] );
             if([[followobj objectForKey:@"followed"] isEqualToString:nameLabel.text]){
                 NSLog(@"deleted object with owner = %@",[followobj objectForKey:@"followed"] );
-              tobedeleted = followobj;
-             //   [owner.followedArray removeObject:followobj];
-              
+                tobedeleted = followobj;
+                //   [owner.followedArray removeObject:followobj];
+                
             }
         }
-           [((FollowFriendsViewController*)owner).followedArray removeObject:tobedeleted];
+        [((FollowFriendsViewController*)owner).followedArray removeObject:tobedeleted];
     }
 }
 -(void)deleteOGwithId:(NSString*)idstring
@@ -127,6 +136,17 @@
 -(void)followClickedUserWithOGid:(NSString*)idstring
 {
     NSLog(@"now following %@",nameLabel.text);
+    PFQuery* userQ = [PFUser query];
+    [userQ whereKey:@"name" equalTo:nameLabel.text];
+    [userQ getFirstObjectInBackgroundWithBlock:^(PFObject *object, NSError *error) {
+        if (object) {
+        [PFPush sendPushMessageToChannelInBackground:[NSString stringWithFormat:@"channel%@",[object objectForKey:@"facebookid"]] withMessage:[NSString stringWithFormat:@"%@ is now following you on Psyched!",[[PFUser currentUser] objectForKey:@"name"]]];
+        }else{
+            NSLog(@"error = %@",error);
+        }
+    }];
+    
+    
     PFObject* pfObj = [PFObject objectWithClassName:@"Follow"];
     [pfObj setObject:[PFUser currentUser] forKey:@"follower"];
     [pfObj setObject:nameLabel.text forKey:@"followed"];

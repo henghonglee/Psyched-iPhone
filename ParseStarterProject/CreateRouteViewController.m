@@ -186,9 +186,15 @@ typedef enum apiCall {
     [textField resignFirstResponder];
     return YES;
 }
--(void)DescriptionDidReturnWithText:(NSString *)text
+-(void)DescriptionDidReturnWithText:(NSString *)text andTaggedUsers:(NSMutableArray *)taggedFriends
 {
     descriptionTextField.text = text;
+    if (taggedFriends){
+        if (!taggedUsers) {
+            taggedUsers = [[NSMutableArray alloc]init];
+        }
+        taggedUsers = taggedFriends;
+    }
 }
 -(void)LocationDidReturnWithText:(NSString *)text
 {
@@ -777,43 +783,114 @@ typedef enum apiCall {
 }
 -(void)postOG:(PFObject*)newRoute
 {
-    ASIHTTPRequest* postOG;
-    NSString* tagString = [[[NSString alloc]init]autorelease];
-    PFFile* arrowed = [newRoute objectForKey:@"imageFileWithArrows"];
     if (taggedUsers) {
-        for (FBfriend* user in taggedUsers) {
-            if ([tagString isEqualToString:@""]) {
-                tagString = [NSString stringWithFormat:@"%@",user.uid];
-                
-            }else{
-                tagString = [tagString stringByAppendingFormat:@",%@",user.uid];
-                
+        for (FBfriend* friend in taggedUsers) {
+            if ([descriptionTextField.text rangeOfString:friend.name].location != NSNotFound) {
+                descriptionTextField.text = [descriptionTextField.text stringByReplacingOccurrencesOfString:friend.name withString:[NSString stringWithFormat:@"@[%@]",friend.uid]];
             }
         }
-    
+        [taggedUsers release];
+        
     }
     if(fbuploadswitch.on){
-        postOG = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"http://psychedsupport.herokuapp.com/support/%@?og=true&access_token=%@&explicit=true&imageurl=%@&user_generated=true&tag=%@",newRoute.objectId,[PFFacebookUtils facebook].accessToken,arrowed.url,tagString]]];
-        NSLog(@"postog url = %@",postOG.url);
+        NSLog(@"image url = %@",((PFFile*)[newRoute objectForKey:@"imageFileWithArrows"]).url);
+        ASIFormDataRequest* newOGPost = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:@"https://graph.facebook.com/me/climbing_:add"]];
+        [newOGPost setPostValue:@"true" forKey:@"fb:explicitly_shared"];
+        [newOGPost setPostValue:[PFFacebookUtils facebook].accessToken forKey:@"access_token"];
+        [newOGPost setPostValue:[NSString stringWithFormat:@"http://www.psychedapp.com/home/%@",newRoute.objectId] forKey:@"route"];
+        [newOGPost setPostValue:[NSString stringWithFormat:@"%@ -- http://www.psychedapp.com/home/%@",descriptionTextField.text,newRoute.objectId] forKey:@"message"];
+        [newOGPost setPostValue:((PFFile*)[newRoute objectForKey:@"imageFileWithArrows"]).url forKey:@"image[0][url]"];
+        [newOGPost setPostValue:@"true" forKey:@"image[0][user_generated]"];
+        [newOGPost setRequestMethod:@"POST"];
+        [newOGPost setCompletionBlock:^{
+            SBJsonParser *jsonParser = [[SBJsonParser alloc] init];
+            NSDictionary *jsonObjects = [jsonParser objectWithString:[newOGPost responseString]];
+            [jsonParser release];
+            jsonParser = nil;
+            if ([jsonObjects objectForKey:@"id"]) {
+                NSLog(@"posted og added, %@",[newOGPost responseString]);
+                [newRoute setObject:[jsonObjects objectForKey:@"id"] forKey:@"opengraphid"];
+                [newRoute saveEventually];
+                [JHNotificationManager notificationWithMessage:@"Successfully uploaded your route!"];
+                [[UIApplication sharedApplication] endBackgroundTask:self.fileUploadBackgroundTaskId];
+                //   [self postNewLikeWithOG:[jsonObjects objectForKey:@"id"] andLikeCounter:likecounter];
+            }else{
+                NSLog(@"most likely authentication failed , %@",[newOGPost responseString]);
+                // [self postNewLikeWithOG:nil andLikeCounter:likecounter];
+                 [[UIApplication sharedApplication] endBackgroundTask:self.fileUploadBackgroundTaskId];
+            }
+            
+        }];
+        
+        
+        [newOGPost setFailedBlock:^{
+            NSLog(@"failed");
+            [[UIApplication sharedApplication] endBackgroundTask:self.fileUploadBackgroundTaskId];
+        }];
+        [newOGPost setTimeOutSeconds:30];
+        [newOGPost startAsynchronous];
+        NSLog(@"finished posting");
+        
+
+        
+        
+        
+        
+//        postOG = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"http://psychedsupport.herokuapp.com/support/%@?og=true&access_token=%@&explicit=true&imageurl=%@&image",newRoute.objectId,[PFFacebookUtils facebook].accessToken,arrowed.url,tagString]]];
+//        NSLog(@"postog url = %@",postOG.url);
     }else{
-        postOG = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"http://psychedsupport.herokuapp.com/support/%@?og=true&access_token=%@&explicit=false&tag=%@",newRoute.objectId,[PFFacebookUtils facebook].accessToken,tagString]]];
+        //silent mode post action
+        NSLog(@"image url = %@",((PFFile*)[newRoute objectForKey:@"imageFileWithArrows"]).url);
+        ASIFormDataRequest* newOGPost = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:@"https://graph.facebook.com/me/climbing_:add"]];
+
+        [newOGPost setPostValue:[PFFacebookUtils facebook].accessToken forKey:@"access_token"];
+        [newOGPost setPostValue:[NSString stringWithFormat:@"http://www.psychedapp.com/home/%@",newRoute.objectId] forKey:@"route"];
+        [newOGPost setRequestMethod:@"POST"];
+        [newOGPost setCompletionBlock:^{
+            SBJsonParser *jsonParser = [[SBJsonParser alloc] init];
+            NSDictionary *jsonObjects = [jsonParser objectWithString:[newOGPost responseString]];
+            [jsonParser release];
+            jsonParser = nil;
+            if ([jsonObjects objectForKey:@"id"]) {
+                NSLog(@"posted og added, %@",[newOGPost responseString]);
+                [newRoute setObject:[jsonObjects objectForKey:@"id"] forKey:@"opengraphid"];
+                [newRoute saveEventually];
+                [JHNotificationManager notificationWithMessage:@"Successfully uploaded your route!"];
+                [[UIApplication sharedApplication] endBackgroundTask:self.fileUploadBackgroundTaskId];
+                //   [self postNewLikeWithOG:[jsonObjects objectForKey:@"id"] andLikeCounter:likecounter];
+            }else{
+                NSLog(@"most likely authentication failed , %@",[newOGPost responseString]);
+                 [[UIApplication sharedApplication] endBackgroundTask:self.fileUploadBackgroundTaskId];
+                // [self postNewLikeWithOG:nil andLikeCounter:likecounter];
+            }
+            
+        }];
+        
+        
+        [newOGPost setFailedBlock:^{
+            NSLog(@"failed");
+            [[UIApplication sharedApplication] endBackgroundTask:self.fileUploadBackgroundTaskId];
+        }];
+        [newOGPost setTimeOutSeconds:30];
+        [newOGPost startAsynchronous];
+        NSLog(@"finished posting");
     }
-    [postOG setCompletionBlock:^{
-        NSLog(@"added og with response \n %@",postOG.responseString);
-        SBJsonParser *jsonParser = [[SBJsonParser alloc] init];
-        NSDictionary *jsonObjects = [jsonParser objectWithString:[postOG responseString]];
-        [jsonParser release];
-        jsonParser = nil;
-        [newRoute setObject:[jsonObjects objectForKey:@"id"] forKey:@"opengraphid"];
-        [newRoute saveEventually];
-        [JHNotificationManager notificationWithMessage:@"Successfully uploaded your route!"];
-        [[UIApplication sharedApplication] endBackgroundTask:self.fileUploadBackgroundTaskId];
-    }];
-    [postOG setFailedBlock:^{
-        [[UIApplication sharedApplication] endBackgroundTask:self.fileUploadBackgroundTaskId];
-    }];
-    [postOG setTimeOutSeconds:30];
-    [postOG startAsynchronous];
+//    [postOG setCompletionBlock:^{
+//        NSLog(@"added og with response \n %@",postOG.responseString);
+//        SBJsonParser *jsonParser = [[SBJsonParser alloc] init];
+//        NSDictionary *jsonObjects = [jsonParser objectWithString:[postOG responseString]];
+//        [jsonParser release];
+//        jsonParser = nil;
+//        [newRoute setObject:[jsonObjects objectForKey:@"id"] forKey:@"opengraphid"];
+//        [newRoute saveEventually];
+//        [JHNotificationManager notificationWithMessage:@"Successfully uploaded your route!"];
+//        [[UIApplication sharedApplication] endBackgroundTask:self.fileUploadBackgroundTaskId];
+//    }];
+//    [postOG setFailedBlock:^{
+//        [[UIApplication sharedApplication] endBackgroundTask:self.fileUploadBackgroundTaskId];
+//    }];
+//    [postOG setTimeOutSeconds:30];
+//    [postOG startAsynchronous];
 
     
     
@@ -958,7 +1035,6 @@ typedef enum apiCall {
         [[myRequest connection] cancel];
         [myRequest release];
          }
-     [taggedUsers release];
     [selectedGymObject release];
     [gymlist release];
     [oldAccessToken release];
@@ -985,24 +1061,7 @@ typedef enum apiCall {
     [gymShareLabel release];
     [super dealloc];
 }
--(void)TaggerDidReturnWithRecommendedArray:(NSMutableArray *)recommendedArray
-{
 
-    recommendTextField.text = @"";
-    if(!taggedUsers)
-    taggedUsers = [[NSMutableArray alloc]init ];
-    [taggedUsers removeAllObjects];
-    for (FBfriend* user in recommendedArray) {
-        [taggedUsers addObject:user];
-        if ([recommendTextField.text isEqualToString:@""]) {
-            recommendTextField.text = [NSString stringWithFormat:@"%@",user.name];
-            
-        }else{
-        recommendTextField.text = [recommendTextField.text stringByAppendingFormat:@",%@",user.name];
-
-        }
-    }
-}
 - (void)apiGraphUserPhotosPost:(UIImage*)img
 {
 

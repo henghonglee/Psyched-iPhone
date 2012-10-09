@@ -17,6 +17,7 @@
 #import "SearchFriendsViewController.h"
 @implementation ProfileViewController
 @synthesize userimage;
+@synthesize levelLabel;
 @synthesize queryArray;
 @synthesize addedButton;
 @synthesize projectsButton;
@@ -32,12 +33,14 @@
 @synthesize userFeedTable;
 @synthesize followButton;
 @synthesize userfeeds;
+@synthesize levelPercentLabel;
 @synthesize followingLabel;
 @synthesize flashLabel;
 @synthesize sendLabel;
 @synthesize projectLabel;
 @synthesize likeLabel;
 @synthesize addfriendsbutton;
+@synthesize levelProgressBar;
 @synthesize navigationBarItem;
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -78,12 +81,18 @@
     [super viewDidLoad];
     
     self.navigationItem.title = @"Profile";
-    userImageView.layer.borderColor = [UIColor whiteColor].CGColor;
-    userImageView.layer.borderWidth = 3;
-    userImageView.layer.shadowColor = [UIColor blackColor].CGColor;
-    userImageView.layer.shadowOffset = CGSizeMake(-1, -1);
-    userImageView.layer.shadowRadius = 2;
-    userImageView.layer.shadowOpacity = 0.8;
+    UIImage *track = [[UIImage imageNamed:@"trackImage"] resizableImageWithCapInsets:UIEdgeInsetsMake(0, 3, 0, 3)];
+    UIImage *progImage = [[UIImage imageNamed:@"progressImage"] resizableImageWithCapInsets:UIEdgeInsetsMake(0, 3, 0, 3)];
+    [levelProgressBar setProgressImage:progImage];
+    [levelProgressBar setTrackImage:track];
+    
+//    userImageView.layer.cornerRadius = 20;
+//    userImageView.layer.borderColor = [UIColor whiteColor].CGColor;
+//    userImageView.layer.borderWidth = 3;
+//    userImageView.layer.shadowColor = [UIColor blackColor].CGColor;
+//    userImageView.layer.shadowOffset = CGSizeMake(-1, -1);
+//    userImageView.layer.shadowRadius = 2;
+//    userImageView.layer.shadowOpacity = 0.8;
     
     [self.navigationController.navigationBar setBarStyle:UIBarStyleBlackOpaque];
     
@@ -92,7 +101,8 @@
     self.navigationController.navigationBar.layer.shadowOffset = CGSizeMake(0, 4);
     navigationBarItem = [[DAReloadActivityButton alloc] init];
     navigationBarItem.showsTouchWhenHighlighted = NO;
-    [navigationBarItem addTarget:self action:@selector(reloadUserData) forControlEvents:UIControlEventTouchUpInside];
+    [navigationBarItem addTarget:self action:@selector(reloadUserDataAction
+) forControlEvents:UIControlEventTouchUpInside];
     UIBarButtonItem *barButtonItem = [[UIBarButtonItem alloc] initWithCustomView:navigationBarItem];
     self.navigationItem.rightBarButtonItem = barButtonItem;
     [barButtonItem release];
@@ -111,7 +121,6 @@
         NSLog(@"loading profile");
         selectedUser = [objects objectAtIndex:0];
         [selectedUser retain];
-        NSLog(@"selected User = %@ , retain count = %d",selectedUser, [selectedUser retainCount]);
         if (userimage) {
             userImageView.image = userimage;
         }else{
@@ -123,6 +132,18 @@
             [request setFailedBlock:^{}];
             [request startAsynchronous];
         }
+        if ([[selectedUser objectForKey:@"score"] isKindOfClass:[NSNull class]]) {
+            [selectedUser setObject:[NSNumber numberWithInt:0] forKey:@"score"];
+            [selectedUser saveEventually];
+            
+        }
+        int totalScore = [((NSNumber*)[selectedUser objectForKey:@"score"]) intValue];
+        int level = (int)((1+sqrt(totalScore/5 + 1))/2);
+        float percentToNextLevel = (((1+sqrt(totalScore/5 + 1))/2) - level);
+        levelProgressBar.progress = percentToNextLevel;
+        levelPercentLabel.text = [NSString stringWithFormat:@"%d/%d points to Level %d (%d%%)",totalScore,5*(((level+1)*2-1)*((level+1)*2-1)),level+1,(int)(percentToNextLevel*100)];
+        levelLabel.text = [NSString stringWithFormat:@"%d", level];
+        
         PFQuery* likequery = [PFQuery queryWithClassName:@"Route"];
         likequery.cachePolicy= kPFCachePolicyNetworkElseCache; 
         [likequery whereKey:@"username" equalTo:username];
@@ -253,6 +274,16 @@
 }
 - (IBAction)showsubmitted:(id)sender {
 }
+-(void)reloadUserDataAction
+{
+    if ([selectedUser.objectId isEqualToString:[PFUser currentUser].objectId]) {
+        NSLog(@"calculating score..");
+    [PFCloud callFunctionInBackground:@"calculateScore" withParameters:[NSDictionary new] target:self selector:@selector(reloadUserData)];
+    }else{
+        [self performSelector:@selector(reloadUserData)];
+    }
+
+}
 -(void)reloadUserData
 {
     userFeedTable.scrollEnabled = NO;
@@ -264,7 +295,12 @@
          [queryArray removeObject:userQuery];
     selectedUser = [objects objectAtIndex:0];    
         [selectedUser retain];
-    NSLog(@"selected user  = %@",selectedUser);
+        int totalScore = [((NSNumber*)[selectedUser objectForKey:@"score"]) intValue];
+        int level = (int)((1+sqrt(totalScore/5 + 1))/2);
+        float percentToNextLevel = (((1+sqrt(totalScore/5 + 1))/2) - level);
+        levelProgressBar.progress = percentToNextLevel;
+        levelPercentLabel.text = [NSString stringWithFormat:@"%d/%d points to Level %d (%d%%)",totalScore,5*(((level+1)*2-1)*((level+1)*2-1)),level+1,(int)(percentToNextLevel*100)];
+        levelLabel.text = [NSString stringWithFormat:@"%d", level];
     if (userimage) {
         userImageView.image = userimage;
     }else{
@@ -428,6 +464,9 @@
     [self setNavigationBarItem:nil];
     [self setUserfeeds:nil];
 
+    [self setLevelProgressBar:nil];
+    [self setLevelLabel:nil];
+    [self setLevelPercentLabel:nil];
     [super viewDidUnload];
     // Release any retained subviews of the main view.
     // e.g. self.myOutlet = nil;
@@ -436,6 +475,34 @@
 
 - (IBAction)followAction:(UIButton*)sender {
     if (sender.tag == 1) {
+        UIAlertView* alert = [[UIAlertView alloc]initWithTitle:@"Confirm" message:[NSString stringWithFormat:@"Stop Following %@?",userNameLabel.text] delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:@"Yes",nil];
+        alert.delegate = self;
+    [alert show];
+    [alert release];
+
+    }else{
+    PFObject* pfObj = [PFObject objectWithClassName:@"Follow"];
+    [pfObj setObject:[PFUser currentUser] forKey:@"follower"];
+    [pfObj setObject:userNameLabel.text forKey:@"followed"];
+    [pfObj saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+        PFQuery* userQ = [PFUser query];
+        [userQ whereKey:@"name" equalTo:userNameLabel.text];
+        [userQ getFirstObjectInBackgroundWithBlock:^(PFObject *object, NSError *error) {
+            if (object) {
+                [PFPush sendPushMessageToChannelInBackground:[NSString stringWithFormat:@"channel%@",[object objectForKey:@"facebookid"]] withMessage:[NSString stringWithFormat:@"%@ is now following you on Psyched!",[[PFUser currentUser] objectForKey:@"name"]]];
+            }else{
+                NSLog(@"error = %@",error);
+            }
+        }];
+        [sender setTitle:@"UnFollow" forState:UIControlStateNormal];
+        sender.tag = 1;
+    }];
+    }
+    
+}
+-(void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex
+{
+    if (buttonIndex != alertView.cancelButtonIndex) {
         PFQuery* query = [PFQuery queryWithClassName:@"Follow"];
         [query whereKey:@"followed" equalTo:userNameLabel.text];
         [queryArray addObject:query];
@@ -444,20 +511,10 @@
             for (PFObject* obj in objects) {
                 [obj deleteInBackground];
             }
-            [sender setTitle:@"Follow" forState:UIControlStateNormal];
-            sender.tag = 0;
+            [followButton setTitle:@"Follow" forState:UIControlStateNormal];
+            followButton.tag = 0;
         }];
-
-    }else{
-    PFObject* pfObj = [PFObject objectWithClassName:@"Follow"];
-    [pfObj setObject:[PFUser currentUser] forKey:@"follower"];
-    [pfObj setObject:userNameLabel.text forKey:@"followed"];
-    [pfObj saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
-        [sender setTitle:@"UnFollow" forState:UIControlStateNormal];
-        sender.tag = 1;
-    }];
     }
-    
 }
 
 -(UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -643,6 +700,9 @@ return [userfeeds count];
     [flashButton release];
     [followersButton release];
     [followingButton release];
+    [levelProgressBar release];
+    [levelLabel release];
+    [levelPercentLabel release];
     [super dealloc];
 }
 @end

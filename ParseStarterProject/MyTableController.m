@@ -15,6 +15,7 @@
 #import <QuartzCore/QuartzCore.h>
 #import "GradientButton.h"
 #import "BarBackgroundLayer.h"
+#import "JHNotificationManager.h"
 @implementation MyTableController
 @synthesize routeTableView;
 @synthesize followedPosters;
@@ -240,6 +241,12 @@
 }
 -(IBAction)Settings:(id)sender
 {
+    [PFCloud callFunctionInBackground:@"calculateScore" withParameters:[NSDictionary new] block:^(id object, NSError *error) {
+        if ([object isKindOfClass:[NSString class]]) {
+            [JHNotificationManager notificationWithMessage:object];
+        }
+     
+    }];
     SettingsViewController* viewController = [[SettingsViewController alloc]initWithNibName:@"SettingsViewController" bundle:nil];
     [self presentModalViewController:viewController animated:YES];
     [viewController release];

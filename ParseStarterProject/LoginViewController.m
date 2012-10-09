@@ -204,7 +204,7 @@
 
     
     NSLog(@"runnign fqlme");
-    NSURL* reqURL = [NSURL URLWithString:[NSString stringWithFormat:@"https://graph.facebook.com/fql?q=SELECT+about_me,locale,birthday,birthday_date,sex,uid,name,pic,email+FROM+user+WHERE+uid=me()&access_token=%@",[PFFacebookUtils facebook].accessToken]];
+    NSURL* reqURL = [NSURL URLWithString:[NSString stringWithFormat:@"https://graph.facebook.com/fql?q=SELECT+about_me,locale,birthday,birthday_date,sex,uid,name,pic_big,email+FROM+user+WHERE+uid=me()&access_token=%@",[PFFacebookUtils facebook].accessToken]];
     ASIHTTPRequest* fqlRequest = [ASIHTTPRequest requestWithURL:reqURL];
     [fqlRequest setCompletionBlock:^{
         SBJsonParser *jsonParser = [[SBJsonParser alloc] init];

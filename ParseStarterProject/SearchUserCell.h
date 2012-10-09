@@ -8,7 +8,7 @@
 #import <Parse/Parse.h>
 #import <UIKit/UIKit.h>
 #import "FollowFriendsViewController.h"
-@interface SearchUserCell : UITableViewCell
+@interface SearchUserCell : UITableViewCell<UIAlertViewDelegate>
 {
     PFObject* tobedeleted;
 }

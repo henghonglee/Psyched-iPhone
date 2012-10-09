@@ -30,11 +30,6 @@
 		EF0A655615BFE626003BF1E5 /* step3.png in Resources */ = {isa = PBXBuildFile; fileRef = EF0A655515BFE626003BF1E5 /* step3.png */; };
 		EF0C4F9414BDC427003F88D4 /* EditImageViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EF0C4F9214BDC427003F88D4 /* EditImageViewController.m */; };
 		EF0C4F9514BDC427003F88D4 /* EditImageViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = EF0C4F9314BDC427003F88D4 /* EditImageViewController.xib */; };
-		EF11780915DBFAD80087C894 /* SenTestingKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EF1177E715DBE8780087C894 /* SenTestingKit.framework */; };
-		EF11780A15DBFAD80087C894 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 09ABC07113A1D52D009C3FCF /* UIKit.framework */; };
-		EF11780B15DBFAD80087C894 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 09ABC07313A1D52D009C3FCF /* Foundation.framework */; };
-		EF11781115DBFAD80087C894 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = EF11780F15DBFAD80087C894 /* InfoPlist.strings */; };
-		EF11781415DBFAD80087C894 /* testbundle.m in Sources */ = {isa = PBXBuildFile; fileRef = EF11781315DBFAD80087C894 /* testbundle.m */; };
 		EF1679C71541AE8600CE757A /* CommentsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EF1679C51541AE8600CE757A /* CommentsViewController.m */; };
 		EF1679C81541AE8600CE757A /* CommentsViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = EF1679C61541AE8600CE757A /* CommentsViewController.xib */; };
 		EF17AA3516174DCA00F356C6 /* BugSense-iOS.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EF17AA3416174DCA00F356C6 /* BugSense-iOS.framework */; };
@@ -53,12 +48,12 @@
 		EF2D2D35154B005200BB07DA /* Default.png in Resources */ = {isa = PBXBuildFile; fileRef = EF2D2D34154B005200BB07DA /* Default.png */; };
 		EF2D2D37154B005700BB07DA /* Default@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = EF2D2D36154B005700BB07DA /* Default@2x.png */; };
 		EF2D2D39154B862400BB07DA /* playback_mode_hint.png in Resources */ = {isa = PBXBuildFile; fileRef = EF2D2D38154B862400BB07DA /* playback_mode_hint.png */; };
-		EF308BA11602C8B800E99278 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = EF308BA01602C8B800E99278 /* Default-568h@2x.png */; };
 		EF36504214FBAF3D00C0F3DF /* tick.png in Resources */ = {isa = PBXBuildFile; fileRef = EF36504114FBAF3D00C0F3DF /* tick.png */; };
 		EF36504514FBB16F00C0F3DF /* heartcolor.png in Resources */ = {isa = PBXBuildFile; fileRef = EF36504414FBB16F00C0F3DF /* heartcolor.png */; };
 		EF36518C14FCB4F100C0F3DF /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EF36518B14FCB4F100C0F3DF /* CoreLocation.framework */; };
 		EF36518E14FCB4F800C0F3DF /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EF36518D14FCB4F700C0F3DF /* MapKit.framework */; };
 		EF36519514FCD44600C0F3DF /* MKMapView+ZoomLevel.m in Sources */ = {isa = PBXBuildFile; fileRef = EF36519414FCD44500C0F3DF /* MKMapView+ZoomLevel.m */; };
+		EF384E39161D3C6400FC04EF /* DescriptionBox.png in Resources */ = {isa = PBXBuildFile; fileRef = EF384E38161D3C6400FC04EF /* DescriptionBox.png */; };
 		EF384E3D15BD8AA6008A8B77 /* HomeLB.png in Resources */ = {isa = PBXBuildFile; fileRef = EF384E3915BD8AA5008A8B77 /* HomeLB.png */; };
 		EF384E3E15BD8AA6008A8B77 /* HomeDB.png in Resources */ = {isa = PBXBuildFile; fileRef = EF384E3A15BD8AA5008A8B77 /* HomeDB.png */; };
 		EF384E4315BD8B16008A8B77 /* BuildingsLB.png in Resources */ = {isa = PBXBuildFile; fileRef = EF384E4115BD8B14008A8B77 /* BuildingsLB.png */; };
@@ -134,12 +129,9 @@
 		EF3D7E641517696200D5395D /* UIImagePickerController+NoRotate.m in Sources */ = {isa = PBXBuildFile; fileRef = EF3D7E631517695D00D5395D /* UIImagePickerController+NoRotate.m */; };
 		EF3DEA7E161855DB0061613B /* headerimg@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = EF3DEA7C161855DA0061613B /* headerimg@2x.png */; };
 		EF3DEA8416185B730061613B /* headerimgbg@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = EF3DEA8316185B730061613B /* headerimgbg@2x.png */; };
-		EF3DEA9D1619A0C00061613B /* RouteCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = EF3DEA9C1619A0C00061613B /* RouteCell.xib */; };
-		EF3DEAA01619A0D20061613B /* RouteCell.m in Sources */ = {isa = PBXBuildFile; fileRef = EF3DEA9F1619A0D10061613B /* RouteCell.m */; };
 		EF3DEAA11619A8140061613B /* RouteCell.h in Sources */ = {isa = PBXBuildFile; fileRef = EF3DEA9E1619A0D10061613B /* RouteCell.h */; };
 		EF3DEAA21619A8140061613B /* RouteCell.m in Sources */ = {isa = PBXBuildFile; fileRef = EF3DEA9F1619A0D10061613B /* RouteCell.m */; };
 		EF3DEAA31619A8280061613B /* RouteCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = EF3DEA9C1619A0C00061613B /* RouteCell.xib */; };
-		EF3DEAB01619DAA10061613B /* recommendbox.png in Resources */ = {isa = PBXBuildFile; fileRef = EF3DEAAF1619DAA00061613B /* recommendbox.png */; };
 		EF3DEAB41619DEF70061613B /* recommendbox.png in Resources */ = {isa = PBXBuildFile; fileRef = EF3DEAAF1619DAA00061613B /* recommendbox.png */; };
 		EF43AF5714ED4CC70079DAF2 /* graybutton.png in Resources */ = {isa = PBXBuildFile; fileRef = EF43AF5614ED4CC60079DAF2 /* graybutton.png */; };
 		EF43AF5914ED4E2F0079DAF2 /* popularbutton.png in Resources */ = {isa = PBXBuildFile; fileRef = EF43AF5814ED4E2F0079DAF2 /* popularbutton.png */; };
@@ -182,7 +174,6 @@
 		EF5DAF0C14F52F4300250499 /* SendUserViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = EF5DAF0A14F52F4300250499 /* SendUserViewController.xib */; };
 		EF5DE5CA14BF0EA300FCAF60 /* CommentsCell.m in Sources */ = {isa = PBXBuildFile; fileRef = EF5DE5C914BF0EA300FCAF60 /* CommentsCell.m */; };
 		EF5DE5CC14BF0EC600FCAF60 /* CommentsCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = EF5DE5CB14BF0EC600FCAF60 /* CommentsCell.xib */; };
-		EF62F40B14FDB4B500933BB8 /* Parse.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EF62F40A14FDB4B500933BB8 /* Parse.framework */; };
 		EF62F40D14FDBAC900933BB8 /* AssetsLibrary.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EF62F40C14FDBAC900933BB8 /* AssetsLibrary.framework */; };
 		EF62F40F14FDBD7500933BB8 /* ImageIO.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EF62F40E14FDBD7500933BB8 /* ImageIO.framework */; };
 		EF62F41214FDC0F500933BB8 /* NSMutableDictionary+ImageMetadata.m in Sources */ = {isa = PBXBuildFile; fileRef = EF62F41114FDC0F500933BB8 /* NSMutableDictionary+ImageMetadata.m */; };
@@ -196,6 +187,8 @@
 		EF6687CC14F1230100609E05 /* SVModalWebViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EF6687C814F1230100609E05 /* SVModalWebViewController.m */; };
 		EF6687CD14F1230100609E05 /* SVWebViewController.bundle in Resources */ = {isa = PBXBuildFile; fileRef = EF6687C914F1230100609E05 /* SVWebViewController.bundle */; };
 		EF6687CE14F1230100609E05 /* SVWebViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EF6687CB14F1230100609E05 /* SVWebViewController.m */; };
+		EF6871F51623BA300063E208 /* 45degreee_fabric_@2X.png in Resources */ = {isa = PBXBuildFile; fileRef = EF6871F41623BA300063E208 /* 45degreee_fabric_@2X.png */; };
+		EF6871FA1623BF550063E208 /* Parse.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EF6871F91623BF550063E208 /* Parse.framework */; };
 		EF73B48B15CAC21B0052B9B0 /* Icon.png in Resources */ = {isa = PBXBuildFile; fileRef = EF73B48A15CAC21A0052B9B0 /* Icon.png */; };
 		EF73B48D15CAC2200052B9B0 /* Icon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = EF73B48C15CAC2200052B9B0 /* Icon@2x.png */; };
 		EF766B8B15BE923600EF0FCB /* placeholder.png in Resources */ = {isa = PBXBuildFile; fileRef = EF766B8A15BE923600EF0FCB /* placeholder.png */; };
@@ -216,6 +209,11 @@
 		EF7986971540598C00635958 /* GymDetailCell.m in Sources */ = {isa = PBXBuildFile; fileRef = EF7986961540598C00635958 /* GymDetailCell.m */; };
 		EF79869A1540599C00635958 /* GymDetailCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = EF7986991540599C00635958 /* GymDetailCell.xib */; };
 		EF7DC7A61503A2E000DC0433 /* graybuttondepressed.png in Resources */ = {isa = PBXBuildFile; fileRef = EF7DC7A51503A2E000DC0433 /* graybuttondepressed.png */; };
+		EF86AEF61623C8F40096150B /* Accounts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EF86AEF51623C8F40096150B /* Accounts.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
+		EF86AEF81623C9170096150B /* Social.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EF86AEF71623C9170096150B /* Social.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
+		EF86AEFA1623C9730096150B /* AdSupport.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EF86AEF91623C9730096150B /* AdSupport.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
+		EF86AEFC1623F7380096150B /* trackImage.png in Resources */ = {isa = PBXBuildFile; fileRef = EF86AEFB1623F7380096150B /* trackImage.png */; };
+		EF86AEFE1623F7530096150B /* progressImage.png in Resources */ = {isa = PBXBuildFile; fileRef = EF86AEFD1623F7530096150B /* progressImage.png */; };
 		EF8765341547AFCA00589622 /* GradientButton.m in Sources */ = {isa = PBXBuildFile; fileRef = EF8765321547AD2400589622 /* GradientButton.m */; };
 		EF8765381547CEEA00589622 /* SettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EF8765361547CEE700589622 /* SettingsViewController.m */; };
 		EF8765391547CEEA00589622 /* SettingsViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = EF8765371547CEE800589622 /* SettingsViewController.xib */; };
@@ -349,12 +347,6 @@
 		EF0C4F9214BDC427003F88D4 /* EditImageViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EditImageViewController.m; sourceTree = "<group>"; };
 		EF0C4F9314BDC427003F88D4 /* EditImageViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = EditImageViewController.xib; sourceTree = "<group>"; };
 		EF1177E715DBE8780087C894 /* SenTestingKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SenTestingKit.framework; path = Library/Frameworks/SenTestingKit.framework; sourceTree = DEVELOPER_DIR; };
-		EF11780815DBFAD80087C894 /* testbundle.octest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = testbundle.octest; sourceTree = BUILT_PRODUCTS_DIR; };
-		EF11780E15DBFAD80087C894 /* testbundle-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "testbundle-Info.plist"; sourceTree = "<group>"; };
-		EF11781015DBFAD80087C894 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
-		EF11781215DBFAD80087C894 /* testbundle.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = testbundle.h; sourceTree = "<group>"; };
-		EF11781315DBFAD80087C894 /* testbundle.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = testbundle.m; sourceTree = "<group>"; };
-		EF11781515DBFAD80087C894 /* testbundle-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "testbundle-Prefix.pch"; sourceTree = "<group>"; };
 		EF1679C41541AE8600CE757A /* CommentsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CommentsViewController.h; sourceTree = "<group>"; };
 		EF1679C51541AE8600CE757A /* CommentsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CommentsViewController.m; sourceTree = "<group>"; };
 		EF1679C61541AE8600CE757A /* CommentsViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CommentsViewController.xib; sourceTree = "<group>"; };
@@ -381,13 +373,13 @@
 		EF2D2D34154B005200BB07DA /* Default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Default.png; path = ../Default.png; sourceTree = "<group>"; };
 		EF2D2D36154B005700BB07DA /* Default@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Default@2x.png"; path = "../Default@2x.png"; sourceTree = "<group>"; };
 		EF2D2D38154B862400BB07DA /* playback_mode_hint.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = playback_mode_hint.png; sourceTree = "<group>"; };
-		EF308BA01602C8B800E99278 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = SOURCE_ROOT; };
 		EF36504114FBAF3D00C0F3DF /* tick.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = tick.png; sourceTree = "<group>"; };
 		EF36504414FBB16F00C0F3DF /* heartcolor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = heartcolor.png; sourceTree = "<group>"; };
 		EF36518B14FCB4F100C0F3DF /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
 		EF36518D14FCB4F700C0F3DF /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
 		EF36519314FCD44500C0F3DF /* MKMapView+ZoomLevel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "MKMapView+ZoomLevel.h"; sourceTree = "<group>"; };
 		EF36519414FCD44500C0F3DF /* MKMapView+ZoomLevel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "MKMapView+ZoomLevel.m"; sourceTree = "<group>"; };
+		EF384E38161D3C6400FC04EF /* DescriptionBox.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = DescriptionBox.png; sourceTree = "<group>"; };
 		EF384E3915BD8AA5008A8B77 /* HomeLB.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = HomeLB.png; sourceTree = "<group>"; };
 		EF384E3A15BD8AA5008A8B77 /* HomeDB.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = HomeDB.png; sourceTree = "<group>"; };
 		EF384E4115BD8B14008A8B77 /* BuildingsLB.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = BuildingsLB.png; sourceTree = "<group>"; };
@@ -567,7 +559,6 @@
 		EF5DE5C814BF0EA300FCAF60 /* CommentsCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CommentsCell.h; sourceTree = "<group>"; };
 		EF5DE5C914BF0EA300FCAF60 /* CommentsCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CommentsCell.m; sourceTree = "<group>"; };
 		EF5DE5CB14BF0EC600FCAF60 /* CommentsCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CommentsCell.xib; sourceTree = "<group>"; };
-		EF62F40A14FDB4B500933BB8 /* Parse.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Parse.framework; sourceTree = "<group>"; };
 		EF62F40C14FDBAC900933BB8 /* AssetsLibrary.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AssetsLibrary.framework; path = System/Library/Frameworks/AssetsLibrary.framework; sourceTree = SDKROOT; };
 		EF62F40E14FDBD7500933BB8 /* ImageIO.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ImageIO.framework; path = System/Library/Frameworks/ImageIO.framework; sourceTree = SDKROOT; };
 		EF62F41014FDC0F500933BB8 /* NSMutableDictionary+ImageMetadata.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSMutableDictionary+ImageMetadata.h"; sourceTree = "<group>"; };
@@ -586,6 +577,8 @@
 		EF6687C914F1230100609E05 /* SVWebViewController.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = SVWebViewController.bundle; sourceTree = "<group>"; };
 		EF6687CA14F1230100609E05 /* SVWebViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SVWebViewController.h; sourceTree = "<group>"; };
 		EF6687CB14F1230100609E05 /* SVWebViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SVWebViewController.m; sourceTree = "<group>"; };
+		EF6871F41623BA300063E208 /* 45degreee_fabric_@2X.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "45degreee_fabric_@2X.png"; sourceTree = "<group>"; };
+		EF6871F91623BF550063E208 /* Parse.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Parse.framework; sourceTree = "<group>"; };
 		EF73B48A15CAC21A0052B9B0 /* Icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Icon.png; path = ../Icon.png; sourceTree = "<group>"; };
 		EF73B48C15CAC2200052B9B0 /* Icon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Icon@2x.png"; path = "../Icon@2x.png"; sourceTree = "<group>"; };
 		EF766B8A15BE923600EF0FCB /* placeholder.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = placeholder.png; sourceTree = "<group>"; };
@@ -610,6 +603,11 @@
 		EF7986961540598C00635958 /* GymDetailCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GymDetailCell.m; sourceTree = "<group>"; };
 		EF7986991540599C00635958 /* GymDetailCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = GymDetailCell.xib; sourceTree = "<group>"; };
 		EF7DC7A51503A2E000DC0433 /* graybuttondepressed.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = graybuttondepressed.png; path = ../graybuttondepressed.png; sourceTree = "<group>"; };
+		EF86AEF51623C8F40096150B /* Accounts.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accounts.framework; path = System/Library/Frameworks/Accounts.framework; sourceTree = SDKROOT; };
+		EF86AEF71623C9170096150B /* Social.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Social.framework; path = System/Library/Frameworks/Social.framework; sourceTree = SDKROOT; };
+		EF86AEF91623C9730096150B /* AdSupport.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AdSupport.framework; path = System/Library/Frameworks/AdSupport.framework; sourceTree = SDKROOT; };
+		EF86AEFB1623F7380096150B /* trackImage.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = trackImage.png; sourceTree = "<group>"; };
+		EF86AEFD1623F7530096150B /* progressImage.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = progressImage.png; sourceTree = "<group>"; };
 		EF8765311547AD2200589622 /* GradientButton.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GradientButton.h; sourceTree = "<group>"; };
 		EF8765321547AD2400589622 /* GradientButton.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = GradientButton.m; sourceTree = "<group>"; };
 		EF8765351547CEE600589622 /* SettingsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SettingsViewController.h; sourceTree = "<group>"; };
@@ -755,6 +753,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				EF86AEFA1623C9730096150B /* AdSupport.framework in Frameworks */,
+				EF86AEF81623C9170096150B /* Social.framework in Frameworks */,
+				EF86AEF61623C8F40096150B /* Accounts.framework in Frameworks */,
+				EF6871FA1623BF550063E208 /* Parse.framework in Frameworks */,
 				EF17AA3516174DCA00F356C6 /* BugSense-iOS.framework in Frameworks */,
 				EF39A00D14BB327700A02516 /* libxml2.dylib in Frameworks */,
 				EFAE9A1515F0F9BB003DB569 /* libsqlite3.dylib in Frameworks */,
@@ -764,7 +766,6 @@
 				EF62F41414FDC20300933BB8 /* CoreMedia.framework in Frameworks */,
 				EF62F40F14FDBD7500933BB8 /* ImageIO.framework in Frameworks */,
 				EF62F40D14FDBAC900933BB8 /* AssetsLibrary.framework in Frameworks */,
-				EF62F40B14FDB4B500933BB8 /* Parse.framework in Frameworks */,
 				EF36518E14FCB4F800C0F3DF /* MapKit.framework in Frameworks */,
 				EF36518C14FCB4F100C0F3DF /* CoreLocation.framework in Frameworks */,
 				EF6687C014F1228600609E05 /* MessageUI.framework in Frameworks */,
@@ -782,25 +783,18 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		EF11780415DBFAD80087C894 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				EF11780915DBFAD80087C894 /* SenTestingKit.framework in Frameworks */,
-				EF11780A15DBFAD80087C894 /* UIKit.framework in Frameworks */,
-				EF11780B15DBFAD80087C894 /* Foundation.framework in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
 		09ABC06213A1D52D009C3FCF = {
 			isa = PBXGroup;
 			children = (
+				EF86AEF91623C9730096150B /* AdSupport.framework */,
+				EF86AEF71623C9170096150B /* Social.framework */,
+				EF86AEF51623C8F40096150B /* Accounts.framework */,
+				EF6871F91623BF550063E208 /* Parse.framework */,
 				EF17AA3416174DCA00F356C6 /* BugSense-iOS.framework */,
 				09ABC07713A1D52D009C3FCF /* ParseStarterProject */,
-				EF11780C15DBFAD80087C894 /* testbundle */,
 				09ABC07013A1D52D009C3FCF /* Frameworks */,
 				09ABC06E13A1D52D009C3FCF /* Products */,
 			);
@@ -810,7 +804,6 @@
 			isa = PBXGroup;
 			children = (
 				09ABC06D13A1D52D009C3FCF /* PsychedApp.app */,
-				EF11780815DBFAD80087C894 /* testbundle.octest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -828,7 +821,6 @@
 				EF62F41314FDC20300933BB8 /* CoreMedia.framework */,
 				EF62F40E14FDBD7500933BB8 /* ImageIO.framework */,
 				EF62F40C14FDBAC900933BB8 /* AssetsLibrary.framework */,
-				EF62F40A14FDB4B500933BB8 /* Parse.framework */,
 				EF36518D14FCB4F700C0F3DF /* MapKit.framework */,
 				EF36518B14FCB4F100C0F3DF /* CoreLocation.framework */,
 				EF6687C614F1230100609E05 /* SVWebViewController */,
@@ -862,7 +854,7 @@
 				EF3DEA7C161855DA0061613B /* headerimg@2x.png */,
 				EF3DEAAF1619DAA00061613B /* recommendbox.png */,
 				EF3DEA8316185B730061613B /* headerimgbg@2x.png */,
-				EF308BA01602C8B800E99278 /* Default-568h@2x.png */,
+				EF384E38161D3C6400FC04EF /* DescriptionBox.png */,
 				EFB6773A160AAA9900621509 /* arrowbgflip.png */,
 				09ABC08013A1D52D009C3FCF /* ParseStarterProjectAppDelegate.h */,
 				09ABC08113A1D52D009C3FCF /* ParseStarterProjectAppDelegate.m */,
@@ -916,29 +908,12 @@
 			name = Tests;
 			sourceTree = "<group>";
 		};
-		EF11780C15DBFAD80087C894 /* testbundle */ = {
-			isa = PBXGroup;
-			children = (
-				EF11781215DBFAD80087C894 /* testbundle.h */,
-				EF11781315DBFAD80087C894 /* testbundle.m */,
-				EF11780D15DBFAD80087C894 /* Supporting Files */,
-			);
-			path = testbundle;
-			sourceTree = "<group>";
-		};
-		EF11780D15DBFAD80087C894 /* Supporting Files */ = {
-			isa = PBXGroup;
-			children = (
-				EF11780E15DBFAD80087C894 /* testbundle-Info.plist */,
-				EF11780F15DBFAD80087C894 /* InfoPlist.strings */,
-				EF11781515DBFAD80087C894 /* testbundle-Prefix.pch */,
-			);
-			name = "Supporting Files";
-			sourceTree = "<group>";
-		};
 		EF232BFC154E5AA400BCE6CA /* Profile */ = {
 			isa = PBXGroup;
 			children = (
+				EF6871F41623BA300063E208 /* 45degreee_fabric_@2X.png */,
+				EF86AEFD1623F7530096150B /* progressImage.png */,
+				EF86AEFB1623F7380096150B /* trackImage.png */,
 				EF5BD4CA14C5DF7D00C4FCB3 /* ProfileViewController.h */,
 				EF5BD4CB14C5DF7F00C4FCB3 /* ProfileViewController.m */,
 				EF5BD4CC14C5DF8000C4FCB3 /* ProfileViewController.xib */,
@@ -1527,24 +1502,6 @@
 			productReference = 09ABC06D13A1D52D009C3FCF /* PsychedApp.app */;
 			productType = "com.apple.product-type.application";
 		};
-		EF11780715DBFAD80087C894 /* testbundle */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = EF11781615DBFAD80087C894 /* Build configuration list for PBXNativeTarget "testbundle" */;
-			buildPhases = (
-				EF11780315DBFAD80087C894 /* Sources */,
-				EF11780415DBFAD80087C894 /* Frameworks */,
-				EF11780515DBFAD80087C894 /* Resources */,
-				EF11780615DBFAD80087C894 /* ShellScript */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-			);
-			name = testbundle;
-			productName = testbundle;
-			productReference = EF11780815DBFAD80087C894 /* testbundle.octest */;
-			productType = "com.apple.product-type.bundle";
-		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -1566,7 +1523,6 @@
 			projectRoot = "";
 			targets = (
 				09ABC06C13A1D52D009C3FCF /* PsychedApp */,
-				EF11780715DBFAD80087C894 /* testbundle */,
 			);
 		};
 /* End PBXProject section */
@@ -1731,7 +1687,6 @@
 				EF73B48B15CAC21B0052B9B0 /* Icon.png in Resources */,
 				EF73B48D15CAC2200052B9B0 /* Icon@2x.png in Resources */,
 				EFC6543815F3DC09005E425A /* hashtag.png in Resources */,
-				EF308BA11602C8B800E99278 /* Default-568h@2x.png in Resources */,
 				EF87E10F16097CA100637600 /* arrow3flip.png in Resources */,
 				EFA5214016099FCA0095E4D2 /* arrow3white.png in Resources */,
 				EFAB68BA1609BA94000BCC01 /* start1.png in Resources */,
@@ -1741,36 +1696,14 @@
 				EF3DEA8416185B730061613B /* headerimgbg@2x.png in Resources */,
 				EFC0A08F161A7EE200755C39 /* download.jpeg in Resources */,
 				EFC0A091161A7FFD00755C39 /* friendicon.png in Resources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		EF11780515DBFAD80087C894 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				EF11781115DBFAD80087C894 /* InfoPlist.strings in Resources */,
-				EF3DEA9D1619A0C00061613B /* RouteCell.xib in Resources */,
-				EF3DEAB01619DAA10061613B /* recommendbox.png in Resources */,
+				EF384E39161D3C6400FC04EF /* DescriptionBox.png in Resources */,
+				EF6871F51623BA300063E208 /* 45degreee_fabric_@2X.png in Resources */,
+				EF86AEFC1623F7380096150B /* trackImage.png in Resources */,
+				EF86AEFE1623F7530096150B /* progressImage.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
-
-/* Begin PBXShellScriptBuildPhase section */
-		EF11780615DBFAD80087C894 /* ShellScript */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "# Run the unit tests in this test bundle.\n\"${SYSTEM_DEVELOPER_DIR}/Tools/RunUnitTests\"\n";
-		};
-/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		09ABC06913A1D52D009C3FCF /* Sources */ = {
@@ -1890,15 +1823,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		EF11780315DBFAD80087C894 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				EF11781415DBFAD80087C894 /* testbundle.m in Sources */,
-				EF3DEAA01619A0D20061613B /* RouteCell.m in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXVariantGroup section */
@@ -1918,14 +1842,6 @@
 			name = MainWindow.xib;
 			sourceTree = "<group>";
 		};
-		EF11780F15DBFAD80087C894 /* InfoPlist.strings */ = {
-			isa = PBXVariantGroup;
-			children = (
-				EF11781015DBFAD80087C894 /* en */,
-			);
-			name = InfoPlist.strings;
-			sourceTree = "<group>";
-		};
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
@@ -1933,8 +1849,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
-				CODE_SIGN_IDENTITY = "iPhone Distribution: Lee Heng Hong";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: Lee Heng Hong";
+				CODE_SIGN_IDENTITY = "iPhone Developer: Lee Heng Hong (T53AB93G9J)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Lee Heng Hong (T53AB93G9J)";
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PREPROCESSOR_DEFINITIONS = DEBUG;
@@ -1943,8 +1859,8 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
-				PROVISIONING_PROFILE = "A0A91AD3-8FB3-4081-967E-FF246DCCA012";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "A0A91AD3-8FB3-4081-967E-FF246DCCA012";
+				PROVISIONING_PROFILE = "F591337F-BE7C-4D57-98FA-28A7D9B7C5E1";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "F591337F-BE7C-4D57-98FA-28A7D9B7C5E1";
 				SDKROOT = iphoneos;
 			};
 			name = Debug;
@@ -1953,16 +1869,16 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
-				CODE_SIGN_IDENTITY = "iPhone Distribution: Lee Heng Hong";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: Lee Heng Hong";
+				CODE_SIGN_IDENTITY = "iPhone Developer: Lee Heng Hong (T53AB93G9J)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Lee Heng Hong (T53AB93G9J)";
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
 				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
-				PROVISIONING_PROFILE = "A0A91AD3-8FB3-4081-967E-FF246DCCA012";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "A0A91AD3-8FB3-4081-967E-FF246DCCA012";
+				PROVISIONING_PROFILE = "F591337F-BE7C-4D57-98FA-28A7D9B7C5E1";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "F591337F-BE7C-4D57-98FA-28A7D9B7C5E1";
 				SDKROOT = iphoneos;
 			};
 			name = Release;
@@ -1972,15 +1888,15 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
-				CODE_SIGN_IDENTITY = "iPhone Distribution: Lee Heng Hong";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: Lee Heng Hong";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)\"",
 					"\"$(SRCROOT)/..\"",
 					"\"$(SRCROOT)/../../Downloads\"",
-					"\"$(SYSTEM_APPS_DIR)/Xcode45-DP4.app/Contents/Developer/Library/Frameworks\"",
+					"\"$(SYSTEM_APPS_DIR)/Xcode.app/Contents/Developer/Library/Frameworks\"",
 				);
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
@@ -1999,8 +1915,8 @@
 					"-ObjC",
 				);
 				PRODUCT_NAME = PsychedApp;
-				PROVISIONING_PROFILE = "6041023E-8693-4AF7-8DE2-13F02E1CEE5B";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "6041023E-8693-4AF7-8DE2-13F02E1CEE5B";
+				PROVISIONING_PROFILE = "";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
 				TARGETED_DEVICE_FAMILY = 1;
 				USER_HEADER_SEARCH_PATHS = "${SRCROOT}/**";
 				"USER_HEADER_SEARCH_PATHS[arch=*]" = "${SDK_DIR}/usr/include/libxml2";
@@ -2015,15 +1931,15 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
-				CODE_SIGN_IDENTITY = "iPhone Distribution: Lee Heng Hong";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: Lee Heng Hong";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)\"",
 					"\"$(SRCROOT)/..\"",
 					"\"$(SRCROOT)/../../Downloads\"",
-					"\"$(SYSTEM_APPS_DIR)/Xcode45-DP4.app/Contents/Developer/Library/Frameworks\"",
+					"\"$(SYSTEM_APPS_DIR)/Xcode.app/Contents/Developer/Library/Frameworks\"",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "ParseStarterProject/PsychedApp-Prefix.pch";
@@ -2041,63 +1957,13 @@
 					"-ObjC",
 				);
 				PRODUCT_NAME = PsychedApp;
-				PROVISIONING_PROFILE = "6041023E-8693-4AF7-8DE2-13F02E1CEE5B";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "6041023E-8693-4AF7-8DE2-13F02E1CEE5B";
+				PROVISIONING_PROFILE = "";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
 				TARGETED_DEVICE_FAMILY = 1;
 				USER_HEADER_SEARCH_PATHS = "${SDK_DIR}/usr/include/libxml2";
 				VALIDATE_PRODUCT = YES;
 				VALID_ARCHS = "armv7s armv7";
 				WRAPPER_EXTENSION = app;
-			};
-			name = Release;
-		};
-		EF11781715DBFAD80087C894 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
-				CLANG_CXX_LIBRARY = "libc++";
-				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				COPY_PHASE_STRIP = NO;
-				FRAMEWORK_SEARCH_PATHS = (
-					"\"$(SDKROOT)/Developer/Library/Frameworks\"",
-					"\"$(DEVELOPER_LIBRARY_DIR)/Frameworks\"",
-				);
-				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "testbundle/testbundle-Prefix.pch";
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"DEBUG=1",
-					"$(inherited)",
-				);
-				GCC_WARN_UNINITIALIZED_AUTOS = YES;
-				INFOPLIST_FILE = "testbundle/testbundle-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				WRAPPER_EXTENSION = octest;
-			};
-			name = Debug;
-		};
-		EF11781815DBFAD80087C894 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
-				CLANG_CXX_LIBRARY = "libc++";
-				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				COPY_PHASE_STRIP = YES;
-				FRAMEWORK_SEARCH_PATHS = (
-					"\"$(SDKROOT)/Developer/Library/Frameworks\"",
-					"\"$(DEVELOPER_LIBRARY_DIR)/Frameworks\"",
-				);
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "testbundle/testbundle-Prefix.pch";
-				GCC_WARN_UNINITIALIZED_AUTOS = YES;
-				INFOPLIST_FILE = "testbundle/testbundle-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				VALIDATE_PRODUCT = YES;
-				WRAPPER_EXTENSION = octest;
 			};
 			name = Release;
 		};
@@ -2118,15 +1984,6 @@
 			buildConfigurations = (
 				09ABC08F13A1D52E009C3FCF /* Debug */,
 				09ABC09013A1D52E009C3FCF /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		EF11781615DBFAD80087C894 /* Build configuration list for PBXNativeTarget "testbundle" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				EF11781715DBFAD80087C894 /* Debug */,
-				EF11781815DBFAD80087C894 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

@@ -1,0 +1,14 @@
+{
+    "applications": {
+        "Psyched!": {
+            "applicationId": "rUk14GRi8xY6ieFQGyXcJ39iQUPuGo1ihR2dAKeh", 
+            "masterKey": "P3gnQG7Uv1iw9rMBsZF0UceoT4y8ewglrBd8DDnu"
+        }, 
+        "_default": {
+            "link": "Psyched!"
+        }
+    }, 
+    "global": {
+        "parseVersion": "1.1.5"
+    }
+}

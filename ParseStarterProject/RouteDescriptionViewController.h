@@ -7,15 +7,17 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "FriendTaggerViewController.h"
 @protocol RouteDescriptionDelegate;
-@interface RouteDescriptionViewController : UIViewController<UITextViewDelegate>
+@interface RouteDescriptionViewController : UIViewController<UITextViewDelegate,TaggerDelegate>
 @property (retain, nonatomic) IBOutlet UITextView *descriptionTextField;
 @property (retain,nonatomic) id<RouteDescriptionDelegate> delegate;
 @property (retain,nonatomic) NSString* descriptionText;
+@property (retain,nonatomic) NSMutableArray* taggedFriends;
 @property (retain, nonatomic) IBOutlet UIButton *instructionButton;
 @end
 
 @protocol RouteDescriptionDelegate <NSObject>
--(void)DescriptionDidReturnWithText:(NSString*)text;
+-(void)DescriptionDidReturnWithText:(NSString*)text andTaggedUsers:(NSMutableArray*)taggedFriends;
 
 @end
