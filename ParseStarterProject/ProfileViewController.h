@@ -16,6 +16,11 @@
     PFUser* selectedUser;
     NSMutableArray* followedArray;
 }
+@property (retain, nonatomic) IBOutlet UIView *badgeView;
+@property (retain, nonatomic) IBOutlet UILabel *aboutMeLabel;
+@property (retain, nonatomic) IBOutlet UIView *levelView;
+@property (retain, nonatomic) IBOutlet UIImageView *profileImageView;
+@property (retain, nonatomic) IBOutlet UIView *profileView;
 @property (retain, nonatomic) IBOutlet UILabel *levelPercentLabel;
 @property (retain, nonatomic) IBOutlet UILabel *levelLabel;
 @property (retain, nonatomic) IBOutlet UIProgressView *levelProgressBar;

@@ -214,6 +214,9 @@
 		EF86AEFA1623C9730096150B /* AdSupport.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EF86AEF91623C9730096150B /* AdSupport.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		EF86AEFC1623F7380096150B /* trackImage.png in Resources */ = {isa = PBXBuildFile; fileRef = EF86AEFB1623F7380096150B /* trackImage.png */; };
 		EF86AEFE1623F7530096150B /* progressImage.png in Resources */ = {isa = PBXBuildFile; fileRef = EF86AEFD1623F7530096150B /* progressImage.png */; };
+		EF86AF0016240AAE0096150B /* diagmonds_@2X.png in Resources */ = {isa = PBXBuildFile; fileRef = EF86AEFF16240AAE0096150B /* diagmonds_@2X.png */; };
+		EF86AF0216240B3F0096150B /* irongrip_@2X.png in Resources */ = {isa = PBXBuildFile; fileRef = EF86AF0116240B3F0096150B /* irongrip_@2X.png */; };
+		EF86AF0C162427660096150B /* chart.png in Resources */ = {isa = PBXBuildFile; fileRef = EF86AF0B162427660096150B /* chart.png */; };
 		EF8765341547AFCA00589622 /* GradientButton.m in Sources */ = {isa = PBXBuildFile; fileRef = EF8765321547AD2400589622 /* GradientButton.m */; };
 		EF8765381547CEEA00589622 /* SettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EF8765361547CEE700589622 /* SettingsViewController.m */; };
 		EF8765391547CEEA00589622 /* SettingsViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = EF8765371547CEE800589622 /* SettingsViewController.xib */; };
@@ -608,6 +611,9 @@
 		EF86AEF91623C9730096150B /* AdSupport.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AdSupport.framework; path = System/Library/Frameworks/AdSupport.framework; sourceTree = SDKROOT; };
 		EF86AEFB1623F7380096150B /* trackImage.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = trackImage.png; sourceTree = "<group>"; };
 		EF86AEFD1623F7530096150B /* progressImage.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = progressImage.png; sourceTree = "<group>"; };
+		EF86AEFF16240AAE0096150B /* diagmonds_@2X.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "diagmonds_@2X.png"; sourceTree = "<group>"; };
+		EF86AF0116240B3F0096150B /* irongrip_@2X.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "irongrip_@2X.png"; sourceTree = "<group>"; };
+		EF86AF0B162427660096150B /* chart.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = chart.png; sourceTree = "<group>"; };
 		EF8765311547AD2200589622 /* GradientButton.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GradientButton.h; sourceTree = "<group>"; };
 		EF8765321547AD2400589622 /* GradientButton.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = GradientButton.m; sourceTree = "<group>"; };
 		EF8765351547CEE600589622 /* SettingsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SettingsViewController.h; sourceTree = "<group>"; };
@@ -912,10 +918,13 @@
 			isa = PBXGroup;
 			children = (
 				EF6871F41623BA300063E208 /* 45degreee_fabric_@2X.png */,
+				EF86AF0116240B3F0096150B /* irongrip_@2X.png */,
+				EF86AEFF16240AAE0096150B /* diagmonds_@2X.png */,
 				EF86AEFD1623F7530096150B /* progressImage.png */,
 				EF86AEFB1623F7380096150B /* trackImage.png */,
 				EF5BD4CA14C5DF7D00C4FCB3 /* ProfileViewController.h */,
 				EF5BD4CB14C5DF7F00C4FCB3 /* ProfileViewController.m */,
+				EF86AF0B162427660096150B /* chart.png */,
 				EF5BD4CC14C5DF8000C4FCB3 /* ProfileViewController.xib */,
 				EF766B9415BE943B00EF0FCB /* placeholder_user.png */,
 				EFB25D4B15258E67002F310B /* UserObject.h */,
@@ -1700,6 +1709,9 @@
 				EF6871F51623BA300063E208 /* 45degreee_fabric_@2X.png in Resources */,
 				EF86AEFC1623F7380096150B /* trackImage.png in Resources */,
 				EF86AEFE1623F7530096150B /* progressImage.png in Resources */,
+				EF86AF0016240AAE0096150B /* diagmonds_@2X.png in Resources */,
+				EF86AF0216240B3F0096150B /* irongrip_@2X.png in Resources */,
+				EF86AF0C162427660096150B /* chart.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

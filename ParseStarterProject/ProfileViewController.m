@@ -25,6 +25,8 @@
 @synthesize flashButton;
 @synthesize followersButton;
 @synthesize followingButton;
+@synthesize profileView;
+@synthesize profileImageView;
 @synthesize followingwho;
 @synthesize selectedUser;
 @synthesize userImageView;
@@ -85,14 +87,17 @@
     UIImage *progImage = [[UIImage imageNamed:@"progressImage"] resizableImageWithCapInsets:UIEdgeInsetsMake(0, 3, 0, 3)];
     [levelProgressBar setProgressImage:progImage];
     [levelProgressBar setTrackImage:track];
-    
-//    userImageView.layer.cornerRadius = 20;
-//    userImageView.layer.borderColor = [UIColor whiteColor].CGColor;
-//    userImageView.layer.borderWidth = 3;
-//    userImageView.layer.shadowColor = [UIColor blackColor].CGColor;
-//    userImageView.layer.shadowOffset = CGSizeMake(-1, -1);
-//    userImageView.layer.shadowRadius = 2;
-//    userImageView.layer.shadowOpacity = 0.8;
+    profileView.layer.cornerRadius = 5;
+    _badgeView.layer.cornerRadius = 5;
+    _levelView.layer.cornerRadius = 5;
+    levelLabel.layer.cornerRadius=5;
+    userImageView.layer.cornerRadius = 5;
+    userImageView.layer.borderColor = [UIColor whiteColor].CGColor;
+    userImageView.layer.borderWidth = 2;
+    userImageView.layer.shadowColor = [UIColor blackColor].CGColor;
+    userImageView.layer.shadowOffset = CGSizeMake(-1, -1);
+    userImageView.layer.shadowRadius = 2;
+    userImageView.layer.shadowOpacity = 0.8;
     
     [self.navigationController.navigationBar setBarStyle:UIBarStyleBlackOpaque];
     
@@ -121,6 +126,9 @@
         NSLog(@"loading profile");
         selectedUser = [objects objectAtIndex:0];
         [selectedUser retain];
+        
+        _aboutMeLabel.text = [selectedUser objectForKey:@"about_me"];
+        
         if (userimage) {
             userImageView.image = userimage;
         }else{
@@ -467,6 +475,11 @@
     [self setLevelProgressBar:nil];
     [self setLevelLabel:nil];
     [self setLevelPercentLabel:nil];
+    [self setProfileView:nil];
+    [self setProfileImageView:nil];
+    [self setLevelView:nil];
+    [self setAboutMeLabel:nil];
+    [self setBadgeView:nil];
     [super viewDidUnload];
     // Release any retained subviews of the main view.
     // e.g. self.myOutlet = nil;
@@ -703,6 +716,11 @@ return [userfeeds count];
     [levelProgressBar release];
     [levelLabel release];
     [levelPercentLabel release];
+    [profileView release];
+    [profileImageView release];
+    [_levelView release];
+    [_aboutMeLabel release];
+    [_badgeView release];
     [super dealloc];
 }
 @end
