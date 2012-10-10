@@ -52,7 +52,7 @@
 						<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 						<object class="NSCustomResource" key="IBUIImage">
 							<string key="NSClassName">NSImage</string>
-							<string key="NSResourceName">45degreee_fabric_@2X.png</string>
+							<string key="NSResourceName">irongrip_@2X.png</string>
 						</object>
 					</object>
 					<object class="IBUIImageView" id="530755521">
@@ -913,8 +913,8 @@
 		<bool key="IBDocument.PluginDeclaredDependenciesTrackSystemTargetVersion">YES</bool>
 		<int key="IBDocument.defaultPropertyAccessControl">3</int>
 		<dictionary class="NSMutableDictionary" key="IBDocument.LastKnownImageSizes">
-			<string key="45degreee_fabric_@2X.png">{630, 630}</string>
 			<string key="bluepin.png">{32, 32}</string>
+			<string key="irongrip_@2X.png">{600, 602}</string>
 			<string key="placeholder_user.png">{256, 256}</string>
 		</dictionary>
 		<string key="IBCocoaTouchPluginVersion">1929</string>

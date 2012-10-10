@@ -169,12 +169,17 @@ kAPIGraphCommentPhoto,
 }
 -(void)viewDidAppear:(BOOL)animated
 {
+
     
+    
+//    [self checksendstatus];
+//    [self checkCommunitySendStatus];
 }
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    
+
+//    NSString* currentUser = [NSString stringWithFormat:@"%@",[[PFUser currentUser]objectForKey:@"name"]];
     commentsArray = [[NSMutableArray alloc]init];
     queryArray = [[NSMutableArray alloc]init];
     savedArray = [[NSMutableArray alloc]init];
@@ -241,7 +246,7 @@ kAPIGraphCommentPhoto,
         UIBarButtonItem *anotherButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction target:self action:@selector(deleteActionSheetShow)];
         self.navigationItem.rightBarButtonItem = anotherButton;
         [anotherButton release];
-        
+            [self checksendstatus];
    //     if ([routeObject.pfobj objectForKey:@"outdated"]==[NSNumber numberWithBool:true]) {
     //        unoutdateButton.hidden = NO;
     //    }
@@ -251,6 +256,7 @@ kAPIGraphCommentPhoto,
         [[PFUser currentUser]refreshInBackgroundWithBlock:^(PFObject *object, NSError *error) {
             if ([[[PFUser currentUser]objectForKey:@"isAdmin"] isEqualToNumber:[NSNumber numberWithBool:YES]]) {
                 //fetch gyms hes admin for
+                    [self checksendstatus];
                 PFQuery* gymManaged = [PFQuery queryWithClassName:@"Gym"];
                 [gymManaged whereKey:@"admin" containsString:[PFUser currentUser].objectId];
                 [gymManaged findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
@@ -287,7 +293,6 @@ kAPIGraphCommentPhoto,
     }
     */
     
-    
     UserImageView.layer.shadowPath = [self renderPaperCurlProfileImage:UserImageView];
     UserImageView.layer.borderColor = [UIColor whiteColor].CGColor;
     UserImageView.layer.borderWidth = 2;
@@ -299,18 +304,26 @@ kAPIGraphCommentPhoto,
     [routeObject.pfobj setObject:[NSNumber numberWithInt:[viewCountLabel.text intValue]] forKey:@"viewcount"];
     [routeObject.pfobj saveEventually];
     
-    
+    if (routeObject.retrievedImage) {
     routeImageView.image = routeObject.retrievedImage;
+    }else if(routeimage){
+        routeImageView.image = routeimage;
+    }
+    
     
     routeLocationLabel.text = [routeObject.pfobj objectForKey:@"location"]; 
-    
-    [self getImageIfUnavailable];
-    
+   [self getImageIfUnavailable];
+    NSLog(@"getimageifunavaliable done");
+
+
+
+    //scroll.contentSize = CGSizeMake(320, 566);
     self.navigationController.navigationBarHidden = NO;
+    NSLog(@"checking sendstatus");
 
-    [self checksendstatus];
+    NSLog(@"checking others sendstatus");
     [self checkCommunitySendStatus];
-
+    NSLog(@"checking sendstatus... done");
     if ([routeObject.pfobj objectForKey:@"isPage"]==[NSNumber numberWithBool:YES]) {
         if (routeGymObject) {
             [routeObject.pfobj setObject:routeGymObject forKey:@"Gym"];
@@ -336,12 +349,13 @@ kAPIGraphCommentPhoto,
     UserImageView.image = routeObject.ownerImage;
     
     [self arrangeSubViewsaftercomments];
-   
+   NSLog(@"arranging subviews... done");
       if ([routeObject.pfobj objectForKey:@"photoid"]) {   
           NSLog(@"getting fb route detail");
          [self getFacebookRouteDetails];
       }else{
                  [self checkLikedWithoutFacebook];
+          NSLog(@"getting comments");
           PFQuery* query = [PFQuery queryWithClassName:@"Comment"];
                   query.cachePolicy = kPFCachePolicyNetworkElseCache;
           [query whereKey:@"route" equalTo:routeObject.pfobj];
@@ -522,12 +536,17 @@ kAPIGraphCommentPhoto,
 }
 -(void)checksendstatus
 {
+    NSLog(@"checking");
     PFQuery* query1 = [PFQuery queryWithClassName:@"Flash"];
-            query1.cachePolicy = kPFCachePolicyNetworkElseCache;
+    
     [query1 whereKey:@"username" equalTo:[[PFUser currentUser]objectForKey:@"name"]];
+       NSLog(@"checking3");
     [query1 whereKey:@"route" equalTo:routeObject.pfobj];
+       NSLog(@"checking4");
     [queryArray addObject:query1];
+       NSLog(@"checking5");
     [query1 findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+        NSLog(@"fetched flashes");
         NSArray* fetchedFlash = [NSArray arrayWithArray:objects];
         [queryArray removeObject:query1];
         if ([fetchedFlash count]>0){
@@ -540,11 +559,11 @@ kAPIGraphCommentPhoto,
     
     
     PFQuery* query2 = [PFQuery queryWithClassName:@"Sent"];
-            query2.cachePolicy = kPFCachePolicyNetworkElseCache;
     [query2 whereKey:@"username" equalTo:[[PFUser currentUser]objectForKey:@"name"]];
     [query2 whereKey:@"route" equalTo:routeObject.pfobj];
     [queryArray addObject:query2];
     [query2 findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+        NSLog(@"fetched sends");
         NSArray* fetchedSent = [NSArray arrayWithArray:objects];
         [queryArray removeObject:query2];
         if ([fetchedSent count]>0){
@@ -557,11 +576,11 @@ kAPIGraphCommentPhoto,
     
     
     PFQuery* query3 = [PFQuery queryWithClassName:@"Project"];
-            query3.cachePolicy = kPFCachePolicyNetworkElseCache;
     [query3 whereKey:@"username" equalTo:[[PFUser currentUser]objectForKey:@"name"]];
     [query3 whereKey:@"route" equalTo:routeObject.pfobj];
     [queryArray addObject:query3];
     [query3 findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+        NSLog(@"fetched projs");
         NSArray* fetchedProject = [NSArray arrayWithArray:objects];
         [queryArray removeObject:query3];
         if ([fetchedProject count]>0){
@@ -1698,9 +1717,13 @@ kAPIGraphCommentPhoto,
     
     //get route image
     if(routeimage){
+        
+        NSLog(@"route image is present, draw arrows on it");
         [self setRouteImageWithImage:routeimage andData:UIImagePNGRepresentation(routeimage)];
         [routeimage release];
     }else{
+        NSLog(@"route image is not present, fetch");
+        progressBar.hidden = NO;
     PFFile *imagefile = [routeObject.pfobj objectForKey:@"imageFile"];
     if(!imagefile.isDataAvailable){
     [imagefile getDataInBackgroundWithBlock:^(NSData* imageData,NSError *error){
@@ -1789,7 +1812,7 @@ kAPIGraphCommentPhoto,
         UIImage* pastedimage = nil;
         NSLog(@"routearrowarray = %@",routearrowarray);
         for (int i=0; i<[routearrowarray count]; i++) {
-            
+                NSLog(@"going thru array ");
             
             CGRect routearrowrect = CGRectFromString([routearrowarray objectAtIndex:i]);
             
@@ -1801,10 +1824,6 @@ kAPIGraphCommentPhoto,
                 pastedimage = [UIImage imageNamed:@"start1.png"];
             if([[arrowtypearray objectAtIndex:i]isEqualToNumber:[NSNumber numberWithInt:2]])
                 pastedimage = [UIImage imageNamed:@"end1.png"];
-            
-            
-            
-            
             if([[arrowtypearray objectAtIndex:i]isEqualToNumber:[NSNumber numberWithInt:3]])
                 pastedimage = [UIImage imageNamed:@"arrow2.png"];
             if([[arrowtypearray objectAtIndex:i]isEqualToNumber:[NSNumber numberWithInt:4]])
@@ -1823,14 +1842,14 @@ kAPIGraphCommentPhoto,
                 pastedimage = [UIImage imageNamed:@"start4.png"];
             if([[arrowtypearray objectAtIndex:i]isEqualToNumber:[NSNumber numberWithInt:11]])
                 pastedimage = [UIImage imageNamed:@"end4.png"];
-            
+
                 routeImageView.image = [self imageByDrawingImage:pastedimage OnImage:routeImageView.image inRect:routearrowrect];
                
             // [pastedimage release];
         }
         
         
-        
+        NSLog(@"done drawing arrows");
     }
 
 }

@@ -216,7 +216,6 @@
 		EF86AEFE1623F7530096150B /* progressImage.png in Resources */ = {isa = PBXBuildFile; fileRef = EF86AEFD1623F7530096150B /* progressImage.png */; };
 		EF86AF0016240AAE0096150B /* diagmonds_@2X.png in Resources */ = {isa = PBXBuildFile; fileRef = EF86AEFF16240AAE0096150B /* diagmonds_@2X.png */; };
 		EF86AF0216240B3F0096150B /* irongrip_@2X.png in Resources */ = {isa = PBXBuildFile; fileRef = EF86AF0116240B3F0096150B /* irongrip_@2X.png */; };
-		EF86AF0C162427660096150B /* chart.png in Resources */ = {isa = PBXBuildFile; fileRef = EF86AF0B162427660096150B /* chart.png */; };
 		EF8765341547AFCA00589622 /* GradientButton.m in Sources */ = {isa = PBXBuildFile; fileRef = EF8765321547AD2400589622 /* GradientButton.m */; };
 		EF8765381547CEEA00589622 /* SettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EF8765361547CEE700589622 /* SettingsViewController.m */; };
 		EF8765391547CEEA00589622 /* SettingsViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = EF8765371547CEE800589622 /* SettingsViewController.xib */; };
@@ -266,6 +265,8 @@
 		EFA02A9B153439F9004CF6CF /* arrow4.png in Resources */ = {isa = PBXBuildFile; fileRef = EFA02A9A153439F8004CF6CF /* arrow4.png */; };
 		EFA02ABB1534A25E004CF6CF /* old_stamper.ttf in Resources */ = {isa = PBXBuildFile; fileRef = EFA02ABA1534A25E004CF6CF /* old_stamper.ttf */; };
 		EFA02AC31534A9C6004CF6CF /* red_flag.png in Resources */ = {isa = PBXBuildFile; fileRef = EFA02AC21534A9C6004CF6CF /* red_flag.png */; };
+		EFA458651625716D005DF105 /* ProfileFeedCell.m in Sources */ = {isa = PBXBuildFile; fileRef = EFA458641625716D005DF105 /* ProfileFeedCell.m */; };
+		EFA4586816257180005DF105 /* ProfileFeedCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = EFA4586716257180005DF105 /* ProfileFeedCell.xib */; };
 		EFA5214016099FCA0095E4D2 /* arrow3white.png in Resources */ = {isa = PBXBuildFile; fileRef = EFA5213F16099FCA0095E4D2 /* arrow3white.png */; };
 		EFA648A614FF6CEB00B15CE6 /* LoadMoreCell.m in Sources */ = {isa = PBXBuildFile; fileRef = EFA648A514FF6CEB00B15CE6 /* LoadMoreCell.m */; };
 		EFA648A914FF6CF900B15CE6 /* LoadMoreCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = EFA648A814FF6CF900B15CE6 /* LoadMoreCell.xib */; };
@@ -613,7 +614,6 @@
 		EF86AEFD1623F7530096150B /* progressImage.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = progressImage.png; sourceTree = "<group>"; };
 		EF86AEFF16240AAE0096150B /* diagmonds_@2X.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "diagmonds_@2X.png"; sourceTree = "<group>"; };
 		EF86AF0116240B3F0096150B /* irongrip_@2X.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "irongrip_@2X.png"; sourceTree = "<group>"; };
-		EF86AF0B162427660096150B /* chart.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = chart.png; sourceTree = "<group>"; };
 		EF8765311547AD2200589622 /* GradientButton.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GradientButton.h; sourceTree = "<group>"; };
 		EF8765321547AD2400589622 /* GradientButton.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = GradientButton.m; sourceTree = "<group>"; };
 		EF8765351547CEE600589622 /* SettingsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SettingsViewController.h; sourceTree = "<group>"; };
@@ -679,6 +679,9 @@
 		EFA02A9A153439F8004CF6CF /* arrow4.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = arrow4.png; sourceTree = "<group>"; };
 		EFA02ABA1534A25E004CF6CF /* old_stamper.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = old_stamper.ttf; sourceTree = "<group>"; };
 		EFA02AC21534A9C6004CF6CF /* red_flag.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = red_flag.png; sourceTree = "<group>"; };
+		EFA458631625716D005DF105 /* ProfileFeedCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ProfileFeedCell.h; sourceTree = "<group>"; };
+		EFA458641625716D005DF105 /* ProfileFeedCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ProfileFeedCell.m; sourceTree = "<group>"; };
+		EFA4586716257180005DF105 /* ProfileFeedCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ProfileFeedCell.xib; sourceTree = "<group>"; };
 		EFA5213F16099FCA0095E4D2 /* arrow3white.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = arrow3white.png; sourceTree = "<group>"; };
 		EFA648A414FF6CEB00B15CE6 /* LoadMoreCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LoadMoreCell.h; sourceTree = "<group>"; };
 		EFA648A514FF6CEB00B15CE6 /* LoadMoreCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LoadMoreCell.m; sourceTree = "<group>"; };
@@ -924,7 +927,6 @@
 				EF86AEFB1623F7380096150B /* trackImage.png */,
 				EF5BD4CA14C5DF7D00C4FCB3 /* ProfileViewController.h */,
 				EF5BD4CB14C5DF7F00C4FCB3 /* ProfileViewController.m */,
-				EF86AF0B162427660096150B /* chart.png */,
 				EF5BD4CC14C5DF8000C4FCB3 /* ProfileViewController.xib */,
 				EF766B9415BE943B00EF0FCB /* placeholder_user.png */,
 				EFB25D4B15258E67002F310B /* UserObject.h */,
@@ -947,6 +949,9 @@
 				EF5BD4D414C5E5E400C4FCB3 /* SearchUserCell.h */,
 				EF5BD4D514C5E5E500C4FCB3 /* SearchUserCell.m */,
 				EF5BD4D714C5E5F800C4FCB3 /* SearchUserCell.xib */,
+				EFA458631625716D005DF105 /* ProfileFeedCell.h */,
+				EFA458641625716D005DF105 /* ProfileFeedCell.m */,
+				EFA4586716257180005DF105 /* ProfileFeedCell.xib */,
 			);
 			name = Profile;
 			sourceTree = "<group>";
@@ -1711,7 +1716,7 @@
 				EF86AEFE1623F7530096150B /* progressImage.png in Resources */,
 				EF86AF0016240AAE0096150B /* diagmonds_@2X.png in Resources */,
 				EF86AF0216240B3F0096150B /* irongrip_@2X.png in Resources */,
-				EF86AF0C162427660096150B /* chart.png in Resources */,
+				EFA4586816257180005DF105 /* ProfileFeedCell.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1832,6 +1837,7 @@
 				EF87E124160980AD00637600 /* HRColorUtil.m in Sources */,
 				EF87E125160980AD00637600 /* HRBrightnessCursor.m in Sources */,
 				EF87E126160980AD00637600 /* HRColorCursor.m in Sources */,
+				EFA458651625716D005DF105 /* ProfileFeedCell.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1900,8 +1906,8 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "iPhone Developer: Lee Heng Hong (T53AB93G9J)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Lee Heng Hong (T53AB93G9J)";
 				COPY_PHASE_STRIP = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1927,8 +1933,8 @@
 					"-ObjC",
 				);
 				PRODUCT_NAME = PsychedApp;
-				PROVISIONING_PROFILE = "";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
+				PROVISIONING_PROFILE = "09527D81-B6D2-4ACF-B80D-5B4B833BAB17";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "09527D81-B6D2-4ACF-B80D-5B4B833BAB17";
 				TARGETED_DEVICE_FAMILY = 1;
 				USER_HEADER_SEARCH_PATHS = "${SRCROOT}/**";
 				"USER_HEADER_SEARCH_PATHS[arch=*]" = "${SDK_DIR}/usr/include/libxml2";
@@ -1943,8 +1949,8 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "iPhone Developer: Lee Heng Hong (T53AB93G9J)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Lee Heng Hong (T53AB93G9J)";
 				COPY_PHASE_STRIP = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1969,8 +1975,8 @@
 					"-ObjC",
 				);
 				PRODUCT_NAME = PsychedApp;
-				PROVISIONING_PROFILE = "";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
+				PROVISIONING_PROFILE = "09527D81-B6D2-4ACF-B80D-5B4B833BAB17";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "09527D81-B6D2-4ACF-B80D-5B4B833BAB17";
 				TARGETED_DEVICE_FAMILY = 1;
 				USER_HEADER_SEARCH_PATHS = "${SDK_DIR}/usr/include/libxml2";
 				VALIDATE_PRODUCT = YES;

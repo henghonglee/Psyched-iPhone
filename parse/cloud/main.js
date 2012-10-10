@@ -1,43 +1,49 @@
 
-/*Parse.Cloud.afterSave('Flash',function(request,response){
+Parse.Cloud.afterSave('Flash',function(request,response){
 	var reqRoute = request.object.get("route");
 	reqRoute.fetch({
-  success: function(myObject) {
-    // The object was refreshed successfully.
-   console.log("running flash aftersave"+myObject.get("difficulty"));
-   	request.object.set("difficulty",myObject.get("difficulty"));
-			request.object.save(null, {
-									success: function(saved) {
-									// The object was saved successfully.
-									//response.success("Done");
-									console.log("successfully saved");
-									},
-									error: function(error) {
-									console.log("failed w error"+error);
-									//	response.error("failed to save, "+ error);
-									// The save failed.
-									// error is a Parse.Error with an error code and description.
-									}
-									}); 
-  },
-  error: function(myObject, error) {
-    // The object was not refreshed successfully.
-    // error is a Parse.Error with an error code and description.
-  }
-});
-
-	var route = Parse.Object.extend("Route");
-	var routeQuery = new Parse.Query(route);
-	routeQuery.get(request.object.get("route").get("objectId"),{
-		success: function(routeobject) {
-		
-		},
-		error: function(error) {
-			//response.error();
-		}
+	  success: function(myObject) {
+	    // The object was refreshed successfully.
+	   console.log("running flash aftersave"+myObject.get("difficulty"));
+	   	request.object.set("difficulty",myObject.get("difficulty"));
+		request.object.save(null, {
+				success: function(saved) {
+					console.log("successfully saved");
+				},
+				error: function(error) {
+					console.log("failed w error"+error);
+				}
+			}); 
+	  },
+	  error: function(myObject, error) {
+	    // The object was not refreshed successfully.
+	    // error is a Parse.Error with an error code and description.
+	  }
 	});
 });
-*/
+Parse.Cloud.afterSave('Sent',function(request,response){
+	var reqRoute = request.object.get("route");
+	reqRoute.fetch({
+	  success: function(myObject) {
+	    // The object was refreshed successfully.
+	   console.log("running sent aftersave"+myObject.get("difficulty"));
+	   	request.object.set("difficulty",myObject.get("difficulty"));
+		request.object.save(null, {
+				success: function(saved) {
+					console.log("successfully saved");
+				},
+				error: function(error) {
+					console.log("failed w error"+error);
+				}
+			}); 
+	  },
+	  error: function(myObject, error) {
+	    // The object was not refreshed successfully.
+	    // error is a Parse.Error with an error code and description.
+	  }
+	});
+});
+
 // Use Parse.Cloud.define to define as many cloud functions as you want.
 // For example:
 Parse.Cloud.define("calculateScore", function(request, response) {

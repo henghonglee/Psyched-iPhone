@@ -527,18 +527,20 @@
             
         }else if(((UIPinchGestureRecognizer*)sender).state == UIGestureRecognizerStateBegan){
             if (((UIPinchGestureRecognizer*)sender).scale>1) { //greater than on on zoom in
+                                 
                 RouteDetailViewController* viewController = [[RouteDetailViewController alloc]initWithNibName:@"RouteDetailViewController" bundle:nil];
                 viewController.routeObject = [[self.gymSections objectForKey:[self.gymTags objectAtIndex:self.pageControl.currentPage]]objectAtIndex:self.routePageControl.currentPage];
                 
                 ParseStarterProjectAppDelegate* applicationDelegate = ((ParseStarterProjectAppDelegate*)[[UIApplication sharedApplication]delegate]);
                 viewController.routeGymObject = gymObject;
                 viewController.routeimage = [UIImage imageWithData:((BaseViewController*)applicationDelegate.window.rootViewController).reuseImageData];
+
                 [self.navigationController pushViewController:viewController animated:YES];
                 [viewController release];
-                    [MBProgressHUD hideHUDForView:self.view animated:YES];
+                   
                 return;
             }else{
-                    [MBProgressHUD hideHUDForView:self.view animated:YES];
+                  
                 [self performSelector:@selector(reverseHandleDoubleTap:) withObject:sender afterDelay:0.0];
             }
             
@@ -555,11 +557,11 @@
         [self.navigationController pushViewController:viewController animated:YES];
         [viewController release];
     }
-    [MBProgressHUD hideHUDForView:self.view animated:YES];
+    
 }
 -(IBAction)showRoute:(id)sender
 {
-    [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+  
     [self performSelector:@selector(showRouteAction:) withObject:sender afterDelay:0.0];
 
 }

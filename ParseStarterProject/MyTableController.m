@@ -1605,6 +1605,7 @@
                 [[object objectForKey:@"Gym"]fetchIfNeededInBackgroundWithBlock:^(PFObject *object, NSError *error) {
                     newRouteObject.pfobj = object;
                     viewController.routeObject = newRouteObject;
+                    
                     [self.navigationController pushViewController:viewController animated:YES];
                     [tableView deselectRowAtIndexPath:indexPath animated:YES];
                     [viewController release];

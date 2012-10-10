@@ -11,11 +11,17 @@
 #import "FollowFriendsViewController.h"
 #import "MyRoutesViewController.h"
 #import "DAReloadActivityButton.h"
-@interface ProfileViewController : UIViewController <UITableViewDelegate,UITableViewDataSource,UIAlertViewDelegate>
+@interface ProfileViewController : UIViewController <UITableViewDelegate,UITableViewDataSource,UIAlertViewDelegate,UIScrollViewDelegate>
 {
     PFUser* selectedUser;
     NSMutableArray* followedArray;
+    float startDragX;
 }
+@property (retain, nonatomic) IBOutlet UIScrollView *chartScroll;
+@property (retain, nonatomic) IBOutlet UIView *chart3view;
+@property (retain, nonatomic) IBOutlet UIView *chart1View;
+@property (retain, nonatomic) IBOutlet UIActivityIndicatorView *chartActivityIndicator;
+@property (retain, nonatomic) IBOutlet UIImageView *chartImageView;
 @property (retain, nonatomic) IBOutlet UIView *badgeView;
 @property (retain, nonatomic) IBOutlet UILabel *aboutMeLabel;
 @property (retain, nonatomic) IBOutlet UIView *levelView;

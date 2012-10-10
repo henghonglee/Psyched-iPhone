@@ -798,9 +798,9 @@ typedef enum apiCall {
         [newOGPost setPostValue:@"true" forKey:@"fb:explicitly_shared"];
         [newOGPost setPostValue:[PFFacebookUtils facebook].accessToken forKey:@"access_token"];
         [newOGPost setPostValue:[NSString stringWithFormat:@"http://www.psychedapp.com/home/%@",newRoute.objectId] forKey:@"route"];
-        [newOGPost setPostValue:[NSString stringWithFormat:@"%@ -- http://www.psychedapp.com/home/%@",descriptionTextField.text,newRoute.objectId] forKey:@"message"];
-        [newOGPost setPostValue:((PFFile*)[newRoute objectForKey:@"imageFileWithArrows"]).url forKey:@"image[0][url]"];
-        [newOGPost setPostValue:@"true" forKey:@"image[0][user_generated]"];
+        [newOGPost setPostValue:[NSString stringWithFormat:@"%@",descriptionTextField.text] forKey:@"message"];
+//        [newOGPost setPostValue:((PFFile*)[newRoute objectForKey:@"imageFileWithArrows"]).url forKey:@"image[0][url]"];
+//        [newOGPost setPostValue:@"true" forKey:@"image[0][user_generated]"];
         [newOGPost setRequestMethod:@"POST"];
         [newOGPost setCompletionBlock:^{
             SBJsonParser *jsonParser = [[SBJsonParser alloc] init];
