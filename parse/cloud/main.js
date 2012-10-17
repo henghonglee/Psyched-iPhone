@@ -42,7 +42,7 @@ Parse.Cloud.afterSave('Sent',function(request,response){
 	    // error is a Parse.Error with an error code and description.
 	  }
 	});
-});
+});	
 
 // Use Parse.Cloud.define to define as many cloud functions as you want.
 // For example:

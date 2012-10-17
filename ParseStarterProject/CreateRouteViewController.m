@@ -220,15 +220,15 @@ typedef enum apiCall {
         [viewController release];
         return NO;
     }
-    if (textField == recommendTextField) {
-        FriendTaggerViewController* viewController = [[FriendTaggerViewController alloc]initWithNibName:@"FriendTaggerViewController" bundle:nil];
-//        viewController.friendsArray = friendsArray;
-        viewController.recommendArray = recommendArray;
-        viewController.delegate = self;
-        [self.navigationController pushViewController:viewController animated:YES];
-        [viewController release];
-        return NO;
-    }
+//    if (textField == recommendTextField) {
+//        FriendTaggerViewController* viewController = [[FriendTaggerViewController alloc]initWithNibName:@"FriendTaggerViewController" bundle:nil];
+////        viewController.friendsArray = friendsArray;
+//        viewController.recommendArray = recommendArray;
+//        viewController.delegate = self;
+//        [self.navigationController pushViewController:viewController animated:YES];
+//        [viewController release];
+//        return NO;
+//    }
 
     if (textField==difficultyTextField){
         gympickerView = [[UIPickerView alloc]initWithFrame:CGRectMake(0, 100, 0,0)];
@@ -281,8 +281,9 @@ typedef enum apiCall {
     if([[alertView buttonTitleAtIndex:buttonIndex] isEqualToString:@"Reauthenticate"]){
         NSLog(@"reauthenticating");
         [PFUser logOut];
-        [[PFFacebookUtils facebook] logout];
-        [[PFFacebookUtils facebook] setAccessToken:nil];
+//        [[PFFacebookUtils facebook] logout];
+//        [[PFFacebookUtils facebook] setAccessToken:nil];
+        [[PFFacebookUtils session] closeAndClearTokenInformation];
         NSArray* permissions = [[NSArray alloc]initWithObjects:@"user_about_me",
                                                                 @"user_videos",
                                                                 @"user_birthday",
@@ -397,7 +398,7 @@ typedef enum apiCall {
     ///////////////////////////////////////////////////////////
     
     /*    if (fbuploadswitch.on) {
-//        ASIHTTPRequest* accountRequest = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"https://graph.facebook.com/%@?access_token=%@",fbphotoid,[PFFacebookUtils facebook].accessToken]]];
+//        ASIHTTPRequest* accountRequest = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"https://graph.facebook.com/%@?access_token=%@",fbphotoid,[PFFacebookUtils session].accessToken]]];
 //        [accountRequest setCompletionBlock:^{
 //            SBJsonParser *jsonParser = [[SBJsonParser alloc] init];
 //            NSDictionary *jsonObjects = [jsonParser objectWithString:[accountRequest responseString]];
@@ -607,7 +608,7 @@ typedef enum apiCall {
     ///////////////////////////////////////////////////////////
     
 /*    if (fbuploadswitch.on) {
-//        ASIHTTPRequest* accountRequest = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"https://graph.facebook.com/%@?access_token=%@",fbphotoid,[PFFacebookUtils facebook].accessToken]]];
+//        ASIHTTPRequest* accountRequest = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"https://graph.facebook.com/%@?access_token=%@",fbphotoid,[PFFacebookUtils session].accessToken]]];
 //        [accountRequest setCompletionBlock:^{
 //            SBJsonParser *jsonParser = [[SBJsonParser alloc] init];
 //            NSDictionary *jsonObjects = [jsonParser objectWithString:[accountRequest responseString]];
@@ -796,7 +797,7 @@ typedef enum apiCall {
         NSLog(@"image url = %@",((PFFile*)[newRoute objectForKey:@"imageFileWithArrows"]).url);
         ASIFormDataRequest* newOGPost = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:@"https://graph.facebook.com/me/climbing_:add"]];
         [newOGPost setPostValue:@"true" forKey:@"fb:explicitly_shared"];
-        [newOGPost setPostValue:[PFFacebookUtils facebook].accessToken forKey:@"access_token"];
+        [newOGPost setPostValue:[PFFacebookUtils session].accessToken forKey:@"access_token"];
         [newOGPost setPostValue:[NSString stringWithFormat:@"http://www.psychedapp.com/home/%@",newRoute.objectId] forKey:@"route"];
         [newOGPost setPostValue:[NSString stringWithFormat:@"%@",descriptionTextField.text] forKey:@"message"];
 //        [newOGPost setPostValue:((PFFile*)[newRoute objectForKey:@"imageFileWithArrows"]).url forKey:@"image[0][url]"];
@@ -836,14 +837,14 @@ typedef enum apiCall {
         
         
         
-//        postOG = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"http://psychedsupport.herokuapp.com/support/%@?og=true&access_token=%@&explicit=true&imageurl=%@&image",newRoute.objectId,[PFFacebookUtils facebook].accessToken,arrowed.url,tagString]]];
+//        postOG = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"http://psychedsupport.herokuapp.com/support/%@?og=true&access_token=%@&explicit=true&imageurl=%@&image",newRoute.objectId,[PFFacebookUtils session].accessToken,arrowed.url,tagString]]];
 //        NSLog(@"postog url = %@",postOG.url);
     }else{
         //silent mode post action
         NSLog(@"image url = %@",((PFFile*)[newRoute objectForKey:@"imageFileWithArrows"]).url);
         ASIFormDataRequest* newOGPost = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:@"https://graph.facebook.com/me/climbing_:add"]];
 
-        [newOGPost setPostValue:[PFFacebookUtils facebook].accessToken forKey:@"access_token"];
+        [newOGPost setPostValue:[PFFacebookUtils session].accessToken forKey:@"access_token"];
         [newOGPost setPostValue:[NSString stringWithFormat:@"http://www.psychedapp.com/home/%@",newRoute.objectId] forKey:@"route"];
         [newOGPost setRequestMethod:@"POST"];
         [newOGPost setCompletionBlock:^{
@@ -1081,7 +1082,7 @@ typedef enum apiCall {
     NSString *actionLinksStr = [jsonWriter stringWithObject:tags];
     [tags release];
     
-    NSURL* postURL = [NSURL URLWithString:[NSString stringWithFormat:@"https://graph.facebook.com/me/photos?access_token=%@",[PFFacebookUtils facebook].accessToken]];
+    NSURL* postURL = [NSURL URLWithString:[NSString stringWithFormat:@"https://graph.facebook.com/me/photos?access_token=%@",[PFFacebookUtils session].accessToken]];
     ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:postURL];
     NSData* postImageData = UIImagePNGRepresentation(resizedimg);
     [request setData:postImageData withFileName:@"resizedimg.png" andContentType:@"image/png" forKey:@"picture"];
@@ -1156,7 +1157,7 @@ typedef enum apiCall {
     if (sender.on && [[[PFUser currentUser] objectForKey:@"isAdmin"]isEqualToNumber:[NSNumber numberWithBool:YES]]) {
         
         [self.navigationItem.rightBarButtonItem setEnabled:NO];
-    ASIHTTPRequest* accountRequest = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"https://graph.facebook.com/me/accounts&access_token=%@",[PFFacebookUtils facebook].accessToken]]];
+    ASIHTTPRequest* accountRequest = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"https://graph.facebook.com/me/accounts&access_token=%@",[PFFacebookUtils session].accessToken]]];
     [accountRequest setCompletionBlock:^{
         NSDictionary *contentOfDictionary = [[accountRequest responseString]JSONValue];
         NSLog(@"%@",[accountRequest responseString]);
@@ -1255,7 +1256,7 @@ typedef enum apiCall {
     }
     [pagesHUD hide:YES];
     if ([arrayOfAccounts count]) {
-        NSDictionary* userDictionary = [NSDictionary dictionaryWithObjectsAndKeys:[[PFUser currentUser] objectForKey:@"name"],@"name",[PFFacebookUtils facebook].accessToken,@"access_token", nil];
+        NSDictionary* userDictionary = [NSDictionary dictionaryWithObjectsAndKeys:[[PFUser currentUser] objectForKey:@"name"],@"name",[PFFacebookUtils session].accessToken,@"access_token", nil];
         [arrayOfAccounts addObject:userDictionary];
         NSLog(@"arr = %@",arrayOfAccounts);
         fbAccountPickerView = [[UIPickerView alloc]initWithFrame:CGRectMake(0, 100, 0,0)];
@@ -1281,7 +1282,7 @@ typedef enum apiCall {
 - (void)apiGraphPagePhotosPost:(UIImage*)img
 {
     currentAPIcall = kAPIGraphPagePhotosPost;
-    oldAccessToken = [PFFacebookUtils facebook].accessToken;
+    oldAccessToken = [PFFacebookUtils session].accessToken;
     [oldAccessToken retain];
     UIImage* resizedimg = [img resizedImage:CGSizeMake(960, 960) interpolationQuality:kCGInterpolationHigh];
     
@@ -1433,7 +1434,7 @@ typedef enum apiCall {
 //                                  andParams:params
 //                              andHttpMethod:@"POST"
 //                                andDelegate:self]; 
-    NSURL* postURL = [NSURL URLWithString:[NSString stringWithFormat:@"https://graph.facebook.com/%@/tags?access_token=%@",photoid,[PFFacebookUtils facebook].accessToken]];
+    NSURL* postURL = [NSURL URLWithString:[NSString stringWithFormat:@"https://graph.facebook.com/%@/tags?access_token=%@",photoid,[PFFacebookUtils session].accessToken]];
     ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:postURL];
     [request setPostValue:[NSString stringWithFormat:@"%@",facebookid] forKey:@"to"];
     [request setPostValue:@"50" forKey:@"x"];    

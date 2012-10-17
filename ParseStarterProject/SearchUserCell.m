@@ -27,13 +27,13 @@
     followButton.userInteractionEnabled = NO;
     if ([followButton backgroundImageForState:UIControlStateNormal]==[UIImage imageNamed:@"follow_text.png"]) {
         // search users by name and find their facebookid
-        PFQuery* userQueryByName = [PFQuery queryForUser];
+        PFQuery* userQueryByName = [PFUser query];
         [userQueryByName whereKey:@"name" equalTo:nameLabel.text];
         NSLog(@"nameLabel = %@",nameLabel.text);
         [userQueryByName getFirstObjectInBackgroundWithBlock:^(PFObject *object, NSError *error) {
             
             if ([[NSUserDefaults standardUserDefaults]boolForKey:@"ogshare"]) {
-                ASIHTTPRequest* newOGPost = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"https://graph.facebook.com/me/og.follows?access_token=%@&profile=%@",[PFFacebookUtils facebook].accessToken,[object objectForKey:@"facebookid"]]]];
+                ASIHTTPRequest* newOGPost = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"https://graph.facebook.com/me/og.follows?access_token=%@&profile=%@",[PFFacebookUtils session].accessToken,[object objectForKey:@"facebookid"]]]];
                 NSLog(@"ogpost = %@",newOGPost.url);
                 [newOGPost setRequestMethod:@"POST"];
                 [newOGPost setCompletionBlock:^{
@@ -119,7 +119,7 @@
 -(void)deleteOGwithId:(NSString*)idstring
 {
     if (idstring) {
-        ASIHTTPRequest* newOGDelete = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"https://graph.facebook.com/%@?access_token=%@",idstring,[PFFacebookUtils facebook].accessToken]]];
+        ASIHTTPRequest* newOGDelete = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"https://graph.facebook.com/%@?access_token=%@",idstring,[PFFacebookUtils session].accessToken]]];
         [newOGDelete setRequestMethod:@"DELETE"];
         NSLog(@"deleting %@",newOGDelete.url);
         [newOGDelete setCompletionBlock:^{

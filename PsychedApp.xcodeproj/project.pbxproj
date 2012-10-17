@@ -48,6 +48,7 @@
 		EF2D2D35154B005200BB07DA /* Default.png in Resources */ = {isa = PBXBuildFile; fileRef = EF2D2D34154B005200BB07DA /* Default.png */; };
 		EF2D2D37154B005700BB07DA /* Default@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = EF2D2D36154B005700BB07DA /* Default@2x.png */; };
 		EF2D2D39154B862400BB07DA /* playback_mode_hint.png in Resources */ = {isa = PBXBuildFile; fileRef = EF2D2D38154B862400BB07DA /* playback_mode_hint.png */; };
+		EF328EC5162E5A940058CF62 /* CreateRouteViewControllerAutoLayout.xib in Resources */ = {isa = PBXBuildFile; fileRef = EF328EC4162E5A940058CF62 /* CreateRouteViewControllerAutoLayout.xib */; };
 		EF36504214FBAF3D00C0F3DF /* tick.png in Resources */ = {isa = PBXBuildFile; fileRef = EF36504114FBAF3D00C0F3DF /* tick.png */; };
 		EF36504514FBB16F00C0F3DF /* heartcolor.png in Resources */ = {isa = PBXBuildFile; fileRef = EF36504414FBB16F00C0F3DF /* heartcolor.png */; };
 		EF36518C14FCB4F100C0F3DF /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EF36518B14FCB4F100C0F3DF /* CoreLocation.framework */; };
@@ -377,6 +378,7 @@
 		EF2D2D34154B005200BB07DA /* Default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Default.png; path = ../Default.png; sourceTree = "<group>"; };
 		EF2D2D36154B005700BB07DA /* Default@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Default@2x.png"; path = "../Default@2x.png"; sourceTree = "<group>"; };
 		EF2D2D38154B862400BB07DA /* playback_mode_hint.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = playback_mode_hint.png; sourceTree = "<group>"; };
+		EF328EC4162E5A940058CF62 /* CreateRouteViewControllerAutoLayout.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CreateRouteViewControllerAutoLayout.xib; sourceTree = "<group>"; };
 		EF36504114FBAF3D00C0F3DF /* tick.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = tick.png; sourceTree = "<group>"; };
 		EF36504414FBB16F00C0F3DF /* heartcolor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = heartcolor.png; sourceTree = "<group>"; };
 		EF36518B14FCB4F100C0F3DF /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
@@ -860,11 +862,6 @@
 		09ABC07713A1D52D009C3FCF /* ParseStarterProject */ = {
 			isa = PBXGroup;
 			children = (
-				EF3DEA7C161855DA0061613B /* headerimg@2x.png */,
-				EF3DEAAF1619DAA00061613B /* recommendbox.png */,
-				EF3DEA8316185B730061613B /* headerimgbg@2x.png */,
-				EF384E38161D3C6400FC04EF /* DescriptionBox.png */,
-				EFB6773A160AAA9900621509 /* arrowbgflip.png */,
 				09ABC08013A1D52D009C3FCF /* ParseStarterProjectAppDelegate.h */,
 				09ABC08113A1D52D009C3FCF /* ParseStarterProjectAppDelegate.m */,
 				09ABC08313A1D52D009C3FCF /* MainWindow.xib */,
@@ -1297,6 +1294,7 @@
 				EFD4A2AC14BAA12F008A583F /* CreateRouteViewController.h */,
 				EFD4A2AD14BAA12F008A583F /* CreateRouteViewController.m */,
 				EFD4A2AE14BAA130008A583F /* CreateRouteViewController.xib */,
+				EF328EC4162E5A940058CF62 /* CreateRouteViewControllerAutoLayout.xib */,
 				EF36519314FCD44500C0F3DF /* MKMapView+ZoomLevel.h */,
 				EF36519414FCD44500C0F3DF /* MKMapView+ZoomLevel.m */,
 				EFDE197414F3874000B1141B /* RouteDescriptionViewController.h */,
@@ -1365,6 +1363,11 @@
 		EFD4A2A814BA9BC7008A583F /* Images */ = {
 			isa = PBXGroup;
 			children = (
+				EF3DEA7C161855DA0061613B /* headerimg@2x.png */,
+				EF3DEAAF1619DAA00061613B /* recommendbox.png */,
+				EF3DEA8316185B730061613B /* headerimgbg@2x.png */,
+				EF384E38161D3C6400FC04EF /* DescriptionBox.png */,
+				EFB6773A160AAA9900621509 /* arrowbgflip.png */,
 				EFAB68BB1609BAB9000BCC01 /* end1.png */,
 				EFAB68B91609BA94000BCC01 /* start1.png */,
 				EF87E10E16097CA100637600 /* arrow3flip.png */,
@@ -1717,6 +1720,7 @@
 				EF86AF0016240AAE0096150B /* diagmonds_@2X.png in Resources */,
 				EF86AF0216240B3F0096150B /* irongrip_@2X.png in Resources */,
 				EFA4586816257180005DF105 /* ProfileFeedCell.xib in Resources */,
+				EF328EC5162E5A940058CF62 /* CreateRouteViewControllerAutoLayout.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -642,7 +642,6 @@
         NSArray* routearrowarray = [route.pfobj objectForKey:@"arrowarray"];
         NSArray* arrowtypearray = [route.pfobj objectForKey:@"arrowtypearray"];
         NSArray* arrowcolorarray = [route.pfobj objectForKey:@"arrowcolorarray"];
-        UIImage* pastedimage = nil;
         for (int i=0; i<[routearrowarray count]; i++) {
             CGRect routearrowrect = CGRectFromString([routearrowarray objectAtIndex:i]);
             if([[arrowtypearray objectAtIndex:i]isEqualToNumber:[NSNumber numberWithInt:0]]){

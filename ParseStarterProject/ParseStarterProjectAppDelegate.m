@@ -7,7 +7,7 @@
 #import "JHNotificationManager.h"
 #import "FlurryAnalytics.h"
 #import <BugSense-iOS/BugSenseCrashController.h>
-#define VERSION 2.0
+#define VERSION 2.1
 @implementation ParseStarterProjectAppDelegate
 @synthesize badgeView;
 @synthesize window=_window;
@@ -63,7 +63,8 @@
         
     }
     
-     if ([PFFacebookUtils facebook].accessToken) { //if accesstoken is ok
+     if ([PFFacebookUtils session].accessToken) { //if accesstoken is ok
+         NSLog(@"facebook access token present = %@",[PFFacebookUtils session].accessToken);
              NSDictionary *dictionary =
              [NSDictionary dictionaryWithObjectsAndKeys:[[PFUser currentUser] objectForKey:@"email"],@"email",[[PFUser currentUser] objectForKey:@"birthday_date"],@"birthday_date",[[PFUser currentUser] objectForKey:@"name"],@"name",[[PFUser currentUser] objectForKey:@"sex"],@"sex",[[PFUser currentUser] objectForKey:@"uid"],@"uid",[[PFUser currentUser] objectForKey:@"about_me"],@"about_me", nil];
              [FlurryAnalytics setUserID:[[PFUser currentUser] objectForKey:@"name"]];
@@ -87,6 +88,7 @@
                           
                       }];
          }else{
+              NSLog(@"facebook access token not present = %@",[PFFacebookUtils session].accessToken);
              self.window.rootViewController = loginVC; 
          }
        
@@ -138,8 +140,7 @@
     }else if ([[alertView buttonTitleAtIndex:buttonIndex]isEqualToString:@"Reauthenticate"]) {
         [PFUser logOut];
      //   [[PFFacebookUtils facebook] closeAndClearTokenInformation];
-        [[PFFacebookUtils facebook] logout];
-        [[PFFacebookUtils facebook] setAccessToken:nil];
+        [[PFFacebookUtils session] closeAndClearTokenInformation];
         NSArray* permissions = [[NSArray alloc]initWithObjects:@"user_about_me",@"user_videos",@"user_birthday",@"email",@"user_photos",@"publish_stream",@"offline_access",nil];
         [PFFacebookUtils logInWithPermissions:permissions block:^(PFUser *user, NSError *error) {
             
@@ -321,14 +322,14 @@
      Called as part of the transition from the background to the inactive state; here you can undo many of the changes made on entering the background.
      */
 -(void)fbOAuthCheck{
-    NSLog(@"facebook oauth check when entering foreground %@",[PFFacebookUtils facebook].accessToken);
+    NSLog(@"facebook oauth check when entering foreground %@",[PFFacebookUtils session].accessToken);
     if (![self.window.rootViewController isKindOfClass:[LoginViewController class]]) {
-    ASIHTTPRequest* accountRequest = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"https://graph.facebook.com/me/picture?type=large&access_token=%@",[PFFacebookUtils facebook].accessToken]]];
+    ASIHTTPRequest* accountRequest = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"https://graph.facebook.com/me/picture?type=large&access_token=%@",[PFFacebookUtils session].accessToken]]];
     accountRequest.shouldRedirect = YES;
     [accountRequest setCompletionBlock:^{
         
         NSLog(@"response = %@",accountRequest.url);
-        if (([[accountRequest responseString] rangeOfString:@"Invalid OAuth access token."].location != NSNotFound)&&[PFFacebookUtils facebook].accessToken) {
+        if (([[accountRequest responseString] rangeOfString:@"Invalid OAuth access token."].location != NSNotFound)&&[PFFacebookUtils session].accessToken) {
             UIAlertView* alert = [[UIAlertView alloc]initWithTitle:@"Sorry!" message:@"You need to reauthenticate with Facebook" delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:@"Reauthenticate",nil];
             
             [alert show];
@@ -447,7 +448,7 @@
 //                                        andHttpMethod:@"POST"
 //                                          andDelegate:self];
     
-    NSURL* reqURL = [NSURL URLWithString:[NSString stringWithFormat:@"https://graph.facebook.com/fql?q=SELECT+about_me,locale,birthday,birthday_date,sex,uid,name,pic_big,email+FROM+user+WHERE+uid=me()&access_token=%@",[PFFacebookUtils facebook].accessToken]];
+    NSURL* reqURL = [NSURL URLWithString:[NSString stringWithFormat:@"https://graph.facebook.com/fql?q=SELECT+about_me,locale,birthday,birthday_date,sex,uid,name,pic_big,email+FROM+user+WHERE+uid=me()&access_token=%@",[PFFacebookUtils session].accessToken]];
     ASIHTTPRequest* fqlRequest = [ASIHTTPRequest requestWithURL:reqURL];
     [fqlRequest setCompletionBlock:^{
         SBJsonParser *jsonParser = [[SBJsonParser alloc] init];

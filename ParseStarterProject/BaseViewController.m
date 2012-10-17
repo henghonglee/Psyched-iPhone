@@ -5,11 +5,13 @@
 #import "CreateRouteViewController.h"
 #import "AssetsLibrary/ALAssetsLibrary.h"
 #import "UIImagePickerController+NoRotate.h"
-
+#import "ParseStarterProjectAppDelegate.h"
 #import "FlurryAnalytics.h"
 #import "RDActionSheet.h"
 #import "LKBadgeView.h"
 #import "RouteDetailViewController.h"
+
+
 @implementation BaseViewController
 @synthesize reuseImageData;
 @synthesize locationManager;
@@ -229,11 +231,11 @@ static inline double radians (double degrees) {return degrees * M_PI/180;}
 -(void)EditImagedidFinishWithImage:(UIImage *)image
 {
 	CreateRouteViewController* viewController= [[CreateRouteViewController alloc]initWithNibName:@"CreateRouteViewController" bundle:nil];
-	viewController.imageTaken = image;
-    [self presentModalViewController:viewController animated:NO];
-    [viewController release];
-	[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault animated:YES];
-}
+        viewController.imageTaken = image;
+        [self presentModalViewController:viewController animated:NO];
+        [viewController release];
+        [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault animated:YES];
+	}
 
 -(void)actionSheet:(UIActionSheet *)actionSheet didDismissWithButtonIndex:(NSInteger)buttonIndex
 {

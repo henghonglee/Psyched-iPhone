@@ -57,12 +57,12 @@ kAPIGraphUserPhotosPost,
 -(void)apiGraphFriends
 { 
     currentAPIcall = kAPIGetAppUsersFriendsUsing;
-    NSLog(@"access token = %@",[PFFacebookUtils facebook].accessToken);
+    NSLog(@"access token = %@",[PFFacebookUtils session].accessToken);
 //    self.myRequest = [[PFFacebookUtils facebook] requestWithGraphPath:@"me/friends?fields=installed" andDelegate:self];
     MBProgressHUD* hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     hud.labelText = @"Finding friends on Psyched!...";
     
-    ASIHTTPRequest* accountRequest = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"https://graph.facebook.com/me/friends?fields=installed&access_token=%@",[PFFacebookUtils facebook].accessToken]]];
+    ASIHTTPRequest* accountRequest = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"https://graph.facebook.com/me/friends?fields=installed&access_token=%@",[PFFacebookUtils session].accessToken]]];
 
     [accountRequest setCompletionBlock:^{
         

@@ -224,9 +224,7 @@
 -(void)LogOut:(id)sender
 {
     [PFUser logOut];
-    [[PFFacebookUtils facebook] logout];
-    [[PFFacebookUtils facebook] setAccessToken:nil];
-    
+    [[PFFacebookUtils session]closeAndClearTokenInformation];
     ParseStarterProjectAppDelegate* applicationDelegate = ((ParseStarterProjectAppDelegate*)[[UIApplication sharedApplication]delegate]);
     applicationDelegate.badgeView.text = @"0";
     if([applicationDelegate.window.rootViewController isKindOfClass:[LoginViewController class]])
@@ -241,12 +239,7 @@
 }
 -(IBAction)Settings:(id)sender
 {
-    [PFCloud callFunctionInBackground:@"calculateScore" withParameters:[NSDictionary new] block:^(id object, NSError *error) {
-        if ([object isKindOfClass:[NSString class]]) {
-            [JHNotificationManager notificationWithMessage:object];
-        }
-     
-    }];
+   
     SettingsViewController* viewController = [[SettingsViewController alloc]initWithNibName:@"SettingsViewController" bundle:nil];
     [self presentModalViewController:viewController animated:YES];
     [viewController release];
@@ -478,7 +471,7 @@
                     cell.imageBackgroundView.layer.cornerRadius = 5.0f;
                     
                 };
-                
+                //604800
                     
                 double timesincenow =  [((NSDate*)object.createdAt) timeIntervalSinceNow];
                 int timeint = ((int)timesincenow);

@@ -17,6 +17,10 @@
     NSMutableArray* followedArray;
     float startDragX;
 }
+@property (retain, nonatomic) IBOutlet UILabel *noTotalClimbsLabel;
+@property (retain, nonatomic) IBOutlet UILabel *noRecentClimbsLabel;
+@property (retain, nonatomic) IBOutlet UIActivityIndicatorView *totalClimbsChartActivityIndicator;
+@property (retain, nonatomic) IBOutlet UIImageView *totalClimbsChartView;
 @property (retain, nonatomic) IBOutlet UIScrollView *chartScroll;
 @property (retain, nonatomic) IBOutlet UIView *chart3view;
 @property (retain, nonatomic) IBOutlet UIView *chart1View;

@@ -93,13 +93,13 @@
     _chart1View.layer.cornerRadius = 5;
     _chart3view.layer.cornerRadius = 5;
     
-    _chartScroll.contentSize = CGSizeMake(840, 155);
+    _chartScroll.contentSize = CGSizeMake(840, 202);
     _chartScroll.delegate = self;
     _chartScroll.clipsToBounds  = NO;
     _chartScroll.contentOffset= CGPointMake(280,0 );
-    [_chart1View setFrame:CGRectMake(0, 0, 280, 155)];
-    [_levelView setFrame:CGRectMake(290, 0, 260, 155)];
-    [_chart3view setFrame:CGRectMake(560, 0, 280, 155)];
+    [_chart1View setFrame:CGRectMake(0, 0, 280, 202)];
+    [_levelView setFrame:CGRectMake(290, 0, 260, 202)];
+    [_chart3view setFrame:CGRectMake(560, 0, 280, 202)];
 
     levelLabel.layer.cornerRadius=5;
     userImageView.layer.cornerRadius = 5;
@@ -140,8 +140,8 @@
         
         _aboutMeLabel.text = [selectedUser objectForKey:@"about_me"];
         
-        [self loadChartData];
-        
+        [self loadRecentChartData];
+        [self loadTotalClimbsChartData];
                 
         
         
@@ -297,17 +297,19 @@
 }
 -(void)reloadUserDataAction
 {
-    if ([selectedUser.objectId isEqualToString:[PFUser currentUser].objectId]) {
-        NSLog(@"calculating score..");
-    [PFCloud callFunctionInBackground:@"calculateScore" withParameters:[NSDictionary new] target:self selector:@selector(reloadUserData)];
-    }else{
+//    if ([selectedUser.objectId isEqualToString:[PFUser currentUser].objectId]) {
+//        NSLog(@"calculating score..");
+//    [PFCloud callFunctionInBackground:@"calculateScore" withParameters:[NSDictionary new] target:self selector:@selector(reloadUserData)];
+//    }else{
         [self performSelector:@selector(reloadUserData)];
-    }
+//    }
 
 }
--(void)loadChartData{
+-(void)loadTotalClimbsChartData{
+    //TODO: should offload these into cloudcode
     __block NSString* urlstring = [NSString stringWithFormat:@""];
-    
+    _noTotalClimbsLabel.hidden = YES;
+    [_totalClimbsChartActivityIndicator startAnimating];
     PFQuery *v0v2flash = [PFQuery queryWithClassName:@"Flash"];
     [v0v2flash whereKey:@"difficulty" equalTo:[NSNumber numberWithInt:0]];
     [v0v2flash whereKey:@"username" equalTo:username];
@@ -369,26 +371,32 @@
                                                     urlstring = [urlstring stringByAppendingFormat:@"%d",number11+number12];
                                                     [urlstring retain];
                                                     
-                                                            
-                                                            NSURL* urlFinal = [NSURL URLWithString:[[NSString stringWithFormat:@"https://chart.googleapis.com/chart?chs=280x100&cht=bvs&chco=19F587|F5EC11|FF9B13|F53312|3019F5|CC16F5|000000&chd=t:%@&chds=a&chxt=x&chxl=0:|----|V0-V2|V3-V5|V6-V8|V9-V11|>V11&chbh=35&chm=N,000000,0,-1,11&chf=bg,s,65432100",urlstring]stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
+                                                    if ([urlstring isEqualToString:@"0,0,0,0,0,0"])
+                                                    {
+                                                        _noTotalClimbsLabel.hidden = NO;
+                                                        [_totalClimbsChartActivityIndicator stopAnimating];
+                                                    }else{
+                                                            NSURL* urlFinal = [NSURL URLWithString:[[NSString stringWithFormat:@"https://chart.googleapis.com/chart?chs=520x324&cht=bvs&chco=19F587|F5EC11|FF9B13|F53312|3019F5|CC16F5|000000&chd=t:%@&chds=a&chxt=x&chxl=0:|----|V0-V2|V3-V5|V6-V8|V9-V11|>V11&chbh=a,0&chm=N,000000,0,-1,15&chf=bg,s,65432100",urlstring]stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
                                                             NSLog(@"urlstringfinal = %@",urlFinal);
                                                             ASIHTTPRequest* chartImageRequest = [ASIHTTPRequest requestWithURL:urlFinal];
                                                             NSLog(@"chartreq=%@",chartImageRequest.url);
                                                             
                                                             [chartImageRequest setCompletionBlock:^{
-                                                                [_chartImageView setImage:[UIImage imageWithData:[chartImageRequest responseData]]];
-                                                                [_chartActivityIndicator stopAnimating];
+                                                                [_totalClimbsChartView setImage:[UIImage imageWithData:[chartImageRequest responseData]]];
+                                                                [_totalClimbsChartActivityIndicator stopAnimating];
+                                                                
                                                                 [urlstring release];
                                                             }];
                                                             [chartImageRequest setFailedBlock:^{
                                                                 NSLog(@"failedddd");
-                                                                [_chartActivityIndicator stopAnimating];
+                                                                [_totalClimbsChartActivityIndicator stopAnimating];
                                                                 [urlstring release];
                                                             }];
                                                             [chartImageRequest setTimeOutSeconds:10];
                                                             [chartImageRequest startAsynchronous];
+                                                    }
                                                         }];
-                                                   
+                                                
                                             }];
                                         }];
                                     }];
@@ -400,6 +408,124 @@
             }];
         }];
     }];
+    
+}
+-(void)loadRecentChartData{
+    
+    //TODO: should offload these into cloudcode
+    __block NSString* urlstring = [NSString stringWithFormat:@""];
+    _noRecentClimbsLabel.hidden = YES;
+    [_chartActivityIndicator startAnimating];
+    PFQuery *v0v2flash = [PFQuery queryWithClassName:@"Flash"];
+    [v0v2flash whereKey:@"difficulty" equalTo:[NSNumber numberWithInt:0]];
+    [v0v2flash whereKey:@"username" equalTo:username];
+    [v0v2flash whereKey:@"createdAt" greaterThan:[NSDate dateWithTimeIntervalSinceNow:-604800]];
+    [v0v2flash countObjectsInBackgroundWithBlock:^(int number, NSError *error) {
+        PFQuery *v0v2send = [PFQuery queryWithClassName:@"Sent"];
+        [v0v2send whereKey:@"difficulty" equalTo:[NSNumber numberWithInt:0]];
+        [v0v2send whereKey:@"username" equalTo:username];
+       [v0v2send whereKey:@"createdAt" greaterThan:[NSDate dateWithTimeIntervalSinceNow:-604800]];
+        [v0v2send countObjectsInBackgroundWithBlock:^(int number2, NSError *error) {
+            urlstring = [urlstring stringByAppendingFormat:@"%d,",number+number2];
+            [urlstring retain];
+            PFQuery *v3v5flash = [PFQuery queryWithClassName:@"Flash"];
+            [v3v5flash whereKey:@"difficulty" equalTo:[NSNumber numberWithInt:1]];
+            [v3v5flash whereKey:@"username" equalTo:username];
+            [v3v5flash whereKey:@"createdAt" greaterThan:[NSDate dateWithTimeIntervalSinceNow:-604800]];
+            [v3v5flash countObjectsInBackgroundWithBlock:^(int number3, NSError *error) {
+                PFQuery *v3v5send = [PFQuery queryWithClassName:@"Sent"];
+                [v3v5send whereKey:@"difficulty" equalTo:[NSNumber numberWithInt:1]];
+                [v3v5send whereKey:@"username" equalTo:username];
+                [v3v5send whereKey:@"createdAt" greaterThan:[NSDate dateWithTimeIntervalSinceNow:-604800]];
+                [v3v5send countObjectsInBackgroundWithBlock:^(int number4, NSError *error) {
+                    urlstring = [urlstring stringByAppendingFormat:@"%d,",number3+number4];
+                    [urlstring retain];
+                    PFQuery *v6v8flash = [PFQuery queryWithClassName:@"Flash"];
+                    [v6v8flash whereKey:@"difficulty" equalTo:[NSNumber numberWithInt:2]];
+                    [v6v8flash whereKey:@"username" equalTo:username];
+                    [v6v8flash whereKey:@"createdAt" greaterThan:[NSDate dateWithTimeIntervalSinceNow:-604800]];
+                    [v6v8flash countObjectsInBackgroundWithBlock:^(int number5, NSError *error) {
+                        PFQuery *v6v8send = [PFQuery queryWithClassName:@"Sent"];
+                        [v6v8send whereKey:@"difficulty" equalTo:[NSNumber numberWithInt:2]];
+                        [v6v8send whereKey:@"username" equalTo:username];
+                       [v6v8send  whereKey:@"createdAt" greaterThan:[NSDate dateWithTimeIntervalSinceNow:-604800]];
+                        [v6v8send countObjectsInBackgroundWithBlock:^(int number6, NSError *error) {
+                            urlstring = [urlstring stringByAppendingFormat:@"%d,",number5+number6];
+                            [urlstring retain];
+                            PFQuery *v9v11flash = [PFQuery queryWithClassName:@"Flash"];
+                            [v9v11flash whereKey:@"difficulty" equalTo:[NSNumber numberWithInt:3]];
+                            [v9v11flash whereKey:@"username" equalTo:username];
+                            [v9v11flash whereKey:@"createdAt" greaterThan:[NSDate dateWithTimeIntervalSinceNow:-604800]];
+                            [v9v11flash countObjectsInBackgroundWithBlock:^(int number7, NSError *error) {
+                                PFQuery *v9v11send = [PFQuery queryWithClassName:@"Sent"];
+                                [v9v11send whereKey:@"difficulty" equalTo:[NSNumber numberWithInt:3]];
+                                [v9v11send whereKey:@"username" equalTo:username];
+                                [v9v11send whereKey:@"createdAt" greaterThan:[NSDate dateWithTimeIntervalSinceNow:-604800]];
+                                [v9v11send countObjectsInBackgroundWithBlock:^(int number8, NSError *error) {
+                                    urlstring = [urlstring stringByAppendingFormat:@"%d,",number7+number8];
+                                    [urlstring retain];
+                                    PFQuery *v12flash = [PFQuery queryWithClassName:@"Flash"];
+                                    [v12flash whereKey:@"difficulty" equalTo:[NSNumber numberWithInt:4]];
+                                    [v12flash whereKey:@"username" equalTo:username];
+                                    [v12flash whereKey:@"createdAt" greaterThan:[NSDate dateWithTimeIntervalSinceNow:-604800]];
+                                    [v12flash countObjectsInBackgroundWithBlock:^(int number9, NSError *error) {
+                                        PFQuery *v12send = [PFQuery queryWithClassName:@"Sent"];
+                                        [v12send whereKey:@"difficulty" equalTo:[NSNumber numberWithInt:4]];
+                                        [v12send whereKey:@"username" equalTo:username];
+                                        [v12send whereKey:@"createdAt" greaterThan:[NSDate dateWithTimeIntervalSinceNow:-604800]];
+                                        [v12send countObjectsInBackgroundWithBlock:^(int number10, NSError *error) {
+                                            urlstring = [urlstring stringByAppendingFormat:@"%d,",number9+number10];
+                                            [urlstring retain];
+                                            PFQuery *v13flash = [PFQuery queryWithClassName:@"Flash"];
+                                            [v13flash whereKey:@"difficulty" greaterThan:[NSNumber numberWithInt:5]];
+                                            [v13flash whereKey:@"username" equalTo:username];
+                                            [v13flash whereKey:@"createdAt" greaterThan:[NSDate dateWithTimeIntervalSinceNow:-604800]];
+                                            [v13flash countObjectsInBackgroundWithBlock:^(int number11, NSError *error) {
+                                                PFQuery *v13send = [PFQuery queryWithClassName:@"Sent"];
+                                                [v13send whereKey:@"difficulty" greaterThan:[NSNumber numberWithInt:5]];
+                                                [v13send whereKey:@"username" equalTo:username];
+                                                [v13send whereKey:@"createdAt" greaterThan:[NSDate dateWithTimeIntervalSinceNow:-604800]];
+                                                [v13send countObjectsInBackgroundWithBlock:^(int number12, NSError *error) {
+                                                    urlstring = [urlstring stringByAppendingFormat:@"%d",number11+number12];
+                                                    [urlstring retain];
+                                                    
+                                                    if ([urlstring isEqualToString:@"0,0,0,0,0,0"])
+                                                    {
+                                                        _noRecentClimbsLabel.hidden = NO;
+                                                        [_chartActivityIndicator stopAnimating];
+                                                    }else{
+                                                    NSURL* urlFinal = [NSURL URLWithString:[[NSString stringWithFormat:@"https://chart.googleapis.com/chart?chs=520x324&cht=bvs&chco=19F587|F5EC11|FF9B13|F53312|3019F5|CC16F5|000000&chd=t:%@&chds=a&chxt=x&chxl=0:|<V0|V0-V2|V3-V5|V6-V8|V9-V11|>V11&chbh=a,0&chm=N,000000,0,-1,15&chf=bg,s,65432100",urlstring]stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
+                                                    NSLog(@"urlstringfinal = %@",urlFinal);
+                                                    ASIHTTPRequest* chartImageRequest = [ASIHTTPRequest requestWithURL:urlFinal];
+                                                    NSLog(@"chartreq=%@",chartImageRequest.url);
+                                                    
+                                                    [chartImageRequest setCompletionBlock:^{
+                                                        [_chartImageView setImage:[UIImage imageWithData:[chartImageRequest responseData]]];
+                                                        [_chartActivityIndicator stopAnimating];
+                                                        [urlstring release];
+                                                    }];
+                                                    [chartImageRequest setFailedBlock:^{
+                                                        NSLog(@"failedddd");
+                                                        [_chartActivityIndicator stopAnimating];
+                                                        [urlstring release];
+                                                    }];
+                                                    [chartImageRequest setTimeOutSeconds:10];
+                                                    [chartImageRequest startAsynchronous];
+                                                    }
+                                                }];
+                                                
+                                            }];
+                                        }];
+                                    }];
+                                }];
+                            }];
+                        }];
+                    }];
+                }];
+            }];
+        }];
+    }];
+    
 }
 -(void)reloadUserData
 {
@@ -407,7 +533,8 @@
     [navigationBarItem startAnimating];
     
     
-    [self loadChartData];
+    [self loadTotalClimbsChartData];
+    [self loadRecentChartData];
     
     
     
@@ -418,12 +545,12 @@
          [queryArray removeObject:userQuery];
     selectedUser = [objects objectAtIndex:0];
         [selectedUser retain];
-        int totalScore = [((NSNumber*)[selectedUser objectForKey:@"score"]) intValue];
-        int level = (int)((1+sqrt(totalScore/5 + 1))/2);
-        float percentToNextLevel = (((1+sqrt(totalScore/5 + 1))/2) - level);
-        levelProgressBar.progress = percentToNextLevel;
-        levelPercentLabel.text = [NSString stringWithFormat:@"%d/%d points to Level %d (%d%%)",totalScore,5*(((level+1)*2-1)*((level+1)*2-1)),level+1,(int)(percentToNextLevel*100)];
-        levelLabel.text = [NSString stringWithFormat:@"%d", level];
+//        int totalScore = [((NSNumber*)[selectedUser objectForKey:@"score"]) intValue];
+//        int level = (int)((1+sqrt(totalScore/5 + 1))/2);
+//        float percentToNextLevel = (((1+sqrt(totalScore/5 + 1))/2) - level);
+//        levelProgressBar.progress = percentToNextLevel;
+//        levelPercentLabel.text = [NSString stringWithFormat:@"%d/%d points to Level %d (%d%%)",totalScore,5*(((level+1)*2-1)*((level+1)*2-1)),level+1,(int)(percentToNextLevel*100)];
+//        levelLabel.text = [NSString stringWithFormat:@"%d", level];
     if (userimage) {
         userImageView.image = userimage;
     }else{
@@ -600,6 +727,10 @@
     [self setChart1View:nil];
     [self setChart3view:nil];
     [self setChartScroll:nil];
+    [self setTotalClimbsChartView:nil];
+    [self setTotalClimbsChartActivityIndicator:nil];
+    [self setNoRecentClimbsLabel:nil];
+    [self setNoTotalClimbsLabel:nil];
     [super viewDidUnload];
     // Release any retained subviews of the main view.
     // e.g. self.myOutlet = nil;
@@ -666,6 +797,7 @@
     
     
     
+    cell.senderImage.layer.cornerRadius = 5;
     cell.feedLabel.text = [[[[[[[userfeeds objectAtIndex:indexPath.row] objectForKey:@"message"]stringByReplacingOccurrencesOfString:[NSString stringWithFormat:@"%@'s",[[PFUser currentUser]objectForKey:@"name"]] withString:@"your"] stringByReplacingOccurrencesOfString:[[PFUser currentUser]objectForKey:@"name"] withString:@"you"]stringByReplacingOccurrencesOfString:@"his/her" withString:@"your"]stringByReplacingOccurrencesOfString:@"her" withString:@"your"]stringByReplacingOccurrencesOfString:@"his" withString:@"your"]  ;
     
         PFObject* selectedFeedObj = [userfeeds objectAtIndex:indexPath.row];
@@ -674,8 +806,10 @@
         
         ASIHTTPRequest* request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:urlstring]];
         [request setCompletionBlock:^{
-            
+            dispatch_async(dispatch_get_main_queue(), ^{
             cell.senderImage.image= [UIImage imageWithData:[request responseData]];
+            });
+            
             
         }];
         [request setFailedBlock:^{}];
@@ -846,6 +980,10 @@ return [userfeeds count];
     [_chart1View release];
     [_chart3view release];
     [_chartScroll release];
+    [_totalClimbsChartView release];
+    [_totalClimbsChartActivityIndicator release];
+    [_noRecentClimbsLabel release];
+    [_noTotalClimbsLabel release];
     [super dealloc];
 }
 @end

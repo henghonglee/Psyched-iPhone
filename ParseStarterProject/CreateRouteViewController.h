@@ -15,7 +15,7 @@
 #import "RouteDescriptionViewController.h"
 #import "RouteLocationViewController.h"
 #import "FriendTaggerViewController.h"
-@interface CreateRouteViewController : UIViewController<UITextFieldDelegate,UIAlertViewDelegate,UIActionSheetDelegate,UIPickerViewDelegate,UIPickerViewDataSource,PF_FBRequestDelegate,MBProgressHUDDelegate,RouteDescriptionDelegate,TaggerDelegate,RouteLocationDelegate,CLLocationManagerDelegate>
+@interface CreateRouteViewController : UIViewController<UITextFieldDelegate,UIAlertViewDelegate,UIActionSheetDelegate,UIPickerViewDelegate,UIPickerViewDataSource,PF_FBRequestDelegate,MBProgressHUDDelegate,RouteDescriptionDelegate,RouteLocationDelegate,CLLocationManagerDelegate>
 {
     BOOL isPage;
     MBProgressHUD* HUD;

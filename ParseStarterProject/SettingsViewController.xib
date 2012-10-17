@@ -53,7 +53,7 @@
 						<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 						<object class="NSCustomResource" key="IBUIImage">
 							<string key="NSClassName">NSImage</string>
-							<string key="NSResourceName">45degreee_fabric_@2X.png</string>
+							<string key="NSResourceName">paperbg.png</string>
 						</object>
 					</object>
 					<object class="IBUINavigationBar" id="441075223">
@@ -560,8 +560,8 @@
 		<bool key="IBDocument.PluginDeclaredDependenciesTrackSystemTargetVersion">YES</bool>
 		<int key="IBDocument.defaultPropertyAccessControl">3</int>
 		<dictionary class="NSMutableDictionary" key="IBDocument.LastKnownImageSizes">
-			<string key="45degreee_fabric_@2X.png">{630, 630}</string>
 			<string key="generic_btn.png">{561, 94}</string>
+			<string key="paperbg.png">{640, 822}</string>
 		</dictionary>
 		<string key="IBCocoaTouchPluginVersion">1929</string>
 	</data>

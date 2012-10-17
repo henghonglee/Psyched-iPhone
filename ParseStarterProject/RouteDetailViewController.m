@@ -760,7 +760,7 @@ kAPIGraphCommentPhoto,
                 if ([fspObject objectForKey:@"facebookid"])
                 {
                     NSLog(@"deleting %@...",[fspObject objectForKey:@"facebookid"]);
-                    ASIHTTPRequest* newOGDelete = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"https://graph.facebook.com/%@?access_token=%@",[fspObject objectForKey:@"facebookid"],[PFFacebookUtils facebook].accessToken]]];
+                    ASIHTTPRequest* newOGDelete = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"https://graph.facebook.com/%@?access_token=%@",[fspObject objectForKey:@"facebookid"],[PFFacebookUtils session].accessToken]]];
                     [newOGDelete setRequestMethod:@"DELETE"];
                     [newOGDelete setCompletionBlock:^{
                             NSLog(@"newOGDelete posted, %@",[newOGDelete responseString]);
@@ -797,7 +797,7 @@ kAPIGraphCommentPhoto,
                
                 if ([[NSUserDefaults standardUserDefaults]boolForKey:@"ogshare"]) {
                     ASIFormDataRequest* newOGPost = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:@"https://graph.facebook.com/me/climbing_:flash"]];
-                    [newOGPost setPostValue:[PFFacebookUtils facebook].accessToken forKey:@"access_token"];
+                    [newOGPost setPostValue:[PFFacebookUtils session].accessToken forKey:@"access_token"];
                     [newOGPost setPostValue:[NSString stringWithFormat:@"http://www.psychedapp.com/home/%@",routeObject.pfobj.objectId] forKey:@"route"];
                     [newOGPost setRequestMethod:@"POST"];
                     [newOGPost setCompletionBlock:^{
@@ -845,7 +845,7 @@ kAPIGraphCommentPhoto,
                 if ([fspObject objectForKey:@"facebookid"])
                 {
                     NSLog(@"deleting %@...",[fspObject objectForKey:@"facebookid"]);
-                    ASIHTTPRequest* newOGDelete = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"https://graph.facebook.com/%@?access_token=%@",[fspObject objectForKey:@"facebookid"],[PFFacebookUtils facebook].accessToken]]];
+                    ASIHTTPRequest* newOGDelete = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"https://graph.facebook.com/%@?access_token=%@",[fspObject objectForKey:@"facebookid"],[PFFacebookUtils session].accessToken]]];
                     [newOGDelete setRequestMethod:@"DELETE"];
                     [newOGDelete setCompletionBlock:^{
                         NSLog(@"newOGDelete posted, %@",[newOGDelete responseString]);
@@ -893,7 +893,7 @@ kAPIGraphCommentPhoto,
                     if ([fspObject objectForKey:@"facebookid"])
                     {
                         NSLog(@"deleting %@...",[fspObject objectForKey:@"facebookid"]);
-                        ASIHTTPRequest* newOGDelete = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"https://graph.facebook.com/%@?access_token=%@",[fspObject objectForKey:@"facebookid"],[PFFacebookUtils facebook].accessToken]]];
+                        ASIHTTPRequest* newOGDelete = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"https://graph.facebook.com/%@?access_token=%@",[fspObject objectForKey:@"facebookid"],[PFFacebookUtils session].accessToken]]];
                         [newOGDelete setRequestMethod:@"DELETE"];
                         [newOGDelete setCompletionBlock:^{
                             NSLog(@"newOGDelete posted, %@",[newOGDelete responseString]);
@@ -996,7 +996,7 @@ kAPIGraphCommentPhoto,
                 if ([fspObject objectForKey:@"facebookid"])
                 {
                     NSLog(@"deleting %@...",[fspObject objectForKey:@"facebookid"]);
-                    ASIHTTPRequest* newOGDelete = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"https://graph.facebook.com/%@?access_token=%@",[fspObject objectForKey:@"facebookid"],[PFFacebookUtils facebook].accessToken]]];
+                    ASIHTTPRequest* newOGDelete = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"https://graph.facebook.com/%@?access_token=%@",[fspObject objectForKey:@"facebookid"],[PFFacebookUtils session].accessToken]]];
                     [newOGDelete setRequestMethod:@"DELETE"];
                     [newOGDelete setCompletionBlock:^{
                         NSLog(@"newOGDelete posted, %@",[newOGDelete responseString]);
@@ -1043,7 +1043,7 @@ kAPIGraphCommentPhoto,
             if ([fspObject objectForKey:@"facebookid"])
             {
                 NSLog(@"deleting %@...",[fspObject objectForKey:@"facebookid"]);
-                ASIHTTPRequest* newOGDelete = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"https://graph.facebook.com/%@?access_token=%@",[fspObject objectForKey:@"facebookid"],[PFFacebookUtils facebook].accessToken]]];
+                ASIHTTPRequest* newOGDelete = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"https://graph.facebook.com/%@?access_token=%@",[fspObject objectForKey:@"facebookid"],[PFFacebookUtils session].accessToken]]];
                 [newOGDelete setRequestMethod:@"DELETE"];
                 [newOGDelete setCompletionBlock:^{
                     NSLog(@"newOGDelete posted, %@",[newOGDelete responseString]);
@@ -1077,7 +1077,7 @@ kAPIGraphCommentPhoto,
         }else{
             if ([[NSUserDefaults standardUserDefaults]boolForKey:@"ogshare"]) {
                 ASIFormDataRequest* newOGPost = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:@"https://graph.facebook.com/me/climbing_:climb"]];
-                [newOGPost setPostValue:[PFFacebookUtils facebook].accessToken forKey:@"access_token"];
+                [newOGPost setPostValue:[PFFacebookUtils session].accessToken forKey:@"access_token"];
                 [newOGPost setPostValue:[NSString stringWithFormat:@"http://www.psychedapp.com/home/%@",routeObject.pfobj.objectId] forKey:@"route"];
                 [newOGPost setRequestMethod:@"POST"];
                 [newOGPost setCompletionBlock:^{
@@ -1124,7 +1124,7 @@ kAPIGraphCommentPhoto,
             if ([fspObject objectForKey:@"facebookid"])
             {
                 NSLog(@"deleting %@...",[fspObject objectForKey:@"facebookid"]);
-                ASIHTTPRequest* newOGDelete = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"https://graph.facebook.com/%@?access_token=%@",[fspObject objectForKey:@"facebookid"],[PFFacebookUtils facebook].accessToken]]];
+                ASIHTTPRequest* newOGDelete = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"https://graph.facebook.com/%@?access_token=%@",[fspObject objectForKey:@"facebookid"],[PFFacebookUtils session].accessToken]]];
                 [newOGDelete setRequestMethod:@"DELETE"];
                 [newOGDelete setCompletionBlock:^{
                     NSLog(@"newOGDelete posted, %@",[newOGDelete responseString]);
@@ -1222,7 +1222,7 @@ kAPIGraphCommentPhoto,
                 if ([fspObject objectForKey:@"facebookid"])
                 {
                     NSLog(@"deleting %@...",[fspObject objectForKey:@"facebookid"]);
-                    ASIHTTPRequest* newOGDelete = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"https://graph.facebook.com/%@?access_token=%@",[fspObject objectForKey:@"facebookid"],[PFFacebookUtils facebook].accessToken]]];
+                    ASIHTTPRequest* newOGDelete = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"https://graph.facebook.com/%@?access_token=%@",[fspObject objectForKey:@"facebookid"],[PFFacebookUtils session].accessToken]]];
                     [newOGDelete setRequestMethod:@"DELETE"];
                     [newOGDelete setCompletionBlock:^{
                         NSLog(@"newOGDelete posted, %@",[newOGDelete responseString]);
@@ -1269,7 +1269,7 @@ kAPIGraphCommentPhoto,
                 if ([fspObject objectForKey:@"facebookid"])
                 {
                     NSLog(@"deleting %@...",[fspObject objectForKey:@"facebookid"]);
-                    ASIHTTPRequest* newOGDelete = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"https://graph.facebook.com/%@?access_token=%@",[fspObject objectForKey:@"facebookid"],[PFFacebookUtils facebook].accessToken]]];
+                    ASIHTTPRequest* newOGDelete = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"https://graph.facebook.com/%@?access_token=%@",[fspObject objectForKey:@"facebookid"],[PFFacebookUtils session].accessToken]]];
                     [newOGDelete setRequestMethod:@"DELETE"];
                     [newOGDelete setCompletionBlock:^{
                         NSLog(@"newOGDelete posted, %@",[newOGDelete responseString]);
@@ -1316,7 +1316,7 @@ kAPIGraphCommentPhoto,
                 if ([fspObject objectForKey:@"facebookid"])
                 {
                     NSLog(@"deleting %@...",[fspObject objectForKey:@"facebookid"]);
-                    ASIHTTPRequest* newOGDelete = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"https://graph.facebook.com/%@?access_token=%@",[fspObject objectForKey:@"facebookid"],[PFFacebookUtils facebook].accessToken]]];
+                    ASIHTTPRequest* newOGDelete = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"https://graph.facebook.com/%@?access_token=%@",[fspObject objectForKey:@"facebookid"],[PFFacebookUtils session].accessToken]]];
                     [newOGDelete setRequestMethod:@"DELETE"];
                     [newOGDelete setCompletionBlock:^{
                         NSLog(@"newOGDelete posted, %@",[newOGDelete responseString]);
@@ -1350,7 +1350,7 @@ kAPIGraphCommentPhoto,
             }else{
                 if ([[NSUserDefaults standardUserDefaults]boolForKey:@"ogshare"]) {
                     ASIFormDataRequest* newOGPost = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:@"https://graph.facebook.com/me/climbing_:project"]];
-                    [newOGPost setPostValue:[PFFacebookUtils facebook].accessToken forKey:@"access_token"];
+                    [newOGPost setPostValue:[PFFacebookUtils session].accessToken forKey:@"access_token"];
                     [newOGPost setPostValue:[NSString stringWithFormat:@"http://www.psychedapp.com/home/%@",routeObject.pfobj.objectId] forKey:@"route"];
                     [newOGPost setRequestMethod:@"POST"];
                     [newOGPost setCompletionBlock:^{
@@ -1590,7 +1590,7 @@ kAPIGraphCommentPhoto,
 -(void)deleteOGwithId:(NSString*)idstring
 {
     if (idstring) {
-    ASIHTTPRequest* newOGDelete = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"https://graph.facebook.com/%@?access_token=%@",idstring,[PFFacebookUtils facebook].accessToken]]];
+    ASIHTTPRequest* newOGDelete = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"https://graph.facebook.com/%@?access_token=%@",idstring,[PFFacebookUtils session].accessToken]]];
     [newOGDelete setRequestMethod:@"DELETE"];
         NSLog(@"deleting %@",newOGDelete.url);
     [newOGDelete setCompletionBlock:^{
@@ -1607,7 +1607,7 @@ kAPIGraphCommentPhoto,
 -(void)getFacebookRouteDetails{
     
     NSString* fbphotoid = [routeObject.pfobj objectForKey:@"photoid"];
-    ASIHTTPRequest* request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"https://graph.facebook.com/%@?access_token=%@",fbphotoid,[PFFacebookUtils facebook].accessToken]]];
+    ASIHTTPRequest* request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"https://graph.facebook.com/%@?access_token=%@",fbphotoid,[PFFacebookUtils session].accessToken]]];
     NSLog(@"url = %@",[request url]);
     [request setCompletionBlock:^{
             NSLog(@"request response = %@",[request responseString]);
@@ -1648,7 +1648,7 @@ kAPIGraphCommentPhoto,
             [fbobject setObject:[fromDict objectForKey:@"name"] forKey:@"commentername"];
             [fbobject setObject:routeObject.pfobj forKey:@"route"];
             [fbobject setObject:[comment objectForKey:@"created_time"] forKey:@"createdAt"];
-            NSString* urlforprofile = [NSString stringWithFormat:@"https://graph.facebook.com/%@/picture?access_token=%@",[fromDict objectForKey:@"id"],[PFFacebookUtils facebook].accessToken];
+            NSString* urlforprofile = [NSString stringWithFormat:@"https://graph.facebook.com/%@/picture?access_token=%@",[fromDict objectForKey:@"id"],[PFFacebookUtils session].accessToken];
             
             [fbobject setObject:urlforprofile forKey:@"commenterimage"];
             
@@ -2122,6 +2122,7 @@ kAPIGraphCommentPhoto,
                                            [NSString stringWithFormat:@"select uid from page_fan where uid=me() and page_id=%@",[[[self.routeObject.pfobj objectForKey:@"Gym"]fetchIfNeeded] objectForKey:@"facebookid"]], @"query",
                                            nil];
             NSLog(@"fetch completed");
+
             [[PFFacebookUtils facebook] requestWithMethodName:@"fql.query"
                                                     andParams:params
                                                 andHttpMethod:@"POST"
@@ -2163,6 +2164,7 @@ kAPIGraphCommentPhoto,
         currentAPICall = kAPIGraphCommentPhoto;
         NSMutableDictionary *params = [NSMutableDictionary dictionaryWithObjectsAndKeys:
                                        commentTextField.text, @"message",nil];
+       
         [[PFFacebookUtils facebook] requestWithGraphPath:[NSString stringWithFormat:@"/%@/comments",[routeObject.pfobj objectForKey:@"photoid"]]
                                       andParams:params
                                   andHttpMethod:@"POST"
@@ -2495,7 +2497,7 @@ if ([routeObject.pfobj objectForKey:@"isPage"]==[NSNumber numberWithBool:YES] &&
 {
     if ([[NSUserDefaults standardUserDefaults]boolForKey:@"ogshare"]) {
         ASIFormDataRequest* newOGPost = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:@"https://graph.facebook.com/me/og.likes"]];
-        [newOGPost setPostValue:[PFFacebookUtils facebook].accessToken forKey:@"access_token"];
+        [newOGPost setPostValue:[PFFacebookUtils session].accessToken forKey:@"access_token"];
         [newOGPost setPostValue:[NSString stringWithFormat:@"http://www.psychedapp.com/home/%@",routeObject.pfobj.objectId] forKey:@"object"];
         [newOGPost setRequestMethod:@"POST"];
         [newOGPost setCompletionBlock:^{
@@ -2669,7 +2671,7 @@ if (cell == nil) {
         if ([[NSUserDefaults standardUserDefaults]boolForKey:@"ogshare"]) {
             ASIFormDataRequest* newOGPost = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:@"https://graph.facebook.com/me/climbing_:recommend"]];
 //            [newOGPost setPostValue:@"true" forKey:@"fb:explicitly_shared"];
-            [newOGPost setPostValue:[PFFacebookUtils facebook].accessToken forKey:@"access_token"];
+            [newOGPost setPostValue:[PFFacebookUtils session].accessToken forKey:@"access_token"];
             [newOGPost setPostValue:[NSString stringWithFormat:@"http://www.psychedapp.com/home/%@",routeObject.pfobj.objectId] forKey:@"route"];
             [newOGPost setPostValue:[NSString stringWithFormat:@"%@",_recommendTextView.text] forKey:@"message"];
             [newOGPost setRequestMethod:@"POST"];
