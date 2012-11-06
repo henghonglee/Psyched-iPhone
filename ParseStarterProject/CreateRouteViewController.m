@@ -125,7 +125,12 @@ typedef enum apiCall {
 {
     descriptionTextField.text = text;
 }
--
+-(void)actionSheet:(UIActionSheet *)actionSheet didDismissWithButtonIndex:(NSInteger)buttonIndex
+{
+    [self.navigationItem.rightBarButtonItem setEnabled:YES];
+        difficultyTextField.text = [gymlist objectAtIndex:[gympickerView selectedRowInComponent:0]];
+        difficultyint = [gympickerView selectedRowInComponent:0];
+}
 
 -(void)viewWillDisappear:(BOOL)animated
 {
