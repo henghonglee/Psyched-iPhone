@@ -77,17 +77,17 @@
     
     if ([[imageMetaData objectForKey:@"sourceType"]isEqualToString:@"UIImagePickerControllerSourceTypeCamera"]) {
         
-     NSLog(@"crashes around here1");
+
      CGAffineTransform transform = CGAffineTransformIdentity;
-         NSLog(@"crashes around here2");
+
      transform = CGAffineTransformTranslate(transform, 0, imageInView.size.width);
-         NSLog(@"crashes around here3");
+
      transform = CGAffineTransformRotate(transform, -M_PI_2);
-         NSLog(@"crashes around here4");
+
      CGRect newRect = CGRectIntegral(CGRectMake(0, 0, imageInView.size.width, imageInView.size.width));
- NSLog(@"crashes around here5");
+
           CGImageRef imageRef = imageInView.CGImage;
-         NSLog(@"crashes around here6");
+
      // Build a context that's the same dimensions as the new size
 
      CGContextRef bitmap = CGBitmapContextCreate(NULL,
@@ -368,13 +368,15 @@ draggableImageView.frame = CGRectMake(0, 0, 320, 320);
     
     
         UIGraphicsBeginImageContext(arrowImageView.image.size);
-        [arrowImageView.image drawAtPoint:CGPointZero];
+       // [arrowImageView.image drawAtPoint:CGPointZero];
         CGContextRef context = UIGraphicsGetCurrentContext();
+    
         CGRect rect = CGRectMake(0, 0, arrowImageView.image.size.width, arrowImageView.image.size.height);
         CGContextClipToMask(context, rect, [UIImage imageNamed:@"arrowbgflip"].CGImage);
-        [arrowImageView.image drawInRect:rect blendMode:kCGBlendModeColor alpha:1.0];
-        CGContextSetBlendMode(context, kCGBlendModeNormal);
+    
+        
         [[UIColor blackColor] setFill];
+    
         CGContextFillRect(context, rect);
         
         UIImage *retImage = UIGraphicsGetImageFromCurrentImageContext();
@@ -388,8 +390,8 @@ draggableImageView.frame = CGRectMake(0, 0, 320, 320);
         CGContextRef newcontext = UIGraphicsGetCurrentContext();
         
         CGContextClipToMask(newcontext, rect, [UIImage imageNamed:@"arrow3flip"].CGImage);
-        
-        [arrowImageView.image drawInRect:rect blendMode:kCGBlendModeColor alpha:1.0];
+
+        //[arrowImageView.image drawInRect:rect blendMode:kCGBlendModeColor alpha:1.0];
         CGContextSetBlendMode(newcontext, kCGBlendModeNormal);
         [selectColor setFill];
         CGContextFillRect(newcontext, rect);
@@ -596,7 +598,7 @@ draggableImageView.frame = CGRectMake(0, 0, 320, 320);
     
 	UIGraphicsBeginImageContext(image.size);
 	// draw original image into the context
-	[image drawAtPoint:CGPointZero];
+	//[image drawAtPoint:CGPointZero];
     
 	// get the context for CoreGraphics
 	
@@ -609,7 +611,7 @@ draggableImageView.frame = CGRectMake(0, 0, 320, 320);
         
         CGContextClipToMask(context, newrect, [UIImage imageNamed:@"arrowbgflip"].CGImage);
         
-        [draggableImageView.image drawInRect:newrect blendMode:kCGBlendModeColor alpha:1.0];
+        //[draggableImageView.image drawInRect:newrect blendMode:kCGBlendModeColor alpha:1.0];
         CGContextSetBlendMode(context, kCGBlendModeNormal);
         [[UIColor blackColor] setFill];
         CGContextFillRect(context, newrect);
@@ -619,14 +621,14 @@ draggableImageView.frame = CGRectMake(0, 0, 320, 320);
         UIGraphicsBeginImageContext(retImage.size);
         
         // draw original image into the context
-        [retImage drawAtPoint:CGPointZero];
+        //[retImage drawAtPoint:CGPointZero];
         
         // get the context for CoreGraphics
         CGContextRef newcontext = UIGraphicsGetCurrentContext();
         
         CGContextClipToMask(newcontext, newrect, [UIImage imageNamed:@"arrow3flip"].CGImage);
         
-        [draggableImageView.image drawInRect:newrect blendMode:kCGBlendModeColor alpha:1.0];
+       // [draggableImageView.image drawInRect:newrect blendMode:kCGBlendModeColor alpha:1.0];
         CGContextSetBlendMode(newcontext, kCGBlendModeNormal);
         [selectColor setFill];
         CGContextFillRect(newcontext, newrect);

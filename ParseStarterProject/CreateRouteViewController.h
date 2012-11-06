@@ -68,6 +68,7 @@
 @property (retain, nonatomic) PFObject* selectedGymObject;
 @property (retain, nonatomic) IBOutlet UITextField *difficultyTextField;
 @property (retain,nonatomic) NSArray* gymlist;
+@property (retain,nonatomic) NSArray* theSpotGymList;
 @property (retain, nonatomic) IBOutlet UISegmentedControl *segControl;
 @property (retain, nonatomic) IBOutlet UITextField *locationTextField;
 @property (retain, nonatomic) IBOutlet UITextField *descriptionTextField;

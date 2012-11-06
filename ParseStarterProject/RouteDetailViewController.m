@@ -1780,23 +1780,26 @@ kAPIGraphCommentPhoto,
         NSArray* routearrowarray = [routeObject.pfobj objectForKey:@"arrowarray"];
         NSArray* arrowtypearray = [routeObject.pfobj objectForKey:@"arrowtypearray"];
         NSArray* arrowcolorarray = [routeObject.pfobj objectForKey:@"arrowcolorarray"];
-
-        for (int i=0; i<[routearrowarray count]; i++) {
-            
-            
-            CGRect routearrowrect = CGRectFromString([routearrowarray objectAtIndex:i]);
-                        
-            if([[arrowtypearray objectAtIndex:i]isEqualToNumber:[NSNumber numberWithInt:0]]){
-              routeImageView.image =  [self imageByDrawingClippedImage:[UIImage imageNamed:@"arrow3.png"] OnImage:routeImageView.image inRect:routearrowrect withColorString:[arrowcolorarray objectAtIndex:i]];
+        
+        int64_t delayInSeconds = 1.0;
+        dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
+        dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+            for (int i=0; i<[routearrowarray count]; i++) {
+                CGRect routearrowrect = CGRectFromString([routearrowarray objectAtIndex:i]);
+                
+                if([[arrowtypearray objectAtIndex:i]isEqualToNumber:[NSNumber numberWithInt:0]]){
+                    routeImageView.image =  [self imageByDrawingClippedImage:[UIImage imageNamed:@"arrow3.png"] OnImage:routeImageView.image inRect:routearrowrect withColorString:[arrowcolorarray objectAtIndex:i]];
+                    continue;
+                }
+                if([[arrowtypearray objectAtIndex:i]isEqualToNumber:[NSNumber numberWithInt:1]]){
+                    routeImageView.image =  [self imageByDrawingClippedText:@"START" OnImage:routeImageView.image inRect:routearrowrect withColorString:[arrowcolorarray objectAtIndex:i]];
+                    continue;}
+                if([[arrowtypearray objectAtIndex:i]isEqualToNumber:[NSNumber numberWithInt:2]]){
+                    routeImageView.image =[self imageByDrawingClippedText:@"END" OnImage:routeImageView.image inRect:routearrowrect withColorString:[arrowcolorarray objectAtIndex:i]];}
                 continue;
             }
-            if([[arrowtypearray objectAtIndex:i]isEqualToNumber:[NSNumber numberWithInt:1]]){
-                routeImageView.image =  [self imageByDrawingClippedText:@"START" OnImage:routeImageView.image inRect:routearrowrect withColorString:[arrowcolorarray objectAtIndex:i]];
-                continue;}
-            if([[arrowtypearray objectAtIndex:i]isEqualToNumber:[NSNumber numberWithInt:2]]){
-               routeImageView.image =[self imageByDrawingClippedText:@"END" OnImage:routeImageView.image inRect:routearrowrect withColorString:[arrowcolorarray objectAtIndex:i]];}
-            continue;
-        }
+
+        });
         
         
         
@@ -1869,7 +1872,7 @@ kAPIGraphCommentPhoto,
     
 	CGContextClipToMask(context, rect, [UIImage imageNamed:@"arrowbgflip"].CGImage);
     
-    [pastedImage drawInRect:rect blendMode:kCGBlendModeColor alpha:1.0];
+    //[pastedImage drawInRect:rect blendMode:kCGBlendModeColor alpha:1.0];
     CGContextSetBlendMode(context, kCGBlendModeNormal);
     [[UIColor blackColor] setFill];
     CGContextFillRect(context, rect);
@@ -1890,7 +1893,7 @@ kAPIGraphCommentPhoto,
     
 	CGContextClipToMask(newcontext, rect, [UIImage imageNamed:@"arrow3flip"].CGImage);
     
-    [pastedImage drawInRect:rect blendMode:kCGBlendModeColor alpha:1.0];
+    //[pastedImage drawInRect:rect blendMode:kCGBlendModeColor alpha:1.0];
     CGContextSetBlendMode(newcontext, kCGBlendModeNormal);
     NSArray *components = [colorstring componentsSeparatedByString:@","];
     CGFloat r = [[components objectAtIndex:0] floatValue];

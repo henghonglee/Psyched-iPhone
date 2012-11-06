@@ -211,13 +211,10 @@
     [gymWallQuery whereKey:@"routelocation" nearGeoPoint:[gymObject objectForKey:@"gymlocation"] withinKilometers:0.5];
     [gymWallQuery whereKey:@"outdated" notEqualTo:[NSNumber numberWithBool:true]];
     [gymWallQuery whereKeyExists:@"hashtag"];
-    [gymWallQuery orderByAscending:@"hashtag"];
-    [gymWallQuery addAscendingOrder:@"difficulty"];
     [queryArray addObject:gymWallQuery];
     [gymWallQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
         [queryArray removeObject:gymWallQuery];
         
-        //NSLog(@"objects = %@",objects);
         //prepare arrays
         if([objects count]>0){
             for (NSString* key in [self.gymSections allKeys]) {
@@ -254,11 +251,11 @@
                 [self.gymTags addObject:gymtag];
             }
             
-            //        [self.gymTags sortUsingSelector:@selector(localizedCaseInsensitiveCompare:)];
+                    [self.gymTags sortUsingSelector:@selector(localizedCaseInsensitiveCompare:)];
             
             for(int i=0; i<[self.gymTags count] ;i++)
             {
-                NSArray* hashtaggedRoutes = [self.gymSections objectForKey:[[self.gymSections allKeys]objectAtIndex:i]];
+                NSArray* hashtaggedRoutes = [self.gymSections objectForKey:[self.gymTags objectAtIndex:i]];
                 
                 PFObject* firstRoute = ((RouteObject*)[hashtaggedRoutes objectAtIndex:0]).pfobj;
                 //       NSLog(@"imagefile =%@",((PFFile*)[firstRoute objectForKey:@"imageFile"]).url);
@@ -272,7 +269,7 @@
                     UILabel* wallLabel = [[UILabel alloc]initWithFrame:CGRectMake(16.5, 0, 287, 35)];
                     wallLabel.textAlignment = UITextAlignmentCenter;
                     wallLabel.font = [UIFont fontWithName:@"Futura" size:25.0f];
-                    wallLabel.text = [NSString stringWithFormat:@"%@",[[self.gymSections allKeys]objectAtIndex:i]];
+                    wallLabel.text = [NSString stringWithFormat:@"%@",[self.gymTags objectAtIndex:i]];
                     wallLabel.textColor = [UIColor whiteColor];
                     wallLabel.backgroundColor = [UIColor blackColor];
                     wallLabel.alpha = 1;
@@ -312,7 +309,7 @@
                     UILabel* wallFooterLabel = [[UILabel alloc]initWithFrame:CGRectMake(16.5,320, 287, 30)];
                     wallFooterLabel.textAlignment = UITextAlignmentCenter;
                     wallFooterLabel.font = [UIFont fontWithName:@"Futura" size:15.0f];
-                    NSString* wallname = [[self.gymSections allKeys] objectAtIndex:i];
+                    NSString* wallname = [self.gymTags objectAtIndex:i];
                     NSArray* arrayForSection = [self.gymSections objectForKey:wallname];
                     if([arrayForSection count]>1){
                         wallFooterLabel.text = [NSString stringWithFormat:@"%d routes",[arrayForSection count]];
@@ -334,7 +331,9 @@
                     NSLog(@"retrieved 1 image, count at %d/%d",downloadedRouteCount,[self.gymTags count]);
                     float progress_to_set = ((float)downloadedRouteCount)/((float)[self.gymTags count]);
                     
-                    [self performSelector:@selector(progressSet:) withObject:[NSNumber numberWithFloat:progress_to_set] afterDelay:0.0];
+                   
+                    [self performSelectorOnMainThread:@selector(progressSet:) withObject:[NSNumber numberWithFloat:progress_to_set] waitUntilDone:YES];
+//                    [self performSelector:@selector(progressSet:) withObject:[NSNumber numberWithFloat:progress_to_set] afterDelay:0.0];
                     
                     if (downloadedRouteCount==[self.gymTags count]) {
                         //  [progressView removeFromSuperview];
@@ -342,7 +341,7 @@
                         
                         isLoadingRoutes = NO;
                         [loadRoutesActivityIndicator stopAnimating];
-                    
+                        
                         [UIView animateWithDuration:0.15
                           delay:0.3
                         options: UIViewAnimationCurveEaseOut
@@ -534,7 +533,7 @@
                 ParseStarterProjectAppDelegate* applicationDelegate = ((ParseStarterProjectAppDelegate*)[[UIApplication sharedApplication]delegate]);
                 viewController.routeGymObject = gymObject;
                 viewController.routeimage = [UIImage imageWithData:((BaseViewController*)applicationDelegate.window.rootViewController).reuseImageData];
-
+                [MBProgressHUD hideHUDForView:self.view animated:YES];
                 [self.navigationController pushViewController:viewController animated:YES];
                 [viewController release];
                    
@@ -553,7 +552,7 @@
         ParseStarterProjectAppDelegate* applicationDelegate = ((ParseStarterProjectAppDelegate*)[[UIApplication sharedApplication]delegate]);
         viewController.routeGymObject = gymObject;
         viewController.routeimage = [UIImage imageWithData:((BaseViewController*)applicationDelegate.window.rootViewController).reuseImageData];
-        
+        [MBProgressHUD hideHUDForView:self.view animated:YES];
         [self.navigationController pushViewController:viewController animated:YES];
         [viewController release];
     }
@@ -561,7 +560,7 @@
 }
 -(IBAction)showRoute:(id)sender
 {
-  
+    [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     [self performSelector:@selector(showRouteAction:) withObject:sender afterDelay:0.0];
 
 }
@@ -595,7 +594,7 @@
  
 
     
-    NSArray*gymsection =[self.gymSections objectForKey:[[self.gymSections allKeys]objectAtIndex:self.pageControl.currentPage]];
+    NSArray*gymsection =[self.gymSections objectForKey:[self.gymTags objectAtIndex:self.pageControl.currentPage]];
     //get the route and its arrows
     RouteObject* route = [gymsection objectAtIndex:self.routePageControl.currentPage];
     if ([[route.pfobj objectForKey:@"routeVersion"] isEqualToString:@"2"]){
@@ -702,7 +701,7 @@
     [self.view bringSubviewToFront:footerView];
     
     [wallRoutesArrowArray removeAllObjects];
-    for (RouteObject* route in [self.gymSections objectForKey:[[self.gymSections allKeys] objectAtIndex:self.pageControl.currentPage]]) {
+    for (RouteObject* route in [self.gymSections objectForKey:[self.gymTags objectAtIndex:self.pageControl.currentPage]]) {
         NSArray* routearrowarray = [route.pfobj objectForKey:@"arrowarray"];
         NSArray* arrowtypearray = [route.pfobj objectForKey:@"arrowtypearray"];
         [wallRoutesArrowArray addObject:routearrowarray];

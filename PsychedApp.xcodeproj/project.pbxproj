@@ -210,12 +210,12 @@
 		EF7986971540598C00635958 /* GymDetailCell.m in Sources */ = {isa = PBXBuildFile; fileRef = EF7986961540598C00635958 /* GymDetailCell.m */; };
 		EF79869A1540599C00635958 /* GymDetailCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = EF7986991540599C00635958 /* GymDetailCell.xib */; };
 		EF7DC7A61503A2E000DC0433 /* graybuttondepressed.png in Resources */ = {isa = PBXBuildFile; fileRef = EF7DC7A51503A2E000DC0433 /* graybuttondepressed.png */; };
+		EF7E4DF9163139DA008330AA /* UserFeed.m in Sources */ = {isa = PBXBuildFile; fileRef = EF7E4DF8163139DA008330AA /* UserFeed.m */; };
 		EF86AEF61623C8F40096150B /* Accounts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EF86AEF51623C8F40096150B /* Accounts.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		EF86AEF81623C9170096150B /* Social.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EF86AEF71623C9170096150B /* Social.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		EF86AEFA1623C9730096150B /* AdSupport.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EF86AEF91623C9730096150B /* AdSupport.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		EF86AEFC1623F7380096150B /* trackImage.png in Resources */ = {isa = PBXBuildFile; fileRef = EF86AEFB1623F7380096150B /* trackImage.png */; };
 		EF86AEFE1623F7530096150B /* progressImage.png in Resources */ = {isa = PBXBuildFile; fileRef = EF86AEFD1623F7530096150B /* progressImage.png */; };
-		EF86AF0016240AAE0096150B /* diagmonds_@2X.png in Resources */ = {isa = PBXBuildFile; fileRef = EF86AEFF16240AAE0096150B /* diagmonds_@2X.png */; };
 		EF86AF0216240B3F0096150B /* irongrip_@2X.png in Resources */ = {isa = PBXBuildFile; fileRef = EF86AF0116240B3F0096150B /* irongrip_@2X.png */; };
 		EF8765341547AFCA00589622 /* GradientButton.m in Sources */ = {isa = PBXBuildFile; fileRef = EF8765321547AD2400589622 /* GradientButton.m */; };
 		EF8765381547CEEA00589622 /* SettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EF8765361547CEE700589622 /* SettingsViewController.m */; };
@@ -609,12 +609,13 @@
 		EF7986961540598C00635958 /* GymDetailCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GymDetailCell.m; sourceTree = "<group>"; };
 		EF7986991540599C00635958 /* GymDetailCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = GymDetailCell.xib; sourceTree = "<group>"; };
 		EF7DC7A51503A2E000DC0433 /* graybuttondepressed.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = graybuttondepressed.png; path = ../graybuttondepressed.png; sourceTree = "<group>"; };
+		EF7E4DF7163139DA008330AA /* UserFeed.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UserFeed.h; sourceTree = "<group>"; };
+		EF7E4DF8163139DA008330AA /* UserFeed.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UserFeed.m; sourceTree = "<group>"; };
 		EF86AEF51623C8F40096150B /* Accounts.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accounts.framework; path = System/Library/Frameworks/Accounts.framework; sourceTree = SDKROOT; };
 		EF86AEF71623C9170096150B /* Social.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Social.framework; path = System/Library/Frameworks/Social.framework; sourceTree = SDKROOT; };
 		EF86AEF91623C9730096150B /* AdSupport.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AdSupport.framework; path = System/Library/Frameworks/AdSupport.framework; sourceTree = SDKROOT; };
 		EF86AEFB1623F7380096150B /* trackImage.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = trackImage.png; sourceTree = "<group>"; };
 		EF86AEFD1623F7530096150B /* progressImage.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = progressImage.png; sourceTree = "<group>"; };
-		EF86AEFF16240AAE0096150B /* diagmonds_@2X.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "diagmonds_@2X.png"; sourceTree = "<group>"; };
 		EF86AF0116240B3F0096150B /* irongrip_@2X.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "irongrip_@2X.png"; sourceTree = "<group>"; };
 		EF8765311547AD2200589622 /* GradientButton.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GradientButton.h; sourceTree = "<group>"; };
 		EF8765321547AD2400589622 /* GradientButton.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = GradientButton.m; sourceTree = "<group>"; };
@@ -800,11 +801,6 @@
 		09ABC06213A1D52D009C3FCF = {
 			isa = PBXGroup;
 			children = (
-				EF86AEF91623C9730096150B /* AdSupport.framework */,
-				EF86AEF71623C9170096150B /* Social.framework */,
-				EF86AEF51623C8F40096150B /* Accounts.framework */,
-				EF6871F91623BF550063E208 /* Parse.framework */,
-				EF17AA3416174DCA00F356C6 /* BugSense-iOS.framework */,
 				09ABC07713A1D52D009C3FCF /* ParseStarterProject */,
 				09ABC07013A1D52D009C3FCF /* Frameworks */,
 				09ABC06E13A1D52D009C3FCF /* Products */,
@@ -822,6 +818,11 @@
 		09ABC07013A1D52D009C3FCF /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				EF86AEF91623C9730096150B /* AdSupport.framework */,
+				EF86AEF71623C9170096150B /* Social.framework */,
+				EF86AEF51623C8F40096150B /* Accounts.framework */,
+				EF6871F91623BF550063E208 /* Parse.framework */,
+				EF17AA3416174DCA00F356C6 /* BugSense-iOS.framework */,
 				EF38CF1E1612FDD2002A930D /* BugSense-iOS.framework */,
 				EF38CF191612FA99002A930D /* FlurryAnalytics */,
 				EF1177DA15DBE7BD0087C894 /* Tests */,
@@ -919,7 +920,6 @@
 			children = (
 				EF6871F41623BA300063E208 /* 45degreee_fabric_@2X.png */,
 				EF86AF0116240B3F0096150B /* irongrip_@2X.png */,
-				EF86AEFF16240AAE0096150B /* diagmonds_@2X.png */,
 				EF86AEFD1623F7530096150B /* progressImage.png */,
 				EF86AEFB1623F7380096150B /* trackImage.png */,
 				EF5BD4CA14C5DF7D00C4FCB3 /* ProfileViewController.h */,
@@ -928,6 +928,8 @@
 				EF766B9415BE943B00EF0FCB /* placeholder_user.png */,
 				EFB25D4B15258E67002F310B /* UserObject.h */,
 				EFB25D4C15258E68002F310B /* UserObject.m */,
+				EF7E4DF7163139DA008330AA /* UserFeed.h */,
+				EF7E4DF8163139DA008330AA /* UserFeed.m */,
 				EF5BD4CF14C5E46000C4FCB3 /* FollowFriendsViewController.h */,
 				EF5BD4D014C5E46100C4FCB3 /* FollowFriendsViewController.m */,
 				EF5BD4D114C5E46300C4FCB3 /* FollowFriendsViewController.xib */,
@@ -1717,7 +1719,6 @@
 				EF6871F51623BA300063E208 /* 45degreee_fabric_@2X.png in Resources */,
 				EF86AEFC1623F7380096150B /* trackImage.png in Resources */,
 				EF86AEFE1623F7530096150B /* progressImage.png in Resources */,
-				EF86AF0016240AAE0096150B /* diagmonds_@2X.png in Resources */,
 				EF86AF0216240B3F0096150B /* irongrip_@2X.png in Resources */,
 				EFA4586816257180005DF105 /* ProfileFeedCell.xib in Resources */,
 				EF328EC5162E5A940058CF62 /* CreateRouteViewControllerAutoLayout.xib in Resources */,
@@ -1842,6 +1843,7 @@
 				EF87E125160980AD00637600 /* HRBrightnessCursor.m in Sources */,
 				EF87E126160980AD00637600 /* HRColorCursor.m in Sources */,
 				EFA458651625716D005DF105 /* ProfileFeedCell.m in Sources */,
+				EF7E4DF9163139DA008330AA /* UserFeed.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1910,8 +1912,8 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
-				CODE_SIGN_IDENTITY = "iPhone Developer: Lee Heng Hong (T53AB93G9J)";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Lee Heng Hong (T53AB93G9J)";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1937,8 +1939,8 @@
 					"-ObjC",
 				);
 				PRODUCT_NAME = PsychedApp;
-				PROVISIONING_PROFILE = "09527D81-B6D2-4ACF-B80D-5B4B833BAB17";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "09527D81-B6D2-4ACF-B80D-5B4B833BAB17";
+				PROVISIONING_PROFILE = "";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
 				TARGETED_DEVICE_FAMILY = 1;
 				USER_HEADER_SEARCH_PATHS = "${SRCROOT}/**";
 				"USER_HEADER_SEARCH_PATHS[arch=*]" = "${SDK_DIR}/usr/include/libxml2";
@@ -1953,8 +1955,8 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
-				CODE_SIGN_IDENTITY = "iPhone Developer: Lee Heng Hong (T53AB93G9J)";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Lee Heng Hong (T53AB93G9J)";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1979,8 +1981,8 @@
 					"-ObjC",
 				);
 				PRODUCT_NAME = PsychedApp;
-				PROVISIONING_PROFILE = "09527D81-B6D2-4ACF-B80D-5B4B833BAB17";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "09527D81-B6D2-4ACF-B80D-5B4B833BAB17";
+				PROVISIONING_PROFILE = "";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
 				TARGETED_DEVICE_FAMILY = 1;
 				USER_HEADER_SEARCH_PATHS = "${SDK_DIR}/usr/include/libxml2";
 				VALIDATE_PRODUCT = YES;

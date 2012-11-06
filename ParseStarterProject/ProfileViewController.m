@@ -15,6 +15,7 @@
 #import "RouteDetailViewController.h"
 #import "FollowingViewController.h"
 #import "SearchFriendsViewController.h"
+#import "UserFeed.h"
 @implementation ProfileViewController
 @synthesize userimage;
 @synthesize levelLabel;
@@ -231,7 +232,12 @@
         [queryArray addObject:queryForNotification];
         [queryForNotification findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
             [queryArray removeObject:queryForNotification];
-            [userfeeds addObjectsFromArray:objects];
+            for (PFObject* pfobject in objects) {
+                UserFeed* userfeed = [[UserFeed alloc]init];
+                userfeed.pfobj = pfobject;
+                [userfeeds addObject:userfeed];
+                [userfeed release];
+            }
             [userFeedTable reloadData];
         }];
         
@@ -624,7 +630,12 @@
         [queryForNotification findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
              [queryArray addObject:queryForNotification];
             [userfeeds removeAllObjects];
-            [userfeeds addObjectsFromArray:objects];
+            for (PFObject* pfobject in objects) {
+                UserFeed* userfeed = [[UserFeed alloc]init];
+                userfeed.pfobj = pfobject;
+                [userfeeds addObject:userfeed];
+                [userfeed release];
+            }
             [userFeedTable reloadData];
             [userFeedTable setScrollEnabled:YES];
         }];    
@@ -798,26 +809,28 @@
     
     
     cell.senderImage.layer.cornerRadius = 5;
-    cell.feedLabel.text = [[[[[[[userfeeds objectAtIndex:indexPath.row] objectForKey:@"message"]stringByReplacingOccurrencesOfString:[NSString stringWithFormat:@"%@'s",[[PFUser currentUser]objectForKey:@"name"]] withString:@"your"] stringByReplacingOccurrencesOfString:[[PFUser currentUser]objectForKey:@"name"] withString:@"you"]stringByReplacingOccurrencesOfString:@"his/her" withString:@"your"]stringByReplacingOccurrencesOfString:@"her" withString:@"your"]stringByReplacingOccurrencesOfString:@"his" withString:@"your"]  ;
+    cell.feedLabel.text = [[[[[[((UserFeed*)[userfeeds objectAtIndex:indexPath.row]).pfobj objectForKey:@"message"]stringByReplacingOccurrencesOfString:[NSString stringWithFormat:@"%@'s",[[PFUser currentUser]objectForKey:@"name"]] withString:@"your"] stringByReplacingOccurrencesOfString:[[PFUser currentUser]objectForKey:@"name"] withString:@"you"]stringByReplacingOccurrencesOfString:@"his/her" withString:@"your"]stringByReplacingOccurrencesOfString:@"her" withString:@"your"]stringByReplacingOccurrencesOfString:@"his" withString:@"your"]  ;
     
-        PFObject* selectedFeedObj = [userfeeds objectAtIndex:indexPath.row];
+        PFObject* selectedFeedObj = ((UserFeed*)[userfeeds objectAtIndex:indexPath.row]).pfobj;
         NSString* urlstring = [NSString stringWithFormat:@"%@",[selectedFeedObj objectForKey:@"senderimagelink"]];
         NSLog(@"urlstring = %@",urlstring);
-        
-        ASIHTTPRequest* request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:urlstring]];
-        [request setCompletionBlock:^{
-            dispatch_async(dispatch_get_main_queue(), ^{
-            cell.senderImage.image= [UIImage imageWithData:[request responseData]];
-            });
-            
-            
-        }];
-        [request setFailedBlock:^{}];
-        [request startAsynchronous];
     
+        if (((UserFeed*)[userfeeds objectAtIndex:indexPath.row]).senderImage) {
+            cell.senderImage.image = ((UserFeed*)[userfeeds objectAtIndex:indexPath.row]).senderImage;
+        }else{
+            ASIHTTPRequest* request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:urlstring]];
+            [request setCompletionBlock:^{
+                cell.senderImage.image= [UIImage imageWithData:[request responseData]];
+                ((UserFeed*)[userfeeds objectAtIndex:indexPath.row]).senderImage = cell.senderImage.image;
+            }];
+            [request setFailedBlock:^{
+                cell.senderImage.image= [UIImage imageNamed:@"placeholder_user.png"];
+            }];
+            [request startAsynchronous];
+        }
 
     if ([userfeeds count]>0) {
-        PFObject* selectedFeed = [userfeeds objectAtIndex:indexPath.row];
+        PFObject* selectedFeed = ((UserFeed*)[userfeeds objectAtIndex:indexPath.row]).pfobj;
         double timesincenow =  [((NSDate*)selectedFeed.createdAt) timeIntervalSinceNow];
        // NSLog(@"timesincenow = %i",((int)timesincenow));
         int timeint = ((int)timesincenow);
@@ -909,12 +922,12 @@
     NSLog(@"didselectrow");
     [self cancelQueries];
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
-    PFObject* selectedFeed = [userfeeds objectAtIndex:indexPath.row];
+    PFObject* selectedFeed = ((UserFeed*)[userfeeds objectAtIndex:indexPath.row]).pfobj;
     NSString* messagestring =[selectedFeed objectForKey:@"message"];
     if([messagestring rangeOfString:@"route"].location!=NSNotFound){
         
            RouteObject* newRouteObject = [[RouteObject alloc]init];
-            newRouteObject.pfobj = [[[userfeeds objectAtIndex:indexPath.row] objectForKey:@"linkedroute"]fetchIfNeeded];
+            newRouteObject.pfobj = [[((UserFeed*)[userfeeds objectAtIndex:indexPath.row]).pfobj objectForKey:@"linkedroute"]fetchIfNeeded];
              RouteDetailViewController* viewController = [[RouteDetailViewController alloc]initWithNibName:@"RouteDetailViewController" bundle:nil];
             viewController.routeObject = newRouteObject;
             

@@ -45,6 +45,7 @@ typedef enum apiCall {
 @synthesize scroll;
 @synthesize recommendTextView;
 @synthesize gymlist;
+@synthesize theSpotGymList;
 @synthesize originalImage;
 @synthesize tempArray;
 @synthesize friendsArray;
@@ -79,7 +80,7 @@ typedef enum apiCall {
 {
     
     [super viewDidLoad];
-
+    
     
 #if !(TARGET_IPHONE_SIMULATOR)
     [[PFUser currentUser]refreshInBackgroundWithBlock:^(PFObject *object, NSError *error) {
@@ -93,7 +94,7 @@ typedef enum apiCall {
 
     if (reusePFObject) {
     descriptionTextField.text = [NSString stringWithFormat:@"#%@",[reusePFObject objectForKey:@"hashtag"]];
-        locationTextField.text = [NSString stringWithFormat:@"%@",[reusePFObject objectForKey:@"location"]];
+    locationTextField.text = [NSString stringWithFormat:@"%@",[reusePFObject objectForKey:@"location"]];
     }
    
     
@@ -135,7 +136,8 @@ typedef enum apiCall {
 //    scroll.contentSize = CGSizeMake(320,620);
     gymlist = [[NSArray alloc]initWithObjects:@"------",@"V0-V2", @"V3-V5",@"V6-V8",@"V9-V11",@"V12",@"V13",@"V14",@"V15",@"V16",@"V16+", nil];
   
-  
+  theSpotGymList = [[NSArray alloc]initWithObjects:@"1",@"1+", @"2-",@"2",@"2+",@"3-",@"3",@"3+",@"4-",@"4",@"4+",@"5-",@"5",@"5+",@"5++", nil];
+    
     // Do any additional setup after loading the view from its nib.
 }
 

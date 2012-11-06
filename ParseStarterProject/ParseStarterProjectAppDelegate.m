@@ -32,9 +32,7 @@
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
     [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleBlackOpaque animated:YES];
-//    application.applicationIconBadgeNumber = 0;
-//    [[PFInstallation currentInstallation]setBadge:0];
- //   [[PFInstallation currentInstallation] saveEventually];
+
     [BugSenseCrashController sharedInstanceWithBugSenseAPIKey:@"ade3c7ab"];
     [FlurryAnalytics startSession:@"N66I1CJV446Z75ZV8G8V"];
     [self startStandardUpdates];
@@ -44,7 +42,7 @@
     [PFFacebookUtils initializeWithApplicationId:@"200778040017319"];
     [[NSUserDefaults standardUserDefaults]setBool:YES forKey:@"ogshare"];
     
-   
+    
     
     
     LoginViewController* loginVC;
@@ -305,9 +303,7 @@
 }
 
 - (void)applicationWillEnterForeground:(UIApplication *)application{
-//        application.applicationIconBadgeNumber = 0;
-//        [[PFInstallation currentInstallation]setBadge:0];
-//    [[PFInstallation currentInstallation] saveEventually];
+
     CLLocation *location = locationManager.location;
     PFGeoPoint* userGeopoint = [PFGeoPoint geoPointWithLatitude:location.coordinate.latitude longitude:location.coordinate.longitude];
     [[PFInstallation currentInstallation]setObject:userGeopoint forKey:@"userRecentLocation"];

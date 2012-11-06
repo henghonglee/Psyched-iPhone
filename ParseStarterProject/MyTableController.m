@@ -138,7 +138,7 @@
     self.routeArray = [[[NSMutableArray alloc]init]autorelease];;
     self.queryArray = [[[NSMutableArray alloc]init]autorelease];
     self.gymFetchArray = [[[NSMutableArray alloc]init]autorelease];
-    self.followedPosters = [[[NSMutableArray alloc]init]autorelease];
+    self.followedPosters = [[NSMutableArray alloc]init];
     PFQuery* followedquery = [PFQuery queryWithClassName:@"Follow"];
     [followedquery whereKey:@"follower" equalTo:[PFUser currentUser]];
     [queryArray addObject:followedquery];
@@ -1574,6 +1574,7 @@
         [gymObject fetchInBackgroundWithBlock:^(PFObject *object, NSError *error) {
             RouteDetailViewController* viewController = [[RouteDetailViewController alloc]initWithNibName:@"RouteDetailViewController" bundle:nil];
             viewController.routeObject = [self.routeArray objectAtIndex:indexPath.row];
+            viewController.routeGymObject= object;
             [self.navigationController pushViewController:viewController animated:YES];
                [tableView deselectRowAtIndexPath:indexPath animated:YES];
                 [viewController release];
@@ -1757,7 +1758,7 @@
 
 - (void)dealloc {
     
-    
+    [followedPosters release];
     [emptyView release];
     [currentLocation release];
     [queryArray release];

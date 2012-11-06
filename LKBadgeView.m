@@ -19,7 +19,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 //
-
+#import <Parse/Parse.h>
 #import "LKBadgeView.h"
 
 #define LK_BADGE_VIEW_MINUM_WIDTH           24.0
@@ -395,15 +395,18 @@
 
 -(void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
 {
+    NSLog(@"change = %@",change);
     
     if ([[change objectForKey:@"new"]isKindOfClass:[NSNull class]]) {
         
     }else{
     if ([[change objectForKey:@"new"]intValue] == 0) {
-        [[UIApplication sharedApplication] setApplicationIconBadgeNumber:[[change objectForKey:@"new"]intValue]];
+        [[PFInstallation currentInstallation] setBadge:[[change objectForKey:@"new"]intValue]];
+        
         self.hidden = YES;
     }else{
-        [[UIApplication sharedApplication] setApplicationIconBadgeNumber:[[change objectForKey:@"new"]intValue]];                   
+       [[PFInstallation currentInstallation] setBadge:[[change objectForKey:@"new"]intValue]];
+        
         self.hidden = NO;
     }
     }
