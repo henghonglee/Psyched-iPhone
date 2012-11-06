@@ -319,60 +319,72 @@
     PFQuery *v0v2flash = [PFQuery queryWithClassName:@"Flash"];
     [v0v2flash whereKey:@"difficulty" equalTo:[NSNumber numberWithInt:0]];
     [v0v2flash whereKey:@"username" equalTo:username];
+    [v0v2flash whereKey:@"is_spot" notEqualTo:[NSNumber numberWithBool:YES]];
     [v0v2flash countObjectsInBackgroundWithBlock:^(int number, NSError *error) {
         PFQuery *v0v2send = [PFQuery queryWithClassName:@"Sent"];
         [v0v2send whereKey:@"difficulty" equalTo:[NSNumber numberWithInt:0]];
         [v0v2send whereKey:@"username" equalTo:username];
+        [v0v2send whereKey:@"is_spot" notEqualTo:[NSNumber numberWithBool:YES]];
         [v0v2send countObjectsInBackgroundWithBlock:^(int number2, NSError *error) {
             urlstring = [urlstring stringByAppendingFormat:@"%d,",number+number2];
             [urlstring retain];
             PFQuery *v3v5flash = [PFQuery queryWithClassName:@"Flash"];
             [v3v5flash whereKey:@"difficulty" equalTo:[NSNumber numberWithInt:1]];
             [v3v5flash whereKey:@"username" equalTo:username];
+            [v3v5flash whereKey:@"is_spot" notEqualTo:[NSNumber numberWithBool:YES]];
             [v3v5flash countObjectsInBackgroundWithBlock:^(int number3, NSError *error) {
                 PFQuery *v3v5send = [PFQuery queryWithClassName:@"Sent"];
                 [v3v5send whereKey:@"difficulty" equalTo:[NSNumber numberWithInt:1]];
                 [v3v5send whereKey:@"username" equalTo:username];
+                [v3v5send whereKey:@"is_spot" notEqualTo:[NSNumber numberWithBool:YES]];
                 [v3v5send countObjectsInBackgroundWithBlock:^(int number4, NSError *error) {
                     urlstring = [urlstring stringByAppendingFormat:@"%d,",number3+number4];
                     [urlstring retain];
                     PFQuery *v6v8flash = [PFQuery queryWithClassName:@"Flash"];
                     [v6v8flash whereKey:@"difficulty" equalTo:[NSNumber numberWithInt:2]];
                     [v6v8flash whereKey:@"username" equalTo:username];
+                    [v6v8flash whereKey:@"is_spot" notEqualTo:[NSNumber numberWithBool:YES]];
                     [v6v8flash countObjectsInBackgroundWithBlock:^(int number5, NSError *error) {
                         PFQuery *v6v8send = [PFQuery queryWithClassName:@"Sent"];
                         [v6v8send whereKey:@"difficulty" equalTo:[NSNumber numberWithInt:2]];
                         [v6v8send whereKey:@"username" equalTo:username];
+                        [v6v8send whereKey:@"is_spot" notEqualTo:[NSNumber numberWithBool:YES]];
                         [v6v8send countObjectsInBackgroundWithBlock:^(int number6, NSError *error) {
                             urlstring = [urlstring stringByAppendingFormat:@"%d,",number5+number6];
                             [urlstring retain];
                             PFQuery *v9v11flash = [PFQuery queryWithClassName:@"Flash"];
                             [v9v11flash whereKey:@"difficulty" equalTo:[NSNumber numberWithInt:3]];
                             [v9v11flash whereKey:@"username" equalTo:username];
+                            [v9v11flash whereKey:@"is_spot" notEqualTo:[NSNumber numberWithBool:YES]];
                             [v9v11flash countObjectsInBackgroundWithBlock:^(int number7, NSError *error) {
                                 PFQuery *v9v11send = [PFQuery queryWithClassName:@"Sent"];
                                 [v9v11send whereKey:@"difficulty" equalTo:[NSNumber numberWithInt:3]];
                                 [v9v11send whereKey:@"username" equalTo:username];
+                                [v9v11send whereKey:@"is_spot" notEqualTo:[NSNumber numberWithBool:YES]];
                                 [v9v11send countObjectsInBackgroundWithBlock:^(int number8, NSError *error) {
                                     urlstring = [urlstring stringByAppendingFormat:@"%d,",number7+number8];
                                     [urlstring retain];
                                     PFQuery *v12flash = [PFQuery queryWithClassName:@"Flash"];
                                     [v12flash whereKey:@"difficulty" equalTo:[NSNumber numberWithInt:4]];
                                     [v12flash whereKey:@"username" equalTo:username];
+                                    [v12flash whereKey:@"is_spot" notEqualTo:[NSNumber numberWithBool:YES]];
                                     [v12flash countObjectsInBackgroundWithBlock:^(int number9, NSError *error) {
                                         PFQuery *v12send = [PFQuery queryWithClassName:@"Sent"];
                                         [v12send whereKey:@"difficulty" equalTo:[NSNumber numberWithInt:4]];
                                         [v12send whereKey:@"username" equalTo:username];
+                                        [v12send whereKey:@"is_spot" notEqualTo:[NSNumber numberWithBool:YES]];
                                         [v12send countObjectsInBackgroundWithBlock:^(int number10, NSError *error) {
                                             urlstring = [urlstring stringByAppendingFormat:@"%d,",number9+number10];
                                             [urlstring retain];
                                             PFQuery *v13flash = [PFQuery queryWithClassName:@"Flash"];
                                             [v13flash whereKey:@"difficulty" greaterThan:[NSNumber numberWithInt:5]];
                                             [v13flash whereKey:@"username" equalTo:username];
+                                            [v13flash whereKey:@"is_spot" notEqualTo:[NSNumber numberWithBool:YES]];
                                             [v13flash countObjectsInBackgroundWithBlock:^(int number11, NSError *error) {
                                                 PFQuery *v13send = [PFQuery queryWithClassName:@"Sent"];
                                                 [v13send whereKey:@"difficulty" greaterThan:[NSNumber numberWithInt:5]];
                                                 [v13send whereKey:@"username" equalTo:username];
+                                                [v13send whereKey:@"is_spot" notEqualTo:[NSNumber numberWithBool:YES]];
                                                 [v13send countObjectsInBackgroundWithBlock:^(int number12, NSError *error) {
                                                     urlstring = [urlstring stringByAppendingFormat:@"%d",number11+number12];
                                                     [urlstring retain];
@@ -425,11 +437,13 @@
     PFQuery *v0v2flash = [PFQuery queryWithClassName:@"Flash"];
     [v0v2flash whereKey:@"difficulty" equalTo:[NSNumber numberWithInt:0]];
     [v0v2flash whereKey:@"username" equalTo:username];
+    [v0v2flash whereKey:@"is_spot" notEqualTo:[NSNumber numberWithBool:YES]];
     [v0v2flash whereKey:@"createdAt" greaterThan:[NSDate dateWithTimeIntervalSinceNow:-604800]];
     [v0v2flash countObjectsInBackgroundWithBlock:^(int number, NSError *error) {
         PFQuery *v0v2send = [PFQuery queryWithClassName:@"Sent"];
         [v0v2send whereKey:@"difficulty" equalTo:[NSNumber numberWithInt:0]];
         [v0v2send whereKey:@"username" equalTo:username];
+        [v0v2send whereKey:@"is_spot" notEqualTo:[NSNumber numberWithBool:YES]];        
        [v0v2send whereKey:@"createdAt" greaterThan:[NSDate dateWithTimeIntervalSinceNow:-604800]];
         [v0v2send countObjectsInBackgroundWithBlock:^(int number2, NSError *error) {
             urlstring = [urlstring stringByAppendingFormat:@"%d,",number+number2];
@@ -437,11 +451,13 @@
             PFQuery *v3v5flash = [PFQuery queryWithClassName:@"Flash"];
             [v3v5flash whereKey:@"difficulty" equalTo:[NSNumber numberWithInt:1]];
             [v3v5flash whereKey:@"username" equalTo:username];
+            [v3v5flash whereKey:@"is_spot" notEqualTo:[NSNumber numberWithBool:YES]];                    
             [v3v5flash whereKey:@"createdAt" greaterThan:[NSDate dateWithTimeIntervalSinceNow:-604800]];
             [v3v5flash countObjectsInBackgroundWithBlock:^(int number3, NSError *error) {
                 PFQuery *v3v5send = [PFQuery queryWithClassName:@"Sent"];
                 [v3v5send whereKey:@"difficulty" equalTo:[NSNumber numberWithInt:1]];
                 [v3v5send whereKey:@"username" equalTo:username];
+                [v3v5send whereKey:@"is_spot" notEqualTo:[NSNumber numberWithBool:YES]];                    
                 [v3v5send whereKey:@"createdAt" greaterThan:[NSDate dateWithTimeIntervalSinceNow:-604800]];
                 [v3v5send countObjectsInBackgroundWithBlock:^(int number4, NSError *error) {
                     urlstring = [urlstring stringByAppendingFormat:@"%d,",number3+number4];
@@ -449,11 +465,13 @@
                     PFQuery *v6v8flash = [PFQuery queryWithClassName:@"Flash"];
                     [v6v8flash whereKey:@"difficulty" equalTo:[NSNumber numberWithInt:2]];
                     [v6v8flash whereKey:@"username" equalTo:username];
+                    [v6v8flash whereKey:@"is_spot" notEqualTo:[NSNumber numberWithBool:YES]];                    
                     [v6v8flash whereKey:@"createdAt" greaterThan:[NSDate dateWithTimeIntervalSinceNow:-604800]];
                     [v6v8flash countObjectsInBackgroundWithBlock:^(int number5, NSError *error) {
                         PFQuery *v6v8send = [PFQuery queryWithClassName:@"Sent"];
                         [v6v8send whereKey:@"difficulty" equalTo:[NSNumber numberWithInt:2]];
                         [v6v8send whereKey:@"username" equalTo:username];
+                        [v6v8send whereKey:@"is_spot" notEqualTo:[NSNumber numberWithBool:YES]];                    
                        [v6v8send  whereKey:@"createdAt" greaterThan:[NSDate dateWithTimeIntervalSinceNow:-604800]];
                         [v6v8send countObjectsInBackgroundWithBlock:^(int number6, NSError *error) {
                             urlstring = [urlstring stringByAppendingFormat:@"%d,",number5+number6];
@@ -461,11 +479,13 @@
                             PFQuery *v9v11flash = [PFQuery queryWithClassName:@"Flash"];
                             [v9v11flash whereKey:@"difficulty" equalTo:[NSNumber numberWithInt:3]];
                             [v9v11flash whereKey:@"username" equalTo:username];
+                            [v9v11flash whereKey:@"is_spot" notEqualTo:[NSNumber numberWithBool:YES]];                    
                             [v9v11flash whereKey:@"createdAt" greaterThan:[NSDate dateWithTimeIntervalSinceNow:-604800]];
                             [v9v11flash countObjectsInBackgroundWithBlock:^(int number7, NSError *error) {
                                 PFQuery *v9v11send = [PFQuery queryWithClassName:@"Sent"];
                                 [v9v11send whereKey:@"difficulty" equalTo:[NSNumber numberWithInt:3]];
                                 [v9v11send whereKey:@"username" equalTo:username];
+                                [v9v11send whereKey:@"is_spot" notEqualTo:[NSNumber numberWithBool:YES]];
                                 [v9v11send whereKey:@"createdAt" greaterThan:[NSDate dateWithTimeIntervalSinceNow:-604800]];
                                 [v9v11send countObjectsInBackgroundWithBlock:^(int number8, NSError *error) {
                                     urlstring = [urlstring stringByAppendingFormat:@"%d,",number7+number8];
@@ -473,11 +493,13 @@
                                     PFQuery *v12flash = [PFQuery queryWithClassName:@"Flash"];
                                     [v12flash whereKey:@"difficulty" equalTo:[NSNumber numberWithInt:4]];
                                     [v12flash whereKey:@"username" equalTo:username];
+                                    [v12flash whereKey:@"is_spot" notEqualTo:[NSNumber numberWithBool:YES]];
                                     [v12flash whereKey:@"createdAt" greaterThan:[NSDate dateWithTimeIntervalSinceNow:-604800]];
                                     [v12flash countObjectsInBackgroundWithBlock:^(int number9, NSError *error) {
                                         PFQuery *v12send = [PFQuery queryWithClassName:@"Sent"];
                                         [v12send whereKey:@"difficulty" equalTo:[NSNumber numberWithInt:4]];
                                         [v12send whereKey:@"username" equalTo:username];
+                                        [v12send whereKey:@"is_spot" notEqualTo:[NSNumber numberWithBool:YES]];
                                         [v12send whereKey:@"createdAt" greaterThan:[NSDate dateWithTimeIntervalSinceNow:-604800]];
                                         [v12send countObjectsInBackgroundWithBlock:^(int number10, NSError *error) {
                                             urlstring = [urlstring stringByAppendingFormat:@"%d,",number9+number10];
@@ -485,11 +507,13 @@
                                             PFQuery *v13flash = [PFQuery queryWithClassName:@"Flash"];
                                             [v13flash whereKey:@"difficulty" greaterThan:[NSNumber numberWithInt:5]];
                                             [v13flash whereKey:@"username" equalTo:username];
+                                            [v13flash whereKey:@"is_spot" notEqualTo:[NSNumber numberWithBool:YES]];
                                             [v13flash whereKey:@"createdAt" greaterThan:[NSDate dateWithTimeIntervalSinceNow:-604800]];
                                             [v13flash countObjectsInBackgroundWithBlock:^(int number11, NSError *error) {
                                                 PFQuery *v13send = [PFQuery queryWithClassName:@"Sent"];
                                                 [v13send whereKey:@"difficulty" greaterThan:[NSNumber numberWithInt:5]];
                                                 [v13send whereKey:@"username" equalTo:username];
+                                                [v13send whereKey:@"is_spot" notEqualTo:[NSNumber numberWithBool:YES]];
                                                 [v13send whereKey:@"createdAt" greaterThan:[NSDate dateWithTimeIntervalSinceNow:-604800]];
                                                 [v13send countObjectsInBackgroundWithBlock:^(int number12, NSError *error) {
                                                     urlstring = [urlstring stringByAppendingFormat:@"%d",number11+number12];

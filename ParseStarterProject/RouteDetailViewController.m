@@ -1446,6 +1446,11 @@ kAPIGraphCommentPhoto,
 -(void)postNewFlashWithOG:(NSString*)idstring
 {
     PFObject* newFlash = [PFObject objectWithClassName:@"Flash"];
+    if([routeObject.pfobj objectForKey:@"spot_route"]){
+        [newFlash setObject:[routeObject.pfobj objectForKey:@"spot_route"]forKey:@"is_spot"];
+    }else{
+        [newFlash setObject:[NSNumber numberWithBool:NO] forKey:@"is_spot"];
+    }
     [newFlash setObject:[[PFUser currentUser] objectForKey:@"name"] forKey:@"username"];
     [newFlash setObject:[[PFUser currentUser] objectForKey:@"profilepicture"] forKey:@"userimage"];
     [newFlash setObject:[[PFUser currentUser] objectForKey:@"email"] forKey:@"useremail"];
@@ -1496,6 +1501,11 @@ kAPIGraphCommentPhoto,
 {
     
     PFObject* newSent = [PFObject objectWithClassName:@"Sent"];
+    if([routeObject.pfobj objectForKey:@"spot_route"]){
+        [newSent setObject:[routeObject.pfobj objectForKey:@"spot_route"]forKey:@"is_spot"];
+    }else{
+        [newSent setObject:[NSNumber numberWithBool:NO] forKey:@"is_spot"];
+    }
     [newSent setObject:[[PFUser currentUser] objectForKey:@"name"] forKey:@"username"];
     [newSent setObject:[[PFUser currentUser] objectForKey:@"profilepicture"] forKey:@"userimage"];
     [newSent setObject:[[PFUser currentUser] objectForKey:@"email"] forKey:@"useremail"];
@@ -1543,6 +1553,12 @@ kAPIGraphCommentPhoto,
 -(void)postNewProjWithOG:(NSString*)idstring
 {
     PFObject* newProj = [PFObject objectWithClassName:@"Project"];
+    if([routeObject.pfobj objectForKey:@"spot_route"]){
+    [newProj setObject:[routeObject.pfobj objectForKey:@"spot_route"]forKey:@"is_spot"];
+    }else{
+    [newProj setObject:[NSNumber numberWithBool:NO] forKey:@"is_spot"];
+    }
+    
     [newProj setObject:[[PFUser currentUser] objectForKey:@"name"] forKey:@"username"];
     [newProj setObject:[[PFUser currentUser] objectForKey:@"profilepicture"] forKey:@"userimage"];
     [newProj setObject:[[PFUser currentUser] objectForKey:@"email"] forKey:@"useremail"];

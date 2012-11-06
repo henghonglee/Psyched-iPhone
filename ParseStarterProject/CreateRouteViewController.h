@@ -15,7 +15,7 @@
 #import "RouteDescriptionViewController.h"
 #import "RouteLocationViewController.h"
 #import "FriendTaggerViewController.h"
-@interface CreateRouteViewController : UIViewController<UITextFieldDelegate,UIAlertViewDelegate,UIActionSheetDelegate,UIPickerViewDelegate,UIPickerViewDataSource,PF_FBRequestDelegate,MBProgressHUDDelegate,RouteDescriptionDelegate,RouteLocationDelegate,CLLocationManagerDelegate>
+@interface CreateRouteViewController : UIViewController<UITextFieldDelegate,UIAlertViewDelegate,UIActionSheetDelegate,UIPickerViewDelegate,UIPickerViewDataSource,MBProgressHUDDelegate,RouteLocationDelegate,RouteDescriptionDelegate,CLLocationManagerDelegate>
 {
     BOOL isPage;
     MBProgressHUD* HUD;
@@ -42,25 +42,21 @@
 @property (retain, nonatomic) IBOutletCollection(UIView) NSArray *socialControls;
 @property (retain, nonatomic) IBOutletCollection(UIView) NSArray *gymControls;
 @property (retain, nonatomic) IBOutlet UILabel *gymShareLabel;
-@property (retain, nonatomic) NSMutableArray* taggedUsers;
+
 
 -(void)tagPhoto:(NSString*)photoid withUser:(NSString*)facebookid;
 @property (nonatomic,retain) PFObject* reusePFObject;
 @property (nonatomic, assign) UIBackgroundTaskIdentifier fileUploadBackgroundTaskId;
 @property (retain, nonatomic) IBOutlet UILabel *fblabel;
-@property (retain,nonatomic) NSArray* accounts;
+
 @property (retain,nonatomic) NSMutableArray* queryArray;
-@property (retain,nonatomic) NSMutableArray* arrayOfAccounts;
-@property (retain,nonatomic) UIPickerView* fbAccountPickerView;
-@property (retain,nonatomic) UIActionSheet* accountActionSheet;
+
+
 @property (retain, nonatomic) IBOutlet UIImageView *routeImageView;
 @property (retain, nonatomic) NSMutableDictionary* imageMetaData;
 @property (retain, nonatomic) IBOutlet MKMapView* routeLocMapView;
 @property (nonatomic, retain) CLLocationManager *locationManager;
 @property (nonatomic, retain) PF_FBRequest *myRequest;
-@property (retain, nonatomic) NSMutableArray* friendsArray;
-@property (retain, nonatomic) NSMutableArray* FBfriendsArray;
-@property (retain, nonatomic) NSMutableArray* tempArray;
 @property (retain, nonatomic) NSMutableArray* recommendArray;
 @property (retain, nonatomic) NSMutableArray* CGPointsArray;
 @property (retain, nonatomic) NSMutableArray* arrowTypeArray;
@@ -68,7 +64,6 @@
 @property (retain, nonatomic) PFObject* selectedGymObject;
 @property (retain, nonatomic) IBOutlet UITextField *difficultyTextField;
 @property (retain,nonatomic) NSArray* gymlist;
-@property (retain,nonatomic) NSArray* theSpotGymList;
 @property (retain, nonatomic) IBOutlet UISegmentedControl *segControl;
 @property (retain, nonatomic) IBOutlet UITextField *locationTextField;
 @property (retain, nonatomic) IBOutlet UITextField *descriptionTextField;

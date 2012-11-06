@@ -66,9 +66,6 @@
         [self.navigationController popViewControllerAnimated:YES];
 
     }
-    
-    
-
 }
 - (IBAction)dismissInstruction:(id)sender {
     [sender removeFromSuperview];

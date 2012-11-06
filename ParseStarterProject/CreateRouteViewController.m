@@ -19,14 +19,10 @@ typedef enum apiCall {
 #import <Twitter/Twitter.h>
 @implementation CreateRouteViewController
 @synthesize gymSwitch;
-@synthesize taggedUsers;
 @synthesize socialControls;
 @synthesize gymControls;
 @synthesize gymShareLabel;
 @synthesize fblabel;
-@synthesize accounts;
-@synthesize arrayOfAccounts;
-@synthesize fbAccountPickerView,accountActionSheet;
 @synthesize routeLocMapView;
 @synthesize recommendTextField;
 @synthesize routeImageView;
@@ -45,11 +41,7 @@ typedef enum apiCall {
 @synthesize scroll;
 @synthesize recommendTextView;
 @synthesize gymlist;
-@synthesize theSpotGymList;
 @synthesize originalImage;
-@synthesize tempArray;
-@synthesize friendsArray;
-@synthesize FBfriendsArray;
 @synthesize recommendArray;
 @synthesize queryArray;
 @synthesize difficultyTextField;
@@ -105,6 +97,18 @@ typedef enum apiCall {
     routeLocMapView.layer.borderColor = [UIColor whiteColor].CGColor;
     routeLocMapView.layer.borderWidth = 3;
     routeLoc = CLLocationCoordinate2DMake([[[imageMetaData objectForKey:@"{GPS}"] objectForKey:@"Latitude"] doubleValue], [[[imageMetaData objectForKey:@"{GPS}"] objectForKey:@"Longitude"] doubleValue]);
+    
+    PFGeoPoint* routeGeoPoint = [PFGeoPoint geoPointWithLatitude:[[[imageMetaData objectForKey:@"{GPS}"] objectForKey:@"Latitude"] doubleValue] longitude:[[[imageMetaData objectForKey:@"{GPS}"] objectForKey:@"Longitude"] doubleValue]];
+    //PFGeoPoint* spotGeoPoint = [PFGeoPoint geoPointWithLatitude:40.02194 longitude:-105.25067];
+        PFGeoPoint* spotGeoPoint = [PFGeoPoint geoPointWithLatitude:1.297346 longitude:103.786908];
+    if ([routeGeoPoint distanceInKilometersTo:spotGeoPoint]<=0.5) {
+        gymlist = [[NSArray alloc]initWithObjects:@"1",@"1+", @"2-",@"2",@"2+",@"3-",@"3",@"3+",@"4-",@"4",@"4+",@"5-",@"5",@"5+",@"5++", nil];
+    }else{
+        gymlist = [[NSArray alloc]initWithObjects:@"------",@"V0-V2", @"V3-V5",@"V6-V8",@"V9-V11",@"V12",@"V13",@"V14",@"V15",@"V16",@"V16+", nil];
+    }
+
+    
+    
     UIBarButtonItem* rightButton = [[UIBarButtonItem alloc] initWithTitle:@"Upload" style:UIBarButtonSystemItemDone target:self action:@selector(saveAction:)];
     [rightButton setTintColor:[UIColor darkGrayColor]];
     [[UIBarButtonItem appearance] setTintColor:[UIColor darkGrayColor]];
@@ -114,32 +118,14 @@ typedef enum apiCall {
     self.navigationController.navigationBarHidden = NO;
     self.navigationItem.title = @"Add Route";
     recommendArray = [[NSMutableArray alloc]init];
-    friendsArray = [[NSMutableArray alloc]init ];
-
-    tempArray=[[NSMutableArray alloc]init ];
     queryArray=[[NSMutableArray alloc]init ];
-    
-    arrayOfAccounts = [[NSMutableArray alloc]init ];  
-    accounts = [[NSArray alloc]init];
-    
-    //[PF_MBProgressHUD showHUDAddedTo:self.view animated:YES];
-
-    
-    //PFQuery* query = [PFUser query];
-    //[friendsArray addObjectsFromArray:[query findObjects]];
-
-
-    
-    //[tempArray addObjectsFromArray:friendsArray];
-  
     imageView.image = imageTaken;
-//    scroll.contentSize = CGSizeMake(320,620);
-    gymlist = [[NSArray alloc]initWithObjects:@"------",@"V0-V2", @"V3-V5",@"V6-V8",@"V9-V11",@"V12",@"V13",@"V14",@"V15",@"V16",@"V16+", nil];
-  
-  theSpotGymList = [[NSArray alloc]initWithObjects:@"1",@"1+", @"2-",@"2",@"2+",@"3-",@"3",@"3+",@"4-",@"4",@"4+",@"5-",@"5",@"5+",@"5++", nil];
-    
-    // Do any additional setup after loading the view from its nib.
 }
+-(void)DescriptionDidReturnWithText:(NSString *)text andTaggedUsers:(NSMutableArray *)taggedFriends
+{
+    descriptionTextField.text = text;
+}
+-
 
 -(void)viewWillDisappear:(BOOL)animated
 {
@@ -188,16 +174,7 @@ typedef enum apiCall {
     [textField resignFirstResponder];
     return YES;
 }
--(void)DescriptionDidReturnWithText:(NSString *)text andTaggedUsers:(NSMutableArray *)taggedFriends
-{
-    descriptionTextField.text = text;
-    if (taggedFriends){
-        if (!taggedUsers) {
-            taggedUsers = [[NSMutableArray alloc]init];
-        }
-        taggedUsers = taggedFriends;
-    }
-}
+
 -(void)LocationDidReturnWithText:(NSString *)text
 {
     locationTextField.text = text;
@@ -222,15 +199,6 @@ typedef enum apiCall {
         [viewController release];
         return NO;
     }
-//    if (textField == recommendTextField) {
-//        FriendTaggerViewController* viewController = [[FriendTaggerViewController alloc]initWithNibName:@"FriendTaggerViewController" bundle:nil];
-////        viewController.friendsArray = friendsArray;
-//        viewController.recommendArray = recommendArray;
-//        viewController.delegate = self;
-//        [self.navigationController pushViewController:viewController animated:YES];
-//        [viewController release];
-//        return NO;
-//    }
 
     if (textField==difficultyTextField){
         gympickerView = [[UIPickerView alloc]initWithFrame:CGRectMake(0, 100, 0,0)];
@@ -256,13 +224,7 @@ typedef enum apiCall {
     }
 -(NSInteger)pickerView:(UIPickerView *)pickerView numberOfRowsInComponent:(NSInteger)component
 {
-
-    if (pickerView==fbAccountPickerView) {
-        //return 0;
-         return [arrayOfAccounts count];
-    }else{
     return [gymlist count];
-    }
 }
 -(NSInteger)numberOfComponentsInPickerView:(UIPickerView *)pickerView
 {
@@ -270,11 +232,9 @@ typedef enum apiCall {
 }
 -(NSString *)pickerView:(UIPickerView *)pickerView titleForRow:(NSInteger)row forComponent:(NSInteger)component
 {
-    if (pickerView==fbAccountPickerView) {
-        return [[arrayOfAccounts objectAtIndex:row] objectForKey:@"name"];   
-    }else{
+   
     return [gymlist objectAtIndex:row];
-    }
+   
 }
 -(void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex
 {
@@ -304,34 +264,7 @@ typedef enum apiCall {
     
     
 }
-//contains gym selector for fb upload for gyms
--(void)actionSheet:(UIActionSheet *)actionSheet didDismissWithButtonIndex:(NSInteger)buttonIndex
-{
-                [self.navigationItem.rightBarButtonItem setEnabled:YES];
-    if (actionSheet == accountActionSheet) {
-       
-        if ([[[arrayOfAccounts objectAtIndex:[fbAccountPickerView selectedRowInComponent:0]]objectForKey:@"name"] isEqualToString:[[PFUser currentUser]objectForKey:@"name"]]) {
-            isPage = NO;
-            
-        }else{
-            if ([[[arrayOfAccounts objectAtIndex:[fbAccountPickerView selectedRowInComponent:0]]objectForKey:@"likes"]intValue]<0) {
-                isPage = NO;
-                UIAlertView* alert = [[UIAlertView alloc]initWithTitle:@"Not Enough Likes on your page" message:@"You need at least 50 likes on your page to post as a page" delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil];
-                [alert show];
-                [alert release];
-            }else{
-            isPage = YES;
-                
-            
-            }
-        }
-        arrIndex = [fbAccountPickerView selectedRowInComponent:0];
-        fblabel.text = [[arrayOfAccounts objectAtIndex:arrIndex]objectForKey:@"name"];
-        }else{
-    difficultyTextField.text = [gymlist objectAtIndex:[gympickerView selectedRowInComponent:0]];
-    difficultyint = [gympickerView selectedRowInComponent:0];
-    }
-}
+
 //rotational code
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
 {
@@ -342,13 +275,15 @@ typedef enum apiCall {
         return NO;
     }
 }
-//creates new gym dynamically
+///////////////////////////////////////////////////////////
+//////////////                                /////////////
+////////////// creates new gym dynamically deprecated  /////////////
+//////////////                                /////////////
+///////////////////////////////////////////////////////////
+/*
 -(void)saveRouteInGym
 {
-    
-    NSDictionary* gymSelected = [arrayOfAccounts objectAtIndex:arrIndex];
-  
-    //find out if the gym object exists , if not create it with the obj dictionary in arrayOfAccounts
+ 
     PFQuery* gymQuery = [PFQuery queryWithClassName:@"Gym"];
     [gymQuery whereKey:@"facebookid" equalTo:[NSString stringWithFormat:@"%@",[gymSelected objectForKey:@"id"]]];
     [gymQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
@@ -380,7 +315,7 @@ typedef enum apiCall {
             }];
         }
     }];
-}
+}*/
 //actually saves the gym route in a gym
 -(void)saveRouteInGymSelector:(PFObject*)GymObject
 {
@@ -392,29 +327,15 @@ typedef enum apiCall {
     NSLog(@"Requested background expiration task with id %d for photo upload", self.fileUploadBackgroundTaskId);
         
     PFObject* newRoute = [PFObject objectWithClassName:@"Route"];
-    
-    ///////////////////////////////////////////////////////////
-    //////////////                                /////////////
-    ////////////// setting fb photoid deprecated  /////////////
-    //////////////                                /////////////
-    ///////////////////////////////////////////////////////////
-    
-    /*    if (fbuploadswitch.on) {
-//        ASIHTTPRequest* accountRequest = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"https://graph.facebook.com/%@?access_token=%@",fbphotoid,[PFFacebookUtils session].accessToken]]];
-//        [accountRequest setCompletionBlock:^{
-//            SBJsonParser *jsonParser = [[SBJsonParser alloc] init];
-//            NSDictionary *jsonObjects = [jsonParser objectWithString:[accountRequest responseString]];
-//            [jsonParser release];
-//            jsonParser = nil;
-//            [newRoute setObject:[jsonObjects objectForKey:@"source"] forKey:@"fbimagelink"];
-//            [newRoute setObject:fbphotoid forKey:@"photoid"];  
-//            [fbphotoid release];
-//        }];
-//        [accountRequest setFailedBlock:^{}];
-//        [accountRequest startAsynchronous];
-//       
-//    }*/
-    
+    PFGeoPoint* routeGeoPoint = [PFGeoPoint geoPointWithLatitude:[[[imageMetaData objectForKey:@"{GPS}"] objectForKey:@"Latitude"] doubleValue] longitude:[[[imageMetaData objectForKey:@"{GPS}"] objectForKey:@"Longitude"] doubleValue]];
+    //PFGeoPoint* spotGeoPoint = [PFGeoPoint geoPointWithLatitude:40.02194 longitude:-105.25067];
+    PFGeoPoint* spotGeoPoint = [PFGeoPoint geoPointWithLatitude:1.297346 longitude:103.786908];
+    if ([routeGeoPoint distanceInKilometersTo:spotGeoPoint]<=0.5) {
+        [newRoute setObject:[NSNumber numberWithBool:YES] forKey:@"spot_route"];
+    }else{
+        [newRoute setObject:[NSNumber numberWithBool:NO] forKey:@"spot_route"];
+    }
+
     [newRoute setObject:locationTextField.text forKey:@"location"];
   
     NSString* hashtag;
@@ -441,14 +362,6 @@ typedef enum apiCall {
     [newRoute setObject:[NSNumber numberWithBool:false] forKey:@"outdated"];
     [newRoute setObject:[NSNumber numberWithBool:YES] forKey:@"isPage"];
     [newRoute  setObject:GymObject forKey:@"Gym"];
-    NSMutableArray* usersrecommended = [[NSMutableArray alloc]init];
-    for (FBfriend* friend in recommendArray) {
-        [usersrecommended addObject:friend.name];
-    }
-    [newRoute setObject:usersrecommended forKey:@"usersrecommended"];
-   // ParseStarterProjectAppDelegate* appDelegate = (ParseStarterProjectAppDelegate*)[[UIApplication sharedApplication]delegate];
-   // appDelegate.usersrecommended = usersrecommended;
-    [usersrecommended release];
     UIImage* thumbnailImage = [imageTaken thumbnailImage:200 transparentBorder:0 cornerRadius:0 interpolationQuality:kCGInterpolationHigh];
     NSData *thumbImageData = UIImageJPEGRepresentation(thumbnailImage, 1.0);
     PFFile *thumbImageFile = [PFFile fileWithName:@"thumbImage.jpeg" data:thumbImageData];
@@ -488,61 +401,15 @@ typedef enum apiCall {
                     
                     // recommendations or tagging //
                     if ([recommendArray count]>0) {
-                        NSLog(@"recommend array count = %d", [recommendArray count]);
-                        for (FBfriend* user in recommendArray) {
+                        for (PFUser* user in recommendArray) {
                             NSMutableDictionary *data = [NSMutableDictionary dictionary];
                             [data setObject:newRoute.objectId forKey:@"linkedroute"];
-                            [data setObject:[NSNumber numberWithInt:1] forKey:@"badge"];
                             [data setObject:[NSString stringWithFormat:@"%@ tagged you in a route",[[PFUser currentUser] objectForKey:@"name"]] forKey:@"alert"];
                             [data setObject:[NSString stringWithFormat:@"%@",[[PFUser currentUser] objectForKey:@"name"]] forKey:@"sender"];
-                            [data setObject:[NSString stringWithFormat:@"%@",user.name] forKey:@"reciever"];
+                            [data setObject:[NSString stringWithFormat:@"%@",[user objectForKey:@"name"]] forKey:@"reciever"];
                             
-                            [PFPush sendPushDataToChannelInBackground:[NSString stringWithFormat:@"channel%@",user.uid] withData:data];
-                            
-                            
-                            
-                            
-                            
+                            [PFPush sendPushDataToChannelInBackground:[NSString stringWithFormat:@"channel%@",[user objectForKey:@"facebookid"]] withData:data];
                         }
-                        
-                        if ([recommendArray count]==1) {
-                            FBfriend*user = [recommendArray objectAtIndex:0];
-                            PFObject* feedObject = [PFObject objectWithClassName:@"Feed"];
-                            [feedObject setObject:[[PFUser currentUser] objectForKey:@"name"] forKey:@"sender"];
-                            [feedObject setObject:[[PFUser currentUser] objectForKey:@"profilepicture"] forKey:@"senderimagelink"];
-                            [feedObject setObject:newRoute forKey:@"linkedroute"];
-                            [feedObject setObject:imageFile forKey:@"imagefile"];
-                            [feedObject setObject:@"tag" forKey:@"action"];
-                            [feedObject setObject:[NSString stringWithFormat:@"%@ tagged %@ in a route",[[PFUser currentUser] objectForKey:@"name"],user.name] forKey:@"message"];
-                            
-                            [feedObject saveInBackground];
-                            
-                        }else if ([recommendArray count]==2){
-                            FBfriend*user = [recommendArray objectAtIndex:0];
-                            PFObject* feedObject = [PFObject objectWithClassName:@"Feed"];
-                            [feedObject setObject:[[PFUser currentUser] objectForKey:@"name"] forKey:@"sender"];
-                            [feedObject setObject:[[PFUser currentUser] objectForKey:@"profilepicture"] forKey:@"senderimagelink"];
-                            [feedObject setObject:newRoute forKey:@"linkedroute"];
-                            [feedObject setObject:imageFile forKey:@"imagefile"];
-                            [feedObject setObject:@"tag" forKey:@"action"];
-                            [feedObject setObject:[NSString stringWithFormat:@"%@ tagged %@ and %d other in a route",[[PFUser currentUser] objectForKey:@"name"],user.name,1] forKey:@"message"];
-                            
-                            [feedObject saveInBackground];
-                        }else{
-                            FBfriend*user = [recommendArray objectAtIndex:0];
-                            PFObject* feedObject = [PFObject objectWithClassName:@"Feed"];
-                            [feedObject setObject:[[PFUser currentUser] objectForKey:@"name"] forKey:@"sender"];
-                            [feedObject setObject:[[PFUser currentUser] objectForKey:@"profilepicture"] forKey:@"senderimagelink"];
-                            [feedObject setObject:newRoute forKey:@"linkedroute"];
-                            [feedObject setObject:imageFile forKey:@"imagefile"];
-                            [feedObject setObject:@"tag" forKey:@"action"];
-                            [feedObject setObject:[NSString stringWithFormat:@"%@ tagged %@ and %d others in a route",[[PFUser currentUser] objectForKey:@"name"],user.name,[recommendArray count]-1] forKey:@"message"];
-                            
-                            [feedObject saveInBackground];
-                        }
-                        
-                        
-                        
                     }
                     // recommendations or tagging end//
                     
@@ -603,6 +470,16 @@ typedef enum apiCall {
    //
     
     PFObject* newRoute = [PFObject objectWithClassName:@"Route"];
+    
+    PFGeoPoint* routeGeoPoint = [PFGeoPoint geoPointWithLatitude:[[[imageMetaData objectForKey:@"{GPS}"] objectForKey:@"Latitude"] doubleValue] longitude:[[[imageMetaData objectForKey:@"{GPS}"] objectForKey:@"Longitude"] doubleValue]];
+    //PFGeoPoint* spotGeoPoint = [PFGeoPoint geoPointWithLatitude:40.02194 longitude:-105.25067];
+        PFGeoPoint* spotGeoPoint = [PFGeoPoint geoPointWithLatitude:1.297346 longitude:103.786908];
+    if ([routeGeoPoint distanceInKilometersTo:spotGeoPoint]<=0.5) {
+        [newRoute setObject:[NSNumber numberWithBool:YES] forKey:@"spot_route"];
+    }else{
+        [newRoute setObject:[NSNumber numberWithBool:NO] forKey:@"spot_route"];
+    }
+
     ///////////////////////////////////////////////////////////
     //////////////                                /////////////
     ////////////// setting fb photoid deprecated  /////////////
@@ -640,14 +517,7 @@ typedef enum apiCall {
         [newRoute setObject:hashtag forKey:@"hashtag"];
         NSLog(@"sethashtag to %@",hashtag);
     }
-    if ([recommendArray count]>0) {
-       
-        
-        for (FBfriend*user in recommendArray) {
-            descriptionTextField.text = [descriptionTextField.text stringByAppendingFormat:@"@%@ ",user.name];
-        }
-        
-    }
+    
     [newRoute setObject:descriptionTextField.text forKey:@"description"];
     [newRoute setObject:[PFGeoPoint geoPointWithLatitude:routeLoc.latitude longitude:routeLoc.longitude] forKey:@"routelocation"];
     [newRoute setObject:difficultyTextField.text forKey:@"difficultydescription"];
@@ -660,19 +530,8 @@ typedef enum apiCall {
     [newRoute setObject:[NSNumber numberWithInt:0] forKey:@"viewcount"];
     [newRoute setObject:[NSNumber numberWithBool:false] forKey:@"outdated"];
     [newRoute setObject:[NSNumber numberWithBool:false] forKey:@"isPage"];
-    NSMutableArray* usersrecommended = [[NSMutableArray alloc]init];
-    for (FBfriend* friend in recommendArray) {
-        [usersrecommended addObject:friend.name];
-    }
-    [newRoute setObject:usersrecommended forKey:@"usersrecommended"];
-    
-    
-    //ParseStarterProjectAppDelegate* appDelegate = (ParseStarterProjectAppDelegate*)[[UIApplication sharedApplication]delegate];
-    //appDelegate.usersrecommended = usersrecommended;
-    [usersrecommended release];
     UIImage* thumbnailImage = [imageTaken thumbnailImage:200 transparentBorder:0 cornerRadius:0 interpolationQuality:kCGInterpolationHigh];
     NSData *thumbImageData = UIImageJPEGRepresentation(thumbnailImage, 1.0);
-   // appDelegate.thumbImageData = thumbImageData;
     PFFile *thumbImageFile = [PFFile fileWithName:@"thumbImage.jpeg" data:thumbImageData];
     NSLog(@"before uploading thumb");
     [queryArray addObject:thumbImageFile];
@@ -719,26 +578,14 @@ typedef enum apiCall {
             
             [feedObject saveInBackground];
             if ([recommendArray count]>0) {
-                NSLog(@"recommend array count = %d", [recommendArray count]);
-                for (FBfriend* user in recommendArray) {
+                for (PFUser* user in recommendArray) {
                     NSMutableDictionary *data = [NSMutableDictionary dictionary];
                     [data setObject:newRoute.objectId forKey:@"linkedroute"];
-                    [data setObject:[NSNumber numberWithInt:1] forKey:@"badge"];
                     [data setObject:[NSString stringWithFormat:@"%@ tagged you in a route",[[PFUser currentUser] objectForKey:@"name"]] forKey:@"alert"];
                     [data setObject:[NSString stringWithFormat:@"%@",[[PFUser currentUser] objectForKey:@"name"]] forKey:@"sender"];
-                    [data setObject:[NSString stringWithFormat:@"%@",user.name] forKey:@"reciever"];
+                    [data setObject:[NSString stringWithFormat:@"%@",[user objectForKey:@"name"]] forKey:@"reciever"];
                     
-                    [PFPush sendPushDataToChannelInBackground:[NSString stringWithFormat:@"channel%@",user.uid] withData:data];
-                    
-                    PFObject* feedObject = [PFObject objectWithClassName:@"Feed"];
-                    [feedObject setObject:[[PFUser currentUser] objectForKey:@"name"] forKey:@"sender"];
-                    [feedObject setObject:[[PFUser currentUser] objectForKey:@"profilepicture"] forKey:@"senderimagelink"];
-                    [feedObject setObject:newRoute forKey:@"linkedroute"];
-                    [feedObject setObject:imageFile forKey:@"imagefile"];
-                    [feedObject setObject:@"tag" forKey:@"action"];
-                    [feedObject setObject:[NSString stringWithFormat:@"%@ tagged %@ in a route",[[PFUser currentUser] objectForKey:@"name"],user.name] forKey:@"message"];
-                    
-                    [feedObject saveInBackground];
+                    [PFPush sendPushDataToChannelInBackground:[NSString stringWithFormat:@"channel%@",[user objectForKey:@"facebookid"]] withData:data];
                 }
             }
             
@@ -786,15 +633,6 @@ typedef enum apiCall {
 }
 -(void)postOG:(PFObject*)newRoute
 {
-    if (taggedUsers) {
-        for (FBfriend* friend in taggedUsers) {
-            if ([descriptionTextField.text rangeOfString:friend.name].location != NSNotFound) {
-                descriptionTextField.text = [descriptionTextField.text stringByReplacingOccurrencesOfString:friend.name withString:[NSString stringWithFormat:@"@[%@]",friend.uid]];
-            }
-        }
-        [taggedUsers release];
-        
-    }
     if(fbuploadswitch.on){
         NSLog(@"image url = %@",((PFFile*)[newRoute objectForKey:@"imageFileWithArrows"]).url);
         ASIFormDataRequest* newOGPost = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:@"https://graph.facebook.com/me/climbing_:add"]];
@@ -919,7 +757,16 @@ typedef enum apiCall {
         [alert release];
         return;
     }
-   
+    PFQuery* followedquery = [PFQuery queryWithClassName:@"Follow"];
+    [followedquery whereKey:@"followed" equalTo:[[PFUser currentUser] objectForKey:@"name"]];
+    [followedquery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+        [recommendArray removeAllObjects];
+        for (PFObject* follow in objects) {
+            [recommendArray addObject:[follow objectForKey:@"follower"]];
+        }
+        NSLog(@"my friends are = %@",recommendArray);
+    }];
+
 
     
     if (twuploadswitch.on) {
@@ -1047,8 +894,6 @@ typedef enum apiCall {
     [descriptionTextField release];
     [imageView release];
     [scroll release];
-    [friendsArray release];
-    [tempArray release];
     [recommendArray release];
     [recommendTextField release];
     [recommendTextView release];
@@ -1065,150 +910,21 @@ typedef enum apiCall {
     [super dealloc];
 }
 
-- (void)apiGraphUserPhotosPost:(UIImage*)img
-{
 
-    currentAPIcall = kAPIGraphUserPhotosPost;
-    UIImage* resizedimg = [img resizedImage:CGSizeMake(960, 960) interpolationQuality:kCGInterpolationHigh];
-    
-    UIGraphicsEndImageContext();
-    NSMutableArray* tags = [[NSMutableArray alloc]init];
-   for (FBfriend* user in recommendArray) {
-        NSMutableDictionary* tag = [NSMutableDictionary dictionaryWithObjectsAndKeys:user.uid ,@"tag_uid",@"50",@"x",@"50",@"y",nil];
-        [tags addObject:tag];
-    }
-    SBJSON *jsonWriter = [[SBJSON new] autorelease];
-    
-    // The action links to be shown with the post in the feed
-   // NSArray* actionLinks = [NSArray arrayWithObjects:tags, nil];
-    NSString *actionLinksStr = [jsonWriter stringWithObject:tags];
-    [tags release];
-    
-    NSURL* postURL = [NSURL URLWithString:[NSString stringWithFormat:@"https://graph.facebook.com/me/photos?access_token=%@",[PFFacebookUtils session].accessToken]];
-    ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:postURL];
-    NSData* postImageData = UIImagePNGRepresentation(resizedimg);
-    [request setData:postImageData withFileName:@"resizedimg.png" andContentType:@"image/png" forKey:@"picture"];
-    [request setPostValue:descriptionTextField.text forKey:@"name"];
-    [request setPostValue:@"960" forKey:@"height"];    
-    [request setPostValue:@"960" forKey:@"width"];
-    [request setPostValue:actionLinksStr forKey:@"tags"];
-    [request setRequestMethod:@"POST"];
-    [request setCompletionBlock:^{
-        NSLog(@"done posting to facebook, now to parse!");
-        SBJsonParser *jsonParser = [[SBJsonParser alloc] init];
-        NSDictionary *jsonObjects = [jsonParser objectWithString:[request responseString]];
-        [jsonParser release];
-        jsonParser = nil;
-         NSArray* fbfriends = [jsonObjects objectForKey:@"data"];
-        switch (currentAPIcall) {
-            case kAPIGraphUserFriends:
-               
-                [FBfriendsArray removeAllObjects];
-                for (NSDictionary* obj in fbfriends) {
-                    FBfriend* newFBfriend = [[FBfriend alloc]init];
-                    newFBfriend.uid = [obj objectForKey:@"id"];
-                    newFBfriend.name = [obj objectForKey:@"name"];
-                    [FBfriendsArray addObject:newFBfriend];
-                    [newFBfriend release];
-                }
-                
-                [friendsArray addObjectsFromArray:FBfriendsArray];
-                [HUD hide:YES];
-                [HUD release];
-                
-                break;
-                
-            case kAPIGraphUserPhotosPost:
-                fbphotoid  =   [jsonObjects objectForKey:@"id"]; 
-                [fbphotoid retain];
-                NSLog(@"facebook photoid = %@",fbphotoid);
-                [self performSelector:@selector(saveRoute) withObject:nil afterDelay:0.0];
-                [JHNotificationManager notificationWithMessage:@"Photo uploaded successfully to Facebook!"];
-                [HUD hide:YES];
-                [HUD release];
-                break;
-            case kAPIGraphPagePhotosPost:
-                
-                fbphotoid  =   [jsonObjects objectForKey:@"id"]; 
-                [fbphotoid retain];
-                NSLog(@"facebook photoid = %@",fbphotoid);
-                [self performSelector:@selector(saveRouteInGym) withObject:nil afterDelay:0.0];
-                [JHNotificationManager notificationWithMessage:@"Photo uploaded successfully to Facebook Page!"];
-                [HUD hide:YES];
-                [HUD release];
-                [[PFFacebookUtils facebook]setAccessToken:[NSString stringWithFormat:@"%@",oldAccessToken]];
-                NSLog(@"reverted to old access token");
-                break;
-            default:
-                break;
-        }
-    
-    }];
-    [request setFailedBlock:^{
-        [MBProgressHUD hideHUDForView:self.view animated:YES];
-    }];
-    [request startAsynchronous];
-}
--(IBAction)facebookswitchon:(UISwitch*)sender
-{
-    
-    /*
-    [[PFUser currentUser]refreshInBackgroundWithBlock:^(PFObject *object, NSError *error) {
-        
-    
-    if (sender.on && [[[PFUser currentUser] objectForKey:@"isAdmin"]isEqualToNumber:[NSNumber numberWithBool:YES]]) {
-        
-        [self.navigationItem.rightBarButtonItem setEnabled:NO];
-    ASIHTTPRequest* accountRequest = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"https://graph.facebook.com/me/accounts&access_token=%@",[PFFacebookUtils session].accessToken]]];
-    [accountRequest setCompletionBlock:^{
-        NSDictionary *contentOfDictionary = [[accountRequest responseString]JSONValue];
-        NSLog(@"%@",[accountRequest responseString]);
-        if ([[accountRequest responseString] rangeOfString:@"Invalid OAuth access token."].location != NSNotFound || [[accountRequest responseString] rangeOfString:@"Unsupported get request."].location != NSNotFound) {
-            self.fbuploadswitch.on = NO;
-            UIAlertView* alert = [[UIAlertView alloc]initWithTitle:@"Sorry!" message:@"You need to reauthenticate with Facebook to retrieve your managed pages" delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:@"Reauthenticate",nil];
 
-    [alert show];
-    [alert release];
-        }
-        accounts = [contentOfDictionary objectForKey:@"data"];
-
-        if ([accounts count]){
-        pagesHUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-            pagesHUD.labelText = @"Fetching your managed pages";
-            [self performSelectorInBackground:@selector(presentAccountsSheet:) withObject:accounts];
-            
-        }else{
-            [self.navigationItem.rightBarButtonItem setEnabled:YES];
-        }
-    }];
-        
-        
-        [accountRequest setFailedBlock:^{}];
-        [accountRequest startAsynchronous];
-
-    
-    }else{
-        fblabel.text = @"Facebook";
-        isPage = NO;
-    }
-     }];
-    */
-}
 - (IBAction)gymSwitchValueChanged:(UISwitch*)sender
 {
     if (sender.on) {
         [fbuploadswitch setOn:NO];
         [twuploadswitch setOn:NO];
-        if (taggedUsers) {
-            [taggedUsers removeAllObjects];
-        }
+        
         for (UIView* view in socialControls) {
             
             view.hidden = YES;
         }
         //fetch gyms and display in action sheet
         PFQuery* queryForGym = [PFQuery queryWithClassName:@"Gym"];
-        [queryForGym whereKey:@"admin" containsString:[PFUser currentUser].objectId];
+        [queryForGym whereKey:@"admin" equalTo:[PFUser currentUser].objectId];
         [queryForGym findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
             if ([objects count]==0) {
                 for (UIView* view in socialControls) {
@@ -1218,13 +934,13 @@ typedef enum apiCall {
                     view.hidden = YES;
                 }
             }else{
-            if ([objects count]>1) {
-                #warning multiple gyms not supported yet!
-                selectedGymObject = [[objects objectAtIndex:0]retain];
-                gymShareLabel.text = [NSString stringWithFormat:@"Share as %@",[selectedGymObject objectForKey:@"name"]];
+                if ([objects count]>1) {
+#warning multiple gyms not supported yet!
+                    selectedGymObject = [[objects objectAtIndex:0]retain];
+                    gymShareLabel.text = [NSString stringWithFormat:@"Share as %@",[selectedGymObject objectForKey:@"name"]];
                 }else{
-                selectedGymObject = [[objects objectAtIndex:0] retain];
-                gymShareLabel.text = [NSString stringWithFormat:@"Share as %@",[selectedGymObject objectForKey:@"name"]];
+                    selectedGymObject = [[objects objectAtIndex:0] retain];
+                    gymShareLabel.text = [NSString stringWithFormat:@"Share as %@",[selectedGymObject objectForKey:@"name"]];
                 }
             }
         }];
@@ -1233,222 +949,6 @@ typedef enum apiCall {
             view.hidden = NO;
         }
     }
-}
--(void)presentAccountsSheet:(NSArray*)fetchedAccounts
-{
-    [arrayOfAccounts removeAllObjects];
-    for (NSDictionary* obj in fetchedAccounts) {
-        ASIHTTPRequest* request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"https://graph.facebook.com/%@&access_token=%@",[NSString stringWithFormat:@"%@",[obj objectForKey:@"id"] ],[obj objectForKey:@"access_token"]]]];
-        [request startSynchronous];
-        NSDictionary *contentDictionary = [[request responseString]JSONValue];
-        NSLog(@"canpost = %@",[contentDictionary objectForKey:@"can_post"]);    
-        [obj setValue:[contentDictionary objectForKey:@"likes"] forKey:@"likes"];
-        [obj setValue:[contentDictionary objectForKey:@"picture"] forKey:@"picture"];
-        [obj setValue:[contentDictionary objectForKey:@"id"] forKey:@"id"];
-        [obj setValue:[[contentDictionary objectForKey:@"cover"]objectForKey:@"source"] forKey:@"coverimagelink"];
-        [obj setValue:[contentDictionary objectForKey:@"about"] forKey:@"about"];
-        if ([contentDictionary objectForKey:@"can_post"]) {
-            
-            [arrayOfAccounts addObject:obj];
-            
-        }
-        
-        
-        
-    }
-    [pagesHUD hide:YES];
-    if ([arrayOfAccounts count]) {
-        NSDictionary* userDictionary = [NSDictionary dictionaryWithObjectsAndKeys:[[PFUser currentUser] objectForKey:@"name"],@"name",[PFFacebookUtils session].accessToken,@"access_token", nil];
-        [arrayOfAccounts addObject:userDictionary];
-        NSLog(@"arr = %@",arrayOfAccounts);
-        fbAccountPickerView = [[UIPickerView alloc]initWithFrame:CGRectMake(0, 100, 0,0)];
-        accountActionSheet = [[UIActionSheet alloc] initWithTitle:@"Share as :"
-                                                         delegate:self cancelButtonTitle:@"Done" destructiveButtonTitle:nil otherButtonTitles:nil];
-        
-        fbAccountPickerView.delegate = self;
-        fbAccountPickerView.dataSource =self;
-        fbAccountPickerView.showsSelectionIndicator = YES;
-        // note this is default to NO
-        [accountActionSheet showInView:self.view];
-        
-        [accountActionSheet addSubview:fbAccountPickerView];
-        [accountActionSheet setBounds:CGRectMake(0,0,320, 400)];
-        
-        
-        [fbAccountPickerView release];
-        [accountActionSheet release];
-
-    }
-
-}
-- (void)apiGraphPagePhotosPost:(UIImage*)img
-{
-    currentAPIcall = kAPIGraphPagePhotosPost;
-    oldAccessToken = [PFFacebookUtils session].accessToken;
-    [oldAccessToken retain];
-    UIImage* resizedimg = [img resizedImage:CGSizeMake(960, 960) interpolationQuality:kCGInterpolationHigh];
-    
-    UIGraphicsEndImageContext();
-
-    
-    NSLog(@"posting with page...");
-    
-                        [[PFFacebookUtils facebook]setAccessToken:[NSString stringWithFormat:@"%@",[[arrayOfAccounts objectAtIndex:arrIndex] objectForKey:@"access_token"]]];
-/*                        NSMutableDictionary *params = [NSMutableDictionary dictionaryWithObjectsAndKeys:
-                                                       resizedimg, @"source",descriptionTextField.text,@"message",
-                                                       nil];
-                        
-                        [[PFFacebookUtils facebook] requestWithGraphPath:[NSString stringWithFormat:@"%@/photos",[[arrayOfAccounts objectAtIndex:arrIndex] objectForKey:@"id"]]
-                                                               andParams:params
-                                                           andHttpMethod:@"POST"
-                                                             andDelegate:self];
-                                      */
-    NSURL* postURL = [NSURL URLWithString:[NSString stringWithFormat:@"https://graph.facebook.com/%@/photos?access_token=%@",[[arrayOfAccounts objectAtIndex:arrIndex] objectForKey:@"id"],[NSString stringWithFormat:@"%@",[[arrayOfAccounts objectAtIndex:arrIndex] objectForKey:@"access_token"]]]];
-    ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:postURL];
-    NSData* postImageData = UIImagePNGRepresentation(resizedimg);
-    [request setData:postImageData withFileName:@"resizedimg.png" andContentType:@"image/png" forKey:@"source"];
-    [request setPostValue:descriptionTextField.text forKey:@"message"];
-    [request setRequestMethod:@"POST"];
-    [request setCompletionBlock:^{
-        
-        SBJsonParser *jsonParser = [[SBJsonParser alloc] init];
-        NSDictionary *jsonObjects = [jsonParser objectWithString:[request responseString]];
-        [jsonParser release];
-        jsonParser = nil;
-        NSArray* fbfriends = [jsonObjects objectForKey:@"data"];
-        switch (currentAPIcall) {
-            case kAPIGraphUserFriends:
-                
-                [FBfriendsArray removeAllObjects];
-                for (NSDictionary* obj in fbfriends) {
-                    FBfriend* newFBfriend = [[FBfriend alloc]init];
-                    newFBfriend.uid = [obj objectForKey:@"id"];
-                    newFBfriend.name = [obj objectForKey:@"name"];
-                    [FBfriendsArray addObject:newFBfriend];
-                    [newFBfriend release];
-                }
-                
-                [friendsArray addObjectsFromArray:FBfriendsArray];
-                [MBProgressHUD hideHUDForView:self.view animated:YES];
-                
-                break;
-                
-            case kAPIGraphUserPhotosPost:
-                fbphotoid  =   [jsonObjects objectForKey:@"id"]; 
-                [fbphotoid retain];
-                NSLog(@"facebook photoid = %@",fbphotoid);
-                [self performSelector:@selector(saveRoute) withObject:nil afterDelay:0.0];
-                [JHNotificationManager notificationWithMessage:@"Photo uploaded successfully to Facebook!"];  
-                break;
-            case kAPIGraphPagePhotosPost:
-                
-                fbphotoid  =   [jsonObjects objectForKey:@"id"]; 
-                [fbphotoid retain];
-                NSLog(@"facebook photoid = %@",fbphotoid);
-                [self performSelector:@selector(saveRouteInGym) withObject:nil afterDelay:0.0];
-                [JHNotificationManager notificationWithMessage:@"Photo uploaded successfully to Facebook Page!"];  
-                [[PFFacebookUtils facebook]setAccessToken:[NSString stringWithFormat:@"%@",oldAccessToken]];
-                NSLog(@"reverted to old access token");
-                break;
-            default:
-                break;
-        }
-        
-    }];
-    [request setFailedBlock:^{
-       [MBProgressHUD hideHUDForView:self.view animated:YES];
-    }];
-    [request startAsynchronous];
-
-
-        
-}
--(void)request:(PF_FBRequest *)request didReceiveResponse:(NSURLResponse *)response
-{
-    NSLog(@"%@",response);
-        
-    switch (currentAPIcall) {
-        case kAPIGraphUserFriends:
-    
-            break;
-        case kAPIGraphUserPhotosPost:
-            break;
-        case kAPIGraphPagePhotosPost:
-            break;
-        default:
-            break;
-            
-    }
-   
-}
-- (void)request:(PF_FBRequest *)request didLoad:(id)result
-{
-    //NSString* photoid;
-    NSLog(@"in result =%@",result);
-    switch (currentAPIcall) {
-        case kAPIGraphUserFriends:
-            NSLog(@"result");
-            NSArray* fbfriends = [result objectForKey:@"data"];
-            [FBfriendsArray removeAllObjects];
-            for (NSDictionary* obj in fbfriends) {
-                FBfriend* newFBfriend = [[FBfriend alloc]init];
-                newFBfriend.uid = [obj objectForKey:@"id"];
-                newFBfriend.name = [obj objectForKey:@"name"];
-                [FBfriendsArray addObject:newFBfriend];
-                   [newFBfriend release];
-            }
-         
-            [friendsArray addObjectsFromArray:FBfriendsArray];
-            [MBProgressHUD hideHUDForView:self.view animated:YES];
-            
-                       break;
-
-         case kAPIGraphUserPhotosPost:
-            fbphotoid  =   [result objectForKey:@"id"]; 
-            [fbphotoid retain];
-            [self performSelector:@selector(saveRoute) withObject:nil afterDelay:0.0];
-              [JHNotificationManager notificationWithMessage:@"Photo uploaded successfully to Facebook!"];  
-            break;
-        case kAPIGraphPagePhotosPost:
-            
-            fbphotoid  =   [result objectForKey:@"id"]; 
-            [fbphotoid retain];
-            NSLog(@"facebook photoid = %@",fbphotoid);
-            [self performSelector:@selector(saveRouteInGym) withObject:nil afterDelay:0.0];
-            [JHNotificationManager notificationWithMessage:@"Photo uploaded successfully to Facebook Page!"];  
-            [[PFFacebookUtils facebook]setAccessToken:[NSString stringWithFormat:@"%@",oldAccessToken]];
-            NSLog(@"reverted to old access token");
-            break;
-        default:
-            break;
-    }
-//    NSString* photoid = [result objectForKey:@"id"];
-  //  for (PFUser* user in recommendArray) {
-  //      [self tagPhoto:photoid withUser:[user objectForKey:@"facebookid"]];
-  //  }
-  //  [JHNotificationManager notificationWithMessage:@"Photo uploaded successfully to Facebook!"];    
-}
--(void)tagPhoto:(NSString*)photoid withUser:(NSString*)facebookid
-{
-//    NSMutableDictionary *params = [NSMutableDictionary dictionaryWithObjectsAndKeys:
-//                                   [NSString stringWithFormat:@"%@",facebookid ], @"to",@"50",@"x",@"50",@"y",nil];
-//    [[PFFacebookUtils facebook] requestWithGraphPath:[NSString stringWithFormat:@"%@/tags",photoid]
-//                                  andParams:params
-//                              andHttpMethod:@"POST"
-//                                andDelegate:self]; 
-    NSURL* postURL = [NSURL URLWithString:[NSString stringWithFormat:@"https://graph.facebook.com/%@/tags?access_token=%@",photoid,[PFFacebookUtils session].accessToken]];
-    ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:postURL];
-    [request setPostValue:[NSString stringWithFormat:@"%@",facebookid] forKey:@"to"];
-    [request setPostValue:@"50" forKey:@"x"];    
-    [request setPostValue:@"50" forKey:@"y"];    
-    [request setRequestMethod:@"POST"];
-    [request setCompletionBlock:^{
-        NSLog(@"tagged!");        
-    }];
-    [request setFailedBlock:^{
-        [MBProgressHUD hideHUDForView:self.view animated:YES];
-    }];
-    [request startAsynchronous];
 }
 - (void)startStandardUpdates
 {

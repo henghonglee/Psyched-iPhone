@@ -598,7 +598,7 @@ draggableImageView.frame = CGRectMake(0, 0, 320, 320);
     
 	UIGraphicsBeginImageContext(image.size);
 	// draw original image into the context
-	//[image drawAtPoint:CGPointZero];
+	[image drawAtPoint:CGPointZero];
     
 	// get the context for CoreGraphics
 	
@@ -621,7 +621,7 @@ draggableImageView.frame = CGRectMake(0, 0, 320, 320);
         UIGraphicsBeginImageContext(retImage.size);
         
         // draw original image into the context
-        //[retImage drawAtPoint:CGPointZero];
+        [retImage drawAtPoint:CGPointZero];
         
         // get the context for CoreGraphics
         CGContextRef newcontext = UIGraphicsGetCurrentContext();
