@@ -1797,7 +1797,7 @@ kAPIGraphCommentPhoto,
         NSArray* arrowtypearray = [routeObject.pfobj objectForKey:@"arrowtypearray"];
         NSArray* arrowcolorarray = [routeObject.pfobj objectForKey:@"arrowcolorarray"];
         
-        int64_t delayInSeconds = 1.0;
+        int64_t delayInSeconds = 0.0;
         dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
         dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
             for (int i=0; i<[routearrowarray count]; i++) {

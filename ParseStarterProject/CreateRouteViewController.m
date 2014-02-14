@@ -99,8 +99,7 @@ typedef enum apiCall {
     routeLoc = CLLocationCoordinate2DMake([[[imageMetaData objectForKey:@"{GPS}"] objectForKey:@"Latitude"] doubleValue], [[[imageMetaData objectForKey:@"{GPS}"] objectForKey:@"Longitude"] doubleValue]);
     
     PFGeoPoint* routeGeoPoint = [PFGeoPoint geoPointWithLatitude:[[[imageMetaData objectForKey:@"{GPS}"] objectForKey:@"Latitude"] doubleValue] longitude:[[[imageMetaData objectForKey:@"{GPS}"] objectForKey:@"Longitude"] doubleValue]];
-    //PFGeoPoint* spotGeoPoint = [PFGeoPoint geoPointWithLatitude:40.02194 longitude:-105.25067];
-        PFGeoPoint* spotGeoPoint = [PFGeoPoint geoPointWithLatitude:1.297346 longitude:103.786908];
+    PFGeoPoint* spotGeoPoint = [PFGeoPoint geoPointWithLatitude:40.02194 longitude:-105.25067];
     if ([routeGeoPoint distanceInKilometersTo:spotGeoPoint]<=0.5) {
         gymlist = [[NSArray alloc]initWithObjects:@"1",@"1+", @"2-",@"2",@"2+",@"3-",@"3",@"3+",@"4-",@"4",@"4+",@"5-",@"5",@"5+",@"5++", nil];
     }else{
@@ -333,8 +332,8 @@ typedef enum apiCall {
         
     PFObject* newRoute = [PFObject objectWithClassName:@"Route"];
     PFGeoPoint* routeGeoPoint = [PFGeoPoint geoPointWithLatitude:[[[imageMetaData objectForKey:@"{GPS}"] objectForKey:@"Latitude"] doubleValue] longitude:[[[imageMetaData objectForKey:@"{GPS}"] objectForKey:@"Longitude"] doubleValue]];
-    //PFGeoPoint* spotGeoPoint = [PFGeoPoint geoPointWithLatitude:40.02194 longitude:-105.25067];
-    PFGeoPoint* spotGeoPoint = [PFGeoPoint geoPointWithLatitude:1.297346 longitude:103.786908];
+    PFGeoPoint* spotGeoPoint = [PFGeoPoint geoPointWithLatitude:40.02194 longitude:-105.25067];
+    
     if ([routeGeoPoint distanceInKilometersTo:spotGeoPoint]<=0.5) {
         [newRoute setObject:[NSNumber numberWithBool:YES] forKey:@"spot_route"];
     }else{
@@ -409,7 +408,7 @@ typedef enum apiCall {
                         for (PFUser* user in recommendArray) {
                             NSMutableDictionary *data = [NSMutableDictionary dictionary];
                             [data setObject:newRoute.objectId forKey:@"linkedroute"];
-                            [data setObject:[NSString stringWithFormat:@"%@ tagged you in a route",[[PFUser currentUser] objectForKey:@"name"]] forKey:@"alert"];
+                            [data setObject:[NSString stringWithFormat:@"%@ uploaded a new route.Check it out!",[[PFUser currentUser] objectForKey:@"name"]] forKey:@"alert"];
                             [data setObject:[NSString stringWithFormat:@"%@",[[PFUser currentUser] objectForKey:@"name"]] forKey:@"sender"];
                             [data setObject:[NSString stringWithFormat:@"%@",[user objectForKey:@"name"]] forKey:@"reciever"];
                             
@@ -477,8 +476,7 @@ typedef enum apiCall {
     PFObject* newRoute = [PFObject objectWithClassName:@"Route"];
     
     PFGeoPoint* routeGeoPoint = [PFGeoPoint geoPointWithLatitude:[[[imageMetaData objectForKey:@"{GPS}"] objectForKey:@"Latitude"] doubleValue] longitude:[[[imageMetaData objectForKey:@"{GPS}"] objectForKey:@"Longitude"] doubleValue]];
-    //PFGeoPoint* spotGeoPoint = [PFGeoPoint geoPointWithLatitude:40.02194 longitude:-105.25067];
-        PFGeoPoint* spotGeoPoint = [PFGeoPoint geoPointWithLatitude:1.297346 longitude:103.786908];
+    PFGeoPoint* spotGeoPoint = [PFGeoPoint geoPointWithLatitude:40.02194 longitude:-105.25067];
     if ([routeGeoPoint distanceInKilometersTo:spotGeoPoint]<=0.5) {
         [newRoute setObject:[NSNumber numberWithBool:YES] forKey:@"spot_route"];
     }else{
@@ -586,7 +584,7 @@ typedef enum apiCall {
                 for (PFUser* user in recommendArray) {
                     NSMutableDictionary *data = [NSMutableDictionary dictionary];
                     [data setObject:newRoute.objectId forKey:@"linkedroute"];
-                    [data setObject:[NSString stringWithFormat:@"%@ tagged you in a route",[[PFUser currentUser] objectForKey:@"name"]] forKey:@"alert"];
+                    [data setObject:[NSString stringWithFormat:@"%@ uploaded a new route.Check it out!",[[PFUser currentUser] objectForKey:@"name"]] forKey:@"alert"];
                     [data setObject:[NSString stringWithFormat:@"%@",[[PFUser currentUser] objectForKey:@"name"]] forKey:@"sender"];
                     [data setObject:[NSString stringWithFormat:@"%@",[user objectForKey:@"name"]] forKey:@"reciever"];
                     
@@ -767,9 +765,12 @@ typedef enum apiCall {
     [followedquery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
         [recommendArray removeAllObjects];
         for (PFObject* follow in objects) {
-            [recommendArray addObject:[follow objectForKey:@"follower"]];
+            [[follow objectForKey:@"follower"]fetchInBackgroundWithBlock:^(PFObject *object, NSError *error) {
+                [recommendArray addObject:object];
+                NSLog(@"added friend = %@",object);
+            }];
         }
-        NSLog(@"my friends are = %@",recommendArray);
+        
     }];
 
 

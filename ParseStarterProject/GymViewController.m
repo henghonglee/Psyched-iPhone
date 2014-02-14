@@ -372,7 +372,7 @@
 }
 -(void)handleDoubleTap:(id)sender
 {
-   
+
     
     if ([sender isKindOfClass:[UIPinchGestureRecognizer class]]) {
         if (((UIPinchGestureRecognizer*)sender).state == UIGestureRecognizerStateEnded) {
@@ -520,20 +520,21 @@
 
 }
 -(IBAction)showRouteAction:(id)sender{
+    
     if ([sender isKindOfClass:[UIPinchGestureRecognizer class]]) {
         
         if (((UIPinchGestureRecognizer*)sender).state == UIGestureRecognizerStateEnded) {
             
         }else if(((UIPinchGestureRecognizer*)sender).state == UIGestureRecognizerStateBegan){
             if (((UIPinchGestureRecognizer*)sender).scale>1) { //greater than on on zoom in
-                                 
+                
                 RouteDetailViewController* viewController = [[RouteDetailViewController alloc]initWithNibName:@"RouteDetailViewController" bundle:nil];
                 viewController.routeObject = [[self.gymSections objectForKey:[self.gymTags objectAtIndex:self.pageControl.currentPage]]objectAtIndex:self.routePageControl.currentPage];
                 
                 ParseStarterProjectAppDelegate* applicationDelegate = ((ParseStarterProjectAppDelegate*)[[UIApplication sharedApplication]delegate]);
                 viewController.routeGymObject = gymObject;
                 viewController.routeimage = [UIImage imageWithData:((BaseViewController*)applicationDelegate.window.rootViewController).reuseImageData];
-                [MBProgressHUD hideHUDForView:self.view animated:YES];
+                
                 [self.navigationController pushViewController:viewController animated:YES];
                 [viewController release];
                    
@@ -560,7 +561,10 @@
 }
 -(IBAction)showRoute:(id)sender
 {
-    [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    if ([sender isKindOfClass:[UIPinchGestureRecognizer class]]){
+        }else{
+        [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    }
     [self performSelector:@selector(showRouteAction:) withObject:sender afterDelay:0.0];
 
 }
@@ -1240,6 +1244,7 @@
 }
 -(void)backAction:(id)sender
 {
+
     ParseStarterProjectAppDelegate* applicationDelegate = ((ParseStarterProjectAppDelegate*)[[UIApplication sharedApplication]delegate]);
     ((BaseViewController*)applicationDelegate.window.rootViewController).reuseImageData = nil;
     ((BaseViewController*)applicationDelegate.window.rootViewController).reusePFObject = nil;
