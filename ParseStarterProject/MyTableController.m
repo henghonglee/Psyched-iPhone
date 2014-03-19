@@ -16,6 +16,7 @@
 #import "GradientButton.h"
 #import "BarBackgroundLayer.h"
 #import "JHNotificationManager.h"
+
 @implementation MyTableController
 @synthesize routeTableView;
 @synthesize followedPosters;
@@ -967,7 +968,7 @@
     
     shouldDisplayNext=1;
     switch (itemIndex) {
-        case 0:
+        case 0: {
             [recentQuery whereKey:@"username" containedIn:followedPosters];
             NSLog(@"followed posters = %@",followedPosters);
             [queryArray addObject:recentQuery];
@@ -1039,8 +1040,9 @@
             
             
             break;
-        case 1:
-            
+        }
+        case 1: {
+
             [queryArray addObject:gymQuery];
             [gymQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
                 [queryArray removeObject:gymQuery];
@@ -1061,7 +1063,8 @@
                 }
             }];
             break;
-        case 2:
+        }
+        case 2: {
             [queryArray addObject:recentQuery];
             [recentQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
                 [queryArray removeObject:recentQuery];
@@ -1087,7 +1090,8 @@
             }];
 
             break;
-        case 3:
+        }
+        case 3: {
             
             [queryArray addObject:recommendQuery];
             [recommendQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
@@ -1115,7 +1119,8 @@
                 [self fetchGyms];
             }];    
             break;
-        case 4:
+        }
+        case 4: {
             
             [queryArray addObject:projquery];
             [projquery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
@@ -1146,7 +1151,8 @@
                 
             }];
             break;
-        case 5:
+        }
+        case 5: {
             
             [queryArray addObject:gradeQuery];
             [gradeQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
@@ -1172,48 +1178,7 @@
             }];
 
                 break;
-        
-    /*        
-            
-        
-//        case 9:
-//            [queryArray addObject:popularQuery];
-//            [popularQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
-//                [queryArray removeObject:popularQuery];
-//                if ([objects count]<20) {
-//                    shouldDisplayNext =0;
-//                }
-//                [routeArray removeAllObjects];
-//                for (PFObject* object in objects) {
-//                    RouteObject* newRouteObject =  [[RouteObject alloc]init];
-//                    newRouteObject.pfobj = object;
-//                    [routeArray addObject:newRouteObject];
-//                    [newRouteObject release];
-//                }
-//                [routeTableView reloadData];
-//            }];
-//            
-//            break;
-            //        case 3:
-            //            
-            //            [queryArray addObject:locationQuery];
-            //            [locationQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
-            //                [queryArray removeObject:locationQuery];
-            //                [routeArray removeAllObjects];
-            //                if ([objects count]<20) {
-            //                    shouldDisplayNext =0;
-            //                }
-            //                
-            //                for (PFObject* object in objects) {
-            //                    RouteObject* newRouteObject =  [[RouteObject alloc]init];
-            //                    newRouteObject.pfobj = object;
-            //                    [routeArray addObject:newRouteObject];
-            //                    [newRouteObject release];
-            //                }
-            //                [routeTableView reloadData];
-            //            }];
-            //            break;
-     */
+        }
         default:
             break;
     }
@@ -1296,7 +1261,7 @@
     
     
     switch (tabView.segmentIndex) {
-        case 0:
+        case 0: {
 
             for (id obj in routeArray) {
                 if ([obj isKindOfClass:[RouteObject class]]) {
@@ -1355,8 +1320,9 @@
                          [self fetchGyms];
                 }];
             }];
-                break;
-        case 1:
+            break;
+        }
+        case 1: {
             
             [queryArray addObject:gymQuery];
             [gymQuery setSkip:[routeArray count]];
@@ -1377,7 +1343,8 @@
                 }
             }];
             break;
-        case 2:
+        }
+        case 2: {
             
             [recentQuery setSkip:[routeArray count]];
             [queryArray addObject:recentQuery];
@@ -1400,7 +1367,8 @@
              [self fetchGyms];
             }];
             break;
-        case 3:
+        }
+        case 3: {
             [recommendQuery setSkip:[routeArray count]];
             [queryArray addObject:recommendQuery];
             
@@ -1429,7 +1397,8 @@
                 
             }];
             break;
-        case 4:
+        }
+        case 4: {
             [projquery setSkip:[routeArray count]];
             [queryArray addObject:projquery];
             
@@ -1456,7 +1425,8 @@
                 }
             }];
             break;
-        case 5:
+        }
+        case 5: {
             [gradeQuery setSkip:[routeArray count]];
             [queryArray addObject:gradeQuery];
             
@@ -1484,52 +1454,7 @@
             }];
             
             break;
-     /*   case 6:
-            [gymQuery setSkip:[routeArray count]];
-            [queryArray addObject:gymQuery];
-            
-            [gymQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
-                [queryArray removeObject:gymQuery];
-                [routeArray removeAllObjects] ;
-                if ([objects count]>0) {
-                    if ([objects count]<20) {
-                        shouldDisplayNext =0;
-                    }
-                    
-                    for (PFObject* object in objects) {
-                        RouteObject* newRouteObject =  [[RouteObject alloc]init];
-                        newRouteObject.pfobj = object;
-                        [routeArray addObject:newRouteObject];
-                        [newRouteObject release];
-                    }
-                }
-                [routeTableView reloadData];
-            }];
-            
-            break;
-        case 7:
-            [recommendQuery setSkip:[routeArray count]];
-            [queryArray addObject:recommendQuery];
-            
-            [recommendQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
-                [queryArray removeObject:recommendQuery];
-                [routeArray removeAllObjects] ;
-                if ([objects count]>0) {
-                    if ([objects count]<20) {
-                        shouldDisplayNext =0;
-                    }
-                    
-                    for (PFObject* object in objects) {
-                        RouteObject* newRouteObject =  [[RouteObject alloc]init];
-                        newRouteObject.pfobj = object;
-                        [routeArray addObject:newRouteObject];
-                        [newRouteObject release];
-                    }
-                }
-                [routeTableView reloadData];
-            }];
-            
-            break;*/
+        }
         default:
             break;
     }

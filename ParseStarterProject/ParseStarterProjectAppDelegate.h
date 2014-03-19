@@ -26,7 +26,6 @@ UIBackgroundTaskIdentifier bgTask;
 @property (retain, nonatomic)  CLLocation* currentLocation;
 @property (nonatomic, retain) IBOutlet UIWindow *window;
 @property (nonatomic,retain) LKBadgeView* badgeView;
-@property (nonatomic, retain) IBOutlet ParseStarterProjectViewController *viewController;
 
 //@property (nonatomic, retain) NSString* fbphotoid;
 //@property (nonatomic, retain) NSString* uploadDescription;
