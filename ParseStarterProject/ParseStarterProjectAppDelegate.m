@@ -12,7 +12,6 @@
 @synthesize badgeView;
 @synthesize window=_window;
 @synthesize pushedNotifications;
-@synthesize viewController=_viewController;
 @synthesize currentLocation,locationManager;
 //@synthesize uploadDescription;
 //@synthesize uploadLocation;
@@ -421,7 +420,6 @@
 
 - (void)dealloc{
     [_window release];
-    [_viewController release];
     [badgeView removeObserver:self forKeyPath:@"text"];
     [badgeView release];
     [super dealloc];
