@@ -6,7 +6,6 @@ typedef enum apiCall {
     kAPIGraphUserPhotosPost,
     kAPIGraphPagePhotosPost,
 } apiCall;
-#import "ASIHTTPRequest.h"
 #import "UIImage+Resize.h"
 #import "FlurryAnalytics.h"
 #import "JSON.h"

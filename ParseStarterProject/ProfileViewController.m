@@ -11,7 +11,6 @@
 #import <Parse/Parse.h>
 #import "FeedCell.h"
 #import "FeedObject.h"
-#import "ASIHTTPRequest.h"
 #import "RouteDetailViewController.h"
 #import "FollowingViewController.h"
 #import "SearchFriendsViewController.h"

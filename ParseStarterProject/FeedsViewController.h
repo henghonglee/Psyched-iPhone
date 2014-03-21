@@ -10,7 +10,6 @@
 #import "FeedCell.h"
 #import <Parse/Parse.h>
 #import "RouteDetailViewController.h"
-#import "ASIHTTPRequest.h"
 #import "LoadMoreFeedCell.h"
 @interface FeedsViewController : UIViewController<UITableViewDelegate,UITableViewDataSource,PF_EGORefreshTableHeaderDelegate>
 {
