@@ -14,6 +14,16 @@
 #import "FlurryAnalytics.h"
 #import "NSObject+SBJSON.h"
 #import "NSString+SBJSON.h"
+@interface LoginViewController ()
+{
+    UIScrollView* scrollView;
+	UIPageControl* pageControl;
+	int page;
+	BOOL pageControlBeingUsed;
+    float oldY;
+}
+@end
+
 @implementation LoginViewController
 @synthesize pages;
 @synthesize updownarrow;
@@ -46,6 +56,14 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
+    if ([[[UIDevice currentDevice] systemVersion] floatValue] >= 7)
+    {
+        self.edgesForExtendedLayout = UIRectEdgeNone;
+        self.extendedLayoutIncludesOpaqueBars = NO;
+        self.automaticallyAdjustsScrollViewInsets = NO;
+    }
+    self.navigationController.navigationBar.translucent = NO;
     
     [titleLabel setFont:[UIFont fontWithName:@"Old Stamper" size:50.0]];
     titleLabel.textColor = [UIColor whiteColor];

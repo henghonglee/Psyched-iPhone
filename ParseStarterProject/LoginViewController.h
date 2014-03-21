@@ -9,15 +9,7 @@
 #import <UIKit/UIKit.h>
 #import <Parse/Parse.h>
 @interface LoginViewController : UIViewController <UIScrollViewDelegate,PF_FBRequestDelegate>
-{
-    UIScrollView* scrollView;
-	UIPageControl* pageControl;
-	int page;
-	BOOL pageControlBeingUsed;
-    float oldY;
-}
-- (void)apiFQLIMe;
-- (IBAction)changePage;
+
 @property (retain, nonatomic) IBOutletCollection(UIView) NSArray *pages;
 @property (retain, nonatomic) IBOutlet UIImageView *updownarrow;
 @property (retain, nonatomic) IBOutlet UIScrollView *instructionScroll;
@@ -25,4 +17,8 @@
 @property (nonatomic, retain) IBOutlet UIScrollView* scrollView;
 @property (nonatomic, retain) IBOutlet UIPageControl* pageControl;
 @property (retain, nonatomic) IBOutlet UILabel *titleLabel;
+
+- (void)apiFQLIMe;
+- (IBAction)changePage;
+
 @end
