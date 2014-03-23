@@ -9,7 +9,6 @@
 #import "MyTableController.h"
 #import "SpecialTableCell.h"
 #import "SearchFriendsViewController.h"
-#import "ASIHTTPRequest.h"
 #import "LoadMoreCell.h"
 #import "UIColor+Hex.h"
 #import <QuartzCore/QuartzCore.h>
