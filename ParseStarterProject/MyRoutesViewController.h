@@ -15,7 +15,6 @@
 #import "CustomNoiseBackgroundView.h"
 #import "UIView+Positioning.h"
 #import "MyTableController.h"
-#import "ASIHTTPRequest.h"
 #import <Foundation/Foundation.h>
 #import "JMTabView.h"
 #import "DAReloadActivityButton.h"

@@ -6,6 +6,7 @@
 #import "LoginViewController.h"
 #import "JHNotificationManager.h"
 #import "FlurryAnalytics.h"
+#import "AFNetworking.h"
 #import <BugSense-iOS/BugSenseCrashController.h>
 #define VERSION 2.1
 @implementation ParseStarterProjectAppDelegate
@@ -13,20 +14,6 @@
 @synthesize window=_window;
 @synthesize pushedNotifications;
 @synthesize currentLocation,locationManager;
-//@synthesize uploadDescription;
-//@synthesize uploadLocation;
-//@synthesize uploadDifficultydesc;
-//@synthesize uploadGeopoint;
-//@synthesize isPage;
-//@synthesize nearbyGymObject;
-//@synthesize isFacebookUpload;
-//@synthesize imageData;
-//@synthesize thumbImageData;
-//@synthesize wasUploading;
-//@synthesize difficultyint;
-//@synthesize usersrecommended;
-//@synthesize fbphotoid;
-//@synthesize recommendArray;
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
@@ -90,29 +77,7 @@
          }
        
     [loginVC release ];
-    [self.window makeKeyAndVisible];    
-//    if ([launchOptions objectForKey:UIApplicationLaunchOptionsRemoteNotificationKey]) {
-//        NSDictionary* userInfo = [launchOptions objectForKey:UIApplicationLaunchOptionsRemoteNotificationKey];
-//        
-//        PFQuery* routequery = [PFQuery queryWithClassName:@"Route"];
-//        [routequery whereKey:@"objectId" equalTo:[userInfo objectForKey:@"linkedroute"]];
-//        [routequery getFirstObjectInBackgroundWithBlock:^(PFObject *object, NSError *error) {
-//            NSLog(@"done running query");
-//            RouteObject* newRouteObject = [[RouteObject alloc]init];
-//            newRouteObject.pfobj = object;
-//            RouteDetailViewController* viewController = [[RouteDetailViewController alloc]initWithNibName:@"RouteDetailViewController" bundle:nil];
-//            
-//            viewController.routeObject = newRouteObject;
-//            NSLog(@"rootview = %@",self.window.rootViewController);
-//            
-//            UINavigationController* target = [((InstagramViewController*)self.window.rootViewController).viewControllers objectAtIndex:0];
-//            [((InstagramViewController*)self.window.rootViewController) setSelectedViewController:target];
-//            [target popToRootViewControllerAnimated:NO];
-//            [target pushViewController:viewController animated:YES];
-//            [viewController release];
-//            [newRouteObject release];
-//        }];
-//    }
+    [self.window makeKeyAndVisible];
         [application registerForRemoteNotificationTypes:UIRemoteNotificationTypeBadge|
          UIRemoteNotificationTypeAlert|
          UIRemoteNotificationTypeSound];
@@ -208,17 +173,13 @@
     
     NSLog(@"userInfo = %@",userInfo);
     if([userInfo objectForKey:@"pushid"]){ //if analytics is on acknowledge it
-        ASIHTTPRequest* pushAck = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"http://www.psychedapp.com/push/%@?user[objectId]=%@",[userInfo objectForKey:@"pushid"],[PFUser currentUser].objectId]]];
-        [pushAck setRequestMethod:@"PUT"];
-        [pushAck setCompletionBlock:^{
-            // no action needed, its fire and forget mode
-        }];
-        [pushAck setFailedBlock:^{
-            // no action needed, its fire and forget mode
-        }];
-        [pushAck startAsynchronous];
-        //send webservice to rails server at psychedapp.herokuapp.com to set viewed flag for push
-        //track time opened also
+      NSString *requestString = [NSString stringWithFormat:@"http://www.psychedapp.com/push/%@?user[objectId]=%@",[userInfo objectForKey:@"pushid"],[PFUser currentUser].objectId];
+      AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
+      [manager PUT:requestString parameters:nil success:^(AFHTTPRequestOperation *operation, id responseObject) {
+        NSLog(@"JSON: %@", responseObject);
+      } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+        NSLog(@"Error: %@", error);
+      }];
     }
    if (![[userInfo objectForKey:@"sender"] isEqualToString:[[PFUser currentUser]objectForKey:@"name"]]) {
     if ([[userInfo objectForKey:@"reciever"] isEqualToString:[[PFUser currentUser]objectForKey:@"name"]]) {
@@ -240,17 +201,13 @@
     if ([UIApplication sharedApplication].applicationState == UIApplicationStateInactive) {
         NSLog(@"inactive app state.. recieving push");
         if([userInfo objectForKey:@"pushid"]){ //if analytics is on acknowledge it
-            ASIHTTPRequest* pushAck = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"http://www.psychedapp.com/push/%@?user[objectId]=%@",[userInfo objectForKey:@"pushid"],[PFUser currentUser].objectId]]];
-            [pushAck setRequestMethod:@"PUT"];
-            [pushAck setCompletionBlock:^{
-                // no action needed, its fire and forget mode
-            }];
-            [pushAck setFailedBlock:^{
-                // no action needed, its fire and forget mode
-            }];
-            [pushAck startAsynchronous];
-            //send webservice to rails server at psychedapp.herokuapp.com to set viewed flag for push
-            //track time opened also
+          NSString *requestString = [NSString stringWithFormat:@"http://www.psychedapp.com/push/%@?user[objectId]=%@",[userInfo objectForKey:@"pushid"],[PFUser currentUser].objectId];
+          AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
+          [manager PUT:requestString parameters:nil success:^(AFHTTPRequestOperation *operation, id responseObject) {
+            NSLog(@"JSON: %@", responseObject);
+          } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+            NSLog(@"Error: %@", error);
+          }];
         }
     if([userInfo objectForKey:@"linkedgym"]){
             PFQuery* gymQuery = [PFQuery queryWithClassName:@"Gym"];
@@ -319,36 +276,27 @@
 -(void)fbOAuthCheck{
     NSLog(@"facebook oauth check when entering foreground %@",[PFFacebookUtils session].accessToken);
     if (![self.window.rootViewController isKindOfClass:[LoginViewController class]]) {
-    ASIHTTPRequest* accountRequest = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"https://graph.facebook.com/me/picture?type=large&access_token=%@",[PFFacebookUtils session].accessToken]]];
-    accountRequest.shouldRedirect = YES;
-    [accountRequest setCompletionBlock:^{
-        
-        NSLog(@"response = %@",accountRequest.url);
-        if (([[accountRequest responseString] rangeOfString:@"Invalid OAuth access token."].location != NSNotFound)&&[PFFacebookUtils session].accessToken) {
-            UIAlertView* alert = [[UIAlertView alloc]initWithTitle:@"Sorry!" message:@"You need to reauthenticate with Facebook" delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:@"Reauthenticate",nil];
-            
-            [alert show];
-            [alert release];
+      NSString *requestString = [NSString stringWithFormat:@"https://graph.facebook.com/me/picture?type=large&access_token=%@",[PFFacebookUtils session].accessToken];
+      AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
+      [manager PUT:requestString parameters:nil success:^(AFHTTPRequestOperation *operation, id responseObject) {
+        NSLog(@"JSON: %@", responseObject);
+        if (([[responseObject responseString] rangeOfString:@"Invalid OAuth access token."].location != NSNotFound)&&[PFFacebookUtils session].accessToken) {
+          UIAlertView* alert = [[UIAlertView alloc]initWithTitle:@"Sorry!" message:@"You need to reauthenticate with Facebook" delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:@"Reauthenticate",nil];
+
+          [alert show];
+          [alert release];
         }else{
-            [[PFUser currentUser] setObject:[NSString stringWithFormat:@"%@",accountRequest.url] forKey:@"profilepicture"]; 
-            [[PFUser currentUser]saveEventually];
+          [[PFUser currentUser] setObject:[NSString stringWithFormat:@"%@",requestString] forKey:@"profilepicture"];
+          [[PFUser currentUser]saveEventually];
         }
-    }];
-    [accountRequest setFailedBlock:^{
-        
-    }];
-    [accountRequest startAsynchronous];
+      } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+        NSLog(@"Error: %@", error);
+      }];
     }
 }
 
 - (void)applicationDidBecomeActive:(UIApplication *)application{
     NSLog(@"app did become active");
-//    PFInstallation *currentInstallation = [PFInstallation currentInstallation];
-//    if (currentInstallation.badge != 0) {
-//        currentInstallation.badge = 0;
-//    }
-//    [currentInstallation setObject:[NSNumber numberWithDouble:VERSION ] forKey:@"Version"];
-//    [currentInstallation saveEventually];
     PFQuery* versionquery = [PFQuery queryWithClassName:@"Version"];
     [versionquery getFirstObjectInBackgroundWithBlock:^(PFObject *object, NSError *error) {
         if ([[object objectForKey:@"version"] doubleValue] > VERSION) {
@@ -429,88 +377,73 @@
 
 
 - (void)apiFQLIMe {
-    // Using the "pic" picture since this currently has a maximum width of 100 pixels
-    // and since the minimum profile picture size is 180 pixels wide we should be able
-    // to get a 100 pixel wide version of the profile picture
-    NSLog(@"in apiFQLMe function");
-//    
-//    NSMutableDictionary *params = [NSMutableDictionary dictionaryWithObjectsAndKeys:
-//                                   @"SELECT about_me,locale,birthday,birthday_date,sex,uid, name, pic , email FROM user WHERE uid=me()", @"query",
-//                                   nil];
-//    [[PFFacebookUtils facebook] requestWithMethodName:@"fql.query"
-//                                            andParams:params
-//                                        andHttpMethod:@"POST"
-//                                          andDelegate:self];
-    
-    NSURL* reqURL = [NSURL URLWithString:[NSString stringWithFormat:@"https://graph.facebook.com/fql?q=SELECT+about_me,locale,birthday,birthday_date,sex,uid,name,pic_big,email+FROM+user+WHERE+uid=me()&access_token=%@",[PFFacebookUtils session].accessToken]];
-    ASIHTTPRequest* fqlRequest = [ASIHTTPRequest requestWithURL:reqURL];
-    [fqlRequest setCompletionBlock:^{
-        SBJsonParser *jsonParser = [[SBJsonParser alloc] init];
-        NSArray *jsonObjects = [[jsonParser objectWithString:[fqlRequest responseString]] objectForKey:@"data"];
-        [jsonParser release];
-        jsonParser = nil;
-        
-        NSLog(@"result = %@ class = %@",jsonObjects,[jsonObjects class]);
-        if ([jsonObjects isKindOfClass:[NSArray class]]) {
-            if([((NSArray*)jsonObjects) count]==0) {
-                NSLog(@"couldnt get user values .. exiting");
-                return;
+
+  NSURL* reqURL = [NSURL URLWithString:[NSString stringWithFormat:@"https://graph.facebook.com/fql?q=SELECT+about_me,locale,birthday,birthday_date,sex,uid,name,pic_big,email+FROM+user+WHERE+uid=me()&access_token=%@",[PFFacebookUtils session].accessToken]];
+  AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
+  [manager GET:[reqURL absoluteString] parameters:nil success:^(AFHTTPRequestOperation *operation, id responseObject) {
+    NSLog(@"JSON: %@", responseObject);
+    SBJsonParser *jsonParser = [[SBJsonParser alloc] init];
+    NSArray *jsonObjects = [[jsonParser objectWithString:[responseObject responseString]] objectForKey:@"data"];
+    [jsonParser release];
+    jsonParser = nil;
+
+    NSLog(@"result = %@ class = %@",jsonObjects,[jsonObjects class]);
+    if ([jsonObjects isKindOfClass:[NSArray class]]) {
+      if([((NSArray*)jsonObjects) count]==0) {
+        NSLog(@"couldnt get user values .. exiting");
+        return;
+      }else{
+
+        NSDictionary* result = [((NSArray*)jsonObjects) objectAtIndex:0];
+        // This callback can be a result of getting the user's basic
+        // information or getting the user's permissions.
+        if ([result objectForKey:@"name"]) {
+
+          [[PFUser currentUser] setObject:[result objectForKey:@"email"] forKey:@"email"];
+          [[PFUser currentUser] setObject:[result objectForKey:@"pic"] forKey:@"profilepicture"];
+          [[PFUser currentUser] setObject:[result objectForKey:@"name"] forKey:@"name"];
+          [[PFUser currentUser] setObject:[result objectForKey:@"uid"] forKey:@"facebookid"];
+          [[PFUser currentUser] setObject:[result objectForKey:@"birthday_date"] forKey:@"birthday_date"];
+
+          NSString *trimmedString=[((NSString*)[result objectForKey:@"birthday_date"]) substringFromIndex:[((NSString*)[result objectForKey:@"birthday_date"]) length]-4];
+          NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
+          [formatter setDateFormat:@"YYYY"];
+          NSString *yearString = [formatter stringFromDate:[NSDate date]];
+          [formatter release];
+          int age = [yearString intValue]-[trimmedString intValue];
+
+          [[PFUser currentUser] setObject:[NSNumber numberWithInt:age] forKey:@"age"];
+          [[PFUser currentUser] setObject:[result objectForKey:@"sex"] forKey:@"sex"];
+          [[PFUser currentUser] setObject:[result objectForKey:@"locale"] forKey:@"locale"];
+          [[PFUser currentUser] setObject:[result objectForKey:@"about_me"] forKey:@"about_me"];
+          [[PFUser currentUser] saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+            [PFPush subscribeToChannelInBackground:[NSString stringWithFormat:@"channel%@",[[PFUser currentUser] objectForKey:@"facebookid"]] target:self selector:@selector(subscribeFinished:error:)];
+            NSLog(@"subscribed to channeluser %@",[NSString stringWithFormat:@"channel%@",[[PFUser currentUser] objectForKey:@"facebookid"]]);
+            [FlurryAnalytics setUserID:[[PFUser currentUser] objectForKey:@"name"]];
+            if ([[[PFUser currentUser] objectForKey:@"sex"] isEqualToString:@"male"]) {
+              [FlurryAnalytics setGender:@"m"];
             }else{
-                
-                NSDictionary* result = [((NSArray*)jsonObjects) objectAtIndex:0];
-                // This callback can be a result of getting the user's basic
-                // information or getting the user's permissions.
-                if ([result objectForKey:@"name"]) {
-                    
-                    [[PFUser currentUser] setObject:[result objectForKey:@"email"] forKey:@"email"];
-                    [[PFUser currentUser] setObject:[result objectForKey:@"pic"] forKey:@"profilepicture"]; 
-                    [[PFUser currentUser] setObject:[result objectForKey:@"name"] forKey:@"name"]; 
-                    [[PFUser currentUser] setObject:[result objectForKey:@"uid"] forKey:@"facebookid"]; 
-                    [[PFUser currentUser] setObject:[result objectForKey:@"birthday_date"] forKey:@"birthday_date"];
-                    
-                    NSString *trimmedString=[((NSString*)[result objectForKey:@"birthday_date"]) substringFromIndex:[((NSString*)[result objectForKey:@"birthday_date"]) length]-4];
-                    NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
-                    [formatter setDateFormat:@"YYYY"];
-                    NSString *yearString = [formatter stringFromDate:[NSDate date]];
-                    [formatter release];
-                    int age = [yearString intValue]-[trimmedString intValue];
-                    
-                    [[PFUser currentUser] setObject:[NSNumber numberWithInt:age] forKey:@"age"];         
-                    [[PFUser currentUser] setObject:[result objectForKey:@"sex"] forKey:@"sex"]; 
-                    [[PFUser currentUser] setObject:[result objectForKey:@"locale"] forKey:@"locale"];
-                    [[PFUser currentUser] setObject:[result objectForKey:@"about_me"] forKey:@"about_me"];
-                    [[PFUser currentUser] saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
-                        [PFPush subscribeToChannelInBackground:[NSString stringWithFormat:@"channel%@",[[PFUser currentUser] objectForKey:@"facebookid"]] target:self selector:@selector(subscribeFinished:error:)];
-                        NSLog(@"subscribed to channeluser %@",[NSString stringWithFormat:@"channel%@",[[PFUser currentUser] objectForKey:@"facebookid"]]);
-                        [FlurryAnalytics setUserID:[[PFUser currentUser] objectForKey:@"name"]];
-                        if ([[[PFUser currentUser] objectForKey:@"sex"] isEqualToString:@"male"]) {
-                            [FlurryAnalytics setGender:@"m"];
-                        }else{
-                            [FlurryAnalytics setGender:@"f"];
-                        }
-                        [FlurryAnalytics setAge:age];
-                        NSDictionary *dictionary = 
-                        [NSDictionary dictionaryWithObjectsAndKeys:[result objectForKey:@"email"],@"email",[result objectForKey:@"birthday"],@"birthday",[result objectForKey:@"name"],@"name",[result objectForKey:@"sex"],@"sex",[result objectForKey:@"uid"],@"uid",[result objectForKey:@"about_me"],@"about_me", nil];
-                        
-                        [FlurryAnalytics logEvent:@"USER_LOGIN" withParameters:dictionary timed:YES];
-                                                            NSLog(@"subscription commpleted");  
-                    }];
-                    
-                    
-                    InstagramViewController* viewController = [[InstagramViewController alloc]initWithNibName:@"InstagramViewController" bundle:nil];
-                    
-                    self.window.rootViewController = viewController;
-                    [viewController release];
-                }
+              [FlurryAnalytics setGender:@"f"];
             }
+            [FlurryAnalytics setAge:age];
+            NSDictionary *dictionary =
+            [NSDictionary dictionaryWithObjectsAndKeys:[result objectForKey:@"email"],@"email",[result objectForKey:@"birthday"],@"birthday",[result objectForKey:@"name"],@"name",[result objectForKey:@"sex"],@"sex",[result objectForKey:@"uid"],@"uid",[result objectForKey:@"about_me"],@"about_me", nil];
+
+            [FlurryAnalytics logEvent:@"USER_LOGIN" withParameters:dictionary timed:YES];
+            NSLog(@"subscription commpleted");
+          }];
+
+
+          InstagramViewController* viewController = [[InstagramViewController alloc]initWithNibName:@"InstagramViewController" bundle:nil];
+
+          self.window.rootViewController = viewController;
+          [viewController release];
         }
-    }];
-    [fqlRequest setFailedBlock:^{
-        NSLog(@"fql req failed");
-    }];
-    [fqlRequest startAsynchronous];
-    
-    
+      }
+    }
+  } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+    NSLog(@"Error: %@", error);
+  }];
 }
 
 #pragma mark - FBRequestDelegate Methods
@@ -520,7 +453,7 @@
 }
 
 - (void)request:(PF_FBRequest *)request didLoad:(id)result {
-    
+
 }
 
 

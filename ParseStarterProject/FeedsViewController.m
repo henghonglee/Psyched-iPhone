@@ -10,6 +10,7 @@
 #import "FeedObject.h"
 #import "UIColor+Hex.h"
 #import "SearchFriendsViewController.h"
+#import "AFNetworking.h"
 #define MAX_LINES 20
 @implementation FeedsViewController
 @synthesize feedsTable;
@@ -327,16 +328,14 @@
             cell.senderImage.image = selectedFeedObj.senderImage;
         }else{
             NSString* urlstring = [NSString stringWithFormat:@"%@",[selectedPFObj objectForKey:@"senderimagelink"]];
-            NSLog(@"urlstring = %@",urlstring);
-            
-            ASIHTTPRequest* request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:urlstring]];
-            [request setCompletionBlock:^{
-                
-                selectedFeedObj.senderImage = [UIImage imageWithData:[request responseData]];
-                cell.senderImage.image = selectedFeedObj.senderImage;
+            AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
+            [manager GET:urlstring parameters:nil success:^(AFHTTPRequestOperation *operation, id responseObject) {
+              NSLog(@"JSON: %@", responseObject);
+              selectedFeedObj.senderImage = [UIImage imageWithData:[responseObject responseData]];
+              cell.senderImage.image = selectedFeedObj.senderImage;
+            } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+              NSLog(@"Error: %@", error);
             }];
-            [request setFailedBlock:^{}];
-            [request startAsynchronous];
         }
                 if (![[selectedPFObj objectForKey:@"viewed"] containsObject:[[PFUser currentUser]objectForKey:@"name"]] && ![[selectedPFObj objectForKey:@"sender"] isEqualToString:[[PFUser currentUser] objectForKey:@"name"]] && ([cell.feedLabel.text rangeOfString:@"you"].location != NSNotFound || [cell.feedLabel.text rangeOfString:@"your"].location != NSNotFound)) {
                     cell.readSphereView.image = [UIImage imageNamed:@"bluesphere.png"];
@@ -399,17 +398,16 @@
             if (selectedFeedObj.senderImage){
         cell.senderImage.image = selectedFeedObj.senderImage;
     }else{
-    NSString* urlstring = [NSString stringWithFormat:@"%@",[((FeedObject*)[followsArray objectAtIndex:indexPath.row]).pfobj objectForKey:@"senderimagelink"]];
-    NSLog(@"urlstring = %@",urlstring);
-    
-    ASIHTTPRequest* request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:urlstring]];
-    [request setCompletionBlock:^{
-       
-        ((FeedObject*)[followsArray objectAtIndex:indexPath.row]).senderImage = [UIImage imageWithData:[request responseData]];
-         cell.senderImage.image = ((FeedObject*)[followsArray objectAtIndex:indexPath.row]).senderImage;
-    }];
-    [request setFailedBlock:^{}];
-    [request startAsynchronous];
+      NSString* urlstring = [NSString stringWithFormat:@"%@",[((FeedObject*)[followsArray objectAtIndex:indexPath.row]).pfobj objectForKey:@"senderimagelink"]];
+      NSLog(@"urlstring = %@",urlstring);
+      AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
+      [manager GET:@"http://example.com/resources.json" parameters:nil success:^(AFHTTPRequestOperation *operation, id responseObject) {
+        NSLog(@"JSON: %@", responseObject);
+        ((FeedObject*)[followsArray objectAtIndex:indexPath.row]).senderImage = [UIImage imageWithData:[responseObject responseData]];
+        cell.senderImage.image = ((FeedObject*)[followsArray objectAtIndex:indexPath.row]).senderImage;
+      } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+        NSLog(@"Error: %@", error);
+      }];
     }
        
         if (![[selectedPFObj objectForKey:@"viewed"] containsObject:[[PFUser currentUser]objectForKey:@"name"]] && ![[selectedPFObj objectForKey:@"sender"] isEqualToString:[[PFUser currentUser] objectForKey:@"name"]] && ([cell.feedLabel.text rangeOfString:@"you"].location != NSNotFound || [cell.feedLabel.text rangeOfString:@"your"].location != NSNotFound)) {

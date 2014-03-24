@@ -10,6 +10,7 @@
 #import <Parse/Parse.h>
 #import "RouteDetailViewController.h"
 #import "CreateRouteViewController.h"
+#import "AFNetworking.h"
 @implementation FriendTaggerViewController
 @synthesize taggerTextField;
 @synthesize taggerTable;
@@ -68,58 +69,42 @@
     }
 }
 -(void)apiGraphFriends
-{ 
-   
-    //self.myRequest = [[PFFacebookUtils facebook] requestWithGraphPath:@"me/friends" andDelegate:self];
-
-    ASIHTTPRequest* accountRequest = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"https://graph.facebook.com/me/friends?access_token=%@",[PFFacebookUtils session].accessToken]]];
-    
-    [accountRequest setCompletionBlock:^{
-        
-        
-        SBJsonParser *jsonParser = [[SBJsonParser alloc] init];
-        id jsonObject = [jsonParser objectWithString:[accountRequest responseString]];
-        NSLog(@"response = %@",jsonObject);
-        [jsonParser release];
-        jsonParser = nil;
-        NSLog(@"result");
-        NSArray* fbfriends = [jsonObject objectForKey:@"data"];
-        [FBfriendsArray removeAllObjects];
-        for (NSDictionary* obj in fbfriends) {
-            FBfriend* newFBfriend = [[FBfriend alloc]init];
-            newFBfriend.uid = [obj objectForKey:@"id"];
-            newFBfriend.name = [obj objectForKey:@"name"];
-            [FBfriendsArray addObject:newFBfriend];
-            [newFBfriend release];
-        }
-        //  NSLog(@"fbfriends array = %@",FBfriendsArray);
-        [friendsArray addObjectsFromArray:FBfriendsArray];
-        [taggerTable reloadData];
-        [MBProgressHUD hideHUDForView:self.view animated:YES];
-        taggerTable.hidden=NO;
-        [taggerTextField becomeFirstResponder];
-
-        
-    }];
-    [accountRequest setFailedBlock:^{
-        [MBProgressHUD hideHUDForView:self.view animated:YES];
-    }];
-    [accountRequest startAsynchronous];
-    
-    
+{
+  NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"https://graph.facebook.com/me/friends?access_token=%@",[PFFacebookUtils session].accessToken]];
+  AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
+  [manager GET:[url absoluteString] parameters:nil success:^(AFHTTPRequestOperation *operation, id responseObject) {
+    NSLog(@"JSON: %@", responseObject);
+    SBJsonParser *jsonParser = [[SBJsonParser alloc] init];
+    id jsonObject = [jsonParser objectWithString:[responseObject responseString]];
+    NSLog(@"response = %@",jsonObject);
+    [jsonParser release];
+    jsonParser = nil;
+    NSLog(@"result");
+    NSArray* fbfriends = [jsonObject objectForKey:@"data"];
+    [FBfriendsArray removeAllObjects];
+    for (NSDictionary* obj in fbfriends) {
+      FBfriend* newFBfriend = [[FBfriend alloc]init];
+      newFBfriend.uid = [obj objectForKey:@"id"];
+      newFBfriend.name = [obj objectForKey:@"name"];
+      [FBfriendsArray addObject:newFBfriend];
+      [newFBfriend release];
+    }
+    //  NSLog(@"fbfriends array = %@",FBfriendsArray);
+    [friendsArray addObjectsFromArray:FBfriendsArray];
+    [taggerTable reloadData];
+    [MBProgressHUD hideHUDForView:self.view animated:YES];
+    taggerTable.hidden=NO;
+    [taggerTextField becomeFirstResponder];
+  } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+    NSLog(@"Error: %@", error);
+    [MBProgressHUD hideHUDForView:self.view animated:YES];
+  }];
 }
 -(void)request:(PF_FBRequest *)request didReceiveResponse:(NSURLResponse *)response
 {
     NSLog(@"%@",response);
-    
-   
-    
 }
 - (void)request:(PF_FBRequest *)request didLoad:(id)result {
-    //NSString* photoid;
-    
-                       
-         
 }
 - (void)viewDidUnload
 {
@@ -127,8 +112,6 @@
     [self setTaggerTable:nil];
 
     [super viewDidUnload];
-    // Release any retained subviews of the main view.
-    // e.g. self.myOutlet = nil;
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
@@ -216,7 +199,6 @@
         }
     }
     
-    // cell.textLabel.text = [[friendsArray objectAtIndex:indexPath.row] objectForKey:@"name"];
     cell.textLabel.text = ((FBfriend*)[friendsArray objectAtIndex:indexPath.row]).name;    
     return cell;
 }

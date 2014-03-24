@@ -9,7 +9,6 @@
 #import <UIKit/UIKit.h>
 #import "NewsCell.h"
 #import "NewsObject.h"
-#import "ASIHTTPRequest.h"
 #import "DAReloadActivityButton.h"
 @interface NewsViewController : UIViewController<UITableViewDataSource,UITableViewDelegate>
 {

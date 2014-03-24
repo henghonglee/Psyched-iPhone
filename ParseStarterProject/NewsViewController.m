@@ -179,26 +179,27 @@ if (cell == nil) {
         cell.newsText.text =selectedNewsObject.newsText;
         
         if (!selectedNewsObject.newsImage) {
-    ASIHTTPRequest* imageReq = [ASIHTTPRequest requestWithURL:[NSURL URLWithString: selectedNewsObject.newsImageURL]];
-        [imageReq setCompletionBlock:^{
-    //        [FlurryAnalytics logEvent:[NSString stringWithFormat:@"%@ viewed",selectedNewsObject.newsId]];
-            selectedNewsObject.newsImage = [UIImage imageWithData:[imageReq responseData]];
-            cell.newsImage.alpha = 0.0;
-            cell.newsImage.image = selectedNewsObject.newsImage;
-            
-            [UIView animateWithDuration:0.3
-                                  delay:0.0
-                                options: UIViewAnimationCurveEaseOut
-                             animations:^{
-                                 cell.newsImage.alpha = 1.0;
-                             } 
-                             completion:^(BOOL finished){
-                                 
-                             }];
-
-        }];
-        [imageReq setFailedBlock:^{}];
-        [imageReq startAsynchronous];
+            // TODO: afnetwork this
+//    ASIHTTPRequest* imageReq = [ASIHTTPRequest requestWithURL:[NSURL URLWithString: selectedNewsObject.newsImageURL]];
+//        [imageReq setCompletionBlock:^{
+//    //        [FlurryAnalytics logEvent:[NSString stringWithFormat:@"%@ viewed",selectedNewsObject.newsId]];
+//            selectedNewsObject.newsImage = [UIImage imageWithData:[imageReq responseData]];
+//            cell.newsImage.alpha = 0.0;
+//            cell.newsImage.image = selectedNewsObject.newsImage;
+//            
+//            [UIView animateWithDuration:0.3
+//                                  delay:0.0
+//                                options: UIViewAnimationCurveEaseOut
+//                             animations:^{
+//                                 cell.newsImage.alpha = 1.0;
+//                             } 
+//                             completion:^(BOOL finished){
+//                                 
+//                             }];
+//
+//        }];
+//        [imageReq setFailedBlock:^{}];
+//        [imageReq startAsynchronous];
         }else{
       //  [FlurryAnalytics logEvent:[NSString stringWithFormat:@"%@ viewed",selectedNewsObject.newsId]];
          cell.newsImage.image = selectedNewsObject.newsImage;

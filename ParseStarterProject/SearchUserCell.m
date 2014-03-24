@@ -5,9 +5,9 @@
 //  Created by HengHong Lee on 18/1/12.
 //  Copyright (c) 2012 Psyched!. All rights reserved.
 //
-#import "ASIFormDataRequest.h"
 #import "SearchUserCell.h"
 #import <Parse/Parse.h>
+#import "AFNetworking.h"
 @implementation SearchUserCell
 @synthesize nameLabel;
 @synthesize userImageView;
@@ -33,36 +33,29 @@
         [userQueryByName getFirstObjectInBackgroundWithBlock:^(PFObject *object, NSError *error) {
             
             if ([[NSUserDefaults standardUserDefaults]boolForKey:@"ogshare"]) {
-                ASIHTTPRequest* newOGPost = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"https://graph.facebook.com/me/og.follows?access_token=%@&profile=%@",[PFFacebookUtils session].accessToken,[object objectForKey:@"facebookid"]]]];
-                NSLog(@"ogpost = %@",newOGPost.url);
-                [newOGPost setRequestMethod:@"POST"];
-                [newOGPost setCompletionBlock:^{
-                    SBJsonParser *jsonParser = [[SBJsonParser alloc] init];
-                    NSDictionary *jsonObjects = [jsonParser objectWithString:[newOGPost responseString]];
-                    [jsonParser release];
-                    jsonParser = nil;
-                    if ([jsonObjects objectForKey:@"id"]) {
-                        [self followClickedUserWithOGid:[jsonObjects objectForKey:@"id"]];
-                      
-                    }else{
-                        NSLog(@"most likely authentication failed , %@",[newOGPost responseString]);
-                    }
-                    
+              NSURL *OGURL = [NSURL URLWithString:[NSString stringWithFormat:@"https://graph.facebook.com/me/og.follows?access_token=%@&profile=%@",[PFFacebookUtils session].accessToken,[object objectForKey:@"facebookid"]]];
+                AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
+                [manager POST:[OGURL absoluteString] parameters:nil success:^(AFHTTPRequestOperation *operation, id responseObject) {
+                  NSLog(@"JSON: %@", responseObject);
+                  SBJsonParser *jsonParser = [[SBJsonParser alloc] init];
+                  NSDictionary *jsonObjects = [jsonParser objectWithString:[responseObject responseString]];
+                  [jsonParser release];
+                  jsonParser = nil;
+                  if ([jsonObjects objectForKey:@"id"]) {
+                    [self followClickedUserWithOGid:[jsonObjects objectForKey:@"id"]];
+
+                  }else{
+                    NSLog(@"most likely authentication failed , %@",[responseObject responseString]);
+                  }
+
+                } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+                  NSLog(@"Error: %@", error);
                 }];
-                [newOGPost setFailedBlock:^{
-                    NSLog(@"failed");
-                }];
-                [newOGPost startAsynchronous];
+
             }else{
                 [self followClickedUserWithOGid:nil];
             }
-         
-            
-            
-            
-            
         }];
-        
     }else{
         UIAlertView* alert = [[UIAlertView alloc]initWithTitle:@"Confirm" message:[NSString stringWithFormat:@"Stop Following %@?",nameLabel.text] delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:@"Yes",nil];
         alert.delegate = self;
@@ -118,19 +111,16 @@
 }
 -(void)deleteOGwithId:(NSString*)idstring
 {
-    if (idstring) {
-        ASIHTTPRequest* newOGDelete = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"https://graph.facebook.com/%@?access_token=%@",idstring,[PFFacebookUtils session].accessToken]]];
-        [newOGDelete setRequestMethod:@"DELETE"];
-        NSLog(@"deleting %@",newOGDelete.url);
-        [newOGDelete setCompletionBlock:^{
-            NSLog(@"newOGDelete posted, %@",[newOGDelete responseString]);
-        }];
-        [newOGDelete setFailedBlock:^{
-            NSLog(@"newOGDelete failed");
-        }];
-        [newOGDelete startAsynchronous];
-        
-    }
+  if (idstring) {
+    NSURL *OGDelURL = [NSURL URLWithString:[NSString stringWithFormat:@"https://graph.facebook.com/%@?access_token=%@",idstring,[PFFacebookUtils session].accessToken]];
+    AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
+    [manager DELETE:[OGDelURL absoluteString] parameters:nil success:^(AFHTTPRequestOperation *operation, id responseObject) {
+      NSLog(@"JSON: %@", responseObject);
+      NSLog(@"newOGDelete posted, %@",[OGDelURL responseString]);
+    } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+      NSLog(@"Error: %@", error);
+    }];
+  }
 }
 
 -(void)followClickedUserWithOGid:(NSString*)idstring

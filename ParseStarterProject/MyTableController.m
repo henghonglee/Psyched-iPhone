@@ -9,14 +9,14 @@
 #import "MyTableController.h"
 #import "SpecialTableCell.h"
 #import "SearchFriendsViewController.h"
-#import "ASIHTTPRequest.h"
 #import "LoadMoreCell.h"
 #import "UIColor+Hex.h"
 #import <QuartzCore/QuartzCore.h>
 #import "GradientButton.h"
 #import "BarBackgroundLayer.h"
 #import "JHNotificationManager.h"
-
+#import "UIImageView+AFNetworking.h"
+#import "AFNetworking.h"
 @implementation MyTableController
 @synthesize routeTableView;
 @synthesize followedPosters;
@@ -40,10 +40,12 @@
 }
 
 #pragma mark - View lifecycle
+-(void)viewDidAppear:(BOOL)animated
+{
 
+}
 - (void)viewDidLoad
 {
-    
     UIImage *selectedImage0 = [UIImage imageNamed:@"HomeDB.png"];
     UIImage *unselectedImage0 = [UIImage imageNamed:@"HomeLB.png"];
     
@@ -109,13 +111,6 @@
     headerviewimage.image = [UIImage imageNamed:@"headerimg@2x.png"];
     [headerView addSubview:headerviewimage];
     [headerviewimage release];
-//    UILabel* headerLabel = [[UILabel alloc]initWithFrame:CGRectMake(60, 0, 200, 44)];
-//    headerLabel.font = [UIFont boldSystemFontOfSize:23.0f];
-//    headerLabel.textAlignment = UITextAlignmentCenter;
-//    headerLabel.textColor = [UIColor whiteColor];
-//    headerLabel.text = @"Psyched!";
-//    headerLabel.backgroundColor = [UIColor clearColor];
-    
     [settingsButton addTarget:self action:@selector(Settings:) forControlEvents:UIControlEventTouchUpInside];
     [headerView addSubview:settingsButton];
     [settingsButton setFrame:CGRectMake(7, 3, 38, 38)];
@@ -230,7 +225,7 @@
     applicationDelegate.badgeView.text = @"0";
     if([applicationDelegate.window.rootViewController isKindOfClass:[LoginViewController class]])
     {
-        [self dismissModalViewControllerAnimated:YES];
+      [self dismissModalViewControllerAnimated:YES];
     }else{
         LoginViewController* viewController = [[LoginViewController alloc]initWithNibName:@"LoginViewController" bundle:nil];
         applicationDelegate.window.rootViewController = viewController;
@@ -328,416 +323,251 @@
         }
     } 
        
-            if ([self.routeArray count]>0) {
-                if ([[routeArray objectAtIndex:indexPath.row] isKindOfClass:[RouteObject class]]) {
-                PFObject* object = ((RouteObject*)[self.routeArray objectAtIndex:indexPath.row]).pfobj;
+        if ([self.routeArray count]>0) {
+            if ([[routeArray objectAtIndex:indexPath.row] isKindOfClass:[RouteObject class]])
+            {
+            PFObject* object = ((RouteObject*)[self.routeArray objectAtIndex:indexPath.row]).pfobj;
+            
+            
+            //set route location
+            cell.routeLocationLabel.text = [NSString stringWithFormat:@"%@",[object objectForKey:@"location"]];
+            if ([cell.routeLocationLabel.text isEqualToString:@""]) {
+                cell.pinImageView.hidden = YES;   
+            }else{
+             cell.pinImageView.hidden = NO;      
+            }
+            
+            //set counts
+            cell.commentcount.text = [NSString stringWithFormat:@"%@",[[object objectForKey:@"commentcount"]stringValue]];
+            cell.likecount.text = [NSString stringWithFormat:@"%@",[[object objectForKey:@"likecount"]stringValue ]];
+            cell.viewcount.text = [NSString stringWithFormat:@"%@",[[object objectForKey:@"viewcount"]stringValue ]];
+                __block NSString* imagelink;
                 
-                
-                //set route location
-                cell.routeLocationLabel.text = [NSString stringWithFormat:@"%@",[object objectForKey:@"location"]];
-                if ([cell.routeLocationLabel.text isEqualToString:@""]) {
-                    cell.pinImageView.hidden = YES;   
-                }else{
-                 cell.pinImageView.hidden = NO;      
-                }
-                
-                //set counts
-                cell.commentcount.text = [NSString stringWithFormat:@"%@",[[object objectForKey:@"commentcount"]stringValue]];
-                cell.likecount.text = [NSString stringWithFormat:@"%@",[[object objectForKey:@"likecount"]stringValue ]];
-                cell.viewcount.text = [NSString stringWithFormat:@"%@",[[object objectForKey:@"viewcount"]stringValue ]];
-                    __block NSString* imagelink;
-                    
-                    if ([object objectForKey:@"isPage"]==[NSNumber numberWithBool:YES]) {
-                        if (!cell.isFetchingGym) {
-                            cell.isFetchingGym = YES;
-                          
-                        [[object objectForKey:@"Gym"]fetchIfNeededInBackgroundWithBlock:^(PFObject *gym, NSError *error) {
-                            cell.isFetchingGym = NO;
-                            imagelink=[gym objectForKey:@"imagelink"];  
-                            cell.ownerNameLabel.text = [NSString stringWithFormat:@"%@ added a new %@ route",[gym objectForKey:@"name"],[object objectForKey:@"difficultydescription"]];
-                            
-                            
-                            if (((RouteObject*)[self.routeArray objectAtIndex:indexPath.row]).ownerImage) {
-                                cell.ownerImage.image = ((RouteObject*)[self.routeArray objectAtIndex:indexPath.row]).ownerImage;
-                            }else{
-                                ASIHTTPRequest* request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:imagelink]];
-                               
-                                [request setCompletionBlock:^{
-                                    
-                                    UIImage* ownerImage = [UIImage imageWithData:[request responseData]];
-                                    if (ownerImage == nil) {
-                                        ownerImage = [UIImage imageNamed:@"placeholder_user.png"];
-                                    }
-                                    cell.ownerImage.alpha = 0.0;
-                                    cell.ownerImage.image = ownerImage;
-                                    ((RouteObject*)[self.routeArray objectAtIndex:indexPath.row]).ownerImage= ownerImage;
-                                    [UIView animateWithDuration:0.3
-                                                          delay:0.0
-                                                        options: UIViewAnimationCurveEaseOut
-                                                     animations:^{
-                                                         cell.ownerImage.alpha = 1.0;
-                                                     } 
-                                                     completion:^(BOOL finished){
-                                                         
-                                                     }];
-                                    
-                                }];
-                                [request setFailedBlock:^{}];
-                                [request startAsynchronous];
-                            }
-
-                        }];
-                        }
-                    }else{
-                        imagelink = [object objectForKey:@"userimage"];
-                        cell.ownerNameLabel.text = [NSString stringWithFormat:@"%@ added a new %@ route",[object objectForKey:@"username"],[object objectForKey:@"difficultydescription"]];
+                if ([object objectForKey:@"isPage"]==[NSNumber numberWithBool:YES]) {
+                    if (!cell.isFetchingGym) {
+                        cell.isFetchingGym = YES;
+                      
+                    [[object objectForKey:@"Gym"]fetchIfNeededInBackgroundWithBlock:^(PFObject *gym, NSError *error) {
+                        cell.isFetchingGym = NO;
+                        imagelink=[gym objectForKey:@"imagelink"];  
+                        cell.ownerNameLabel.text = [NSString stringWithFormat:@"%@ added a new %@ route",[gym objectForKey:@"name"],[object objectForKey:@"difficultydescription"]];
+                        
                         
                         if (((RouteObject*)[self.routeArray objectAtIndex:indexPath.row]).ownerImage) {
-                            
                             cell.ownerImage.image = ((RouteObject*)[self.routeArray objectAtIndex:indexPath.row]).ownerImage;
                         }else{
-                            ASIHTTPRequest* request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:imagelink]];
-                            [request setCompletionBlock:^{
-                             
-                                   UIImage* ownerImage = [UIImage imageWithData:[request responseData]];
-                                if (ownerImage == nil) {
-                                    ownerImage = [UIImage imageNamed:@"placeholder_user.png"];
-                                }
-                                   cell.ownerImage.alpha = 0.0;
-                                   cell.ownerImage.image = ownerImage;
-                                   ((RouteObject*)[self.routeArray objectAtIndex:indexPath.row]).ownerImage= ownerImage;
-                               
-                               
-                                [UIView animateWithDuration:0.3
-                                                      delay:0.0
-                                                    options: UIViewAnimationCurveEaseOut
-                                                 animations:^{
-                                                     cell.ownerImage.alpha = 1.0;
-                                                     
-                                                 } 
-                                                 completion:^(BOOL finished){
-                                                     
-                                                 }];
-                            }];
-                            [request setFailedBlock:^{}];
-                            [request startAsynchronous];
+                          [cell.ownerImage setImageWithURL:[NSURL URLWithString:imagelink] placeholderImage:[UIImage imageNamed:@"placeholder_user.png"]];
                         }
 
-                    }
-                                
-                ///loading route thumbnail image
-                if (!((RouteObject*)[self.routeArray objectAtIndex:indexPath.row]).retrievedImage && !((RouteObject*)[self.routeArray objectAtIndex:indexPath.row]).isLoading) {
-                    ((RouteObject*)[self.routeArray objectAtIndex:indexPath.row]).isLoading = YES;
-                    PFFile *imagefile = [object objectForKey:@"thumbImageFile"];
-                     [queryArray addObject:imagefile];
-                    [imagefile getDataInBackgroundWithBlock:^(NSData* imageData,NSError *error){
-                        [queryArray removeObject:imagefile];
-                        if ([[self.routeArray objectAtIndex:indexPath.row] isKindOfClass:[RouteObject class]]) {
-                        ((RouteObject*)[self.routeArray objectAtIndex:indexPath.row]).isLoading = NO;     
-                        }
-                       UIImage* retrievedImage = [UIImage imageWithData:imageData];
-                        ((RouteObject*)[self.routeArray objectAtIndex:indexPath.row]).retrievedImage = retrievedImage;
-                        cell.routeImageView.alpha = 0.0;
-                        cell.routeImageView.image = retrievedImage;
-
-                        [UIView animateWithDuration:0.3
-                          delay:0.0
-                        options: UIViewAnimationCurveEaseOut
-                     animations:^{
-                         cell.routeImageView.alpha = 1.0;
-                         
-                     } 
-                     completion:^(BOOL finished){
-                         cell.routeImageView.layer.masksToBounds = YES;
-                         cell.routeImageView.layer.cornerRadius = 5.0f;
-                         cell.imageBackgroundView.layer.shadowPath =[UIBezierPath bezierPathWithRect:cell.routeImageView.bounds].CGPath;
-                         cell.imageBackgroundView.layer.shadowColor = [UIColor blackColor].CGColor;
-                         cell.imageBackgroundView.layer.shadowOpacity = 0.7f;
-                         cell.imageBackgroundView.layer.shadowOffset = CGSizeMake(2.0f, 2.0f);
-                         cell.imageBackgroundView.layer.shadowRadius = 3.0f;
-                         cell.imageBackgroundView.layer.cornerRadius = 5.0f;
-                     }];
                     }];
-                    
-                    
-                }else{
-                    cell.routeImageView.image = ((RouteObject*)[self.routeArray objectAtIndex:indexPath.row]).retrievedImage;
-                    cell.routeImageView.layer.masksToBounds = YES;
-                    cell.routeImageView.layer.cornerRadius = 5.0f;
-                    cell.imageBackgroundView.layer.shadowPath =[UIBezierPath bezierPathWithRect:cell.routeImageView.bounds].CGPath;
-                    cell.imageBackgroundView.layer.shadowColor = [UIColor blackColor].CGColor;
-                    cell.imageBackgroundView.layer.shadowOpacity = 0.7f;
-                    cell.imageBackgroundView.layer.shadowOffset = CGSizeMake(2.0f, 2.0f);
-                    cell.imageBackgroundView.layer.shadowRadius = 3.0f;
-                    cell.imageBackgroundView.layer.cornerRadius = 5.0f;
-                    
-                };
-                //604800
-                    
-                double timesincenow =  [((NSDate*)object.createdAt) timeIntervalSinceNow];
-                int timeint = ((int)timesincenow);
-                //if more than 1 day show number of days
-                //if more than 60min show number of hrs
-                //if more than 24hrs show days
-                
-                if (timeint < -86400) {
-                    cell.timeLabel.text = [NSString stringWithFormat:@"%id",timeint/-86400];
-                }else if(timeint < -3600){
-                    cell.timeLabel.text = [NSString stringWithFormat:@"%ih",timeint/-3600];
-                }else{
-                    cell.timeLabel.text = [NSString stringWithFormat:@"%im",timeint/-60];
-                }
-                //    [request2 release];
-                
-                
-                //loading stamp image
-                /*
-                if (((RouteObject*)[self.routeArray objectAtIndex:indexPath.row]).stampImage) {
-                    [cell.stampImageView setImage:((RouteObject*)[self.routeArray objectAtIndex:indexPath.row]).stampImage];
-                }else{
-                PFQuery* flashquery = [PFQuery queryWithClassName:@"Flash"];
-                [flashquery whereKey:@"username" equalTo:[[PFUser currentUser]objectForKey:@"name"]];
-                [flashquery whereKey:@"route" equalTo:((RouteObject*)[self.routeArray objectAtIndex:indexPath.row]).pfobj];
-                [queryArray addObject:flashquery];
-                [flashquery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
-                    [queryArray removeObject:flashquery];
-                    if ([objects count]) {
-                        [cell.stampImageView setImage:[UIImage imageNamed:@"flashoverlay210.png"]];
-                        ((RouteObject*)[self.routeArray objectAtIndex:indexPath.row]).stampImage = [UIImage imageNamed:@"flashoverlay210.png"];
                     }
-                }];
-                PFQuery* sentquery = [PFQuery queryWithClassName:@"Sent"];
-                [sentquery whereKey:@"username" equalTo:[[PFUser currentUser]objectForKey:@"name"]];
-                [sentquery whereKey:@"route" equalTo:((RouteObject*)[self.routeArray objectAtIndex:indexPath.row]).pfobj];
-                [queryArray addObject:sentquery];
-                [sentquery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
-                    [queryArray removeObject:sentquery];
-                    if ([objects count]) {
-                        [cell.stampImageView setImage:[UIImage imageNamed:@"sentoverlay210.png"]];
-                        ((RouteObject*)[self.routeArray objectAtIndex:indexPath.row]).stampImage = [UIImage imageNamed:@"sentoverlay210.png"];
-                    }
-                }];
-                    
-                PFQuery* projquery = [PFQuery queryWithClassName:@"Project"];
-                [projquery whereKey:@"username" equalTo:[[PFUser currentUser]objectForKey:@"name"]];
-                [projquery whereKey:@"route" equalTo:((RouteObject*)[self.routeArray objectAtIndex:indexPath.row]).pfobj];
-                [queryArray addObject:projquery];
-                [projquery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
-                    [queryArray removeObject:projquery];
-                    if ([objects count]) {
-                        [cell.stampImageView setImage:[UIImage imageNamed:@"projectoverlay210.png"]];
-                        ((RouteObject*)[self.routeArray objectAtIndex:indexPath.row]).stampImage = [UIImage imageNamed:@"projectoverlay210.png"];
-                    }
-                }];
-                }
-                 */
-                if ([object objectForKey:@"difficultydescription"]) {
-                    cell.difficultyLabel.text = [object objectForKey:@"difficultydescription"];
-                }
-
-                cell.todoTextLabel.text = [object objectForKey:@"description"];
-   
-                
-                
-                cell.backgroundColor = [UIColor whiteColor];
-            }
-            }
-    // Configure the cell
-    
-       return cell;
-            
-        }else if([[routeArray objectAtIndex:indexPath.row] isKindOfClass:[FeedObject class]]){
-            if ([[((FeedObject*)[routeArray objectAtIndex:indexPath.row]).pfobj objectForKey:@"action"] isEqualToString:@"comment"]) {
-                static NSString *CommentTableCellIdentifier = @"CommentTableCell";
-                CommentTableCell* cell = (CommentTableCell*) [tableView dequeueReusableCellWithIdentifier:CommentTableCellIdentifier]; 
-                if (cell == nil) {
-                    NSArray *topLevelObjects = [[NSBundle mainBundle] loadNibNamed:@"CommentTableCell" owner:nil options:nil];
-                    for(id currentObject in topLevelObjects){
-                        if([currentObject isKindOfClass:[UITableViewCell class]]){
-                            cell = (CommentTableCell*)currentObject;
-                            
-                        }
-                    }
-                }    
-                
-                
-                FeedObject* selectedFeedObj = ((FeedObject*)[routeArray objectAtIndex:indexPath.row]);
-                PFObject* selectedPFObj = selectedFeedObj.pfobj;
-                cell.userNameLabel.text = [selectedPFObj objectForKey:@"sender"];
-                cell.commentTextLabel.text = [selectedPFObj objectForKey:@"commenttext"];
-                cell.selectionStyle = UITableViewCellSelectionStyleGray;
-                if (!selectedFeedObj.routeImage && !((FeedObject*)[self.routeArray objectAtIndex:indexPath.row]).isLoading) {
-                    ((FeedObject*)[self.routeArray objectAtIndex:indexPath.row]).isLoading = YES;
-                    [[selectedFeedObj.pfobj objectForKey:@"linkedroute"]fetchIfNeededInBackgroundWithBlock:^(PFObject *object, NSError *error) {
-                    PFFile *imagefile = [object objectForKey:@"thumbImageFile"];
-                    [queryArray addObject:imagefile];
-                    [imagefile getDataInBackgroundWithBlock:^(NSData* imageData,NSError *error){
-                        [queryArray removeObject:imagefile];
-                            ((FeedObject*)[self.routeArray objectAtIndex:indexPath.row]).isLoading = NO;     
-                        UIImage* retrievedImage = [UIImage imageWithData:imageData];
-                        ((FeedObject*)[self.routeArray objectAtIndex:indexPath.row]).routeImage = retrievedImage;
-                        //till here
-                        cell.routeImageView.alpha = 0.0;
-                        cell.routeImageView.image = retrievedImage;
-                        if (cell.routeImageView.image==nil){
-                            cell.routeImageView.image = [UIImage imageNamed:@"placeholder.png"];
-                        }
-                        [UIView animateWithDuration:0.3
-                                              delay:0.0
-                                            options: UIViewAnimationCurveEaseOut
-                                         animations:^{
-                                             cell.routeImageView.alpha = 1.0;
-                                         } 
-                                         completion:^(BOOL finished){
-                                             cell.routeImageView.layer.masksToBounds = YES;
-                                             cell.routeImageView.layer.cornerRadius = 5.0f;
-                                             cell.imageBackgroundView.layer.shadowPath =[UIBezierPath bezierPathWithRect:cell.routeImageView.bounds].CGPath;
-                                             cell.imageBackgroundView.layer.shadowColor = [UIColor blackColor].CGColor;
-                                             cell.imageBackgroundView.layer.shadowOpacity = 0.7f;
-                                             cell.imageBackgroundView.layer.shadowOffset = CGSizeMake(2.0f, 2.0f);
-                                             cell.imageBackgroundView.layer.shadowRadius = 3.0f;
-                                             cell.imageBackgroundView.layer.cornerRadius = 5.0f;
-                                         }];
-                    }];
-                        }];
                 }else{
-                    cell.routeImageView.image = selectedFeedObj.routeImage;
-                    cell.routeImageView.layer.masksToBounds = YES;
-                    cell.routeImageView.layer.cornerRadius = 5.0f;
-                    cell.imageBackgroundView.layer.shadowPath =[UIBezierPath bezierPathWithRect:cell.routeImageView.bounds].CGPath;
-                    cell.imageBackgroundView.layer.shadowColor = [UIColor blackColor].CGColor;
-                    cell.imageBackgroundView.layer.shadowOpacity = 0.7f;
-                    cell.imageBackgroundView.layer.shadowOffset = CGSizeMake(2.0f, 2.0f);
-                    cell.imageBackgroundView.layer.shadowRadius = 3.0f;
-                    cell.imageBackgroundView.layer.cornerRadius = 5.0f;
-                }
-
-                if (selectedFeedObj.senderImage){
-                    cell.userImageView.image = selectedFeedObj.senderImage;
-                }else{
-                    NSString* urlstring = [NSString stringWithFormat:@"%@",[selectedPFObj objectForKey:@"senderimagelink"]];
+                    imagelink = [object objectForKey:@"userimage"];
+                    cell.ownerNameLabel.text = [NSString stringWithFormat:@"%@ added a new %@ route",[object objectForKey:@"username"],[object objectForKey:@"difficultydescription"]];
                     
-                    ASIHTTPRequest* request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:urlstring]];
-                    [request setCompletionBlock:^{
+                    if (((RouteObject*)[self.routeArray objectAtIndex:indexPath.row]).ownerImage) {
                         
-                        selectedFeedObj.senderImage = [UIImage imageWithData:[request responseData]];
-                        if (selectedFeedObj.senderImage == nil) {
-                            selectedFeedObj.senderImage = [UIImage imageNamed:@"placeholder_user.png"];
-                        }
-                        cell.userImageView.image = selectedFeedObj.senderImage;
-                    }];
-                    [request setFailedBlock:^{}];
-                    [request startAsynchronous];
+                        cell.ownerImage.image = ((RouteObject*)[self.routeArray objectAtIndex:indexPath.row]).ownerImage;
+                    }else{
+                      [cell.ownerImage setImageWithURL:[NSURL URLWithString:imagelink] placeholderImage:[UIImage imageNamed:@"placeholder_user.png"]];
+                    }
+
                 }
+                            
+            ///loading route thumbnail image
+            if (!((RouteObject*)[self.routeArray objectAtIndex:indexPath.row]).retrievedImage && !((RouteObject*)[self.routeArray objectAtIndex:indexPath.row]).isLoading) {
+                ((RouteObject*)[self.routeArray objectAtIndex:indexPath.row]).isLoading = YES;
+                PFFile *imagefile = [object objectForKey:@"thumbImageFile"];
+                 [queryArray addObject:imagefile];
+                [imagefile getDataInBackgroundWithBlock:^(NSData* imageData,NSError *error){
+                    [queryArray removeObject:imagefile];
+                    if ([[self.routeArray objectAtIndex:indexPath.row] isKindOfClass:[RouteObject class]]) {
+                    ((RouteObject*)[self.routeArray objectAtIndex:indexPath.row]).isLoading = NO;     
+                    }
+                   UIImage* retrievedImage = [UIImage imageWithData:imageData];
+                    ((RouteObject*)[self.routeArray objectAtIndex:indexPath.row]).retrievedImage = retrievedImage;
+                    cell.routeImageView.alpha = 0.0;
+                    cell.routeImageView.image = retrievedImage;
+
+                    [UIView animateWithDuration:0.3
+                      delay:0.0
+                    options: UIViewAnimationCurveEaseOut
+                 animations:^{
+                     cell.routeImageView.alpha = 1.0;
+                     
+                 } 
+                 completion:^(BOOL finished){
+                     cell.routeImageView.layer.masksToBounds = YES;
+                     cell.routeImageView.layer.cornerRadius = 5.0f;
+                     cell.imageBackgroundView.layer.shadowPath =[UIBezierPath bezierPathWithRect:cell.routeImageView.bounds].CGPath;
+                     cell.imageBackgroundView.layer.shadowColor = [UIColor blackColor].CGColor;
+                     cell.imageBackgroundView.layer.shadowOpacity = 0.7f;
+                     cell.imageBackgroundView.layer.shadowOffset = CGSizeMake(2.0f, 2.0f);
+                     cell.imageBackgroundView.layer.shadowRadius = 3.0f;
+                     cell.imageBackgroundView.layer.cornerRadius = 5.0f;
+                 }];
+                }];
                 
-               
-                double timesincenow =  [((NSDate*)selectedPFObj.createdAt) timeIntervalSinceNow];
                 
-                int timeint = ((int)timesincenow);
-                if (timeint < -86400) {
-                    cell.timeLabel.text = [NSString stringWithFormat:@"%id ago",timeint/-86400];
-                }else if(timeint < -3600){
-                    cell.timeLabel.text = [NSString stringWithFormat:@"%ih ago",timeint/-3600];
-                }else{
-                    cell.timeLabel.text = [NSString stringWithFormat:@"%im ago",timeint/-60];
-                }
-                
-                
-                
-                
-                
-                
-                return cell;    
             }else{
-        static NSString *FromCellIdentifier = @"FromCell";
-        FeedCell* cell = (FeedCell*) [tableView dequeueReusableCellWithIdentifier:FromCellIdentifier]; 
-        if (cell == nil) {
-            NSArray *topLevelObjects = [[NSBundle mainBundle] loadNibNamed:@"FeedCell" owner:nil options:nil];
-            for(id currentObject in topLevelObjects){
-                if([currentObject isKindOfClass:[UITableViewCell class]]){
-                    cell = (FeedCell*)currentObject;
-                    
-                }
+                cell.routeImageView.image = ((RouteObject*)[self.routeArray objectAtIndex:indexPath.row]).retrievedImage;
+                cell.routeImageView.layer.masksToBounds = YES;
+                cell.routeImageView.layer.cornerRadius = 5.0f;
+                cell.imageBackgroundView.layer.shadowPath =[UIBezierPath bezierPathWithRect:cell.routeImageView.bounds].CGPath;
+                cell.imageBackgroundView.layer.shadowColor = [UIColor blackColor].CGColor;
+                cell.imageBackgroundView.layer.shadowOpacity = 0.7f;
+                cell.imageBackgroundView.layer.shadowOffset = CGSizeMake(2.0f, 2.0f);
+                cell.imageBackgroundView.layer.shadowRadius = 3.0f;
+                cell.imageBackgroundView.layer.cornerRadius = 5.0f;
+                
+            };
+            //604800
+                
+            double timesincenow =  [((NSDate*)object.createdAt) timeIntervalSinceNow];
+            int timeint = ((int)timesincenow);
+            //if more than 1 day show number of days
+            //if more than 60min show number of hrs
+            //if more than 24hrs show days
+            
+            if (timeint < -86400) {
+                cell.timeLabel.text = [NSString stringWithFormat:@"%id",timeint/-86400];
+            }else if(timeint < -3600){
+                cell.timeLabel.text = [NSString stringWithFormat:@"%ih",timeint/-3600];
+            }else{
+                cell.timeLabel.text = [NSString stringWithFormat:@"%im",timeint/-60];
             }
-        }   
+            //    [request2 release];
+            
+            
+            //loading stamp image
+            /*
+            if (((RouteObject*)[self.routeArray objectAtIndex:indexPath.row]).stampImage) {
+                [cell.stampImageView setImage:((RouteObject*)[self.routeArray objectAtIndex:indexPath.row]).stampImage];
+            }else{
+            PFQuery* flashquery = [PFQuery queryWithClassName:@"Flash"];
+            [flashquery whereKey:@"username" equalTo:[[PFUser currentUser]objectForKey:@"name"]];
+            [flashquery whereKey:@"route" equalTo:((RouteObject*)[self.routeArray objectAtIndex:indexPath.row]).pfobj];
+            [queryArray addObject:flashquery];
+            [flashquery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+                [queryArray removeObject:flashquery];
+                if ([objects count]) {
+                    [cell.stampImageView setImage:[UIImage imageNamed:@"flashoverlay210.png"]];
+                    ((RouteObject*)[self.routeArray objectAtIndex:indexPath.row]).stampImage = [UIImage imageNamed:@"flashoverlay210.png"];
+                }
+            }];
+            PFQuery* sentquery = [PFQuery queryWithClassName:@"Sent"];
+            [sentquery whereKey:@"username" equalTo:[[PFUser currentUser]objectForKey:@"name"]];
+            [sentquery whereKey:@"route" equalTo:((RouteObject*)[self.routeArray objectAtIndex:indexPath.row]).pfobj];
+            [queryArray addObject:sentquery];
+            [sentquery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+                [queryArray removeObject:sentquery];
+                if ([objects count]) {
+                    [cell.stampImageView setImage:[UIImage imageNamed:@"sentoverlay210.png"]];
+                    ((RouteObject*)[self.routeArray objectAtIndex:indexPath.row]).stampImage = [UIImage imageNamed:@"sentoverlay210.png"];
+                }
+            }];
+                
+            PFQuery* projquery = [PFQuery queryWithClassName:@"Project"];
+            [projquery whereKey:@"username" equalTo:[[PFUser currentUser]objectForKey:@"name"]];
+            [projquery whereKey:@"route" equalTo:((RouteObject*)[self.routeArray objectAtIndex:indexPath.row]).pfobj];
+            [queryArray addObject:projquery];
+            [projquery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+                [queryArray removeObject:projquery];
+                if ([objects count]) {
+                    [cell.stampImageView setImage:[UIImage imageNamed:@"projectoverlay210.png"]];
+                    ((RouteObject*)[self.routeArray objectAtIndex:indexPath.row]).stampImage = [UIImage imageNamed:@"projectoverlay210.png"];
+                }
+            }];
+            }
+             */
+            if ([object objectForKey:@"difficultydescription"]) {
+                cell.difficultyLabel.text = [object objectForKey:@"difficultydescription"];
+            }
+
+            cell.todoTextLabel.text = [object objectForKey:@"description"];
+
+            
+            
+            cell.backgroundColor = [UIColor whiteColor];
+        }
+        }
+// Configure the cell
+
+   return cell;
+        
+    }else if([[routeArray objectAtIndex:indexPath.row] isKindOfClass:[FeedObject class]]){
+        if ([[((FeedObject*)[routeArray objectAtIndex:indexPath.row]).pfobj objectForKey:@"action"] isEqualToString:@"comment"]) {
+            static NSString *CommentTableCellIdentifier = @"CommentTableCell";
+            CommentTableCell* cell = (CommentTableCell*) [tableView dequeueReusableCellWithIdentifier:CommentTableCellIdentifier]; 
+            if (cell == nil) {
+                NSArray *topLevelObjects = [[NSBundle mainBundle] loadNibNamed:@"CommentTableCell" owner:nil options:nil];
+                for(id currentObject in topLevelObjects){
+                    if([currentObject isKindOfClass:[UITableViewCell class]]){
+                        cell = (CommentTableCell*)currentObject;
+                        
+                    }
+                }
+            }    
             
             
             FeedObject* selectedFeedObj = ((FeedObject*)[routeArray objectAtIndex:indexPath.row]);
             PFObject* selectedPFObj = selectedFeedObj.pfobj;
-            
-            cell.feedLabel.text = [[[selectedPFObj objectForKey:@"message"]stringByReplacingOccurrencesOfString:[NSString stringWithFormat:@"%@'s",[[PFUser currentUser]objectForKey:@"name"]] withString:@"your"] stringByReplacingOccurrencesOfString:[[PFUser currentUser]objectForKey:@"name"] withString:@"you"]  ;
-            NSString* currentUser = [[PFUser currentUser]objectForKey:@"name"];
-            NSString* sender= [selectedPFObj objectForKey:@"sender"]; 
-            
-            if ([currentUser isEqualToString:sender]) {
-                cell.feedLabel.text = [[[cell.feedLabel.text stringByReplacingOccurrencesOfString:@" his " withString:@" your "] stringByReplacingOccurrencesOfString:@" her " withString:@" your "]stringByReplacingOccurrencesOfString:@"his/her" withString:@"your"];
-            }
-            
-            if (selectedFeedObj.senderImage){
-                cell.senderImage.image = selectedFeedObj.senderImage;
-            }else{
-                NSString* urlstring = [NSString stringWithFormat:@"%@",[selectedPFObj objectForKey:@"senderimagelink"]];
-               
-                
-                ASIHTTPRequest* request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:urlstring]];
-                [request setCompletionBlock:^{
-                    
-                    selectedFeedObj.senderImage = [UIImage imageWithData:[request responseData]];
-                    if (selectedFeedObj.senderImage == nil) {
-                        selectedFeedObj.senderImage = [UIImage imageNamed:@"placeholder_user.png"];
+            cell.userNameLabel.text = [selectedPFObj objectForKey:@"sender"];
+            cell.commentTextLabel.text = [selectedPFObj objectForKey:@"commenttext"];
+            cell.selectionStyle = UITableViewCellSelectionStyleGray;
+            if (!selectedFeedObj.routeImage && !((FeedObject*)[self.routeArray objectAtIndex:indexPath.row]).isLoading) {
+                ((FeedObject*)[self.routeArray objectAtIndex:indexPath.row]).isLoading = YES;
+                [[selectedFeedObj.pfobj objectForKey:@"linkedroute"]fetchIfNeededInBackgroundWithBlock:^(PFObject *object, NSError *error) {
+                PFFile *imagefile = [object objectForKey:@"thumbImageFile"];
+                [queryArray addObject:imagefile];
+                [imagefile getDataInBackgroundWithBlock:^(NSData* imageData,NSError *error){
+                    [queryArray removeObject:imagefile];
+                        ((FeedObject*)[self.routeArray objectAtIndex:indexPath.row]).isLoading = NO;     
+                    UIImage* retrievedImage = [UIImage imageWithData:imageData];
+                    ((FeedObject*)[self.routeArray objectAtIndex:indexPath.row]).routeImage = retrievedImage;
+                    //till here
+                    cell.routeImageView.alpha = 0.0;
+                    cell.routeImageView.image = retrievedImage;
+                    if (cell.routeImageView.image==nil){
+                        cell.routeImageView.image = [UIImage imageNamed:@"placeholder.png"];
                     }
-                    cell.senderImage.image = selectedFeedObj.senderImage;
+                    [UIView animateWithDuration:0.3
+                                          delay:0.0
+                                        options: UIViewAnimationCurveEaseOut
+                                     animations:^{
+                                         cell.routeImageView.alpha = 1.0;
+                                     } 
+                                     completion:^(BOOL finished){
+                                         cell.routeImageView.layer.masksToBounds = YES;
+                                         cell.routeImageView.layer.cornerRadius = 5.0f;
+                                         cell.imageBackgroundView.layer.shadowPath =[UIBezierPath bezierPathWithRect:cell.routeImageView.bounds].CGPath;
+                                         cell.imageBackgroundView.layer.shadowColor = [UIColor blackColor].CGColor;
+                                         cell.imageBackgroundView.layer.shadowOpacity = 0.7f;
+                                         cell.imageBackgroundView.layer.shadowOffset = CGSizeMake(2.0f, 2.0f);
+                                         cell.imageBackgroundView.layer.shadowRadius = 3.0f;
+                                         cell.imageBackgroundView.layer.cornerRadius = 5.0f;
+                                     }];
                 }];
-                [request setFailedBlock:^{}];
-                [request startAsynchronous];
-            }
-
-            if (![[selectedPFObj objectForKey:@"viewed"] containsObject:[[PFUser currentUser]objectForKey:@"name"]] && ![[selectedPFObj objectForKey:@"sender"] isEqualToString:[[PFUser currentUser] objectForKey:@"name"]] && ([cell.feedLabel.text rangeOfString:@"you"].location != NSNotFound || [cell.feedLabel.text rangeOfString:@"your"].location != NSNotFound)) {
-         
-                cell.readSphereView.image = [UIImage imageNamed:@"bluesphere.png"];
-                [UIView animateWithDuration:0.4
-                                      delay:1.0
-                                    options: UIViewAnimationCurveEaseOut
-                                 animations:^{
-                                     cell.readSphereView.alpha = 0.0;
-                                 } 
-                                 completion:^(BOOL finished){
-                                     cell.readSphereView.image = [UIImage imageNamed:@"tick.png"];
-                                     [UIView animateWithDuration:0.4
-                                                           delay:0.0
-                                                         options: UIViewAnimationCurveEaseOut
-                                                      animations:^{
-                                                          cell.readSphereView.alpha = 1.0;
-                                                      } 
-                                                      completion:^(BOOL finished){
-                                                          if (finished) {
-                                                              
-                                                              
-                                                          [selectedPFObj addUniqueObject:[[PFUser currentUser]objectForKey:@"name"] forKey:@"viewed"];
-                                                          [selectedPFObj saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
-                                                              PFQuery* queryForNotification = [PFQuery queryWithClassName:@"Feed"];
-                                                              [queryForNotification whereKey:@"viewed" notEqualTo:[[PFUser currentUser]objectForKey:@"name"]];
-                                                              [queryForNotification  whereKey:@"sender" notEqualTo:[[PFUser currentUser]objectForKey:@"name"]];
-                                                              [queryForNotification whereKey:@"message" containsString:[[PFUser currentUser]objectForKey:@"name"]];
-                                                              [queryForNotification countObjectsInBackgroundWithBlock:^(int number, NSError *error) {
-                                                                  ParseStarterProjectAppDelegate* appDel = (ParseStarterProjectAppDelegate* )[[UIApplication sharedApplication]delegate];
-                                                                  appDel.badgeView.text = [NSString stringWithFormat:@"%d",number];
-                                                              }];
-
-                                                          }];
-                                                          }
-                                                          
-                                                      }];
-
-                                     
-                                 }];
-
-            
+                    }];
             }else{
-                cell.readSphereView.image = nil;
-
-            
+                cell.routeImageView.image = selectedFeedObj.routeImage;
+                cell.routeImageView.layer.masksToBounds = YES;
+                cell.routeImageView.layer.cornerRadius = 5.0f;
+                cell.imageBackgroundView.layer.shadowPath =[UIBezierPath bezierPathWithRect:cell.routeImageView.bounds].CGPath;
+                cell.imageBackgroundView.layer.shadowColor = [UIColor blackColor].CGColor;
+                cell.imageBackgroundView.layer.shadowOpacity = 0.7f;
+                cell.imageBackgroundView.layer.shadowOffset = CGSizeMake(2.0f, 2.0f);
+                cell.imageBackgroundView.layer.shadowRadius = 3.0f;
+                cell.imageBackgroundView.layer.cornerRadius = 5.0f;
             }
+
+            if (selectedFeedObj.senderImage){
+                cell.userImageView.image = selectedFeedObj.senderImage;
+            }else{
+              NSString* urlstring = [NSString stringWithFormat:@"%@",[selectedPFObj objectForKey:@"senderimagelink"]];
+              [cell.userImageView setImageWithURL:[NSURL URLWithString:urlstring] placeholderImage:[UIImage imageNamed:@"placeholder_user.png"]];
+            }
+
             double timesincenow =  [((NSDate*)selectedPFObj.createdAt) timeIntervalSinceNow];
             
             int timeint = ((int)timesincenow);
@@ -749,80 +579,125 @@
                 cell.timeLabel.text = [NSString stringWithFormat:@"%im ago",timeint/-60];
             }
             
-        return cell;
-            }    
+            
+            
+            
+            
+            
+            return cell;    
         }else{
-            static NSString *gymCellIdentifier = @"GymCell";
-            GymCell* cell = (GymCell*) [tableView dequeueReusableCellWithIdentifier:gymCellIdentifier]; 
-            if (cell == nil) {
-                NSArray *topLevelObjects = [[NSBundle mainBundle] loadNibNamed:@"GymCell" owner:nil options:nil];
-                for(id currentObject in topLevelObjects){
-                    if([currentObject isKindOfClass:[UITableViewCell class]]){
-                        cell = (GymCell*)currentObject;
-                        cell.selectionStyle = UITableViewCellSelectionStyleGray;
-                    }
+    static NSString *FromCellIdentifier = @"FromCell";
+    FeedCell* cell = (FeedCell*) [tableView dequeueReusableCellWithIdentifier:FromCellIdentifier]; 
+    if (cell == nil) {
+        NSArray *topLevelObjects = [[NSBundle mainBundle] loadNibNamed:@"FeedCell" owner:nil options:nil];
+        for(id currentObject in topLevelObjects){
+            if([currentObject isKindOfClass:[UITableViewCell class]]){
+                cell = (FeedCell*)currentObject;
+                
+            }
+        }
+    }   
+        
+        
+        FeedObject* selectedFeedObj = ((FeedObject*)[routeArray objectAtIndex:indexPath.row]);
+        PFObject* selectedPFObj = selectedFeedObj.pfobj;
+        
+        cell.feedLabel.text = [[[selectedPFObj objectForKey:@"message"]stringByReplacingOccurrencesOfString:[NSString stringWithFormat:@"%@'s",[[PFUser currentUser]objectForKey:@"name"]] withString:@"your"] stringByReplacingOccurrencesOfString:[[PFUser currentUser]objectForKey:@"name"] withString:@"you"]  ;
+        NSString* currentUser = [[PFUser currentUser]objectForKey:@"name"];
+        NSString* sender= [selectedPFObj objectForKey:@"sender"]; 
+        
+        if ([currentUser isEqualToString:sender]) {
+            cell.feedLabel.text = [[[cell.feedLabel.text stringByReplacingOccurrencesOfString:@" his " withString:@" your "] stringByReplacingOccurrencesOfString:@" her " withString:@" your "]stringByReplacingOccurrencesOfString:@"his/her" withString:@"your"];
+        }
+
+        NSString* urlstring = [NSString stringWithFormat:@"%@",[selectedPFObj objectForKey:@"senderimagelink"]];
+        [cell.senderImage setImageWithURL:[NSURL URLWithString:urlstring] placeholderImage:[UIImage imageNamed:@"placeholder_user.png"]];
+
+        if (![[selectedPFObj objectForKey:@"viewed"] containsObject:[[PFUser currentUser]objectForKey:@"name"]] && ![[selectedPFObj objectForKey:@"sender"] isEqualToString:[[PFUser currentUser] objectForKey:@"name"]] && ([cell.feedLabel.text rangeOfString:@"you"].location != NSNotFound || [cell.feedLabel.text rangeOfString:@"your"].location != NSNotFound)) {
+     
+            cell.readSphereView.image = [UIImage imageNamed:@"bluesphere.png"];
+            [UIView animateWithDuration:0.4
+                                  delay:1.0
+                                options: UIViewAnimationCurveEaseOut
+                             animations:^{
+                                 cell.readSphereView.alpha = 0.0;
+                             } 
+                             completion:^(BOOL finished){
+                                 cell.readSphereView.image = [UIImage imageNamed:@"tick.png"];
+                                 [UIView animateWithDuration:0.4
+                                                       delay:0.0
+                                                     options: UIViewAnimationCurveEaseOut
+                                                  animations:^{
+                                                      cell.readSphereView.alpha = 1.0;
+                                                  } 
+                                                  completion:^(BOOL finished){
+                                                      if (finished) {
+                                                          
+                                                          
+                                                      [selectedPFObj addUniqueObject:[[PFUser currentUser]objectForKey:@"name"] forKey:@"viewed"];
+                                                      [selectedPFObj saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+                                                          PFQuery* queryForNotification = [PFQuery queryWithClassName:@"Feed"];
+                                                          [queryForNotification whereKey:@"viewed" notEqualTo:[[PFUser currentUser]objectForKey:@"name"]];
+                                                          [queryForNotification  whereKey:@"sender" notEqualTo:[[PFUser currentUser]objectForKey:@"name"]];
+                                                          [queryForNotification whereKey:@"message" containsString:[[PFUser currentUser]objectForKey:@"name"]];
+                                                          [queryForNotification countObjectsInBackgroundWithBlock:^(int number, NSError *error) {
+                                                              ParseStarterProjectAppDelegate* appDel = (ParseStarterProjectAppDelegate* )[[UIApplication sharedApplication]delegate];
+                                                              appDel.badgeView.text = [NSString stringWithFormat:@"%d",number];
+                                                          }];
+
+                                                      }];
+                                                      }
+                                                      
+                                                  }];
+
+                                 
+                             }];
+
+        
+        }else{
+            cell.readSphereView.image = nil;
+
+        
+        }
+        double timesincenow =  [((NSDate*)selectedPFObj.createdAt) timeIntervalSinceNow];
+        
+        int timeint = ((int)timesincenow);
+        if (timeint < -86400) {
+            cell.timeLabel.text = [NSString stringWithFormat:@"%id ago",timeint/-86400];
+        }else if(timeint < -3600){
+            cell.timeLabel.text = [NSString stringWithFormat:@"%ih ago",timeint/-3600];
+        }else{
+            cell.timeLabel.text = [NSString stringWithFormat:@"%im ago",timeint/-60];
+        }
+        
+    return cell;
+        }    
+    }else{
+        static NSString *gymCellIdentifier = @"GymCell";
+        GymCell* cell = (GymCell*) [tableView dequeueReusableCellWithIdentifier:gymCellIdentifier]; 
+        if (cell == nil) {
+            NSArray *topLevelObjects = [[NSBundle mainBundle] loadNibNamed:@"GymCell" owner:nil options:nil];
+            for(id currentObject in topLevelObjects){
+                if([currentObject isKindOfClass:[UITableViewCell class]]){
+                    cell = (GymCell*)currentObject;
+                    cell.selectionStyle = UITableViewCellSelectionStyleGray;
                 }
             }
-            if ([routeArray count]) {
-                GymObject* selectedGymObject = [routeArray objectAtIndex:indexPath.row];
-                cell.addressLabel.text = [selectedGymObject.pfobj objectForKey:@"address"];
-                PFGeoPoint* mypoint = [PFGeoPoint geoPointWithLatitude:((ParseStarterProjectAppDelegate*)[[UIApplication sharedApplication] delegate]).currentLocation.coordinate.latitude longitude:((ParseStarterProjectAppDelegate*)[[UIApplication sharedApplication] delegate]).currentLocation.coordinate.longitude];
-                cell.distanceLabel.text = [NSString stringWithFormat:@"%.1f km away",[mypoint distanceInKilometersTo:[selectedGymObject.pfobj objectForKey:@"gymlocation"]]];
-                cell.gymNameLabel.text = [selectedGymObject.pfobj objectForKey:@"name"];
-                cell.gymAboutLabel.text =[selectedGymObject.pfobj objectForKey:@"about"]; 
-                if (!selectedGymObject.thumb) {
-                    ASIHTTPRequest* request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:[selectedGymObject.pfobj objectForKey:@"imagelink"]]];
-                    [request setCompletionBlock:^{
-                        UIImage* gymThumb = [UIImage imageWithData:[request responseData]];
-                        cell.imageContainer.alpha = 0.0;
-                        cell.gymThumbnailView.image = gymThumb;
-                        if (cell.gymThumbnailView.image.size.height>=cell.gymThumbnailView.image.size.width) {
-                        [cell.gymThumbnailView setFrame:CGRectMake(0, 0, 105, cell.gymThumbnailView.image.size.height/(cell.gymThumbnailView.image.size.width/105))];
-                        }
-                        selectedGymObject.thumb= gymThumb;
-                        [UIView animateWithDuration:0.3
-                                              delay:0.0
-                                            options: UIViewAnimationCurveEaseOut
-                                         animations:^{
-                                             cell.imageContainer.alpha = 1.0;
-                                             cell.imageContainer.layer.masksToBounds = YES;
-                                             cell.imageContainer.layer.cornerRadius = 5.0f;
-                                             cell.imageBackgroundView.layer.shadowPath =[UIBezierPath bezierPathWithRect:cell.imageBackgroundView   .bounds].CGPath;
-                                             cell.imageBackgroundView.layer.shadowColor = [UIColor blackColor].CGColor;
-                                             cell.imageBackgroundView.layer.shadowOpacity = 0.7f;
-                                             cell.imageBackgroundView.layer.shadowOffset = CGSizeMake(2.0f, 2.0f);
-                                             cell.imageBackgroundView.layer.shadowRadius = 3.0f;
-                                             cell.imageBackgroundView.layer.cornerRadius = 5.0f;
-                                         } 
-                                         completion:^(BOOL finished){
-                                             
-                                         }];
-                    }];
-                    [request setFailedBlock:^{}];
-                    [request startAsynchronous];
-
-                }else{
-                    cell.gymThumbnailView.image = selectedGymObject.thumb;
-                    cell.gymThumbnailView.layer.masksToBounds = YES;
-                    cell.gymThumbnailView.layer.cornerRadius = 5.0f;
-                    if (cell.gymThumbnailView.image.size.height>=cell.gymThumbnailView.image.size.width) {
-                        [cell.gymThumbnailView setFrame:CGRectMake(0, 0, 105, cell.gymThumbnailView.image.size.height/(cell.gymThumbnailView.image.size.width/105))];
-                    }
-                    cell.imageContainer.layer.masksToBounds = YES;
-                    cell.imageContainer.layer.cornerRadius = 5.0f;
-                    cell.imageBackgroundView.layer.shadowPath =[UIBezierPath bezierPathWithRect:cell.imageBackgroundView   .bounds].CGPath;
-                    cell.imageBackgroundView.layer.shadowColor = [UIColor blackColor].CGColor;
-                    cell.imageBackgroundView.layer.shadowOpacity = 0.7f;
-                    cell.imageBackgroundView.layer.shadowOffset = CGSizeMake(2.0f, 2.0f);
-                    cell.imageBackgroundView.layer.shadowRadius = 3.0f;
-                    cell.imageBackgroundView.layer.cornerRadius = 5.0f;
-                }
-            }
-
-            return  cell;
         }
+        if ([routeArray count]) {
+            GymObject* selectedGymObject = [routeArray objectAtIndex:indexPath.row];
+            cell.addressLabel.text = [selectedGymObject.pfobj objectForKey:@"address"];
+            PFGeoPoint* mypoint = [PFGeoPoint geoPointWithLatitude:((ParseStarterProjectAppDelegate*)[[UIApplication sharedApplication] delegate]).currentLocation.coordinate.latitude longitude:((ParseStarterProjectAppDelegate*)[[UIApplication sharedApplication] delegate]).currentLocation.coordinate.longitude];
+            cell.distanceLabel.text = [NSString stringWithFormat:@"%.1f km away",[mypoint distanceInKilometersTo:[selectedGymObject.pfobj objectForKey:@"gymlocation"]]];
+            cell.gymNameLabel.text = [selectedGymObject.pfobj objectForKey:@"name"];
+            cell.gymAboutLabel.text =[selectedGymObject.pfobj objectForKey:@"about"];
+            [cell.gymThumbnailView setImageWithURL:[NSURL URLWithString:[selectedGymObject.pfobj objectForKey:@"imagelink"]]];
         }
+
+        return  cell;
     }
+    }
+}
 
 
 -(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -948,7 +823,6 @@
     projquery.cachePolicy = kPFCachePolicyNetworkElseCache;
     
     PFQuery* gymQuery = [PFQuery queryWithClassName:@"Gym"];
-    //[gymQuery whereKey:@"outdated" notEqualTo:[NSNumber numberWithBool:true]];
     [gymQuery whereKey:@"gymlocation" nearGeoPoint:[PFGeoPoint geoPointWithLatitude:((ParseStarterProjectAppDelegate*)[[UIApplication sharedApplication] delegate]).currentLocation.coordinate.latitude longitude:((ParseStarterProjectAppDelegate*)[[UIApplication sharedApplication] delegate]).currentLocation.coordinate.longitude]];
     [gymQuery setLimit:20];
     gymQuery.cachePolicy = kPFCachePolicyNetworkElseCache;

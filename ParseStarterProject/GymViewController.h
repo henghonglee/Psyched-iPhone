@@ -8,7 +8,6 @@
 
 #import <UIKit/UIKit.h>
 #import <Parse/Parse.h>
-#import "ASIHTTPRequest.h"
 #import <QuartzCore/QuartzCore.h>
 #import <Parse/Parse.h>
 #import "RouteObject.h"

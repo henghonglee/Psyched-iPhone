@@ -9,6 +9,8 @@
 #import "GymViewController.h"
 #import "GradientButton.h"
 #import <QuartzCore/QuartzCore.h>
+#import "AFNetworking.h"
+#import "UIImageView+AFNetworking.h"
 @implementation GymViewController
 @synthesize loadingLabel;
 @synthesize loadRoutesActivityIndicator;
@@ -26,7 +28,6 @@
 @synthesize routePageControl;
 @synthesize gymProfileImageView;
 @synthesize ourRoutesButton;
-//@synthesize progressView;
 @synthesize gymNameLabel;
 @synthesize gymCoverImageView;
 @synthesize gymMapView;
@@ -167,20 +168,8 @@
     
     
      NSLog(@"before crash");
-//    [PFPush subscribeToChannelInBackground:@"" block:^(BOOL succeeded, NSError *error) {
-//    }];
     [PFPush getSubscribedChannelsInBackgroundWithBlock:^(NSSet *channels, NSError *error) {
-       
-//        if (channels) {
-//            
-//            [PFPush subscribeToChannelInBackground:@"" block:^(BOOL succeeded, NSError *error) {
-//                [PFPush subscribeToChannelInBackground:[NSString stringWithFormat:@"channel%@",[[PFUser currentUser]objectForKey:@"facebookid"]]   block:^(BOOL succeeded, NSError *error) {
-//                               [followButton setTitle:@"Follow Us!" forState:UIControlStateNormal];
-//                               followButton.enabled = YES;
-//                }];
-//                
-//            }];
-//        }else{
+
         if ([channels containsObject:[NSString stringWithFormat:@"channel%@",gymObject.objectId]]) {
             NSLog(@"isSubscribedToThisGym");
             [followButton setTitle:@"Following!" forState:UIControlStateNormal];
@@ -189,10 +178,7 @@
             [followButton setTitle:@"Follow Us!" forState:UIControlStateNormal];
         }
                     followButton.enabled = YES;
-//        }
     }];
-    
-    
     isLoadingRoutes = YES;
   [self loadRoutes];
 
@@ -1034,36 +1020,10 @@
     
     self.navigationItem.title = [NSString stringWithFormat:@"%@",[gymObject objectForKey:@"name"]];
     
-    
-    ASIHTTPRequest* coverrequest = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:[gymObject objectForKey:@"coverimagelink"]] ];
-    [coverrequest setCompletionBlock:^{
-        gymCoverImageView.image = [UIImage imageWithData:[coverrequest responseData]];
-        [self animateInView:gymCoverImageView withFinalRect:CGRectMake(4, 4, 312, 140) andBounceRect:CGRectMake(4, -12, 312, 140)];
-        
-         }];
-    [coverrequest setFailedBlock:^{}];
-    [coverrequest startAsynchronous];
-    
-    ASIHTTPRequest* request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:[gymObject objectForKey:@"imagelink"]] ];
-    [request setCompletionBlock:^{
-        
-        gymProfileImageView.image = [UIImage imageWithData:[request responseData]];
-        [self animateInView:gymProfileImageView withFinalRect:CGRectMake(4, 148, 92, 92) andBounceRect:CGRectMake(-12, 148, 92, 92)];
-/*        NSLog(@"size ht = %f",gymProfileImageView.image.size.height);
-        NSLog(@"size wd = %f",gymProfileImageView.image.size.width);
-        if (gymProfileImageView.image.size.height>=gymProfileImageView.image.size.width) {
-            [gymProfileImageView setFrame:CGRectMake(0, 0, 75, gymProfileImageView.image.size.height/(gymProfileImageView.image.size.width/75))];
-        }
-*/
-     
-    }];
-    [request setFailedBlock:^{
-        ASIHTTPRequest* newCoverReq = [[coverrequest copy]autorelease];
-        [newCoverReq startAsynchronous];
-    
-    }];
-    [request startAsynchronous];
-    
+  [gymCoverImageView setImageWithURL:[NSURL URLWithString:[gymObject objectForKey:@"coverimagelink"]] placeholderImage:nil];
+  [self animateInView:gymCoverImageView withFinalRect:CGRectMake(4, 4, 312, 140) andBounceRect:CGRectMake(4, -12, 312, 140)];
+  [gymProfileImageView setImageWithURL:[NSURL URLWithString:[gymObject objectForKey:@"imagelink"]] placeholderImage:nil];
+  [self animateInView:gymProfileImageView withFinalRect:CGRectMake(4, 148, 92, 92) andBounceRect:CGRectMake(-12, 148, 92, 92)];
 }
 -(void)animateInView:(UIView*)viewToAnimate withFinalRect:(CGRect)startRect andBounceRect:(CGRect)endRect
 {
@@ -1173,27 +1133,7 @@
         if (object.ownerImage) {
             footerUserImageView.image = object.ownerImage;
         }else{
-            ASIHTTPRequest* request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:imagelink]];
-            [request setCompletionBlock:^{
-                UIImage* ownerImage = [UIImage imageWithData:[request responseData]];
-                if (ownerImage == nil) {
-                    ownerImage = [UIImage imageNamed:@"placeholder_user.png"];
-                }
-                footerUserImageView.image = ownerImage;
-                object.ownerImage= ownerImage;
-                footerUserImageView.alpha =0.0;
-                [UIView animateWithDuration:0.3
-                                      delay:0.0
-                                    options: UIViewAnimationCurveEaseOut
-                                 animations:^{
-                                     footerUserImageView.alpha = 1.0;
-                                 }
-                                 completion:^(BOOL finished){
-                                     // NSLog(@"Done!");
-                                 }];
-            }];
-            [request setFailedBlock:^{}];
-            [request startAsynchronous];
+          [footerUserImageView setImageWithURL:[NSURL URLWithString:imagelink] placeholderImage:[UIImage imageNamed:@"placeholder_user.png"]];
         }
         
         
@@ -1202,27 +1142,7 @@
         if (object.ownerImage) {
             footerUserImageView.image = object.ownerImage;
         }else{
-            ASIHTTPRequest* request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:imagelink]];
-            [request setCompletionBlock:^{
-                UIImage* ownerImage = [UIImage imageWithData:[request responseData]];
-                if (ownerImage == nil) {
-                    ownerImage = [UIImage imageNamed:@"placeholder_user.png"];
-                }
-                footerUserImageView.image = ownerImage;
-                object.ownerImage= ownerImage;
-                footerUserImageView.alpha =0.0;
-                [UIView animateWithDuration:0.3
-                                      delay:0.0
-                                    options: UIViewAnimationCurveEaseOut
-                                 animations:^{
-                                     footerUserImageView.alpha = 1.0;
-                                 }
-                                 completion:^(BOOL finished){
-                                     // NSLog(@"Done!");
-                                 }];
-            }];
-            [request setFailedBlock:^{}];
-            [request startAsynchronous];
+          [footerUserImageView setImageWithURL:[NSURL URLWithString:imagelink] placeholderImage:[UIImage imageNamed:@"placeholder_user.png"]];
         }
     }
 }
