@@ -4,11 +4,11 @@
 #import "ProfileViewController.h"
 #import "RouteDetailViewController.h"
 #import "CommentsCell.h"
-#import "ASIHTTPRequest.h"
 #import "MKMapView+ZoomLevel.h"
-#import "ASIFormDataRequest.h"
 #import <QuartzCore/QuartzCore.h>
 #import "MapViewController.h"
+#import "AFNetworking.h"
+#import "UIImageView+AFNetworking.h"
 @implementation RouteDetailViewController
 @synthesize recommendView;
 @synthesize topView;
@@ -677,17 +677,15 @@ kAPIGraphCommentPhoto,
                 }
             }];
             [self deleteOGwithId:[routeObject.pfobj objectForKey:@"opengraphid"]];
-            ASIHTTPRequest* routeDelete = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"http://www.psychedapp.com/routepost/%@",routeObject.pfobj.objectId]]];
-            [routeDelete setRequestMethod:@"DELETE"];
-
-            [routeDelete setCompletionBlock:^{
-                NSLog(@"routeDelete posted, %@",[routeDelete responseString]);
-            }];
-            [routeDelete setFailedBlock:^{
-                NSLog(@"routeDelete failed");
-            }];
-            [routeDelete startAsynchronous];
-    [hud hide:YES];
+          AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
+          [manager DELETE:[NSString stringWithFormat:@"http://www.psychedapp.com/routepost/%@",routeObject.pfobj.objectId] parameters:nil success:^(AFHTTPRequestOperation *operation, id responseObject) {
+            NSLog(@"JSON: %@", responseObject);
+            NSLog(@"routeDelete posted, %@",[responseObject responseString]);
+          } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+            NSLog(@"Error: %@", error);
+            NSLog(@"routeDelete failed");
+          }];
+          [hud hide:YES];
     [self.navigationController popViewControllerAnimated:YES];
     }];
 }
@@ -759,17 +757,15 @@ kAPIGraphCommentPhoto,
                 PFObject* fspObject = [fetchedFlash objectAtIndex:0];
                 if ([fspObject objectForKey:@"facebookid"])
                 {
-                    NSLog(@"deleting %@...",[fspObject objectForKey:@"facebookid"]);
-                    ASIHTTPRequest* newOGDelete = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"https://graph.facebook.com/%@?access_token=%@",[fspObject objectForKey:@"facebookid"],[PFFacebookUtils session].accessToken]]];
-                    [newOGDelete setRequestMethod:@"DELETE"];
-                    [newOGDelete setCompletionBlock:^{
-                            NSLog(@"newOGDelete posted, %@",[newOGDelete responseString]);
-                    }];
-                    [newOGDelete setFailedBlock:^{
-                        NSLog(@"newOGDelete failed");
-                    }];
-                    [newOGDelete startAsynchronous];
-
+                  NSLog(@"deleting %@...",[fspObject objectForKey:@"facebookid"]);
+                  AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
+                  [manager DELETE:[NSString stringWithFormat:@"https://graph.facebook.com/%@?access_token=%@",[fspObject objectForKey:@"facebookid"],[PFFacebookUtils session].accessToken] parameters:nil success:^(AFHTTPRequestOperation *operation, id responseObject) {
+                    NSLog(@"JSON: %@", responseObject);
+                    NSLog(@"newOGDelete posted, %@",[responseObject responseString]);
+                  } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+                    NSLog(@"Error: %@", error);
+                    NSLog(@"newOGDelete failed");
+                  }];
  
                 }
                 [flashbutton setImage:nil forState:UIControlStateNormal];
@@ -796,31 +792,26 @@ kAPIGraphCommentPhoto,
             }else{
                
                 if ([[NSUserDefaults standardUserDefaults]boolForKey:@"ogshare"]) {
-                    ASIFormDataRequest* newOGPost = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:@"https://graph.facebook.com/me/climbing_:flash"]];
-                    [newOGPost setPostValue:[PFFacebookUtils session].accessToken forKey:@"access_token"];
-                    [newOGPost setPostValue:[NSString stringWithFormat:@"http://www.psychedapp.com/home/%@",routeObject.pfobj.objectId] forKey:@"route"];
-                    [newOGPost setRequestMethod:@"POST"];
-                    [newOGPost setCompletionBlock:^{
-                        SBJsonParser *jsonParser = [[SBJsonParser alloc] init];
-                        NSDictionary *jsonObjects = [jsonParser objectWithString:[newOGPost responseString]];
-                        [jsonParser release];
-                        jsonParser = nil;
-                        if ([jsonObjects objectForKey:@"id"]) {
-                            NSLog(@"posted, %@",[newOGPost responseString]);
-                            [self postNewFlashWithOG:[jsonObjects objectForKey:@"id"]];
-                        }else{
-                            NSLog(@"most likely authentication failed , %@",[newOGPost responseString]);
-                            [self postNewFlashWithOG:nil];
-                        }
-                        
-                    }];
-                    
-                    
-                    [newOGPost setFailedBlock:^{
-                        NSLog(@"failed");
-                    }];
-                    [newOGPost startAsynchronous];
-                    NSLog(@"finished posting");
+                  AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
+                  NSDictionary *parameters = @{@"access_token": [PFFacebookUtils session].accessToken,
+                                               @"route":[NSString stringWithFormat:@"http://www.psychedapp.com/home/%@",routeObject.pfobj.objectId]};
+                  [manager POST:@"https://graph.facebook.com/me/climbing_:flash" parameters:parameters success:^(AFHTTPRequestOperation *operation, id responseObject) {
+                    NSLog(@"JSON: %@", responseObject);
+                    SBJsonParser *jsonParser = [[SBJsonParser alloc] init];
+                    NSDictionary *jsonObjects = [jsonParser objectWithString:[responseObject responseString]];
+                    [jsonParser release];
+                    jsonParser = nil;
+                    if ([jsonObjects objectForKey:@"id"]) {
+                      NSLog(@"posted, %@",[responseObject responseString]);
+                      [self postNewFlashWithOG:[jsonObjects objectForKey:@"id"]];
+                    }else{
+                      NSLog(@"most likely authentication failed , %@",[responseObject responseString]);
+                      [self postNewFlashWithOG:nil];
+                    }
+
+                  } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+                    NSLog(@"Error: %@", error);
+                  }];
 
                 }else{
                     [self postNewFlashWithOG:nil];
@@ -844,18 +835,8 @@ kAPIGraphCommentPhoto,
                 PFObject* fspObject = [fetchedSent objectAtIndex:0];
                 if ([fspObject objectForKey:@"facebookid"])
                 {
-                    NSLog(@"deleting %@...",[fspObject objectForKey:@"facebookid"]);
-                    ASIHTTPRequest* newOGDelete = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"https://graph.facebook.com/%@?access_token=%@",[fspObject objectForKey:@"facebookid"],[PFFacebookUtils session].accessToken]]];
-                    [newOGDelete setRequestMethod:@"DELETE"];
-                    [newOGDelete setCompletionBlock:^{
-                        NSLog(@"newOGDelete posted, %@",[newOGDelete responseString]);
-                    }];
-                    [newOGDelete setFailedBlock:^{
-                        NSLog(@"newOGDelete failed");
-                    }];
-                    [newOGDelete startAsynchronous];
-                    
-                    
+                  NSLog(@"deleting %@...",[fspObject objectForKey:@"facebookid"]);
+                  [self OGdeleteWithURLString:[NSString stringWithFormat:@"https://graph.facebook.com/%@?access_token=%@",[fspObject objectForKey:@"facebookid"],[PFFacebookUtils session].accessToken]];
                 }
                 [sentbutton setImage:nil forState:UIControlStateNormal];
                 sendCountLabel.text = [NSString stringWithFormat:@"%d",[sendCountLabel.text intValue]-1];
@@ -892,18 +873,7 @@ kAPIGraphCommentPhoto,
                     PFObject* fspObject = [fetchedProject objectAtIndex:0];
                     if ([fspObject objectForKey:@"facebookid"])
                     {
-                        NSLog(@"deleting %@...",[fspObject objectForKey:@"facebookid"]);
-                        ASIHTTPRequest* newOGDelete = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"https://graph.facebook.com/%@?access_token=%@",[fspObject objectForKey:@"facebookid"],[PFFacebookUtils session].accessToken]]];
-                        [newOGDelete setRequestMethod:@"DELETE"];
-                        [newOGDelete setCompletionBlock:^{
-                            NSLog(@"newOGDelete posted, %@",[newOGDelete responseString]);
-                        }];
-                        [newOGDelete setFailedBlock:^{
-                            NSLog(@"newOGDelete failed");
-                        }];
-                        [newOGDelete startAsynchronous];
-                        
-                        
+                      [self OGdeleteWithURLString:[NSString stringWithFormat:@"https://graph.facebook.com/%@?access_token=%@",[fspObject objectForKey:@"facebookid"],[PFFacebookUtils session].accessToken]];
                     }
                     [projbutton setImage:nil forState:UIControlStateNormal];
                     projectCountLabel.text = [NSString stringWithFormat:@"%d",[projectCountLabel.text intValue]-1];
@@ -974,15 +944,7 @@ kAPIGraphCommentPhoto,
             
         }
         [routeProjArray release];
-        
 
-        
-        
-        
-        
-        
-        
-        
         PFQuery* query1 = [PFQuery queryWithClassName:@"Flash"];
         query1.cachePolicy = kPFCachePolicyNetworkElseCache;
         [query1 whereKey:@"username" equalTo:[[PFUser currentUser]objectForKey:@"name"]];
@@ -995,18 +957,7 @@ kAPIGraphCommentPhoto,
                 PFObject* fspObject = [fetchedFlash  objectAtIndex:0];
                 if ([fspObject objectForKey:@"facebookid"])
                 {
-                    NSLog(@"deleting %@...",[fspObject objectForKey:@"facebookid"]);
-                    ASIHTTPRequest* newOGDelete = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"https://graph.facebook.com/%@?access_token=%@",[fspObject objectForKey:@"facebookid"],[PFFacebookUtils session].accessToken]]];
-                    [newOGDelete setRequestMethod:@"DELETE"];
-                    [newOGDelete setCompletionBlock:^{
-                        NSLog(@"newOGDelete posted, %@",[newOGDelete responseString]);
-                    }];
-                    [newOGDelete setFailedBlock:^{
-                        NSLog(@"newOGDelete failed");
-                    }];
-                    [newOGDelete startAsynchronous];
-                    
-                    
+                  [self OGdeleteWithURLString:[NSString stringWithFormat:@"https://graph.facebook.com/%@?access_token=%@",[fspObject objectForKey:@"facebookid"],[PFFacebookUtils session].accessToken]];
                 }
                 [flashbutton setImage:nil forState:UIControlStateNormal];
                 flashCountLabel.text = [NSString stringWithFormat:@"%d",[flashCountLabel.text intValue]-1];
@@ -1043,17 +994,7 @@ kAPIGraphCommentPhoto,
             if ([fspObject objectForKey:@"facebookid"])
             {
                 NSLog(@"deleting %@...",[fspObject objectForKey:@"facebookid"]);
-                ASIHTTPRequest* newOGDelete = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"https://graph.facebook.com/%@?access_token=%@",[fspObject objectForKey:@"facebookid"],[PFFacebookUtils session].accessToken]]];
-                [newOGDelete setRequestMethod:@"DELETE"];
-                [newOGDelete setCompletionBlock:^{
-                    NSLog(@"newOGDelete posted, %@",[newOGDelete responseString]);
-                }];
-                [newOGDelete setFailedBlock:^{
-                    NSLog(@"newOGDelete failed");
-                }];
-                [newOGDelete startAsynchronous];
-                
-                
+              [self OGdeleteWithURLString:[NSString stringWithFormat:@"https://graph.facebook.com/%@?access_token=%@",[fspObject objectForKey:@"facebookid"],[PFFacebookUtils session].accessToken]];
             }
             [sentbutton setImage:nil forState:UIControlStateNormal];
             sendCountLabel.text = [NSString stringWithFormat:@"%d",[sendCountLabel.text intValue]-1];
@@ -1076,32 +1017,27 @@ kAPIGraphCommentPhoto,
             }];
         }else{
             if ([[NSUserDefaults standardUserDefaults]boolForKey:@"ogshare"]) {
-                ASIFormDataRequest* newOGPost = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:@"https://graph.facebook.com/me/climbing_:climb"]];
-                [newOGPost setPostValue:[PFFacebookUtils session].accessToken forKey:@"access_token"];
-                [newOGPost setPostValue:[NSString stringWithFormat:@"http://www.psychedapp.com/home/%@",routeObject.pfobj.objectId] forKey:@"route"];
-                [newOGPost setRequestMethod:@"POST"];
-                [newOGPost setCompletionBlock:^{
-                    SBJsonParser *jsonParser = [[SBJsonParser alloc] init];
-                    NSDictionary *jsonObjects = [jsonParser objectWithString:[newOGPost responseString]];
-                    [jsonParser release];
-                    jsonParser = nil;
-                    if ([jsonObjects objectForKey:@"id"]) {
-                        NSLog(@"posted, %@",[newOGPost responseString]);
-                        [self postNewSendWithOG:[jsonObjects objectForKey:@"id"]];
-                    }else{
-                        NSLog(@"most likely authentication failed , %@",[newOGPost responseString]);
-                        [self postNewSendWithOG:nil];
-                    }
-                    
-                }];
-                
-                
-                [newOGPost setFailedBlock:^{
-                    NSLog(@"failed");
-                }];
-                [newOGPost startAsynchronous];
-                NSLog(@"finished posting");
-                
+              AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
+              NSDictionary *parameters = @{@"route": [NSString stringWithFormat:@"http://www.psychedapp.com/home/%@",routeObject.pfobj.objectId],
+                                           @"access_token":[PFFacebookUtils session].accessToken};
+              [manager POST:@"http://example.com/resources.json" parameters:parameters success:^(AFHTTPRequestOperation *operation, id responseObject) {
+                NSLog(@"JSON: %@", responseObject);
+                SBJsonParser *jsonParser = [[SBJsonParser alloc] init];
+                NSDictionary *jsonObjects = [jsonParser objectWithString:[responseObject responseString]];
+                [jsonParser release];
+                jsonParser = nil;
+                if ([jsonObjects objectForKey:@"id"]) {
+                  NSLog(@"posted, %@",[responseObject responseString]);
+                  [self postNewSendWithOG:[jsonObjects objectForKey:@"id"]];
+                }else{
+                  NSLog(@"most likely authentication failed , %@",[responseObject responseString]);
+                  [self postNewSendWithOG:nil];
+                }
+
+              } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+                NSLog(@"Error: %@", error);
+              }];
+
             }else{
                 [self postNewSendWithOG:nil];
                 
@@ -1124,17 +1060,7 @@ kAPIGraphCommentPhoto,
             if ([fspObject objectForKey:@"facebookid"])
             {
                 NSLog(@"deleting %@...",[fspObject objectForKey:@"facebookid"]);
-                ASIHTTPRequest* newOGDelete = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"https://graph.facebook.com/%@?access_token=%@",[fspObject objectForKey:@"facebookid"],[PFFacebookUtils session].accessToken]]];
-                [newOGDelete setRequestMethod:@"DELETE"];
-                [newOGDelete setCompletionBlock:^{
-                    NSLog(@"newOGDelete posted, %@",[newOGDelete responseString]);
-                }];
-                [newOGDelete setFailedBlock:^{
-                    NSLog(@"newOGDelete failed");
-                }];
-                [newOGDelete startAsynchronous];
-                
-                
+              [self OGdeleteWithURLString:[NSString stringWithFormat:@"https://graph.facebook.com/%@?access_token=%@",[fspObject objectForKey:@"facebookid"],[PFFacebookUtils session].accessToken]];
             }
             [projbutton setImage:nil forState:UIControlStateNormal];
             projectCountLabel.text = [NSString stringWithFormat:@"%d",[projectCountLabel.text intValue]-1];
@@ -1221,18 +1147,8 @@ kAPIGraphCommentPhoto,
                 PFObject* fspObject = [fetchedFlash  objectAtIndex:0];
                 if ([fspObject objectForKey:@"facebookid"])
                 {
-                    NSLog(@"deleting %@...",[fspObject objectForKey:@"facebookid"]);
-                    ASIHTTPRequest* newOGDelete = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"https://graph.facebook.com/%@?access_token=%@",[fspObject objectForKey:@"facebookid"],[PFFacebookUtils session].accessToken]]];
-                    [newOGDelete setRequestMethod:@"DELETE"];
-                    [newOGDelete setCompletionBlock:^{
-                        NSLog(@"newOGDelete posted, %@",[newOGDelete responseString]);
-                    }];
-                    [newOGDelete setFailedBlock:^{
-                        NSLog(@"newOGDelete failed");
-                    }];
-                    [newOGDelete startAsynchronous];
-                    
-                    
+                  NSLog(@"deleting %@...",[fspObject objectForKey:@"facebookid"]);
+                  [self OGdeleteWithURLString:[NSString stringWithFormat:@"https://graph.facebook.com/%@?access_token=%@",[fspObject objectForKey:@"facebookid"],[PFFacebookUtils session].accessToken]];
                 }
                 [flashbutton setImage:nil forState:UIControlStateNormal];
                 flashCountLabel.text = [NSString stringWithFormat:@"%d",[flashCountLabel.text intValue]-1];
@@ -1269,17 +1185,7 @@ kAPIGraphCommentPhoto,
                 if ([fspObject objectForKey:@"facebookid"])
                 {
                     NSLog(@"deleting %@...",[fspObject objectForKey:@"facebookid"]);
-                    ASIHTTPRequest* newOGDelete = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"https://graph.facebook.com/%@?access_token=%@",[fspObject objectForKey:@"facebookid"],[PFFacebookUtils session].accessToken]]];
-                    [newOGDelete setRequestMethod:@"DELETE"];
-                    [newOGDelete setCompletionBlock:^{
-                        NSLog(@"newOGDelete posted, %@",[newOGDelete responseString]);
-                    }];
-                    [newOGDelete setFailedBlock:^{
-                        NSLog(@"newOGDelete failed");
-                    }];
-                    [newOGDelete startAsynchronous];
-                    
-                    
+                  [self OGdeleteWithURLString:[NSString stringWithFormat:@"https://graph.facebook.com/%@?access_token=%@",[fspObject objectForKey:@"facebookid"],[PFFacebookUtils session].accessToken]];
                 }
                 [sentbutton setImage:nil forState:UIControlStateNormal];
                 sendCountLabel.text = [NSString stringWithFormat:@"%d",[sendCountLabel.text intValue]-1];
@@ -1316,17 +1222,7 @@ kAPIGraphCommentPhoto,
                 if ([fspObject objectForKey:@"facebookid"])
                 {
                     NSLog(@"deleting %@...",[fspObject objectForKey:@"facebookid"]);
-                    ASIHTTPRequest* newOGDelete = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"https://graph.facebook.com/%@?access_token=%@",[fspObject objectForKey:@"facebookid"],[PFFacebookUtils session].accessToken]]];
-                    [newOGDelete setRequestMethod:@"DELETE"];
-                    [newOGDelete setCompletionBlock:^{
-                        NSLog(@"newOGDelete posted, %@",[newOGDelete responseString]);
-                    }];
-                    [newOGDelete setFailedBlock:^{
-                        NSLog(@"newOGDelete failed");
-                    }];
-                    [newOGDelete startAsynchronous];
-                    
-                    
+                  [self OGdeleteWithURLString:[NSString stringWithFormat:@"https://graph.facebook.com/%@?access_token=%@",[fspObject objectForKey:@"facebookid"],[PFFacebookUtils session].accessToken]];
                 }
                 [projbutton setImage:nil forState:UIControlStateNormal];
                 projectCountLabel.text = [NSString stringWithFormat:@"%d",[projectCountLabel.text intValue]-1];
@@ -1349,31 +1245,26 @@ kAPIGraphCommentPhoto,
                 }];
             }else{
                 if ([[NSUserDefaults standardUserDefaults]boolForKey:@"ogshare"]) {
-                    ASIFormDataRequest* newOGPost = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:@"https://graph.facebook.com/me/climbing_:project"]];
-                    [newOGPost setPostValue:[PFFacebookUtils session].accessToken forKey:@"access_token"];
-                    [newOGPost setPostValue:[NSString stringWithFormat:@"http://www.psychedapp.com/home/%@",routeObject.pfobj.objectId] forKey:@"route"];
-                    [newOGPost setRequestMethod:@"POST"];
-                    [newOGPost setCompletionBlock:^{
-                        SBJsonParser *jsonParser = [[SBJsonParser alloc] init];
-                        NSDictionary *jsonObjects = [jsonParser objectWithString:[newOGPost responseString]];
-                        [jsonParser release];
-                        jsonParser = nil;
-                        if ([jsonObjects objectForKey:@"id"]) {
-                            NSLog(@"posted, %@",[newOGPost responseString]);
-                            [self postNewProjWithOG:[jsonObjects objectForKey:@"id"]];
-                        }else{
-                            NSLog(@"most likely authentication failed , %@",[newOGPost responseString]);
-                            [self postNewProjWithOG:nil];
-                        }
-                        
-                    }];
-                    
-                    
-                    [newOGPost setFailedBlock:^{
-                        NSLog(@"failed");
-                    }];
-                    [newOGPost startAsynchronous];
-                    NSLog(@"finished posting");
+                  AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
+                  NSDictionary *parameters = @{@"access_token": [PFFacebookUtils session].accessToken,
+                                               @"route":[NSString stringWithFormat:@"http://www.psychedapp.com/home/%@",routeObject.pfobj.objectId]};
+                  [manager POST:@"http://example.com/resources.json" parameters:parameters success:^(AFHTTPRequestOperation *operation, id responseObject) {
+                    NSLog(@"JSON: %@", responseObject);
+                    SBJsonParser *jsonParser = [[SBJsonParser alloc] init];
+                    NSDictionary *jsonObjects = [jsonParser objectWithString:[responseObject responseString]];
+                    [jsonParser release];
+                    jsonParser = nil;
+                    if ([jsonObjects objectForKey:@"id"]) {
+                      NSLog(@"posted, %@",[responseObject responseString]);
+                      [self postNewProjWithOG:[jsonObjects objectForKey:@"id"]];
+                    }else{
+                      NSLog(@"most likely authentication failed , %@",[responseObject responseString]);
+                      [self postNewProjWithOG:nil];
+                    }
+
+                  } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+                    NSLog(@"Error: %@", error);
+                  }];
                     
                 }else{
                     [self postNewProjWithOG:nil];
@@ -1606,91 +1497,81 @@ kAPIGraphCommentPhoto,
 -(void)deleteOGwithId:(NSString*)idstring
 {
     if (idstring) {
-    ASIHTTPRequest* newOGDelete = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"https://graph.facebook.com/%@?access_token=%@",idstring,[PFFacebookUtils session].accessToken]]];
-    [newOGDelete setRequestMethod:@"DELETE"];
-        NSLog(@"deleting %@",newOGDelete.url);
-    [newOGDelete setCompletionBlock:^{
-        NSLog(@"newOGDelete posted, %@",[newOGDelete responseString]);
-    }];
-    [newOGDelete setFailedBlock:^{
-        NSLog(@"newOGDelete failed");
-    }];
-    [newOGDelete startAsynchronous];
-        
+      [self OGdeleteWithURLString:[NSString stringWithFormat:@"https://graph.facebook.com/%@?access_token=%@",idstring,[PFFacebookUtils session].accessToken]];
     }
 }
 
 -(void)getFacebookRouteDetails{
     
     NSString* fbphotoid = [routeObject.pfobj objectForKey:@"photoid"];
-    ASIHTTPRequest* request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"https://graph.facebook.com/%@?access_token=%@",fbphotoid,[PFFacebookUtils session].accessToken]]];
-    NSLog(@"url = %@",[request url]);
-    [request setCompletionBlock:^{
-            NSLog(@"request response = %@",[request responseString]);
-        if(![[request responseString] isEqualToString:@"false"]){
-        SBJSON *parser = [[SBJSON alloc] init];
+  AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
+  [manager GET:[NSString stringWithFormat:@"https://graph.facebook.com/%@?access_token=%@",fbphotoid,[PFFacebookUtils session].accessToken] parameters:nil success:^(AFHTTPRequestOperation *operation, id responseObject) {
+    NSLog(@"JSON: %@", responseObject);
+    if(![[responseObject responseString] isEqualToString:@"false"]){
+      SBJSON *parser = [[SBJSON alloc] init];
 
-        [commentsArray removeAllObjects];
-        // Prepare URL request to download statuses from Twitter
-        
-        // Get JSON as a NSString from NSData response
-        NSString *json_string = [[NSString alloc] initWithString:[request responseString]];
-        NSDictionary *parsedJson = [parser objectWithString:json_string error:nil];
-        [parser release];
-        [json_string release];
-        NSDictionary *commentsDict = [parsedJson objectForKey:@"comments"];
-        NSDictionary *likesDict =[parsedJson objectForKey:@"likes"];
-        NSArray *likedataDict = [likesDict objectForKey:@"data"];
-        NSLog(@"%d likers",[likedataDict count]);
-        for (NSDictionary* liker in likedataDict) {
-            NSLog(@"liker = %@",[liker objectForKey:@"name"]);
-            if ([[liker objectForKey:@"name"]isEqualToString:[[PFUser currentUser]objectForKey:@"name"]]) {
-                //color
-                [likeButton setImage:[UIImage imageNamed:@"heartcolor.png"] forState:UIControlStateNormal];       
-            }
+      [commentsArray removeAllObjects];
+      // Prepare URL request to download statuses from Twitter
+
+      // Get JSON as a NSString from NSData response
+      NSString *json_string = [[NSString alloc] initWithString:[responseObject responseString]];
+      NSDictionary *parsedJson = [parser objectWithString:json_string error:nil];
+      [parser release];
+      [json_string release];
+      NSDictionary *commentsDict = [parsedJson objectForKey:@"comments"];
+      NSDictionary *likesDict =[parsedJson objectForKey:@"likes"];
+      NSArray *likedataDict = [likesDict objectForKey:@"data"];
+      NSLog(@"%d likers",[likedataDict count]);
+      for (NSDictionary* liker in likedataDict) {
+        NSLog(@"liker = %@",[liker objectForKey:@"name"]);
+        if ([[liker objectForKey:@"name"]isEqualToString:[[PFUser currentUser]objectForKey:@"name"]]) {
+          //color
+          [likeButton setImage:[UIImage imageNamed:@"heartcolor.png"] forState:UIControlStateNormal];
         }
-        [likeButton setUserInteractionEnabled:YES];
-        if ([likedataDict count]>0) {
+      }
+      [likeButton setUserInteractionEnabled:YES];
+      if ([likedataDict count]>0) {
         [routeObject.pfobj setObject:[NSNumber numberWithInt:[likedataDict count]] forKey:@"likecount"];
         [routeObject.pfobj saveEventually];
+      }
+      likeCountLabel.text = [NSString stringWithFormat:@"%d likes",[likedataDict count]];
+      NSArray *dataDict = [commentsDict objectForKey:@"data"];
+      for (NSDictionary* comment in dataDict) {
+        NSLog(@"comment =%@",[comment objectForKey:@"message"]);
+        NSDictionary *fromDict = [comment objectForKey:@"from"];
+        PFObject* fbobject = [PFObject objectWithClassName:@"Comment"];
+        [fbobject setObject:[comment objectForKey:@"message"] forKey:@"text"];
+        [fbobject setObject:[fromDict objectForKey:@"name"] forKey:@"commentername"];
+        [fbobject setObject:routeObject.pfobj forKey:@"route"];
+        [fbobject setObject:[comment objectForKey:@"created_time"] forKey:@"createdAt"];
+        NSString* urlforprofile = [NSString stringWithFormat:@"https://graph.facebook.com/%@/picture?access_token=%@",[fromDict objectForKey:@"id"],[PFFacebookUtils session].accessToken];
+
+        [fbobject setObject:urlforprofile forKey:@"commenterimage"];
+
+        [commentsArray addObject:fbobject];
+        [commentsTable reloadData];
+        [commentsTable layoutIfNeeded];
+        if (commentsTable.superview){
+          [commentsTable removeFromSuperview];
         }
-        likeCountLabel.text = [NSString stringWithFormat:@"%d likes",[likedataDict count]];
-        NSArray *dataDict = [commentsDict objectForKey:@"data"];
-        for (NSDictionary* comment in dataDict) {
-            NSLog(@"comment =%@",[comment objectForKey:@"message"]);
-            NSDictionary *fromDict = [comment objectForKey:@"from"];
-            PFObject* fbobject = [PFObject objectWithClassName:@"Comment"];
-            [fbobject setObject:[comment objectForKey:@"message"] forKey:@"text"];
-            [fbobject setObject:[fromDict objectForKey:@"name"] forKey:@"commentername"];
-            [fbobject setObject:routeObject.pfobj forKey:@"route"];
-            [fbobject setObject:[comment objectForKey:@"created_time"] forKey:@"createdAt"];
-            NSString* urlforprofile = [NSString stringWithFormat:@"https://graph.facebook.com/%@/picture?access_token=%@",[fromDict objectForKey:@"id"],[PFFacebookUtils session].accessToken];
-            
-            [fbobject setObject:urlforprofile forKey:@"commenterimage"];
-            
-            [commentsArray addObject:fbobject];
-            [commentsTable reloadData];
-            [commentsTable layoutIfNeeded];
-            if (commentsTable.superview){
-                [commentsTable removeFromSuperview];
-            }
-            
-            
-        }
-        [self arrangeSubViewsaftercomments];
-        if ([commentsArray count]>0) {
+
+
+      }
+      [self arrangeSubViewsaftercomments];
+      if ([commentsArray count]>0) {
         [routeObject.pfobj setObject:[NSNumber numberWithInt:[commentsArray count]] forKey:@"commentcount"];
         [routeObject.pfobj saveEventually];
-        }
-        }else if([[request responseString]isEqualToString:@"false"]){
-            
-            [JHNotificationManager notificationWithMessage:[NSString stringWithFormat:@"Sorry! Only friends of %@ can like and post/view comments",usernameLabel.text]];
-        }
-     [postButton setUserInteractionEnabled:YES];
-    }];
-    [request setFailedBlock:^{NSLog(@"failed with error =%@",[request error]);}];
-    [request startAsynchronous];
-    
+      }
+    }else if([[responseObject responseString]isEqualToString:@"false"]){
+
+      [JHNotificationManager notificationWithMessage:[NSString stringWithFormat:@"Sorry! Only friends of %@ can like and post/view comments",usernameLabel.text]];
+    }
+    [postButton setUserInteractionEnabled:YES];
+
+  } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+    NSLog(@"Error: %@", error);
+  }];
+
 }
 
 -(void)getImageIfUnavailable
@@ -1705,26 +1586,7 @@ kAPIGraphCommentPhoto,
         urlstring = [routeObject.pfobj objectForKey:@"userimage"];
         
         }
-        ASIHTTPRequest* request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:urlstring]];
-        [request setCompletionBlock:^{
-            UIImage* ownerimage = [UIImage imageWithData:[request responseData]];
-            routeObject.ownerImage = ownerimage;
-            UserImageView.image = ownerimage;
-            UserImageView.alpha =0.0;
-            [UIView animateWithDuration:0.3
-                                  delay:0.0
-                                options: UIViewAnimationCurveEaseOut
-                             animations:^{
-                                 UserImageView.alpha = 1.0;
-                             } 
-                             completion:^(BOOL finished){
-                                 // NSLog(@"Done!");
-                             }];
-
-        }];
-        
-        [request setFailedBlock:^{}];
-        [request startAsynchronous];
+      [UserImageView setImageWithURL:[NSURL URLWithString:urlstring]];
     }else{
         UserImageView.image= routeObject.ownerImage;
     }
@@ -2157,29 +2019,8 @@ kAPIGraphCommentPhoto,
 - (IBAction)PostComment:(id)sender {
         NSError*error=nil;
     if ([routeObject.pfobj objectForKey:@"photoid"])
-    {//if uploaded to facebook also upload comment to facebook.. keep everything there
-        
-        
-        //save photoid in array in docs directory
-//        NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, 
-//                                                            NSUserDomainMask, YES);
-//        if ([paths count] > 0)
-//        {
-//            // Path to save array data
-//            NSString  *arrayPath = [[paths objectAtIndex:0] 
-//                                    stringByAppendingPathComponent:@"array.out"];
-//            NSMutableArray *arrayFromFile = [NSMutableArray arrayWithContentsOfFile:arrayPath];
-//            if (![arrayFromFile containsObject:[routeObject.pfobj objectForKey:@"photoid"]]) {
-//                [arrayFromFile addObject:[routeObject.pfobj objectForKey:@"photoid"]];
-//
-//            }
-//            [arrayFromFile writeToFile:arrayPath atomically:YES];
-//
-//            
-//        }
-        
-            
-            
+    {
+
         currentAPICall = kAPIGraphCommentPhoto;
         NSMutableDictionary *params = [NSMutableDictionary dictionaryWithObjectsAndKeys:
                                        commentTextField.text, @"message",nil];
@@ -2515,41 +2356,29 @@ if ([routeObject.pfobj objectForKey:@"isPage"]==[NSNumber numberWithBool:YES] &&
 -(void)LikeOperation:(NSInteger)likecounter
 {
     if ([[NSUserDefaults standardUserDefaults]boolForKey:@"ogshare"]) {
-        ASIFormDataRequest* newOGPost = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:@"https://graph.facebook.com/me/og.likes"]];
-        [newOGPost setPostValue:[PFFacebookUtils session].accessToken forKey:@"access_token"];
-        [newOGPost setPostValue:[NSString stringWithFormat:@"http://www.psychedapp.com/home/%@",routeObject.pfobj.objectId] forKey:@"object"];
-        [newOGPost setRequestMethod:@"POST"];
-        [newOGPost setCompletionBlock:^{
-            SBJsonParser *jsonParser = [[SBJsonParser alloc] init];
-            NSDictionary *jsonObjects = [jsonParser objectWithString:[newOGPost responseString]];
-            [jsonParser release];
-            jsonParser = nil;
-            if ([jsonObjects objectForKey:@"id"]) {
-                NSLog(@"posted, %@",[newOGPost responseString]);
-                [self postNewLikeWithOG:[jsonObjects objectForKey:@"id"] andLikeCounter:likecounter];
-            }else{
-                NSLog(@"most likely authentication failed , %@",[newOGPost responseString]);
-                [self postNewLikeWithOG:nil andLikeCounter:likecounter];
-            }
-            
-        }];
-        
-        
-        [newOGPost setFailedBlock:^{
-            NSLog(@"failed");
-        }];
-        [newOGPost startAsynchronous];
-        NSLog(@"finished posting");
-        
+      AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
+      NSDictionary *parameters = @{@"access_token": [PFFacebookUtils session].accessToken,
+                                   @"object": [NSString stringWithFormat:@"http://www.psychedapp.com/home/%@",routeObject.pfobj.objectId]};
+      [manager POST:@"https://graph.facebook.com/me/og.likes" parameters:parameters success:^(AFHTTPRequestOperation *operation, id responseObject) {
+        NSLog(@"JSON: %@", responseObject);
+        SBJsonParser *jsonParser = [[SBJsonParser alloc] init];
+        NSDictionary *jsonObjects = [jsonParser objectWithString:[responseObject responseString]];
+        [jsonParser release];
+        jsonParser = nil;
+        if ([jsonObjects objectForKey:@"id"]) {
+          NSLog(@"posted, %@",[responseObject responseString]);
+          [self postNewLikeWithOG:[jsonObjects objectForKey:@"id"] andLikeCounter:likecounter];
+        }else{
+          NSLog(@"most likely authentication failed , %@",[responseObject responseString]);
+          [self postNewLikeWithOG:nil andLikeCounter:likecounter];
+        }
+
+      } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+        NSLog(@"Error: %@", error);
+      }];
     }else{
         [self postNewLikeWithOG:nil andLikeCounter:likecounter];
-        
     }
-    
-    
-    
-    
-    
 }
 
 -(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -2624,13 +2453,8 @@ if (cell == nil) {
     
     cell.commentLabel.text = [[commentsArray objectAtIndex:indexPath.row] objectForKey:@"text"];
     cell.commenterNameLabel.text = [[commentsArray objectAtIndex:indexPath.row] objectForKey:@"commentername"];
-    ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:[[commentsArray objectAtIndex:indexPath.row] objectForKey:@"commenterimage"]] ];
-    [request setCompletionBlock:^{
-        cell.commenterImageView.image = [UIImage imageWithData:[request responseData]];
-    }];
-    [request setFailedBlock:^{NSLog(@"image retrival failed");}];
-    [request startAsynchronous];
-
+    [cell.commenterImageView setImageWithURL:[NSURL URLWithString:
+                                              [[commentsArray objectAtIndex:indexPath.row] objectForKey:@"commenterimage"]] placeholderImage:nil];
     return cell;  
 }
 - (IBAction)recommendButton:(id)sender {
@@ -2688,34 +2512,24 @@ if (cell == nil) {
         [recommendedFBFriends removeObjectsInArray:discardedItems];
         
         if ([[NSUserDefaults standardUserDefaults]boolForKey:@"ogshare"]) {
-            ASIFormDataRequest* newOGPost = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:@"https://graph.facebook.com/me/climbing_:recommend"]];
-//            [newOGPost setPostValue:@"true" forKey:@"fb:explicitly_shared"];
-            [newOGPost setPostValue:[PFFacebookUtils session].accessToken forKey:@"access_token"];
-            [newOGPost setPostValue:[NSString stringWithFormat:@"http://www.psychedapp.com/home/%@",routeObject.pfobj.objectId] forKey:@"route"];
-            [newOGPost setPostValue:[NSString stringWithFormat:@"%@",_recommendTextView.text] forKey:@"message"];
-            [newOGPost setRequestMethod:@"POST"];
-            [newOGPost setCompletionBlock:^{
-                SBJsonParser *jsonParser = [[SBJsonParser alloc] init];
-                NSDictionary *jsonObjects = [jsonParser objectWithString:[newOGPost responseString]];
-                [jsonParser release];
-                jsonParser = nil;
-                if ([jsonObjects objectForKey:@"id"]) {
-                    NSLog(@"posted og recommendation, %@",[newOGPost responseString]);
-                 //   [self postNewLikeWithOG:[jsonObjects objectForKey:@"id"] andLikeCounter:likecounter];
-                }else{
-                    NSLog(@"most likely authentication failed , %@",[newOGPost responseString]);
-                   // [self postNewLikeWithOG:nil andLikeCounter:likecounter];
-                }
-                
-            }];
-            
-            
-            [newOGPost setFailedBlock:^{
-                NSLog(@"failed");
-            }];
-            [newOGPost startAsynchronous];
-            NSLog(@"finished posting");
-            
+          AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
+          NSDictionary *parameters = @{@"access_token": [PFFacebookUtils session].accessToken,
+                                       @"route": [NSString stringWithFormat:@"http://www.psychedapp.com/home/%@",routeObject.pfobj.objectId],
+                                       @"message":[NSString stringWithFormat:@"%@",_recommendTextView.text]};
+          [manager POST:@"https://graph.facebook.com/me/climbing_:recommend" parameters:parameters success:^(AFHTTPRequestOperation *operation, id responseObject) {
+            NSLog(@"JSON: %@", responseObject);
+            SBJsonParser *jsonParser = [[SBJsonParser alloc] init];
+            NSDictionary *jsonObjects = [jsonParser objectWithString:[responseObject responseString]];
+            [jsonParser release];
+            jsonParser = nil;
+            if ([jsonObjects objectForKey:@"id"]) {
+              NSLog(@"posted og recommendation, %@",[responseObject responseString]);
+            }else{
+              NSLog(@"most likely authentication failed , %@",[responseObject responseString]);
+            }
+          } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+            NSLog(@"Error: %@", error);
+          }];
         }
         
     for (FBfriend* friend in recommendedFBFriends) {
@@ -2779,7 +2593,16 @@ if (cell == nil) {
 }
 
 
-
+- (void)OGdeleteWithURLString:(NSString *)urlString
+{
+  AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
+  [manager DELETE:urlString parameters:nil success:^(AFHTTPRequestOperation *operation, id responseObject) {
+    NSLog(@"JSON: %@", responseObject);
+    NSLog(@"newOGDelete posted, %@",[responseObject responseString]);
+  } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+    NSLog(@"Error: %@", error);
+  }];
+}
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
 {
     // Return YES for supported orientations

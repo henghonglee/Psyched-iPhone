@@ -10,7 +10,7 @@
 #import "SearchUserCell.h"
 #import <Parse/Parse.h>
 #import "SearchFriendsViewController.h"
-#import "ASIHTTPRequest.h"
+#import "UIImageView+AFNetworking.h"
 @implementation FollowingViewController
 @synthesize searchBar;
 @synthesize searchTable;
@@ -236,21 +236,9 @@
                 cell.userImageView.image = [UIImage imageNamed:@"placeholder_user.png"];
             }
         }else{
-        ASIHTTPRequest* request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:urlstring]];
-        [request setCompletionBlock:^{
-            userObjForRow.userImage = [UIImage imageWithData:[request responseData]];
-            cell.userImageView.image = userObjForRow.userImage;
-            if (cell.userImageView.image == nil) {
-                cell.userImageView.image = [UIImage imageNamed:@"placeholder_user.png"];
-            }
-        }];
-        [request setFailedBlock:^{}];
-        [request startAsynchronous];
+          [cell.userImageView setImageWithURL:[NSURL URLWithString:urlstring] placeholderImage:[UIImage imageNamed:@"placeholder_user.png"]];
         }
-        
     }
-    
-    
     return cell;
 }
 -(void)searchBarSearchButtonClicked:(UISearchBar *)_searchBar

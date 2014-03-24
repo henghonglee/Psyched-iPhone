@@ -15,6 +15,8 @@
 #import "FollowingViewController.h"
 #import "SearchFriendsViewController.h"
 #import "UserFeed.h"
+#import "AFNetworking.h"
+#import "UIImageView+AFNetworking.h"
 @implementation ProfileViewController
 @synthesize userimage;
 @synthesize levelLabel;
@@ -150,13 +152,7 @@
         if (userimage) {
             userImageView.image = userimage;
         }else{
-            ASIHTTPRequest* request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:[selectedUser objectForKey:@"profilepicture"]] ];
-            [request setCompletionBlock:^{
-                userimage = [UIImage imageWithData:[request responseData]];
-                userImageView.image = userimage;
-            }];
-            [request setFailedBlock:^{}];
-            [request startAsynchronous];
+          [userImageView setImageWithURL:[NSURL URLWithString:[selectedUser objectForKey:@"profilepicture"]] placeholderImage:nil];
         }
         if ([[selectedUser objectForKey:@"score"] isKindOfClass:[NSNull class]]) {
             [selectedUser setObject:[NSNumber numberWithInt:0] forKey:@"score"];
@@ -390,30 +386,14 @@
                                                     
                                                     if ([urlstring isEqualToString:@"0,0,0,0,0,0"])
                                                     {
-                                                        _noTotalClimbsLabel.hidden = NO;
-                                                        [_totalClimbsChartActivityIndicator stopAnimating];
+                                                      _noTotalClimbsLabel.hidden = NO;
+                                                      [_totalClimbsChartActivityIndicator stopAnimating];
                                                     }else{
-                                                            NSURL* urlFinal = [NSURL URLWithString:[[NSString stringWithFormat:@"https://chart.googleapis.com/chart?chs=520x324&cht=bvs&chco=19F587|F5EC11|FF9B13|F53312|3019F5|CC16F5|000000&chd=t:%@&chds=a&chxt=x&chxl=0:|----|V0-V2|V3-V5|V6-V8|V9-V11|>V11&chbh=a,0&chm=N,000000,0,-1,15&chf=bg,s,65432100",urlstring]stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
-                                                            NSLog(@"urlstringfinal = %@",urlFinal);
-                                                            ASIHTTPRequest* chartImageRequest = [ASIHTTPRequest requestWithURL:urlFinal];
-                                                            NSLog(@"chartreq=%@",chartImageRequest.url);
-                                                            
-                                                            [chartImageRequest setCompletionBlock:^{
-                                                                [_totalClimbsChartView setImage:[UIImage imageWithData:[chartImageRequest responseData]]];
-                                                                [_totalClimbsChartActivityIndicator stopAnimating];
-                                                                
-                                                                [urlstring release];
-                                                            }];
-                                                            [chartImageRequest setFailedBlock:^{
-                                                                NSLog(@"failedddd");
-                                                                [_totalClimbsChartActivityIndicator stopAnimating];
-                                                                [urlstring release];
-                                                            }];
-                                                            [chartImageRequest setTimeOutSeconds:10];
-                                                            [chartImageRequest startAsynchronous];
+                                                      NSURL* urlFinal = [NSURL URLWithString:[[NSString stringWithFormat:@"https://chart.googleapis.com/chart?chs=520x324&cht=bvs&chco=19F587|F5EC11|FF9B13|F53312|3019F5|CC16F5|000000&chd=t:%@&chds=a&chxt=x&chxl=0:|----|V0-V2|V3-V5|V6-V8|V9-V11|>V11&chbh=a,0&chm=N,000000,0,-1,15&chf=bg,s,65432100",urlstring]stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
+                                                      [_totalClimbsChartActivityIndicator stopAnimating];
+                                                      [_totalClimbsChartView setImageWithURL:urlFinal placeholderImage:nil];
                                                     }
-                                                        }];
-                                                
+                                                }];
                                             }];
                                         }];
                                     }];
@@ -524,22 +504,8 @@
                                                         [_chartActivityIndicator stopAnimating];
                                                     }else{
                                                     NSURL* urlFinal = [NSURL URLWithString:[[NSString stringWithFormat:@"https://chart.googleapis.com/chart?chs=520x324&cht=bvs&chco=19F587|F5EC11|FF9B13|F53312|3019F5|CC16F5|000000&chd=t:%@&chds=a&chxt=x&chxl=0:|<V0|V0-V2|V3-V5|V6-V8|V9-V11|>V11&chbh=a,0&chm=N,000000,0,-1,15&chf=bg,s,65432100",urlstring]stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
-                                                    NSLog(@"urlstringfinal = %@",urlFinal);
-                                                    ASIHTTPRequest* chartImageRequest = [ASIHTTPRequest requestWithURL:urlFinal];
-                                                    NSLog(@"chartreq=%@",chartImageRequest.url);
-                                                    
-                                                    [chartImageRequest setCompletionBlock:^{
-                                                        [_chartImageView setImage:[UIImage imageWithData:[chartImageRequest responseData]]];
-                                                        [_chartActivityIndicator stopAnimating];
-                                                        [urlstring release];
-                                                    }];
-                                                    [chartImageRequest setFailedBlock:^{
-                                                        NSLog(@"failedddd");
-                                                        [_chartActivityIndicator stopAnimating];
-                                                        [urlstring release];
-                                                    }];
-                                                    [chartImageRequest setTimeOutSeconds:10];
-                                                    [chartImageRequest startAsynchronous];
+                                                      [_chartImageView setImageWithURL:urlFinal placeholderImage:nil];
+                                                      [_chartActivityIndicator stopAnimating];
                                                     }
                                                 }];
                                                 
@@ -574,22 +540,10 @@
          [queryArray removeObject:userQuery];
     selectedUser = [objects objectAtIndex:0];
         [selectedUser retain];
-//        int totalScore = [((NSNumber*)[selectedUser objectForKey:@"score"]) intValue];
-//        int level = (int)((1+sqrt(totalScore/5 + 1))/2);
-//        float percentToNextLevel = (((1+sqrt(totalScore/5 + 1))/2) - level);
-//        levelProgressBar.progress = percentToNextLevel;
-//        levelPercentLabel.text = [NSString stringWithFormat:@"%d/%d points to Level %d (%d%%)",totalScore,5*(((level+1)*2-1)*((level+1)*2-1)),level+1,(int)(percentToNextLevel*100)];
-//        levelLabel.text = [NSString stringWithFormat:@"%d", level];
     if (userimage) {
         userImageView.image = userimage;
     }else{
-        ASIHTTPRequest* request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:[selectedUser objectForKey:@"profilepicture"]] ];
-        [request setCompletionBlock:^{
-            userimage = [UIImage imageWithData:[request responseData]];
-            userImageView.image = userimage;
-        }];
-        [request setFailedBlock:^{}];
-        [request startAsynchronous];
+      [userImageView setImageWithURL:[NSURL URLWithString:[selectedUser objectForKey:@"profilepicture"]] placeholderImage:nil];
     }
     PFQuery* likequery = [PFQuery queryWithClassName:@"Route"];
         likequery.cachePolicy= kPFCachePolicyNetworkElseCache;         
@@ -841,15 +795,7 @@
         if (((UserFeed*)[userfeeds objectAtIndex:indexPath.row]).senderImage) {
             cell.senderImage.image = ((UserFeed*)[userfeeds objectAtIndex:indexPath.row]).senderImage;
         }else{
-            ASIHTTPRequest* request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:urlstring]];
-            [request setCompletionBlock:^{
-                cell.senderImage.image= [UIImage imageWithData:[request responseData]];
-                ((UserFeed*)[userfeeds objectAtIndex:indexPath.row]).senderImage = cell.senderImage.image;
-            }];
-            [request setFailedBlock:^{
-                cell.senderImage.image= [UIImage imageNamed:@"placeholder_user.png"];
-            }];
-            [request startAsynchronous];
+          [cell.senderImage setImageWithURL:[NSURL URLWithString:urlstring] placeholderImage:[UIImage imageNamed:@"placeholder_user.png"]];
         }
 
     if ([userfeeds count]>0) {

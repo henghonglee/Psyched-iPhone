@@ -14,6 +14,7 @@
 #import "FlurryAnalytics.h"
 #import "NSObject+SBJSON.h"
 #import "NSString+SBJSON.h"
+#import "AFNetworking.h"
 @interface LoginViewController ()
 {
     UIScrollView* scrollView;
@@ -200,117 +201,87 @@
                 [self apiFQLIMe];
             } else {
                [self apiFQLIMe];
-               
-                //        [self apiGraphUserPhotosPost];
             }
         }];
         [permissions release];
-//    }else{
-//        InstagramViewController* viewController = [[InstagramViewController alloc]initWithNibName:@"InstagramViewController" bundle:nil];
-//        viewController.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
-//        [self presentModalViewController:viewController animated:YES];
-//        [viewController release];
-//    }
-//       
    }
 
 
 - (void)apiFQLIMe {
-    // Using the "pic" picture since this currently has a maximum width of 100 pixels
-    // and since the minimum profile picture size is 180 pixels wide we should be able
-    // to get a 100 pixel wide version of the profile picture
+  NSURL* reqURL = [NSURL URLWithString:[NSString stringWithFormat:@"https://graph.facebook.com/fql?q=SELECT+about_me,locale,birthday,birthday_date,sex,uid,name,pic_big,email+FROM+user+WHERE+uid=me()&access_token=%@",[PFFacebookUtils session].accessToken]];
+  AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
+  [manager GET:[reqURL absoluteString] parameters:nil success:^(AFHTTPRequestOperation *operation, id responseObject) {
+    SBJsonParser *jsonParser = [[SBJsonParser alloc] init];
+    NSArray *jsonObjects = [[jsonParser objectWithString:[responseObject responseString]] objectForKey:@"data"];
+    [jsonParser release];
+    jsonParser = nil;
 
-    
-    NSLog(@"runnign fqlme");
-    NSURL* reqURL = [NSURL URLWithString:[NSString stringWithFormat:@"https://graph.facebook.com/fql?q=SELECT+about_me,locale,birthday,birthday_date,sex,uid,name,pic_big,email+FROM+user+WHERE+uid=me()&access_token=%@",[PFFacebookUtils session].accessToken]];
-    ASIHTTPRequest* fqlRequest = [ASIHTTPRequest requestWithURL:reqURL];
-    [fqlRequest setCompletionBlock:^{
-        SBJsonParser *jsonParser = [[SBJsonParser alloc] init];
-        NSArray *jsonObjects = [[jsonParser objectWithString:[fqlRequest responseString]] objectForKey:@"data"];
-        [jsonParser release];
-        jsonParser = nil;
-        
-        NSLog(@"result = %@ class = %@",jsonObjects,[jsonObjects class]);
-        if ([jsonObjects isKindOfClass:[NSArray class]]) {
-            if([((NSArray*)jsonObjects) count]==0) {
-                NSLog(@"couldnt get user values .. exiting");
-                UIAlertView* alert = [[UIAlertView alloc]initWithTitle:@"Error" message:@"Couldnt retrieve your Facebook details" delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil];
-    [alert show];
-    [alert release];
-                return;
-            }else{
-                
-                NSDictionary* result = [((NSArray*)jsonObjects) objectAtIndex:0];
-                // This callback can be a result of getting the user's basic
-                // information or getting the user's permissions.
-                if ([result objectForKey:@"name"]) {
-                    
-                    if ([result objectForKey:@"email"])
-                    [[PFUser currentUser] setObject:[result objectForKey:@"email"] forKey:@"email"];
+    NSLog(@"result = %@ class = %@",jsonObjects,[jsonObjects class]);
+    if ([jsonObjects isKindOfClass:[NSArray class]]) {
+      if([((NSArray*)jsonObjects) count]==0) {
+        NSLog(@"couldnt get user values .. exiting");
+        UIAlertView* alert = [[UIAlertView alloc]initWithTitle:@"Error" message:@"Couldnt retrieve your Facebook details" delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil];
+        [alert show];
+        [alert release];
+        return;
+      }else{
 
-                    if ([result objectForKey:@"pic"])
-                    [[PFUser currentUser] setObject:[result objectForKey:@"pic"] forKey:@"profilepicture"];
+        NSDictionary* result = [((NSArray*)jsonObjects) objectAtIndex:0];
+        // This callback can be a result of getting the user's basic
+        // information or getting the user's permissions.
+        if ([result objectForKey:@"name"]) {
 
-                    if ([result objectForKey:@"name"])
-                    [[PFUser currentUser] setObject:[result objectForKey:@"name"] forKey:@"name"];
-                    if ([result objectForKey:@"uid"])
-                    [[PFUser currentUser] setObject:[result objectForKey:@"uid"] forKey:@"facebookid"]; 
-                    
-                    if ([result objectForKey:@"birthday_date"]){
-                    [[PFUser currentUser] setObject:[result objectForKey:@"birthday_date"] forKey:@"birthday_date"];
-                    NSString *trimmedString=[((NSString*)[result objectForKey:@"birthday_date"]) substringFromIndex:[((NSString*)[result objectForKey:@"birthday_date"]) length]-4];
-                    NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
-                    [formatter setDateFormat:@"YYYY"];
-                    NSString *yearString = [formatter stringFromDate:[NSDate date]];
-                    [formatter release];
-                    int age = [yearString intValue]-[trimmedString intValue];
-                    [[PFUser currentUser] setObject:[NSNumber numberWithInt:age] forKey:@"age"];         
-                    }
-                    if ([result objectForKey:@"sex"])                    
-                    [[PFUser currentUser] setObject:[result objectForKey:@"sex"] forKey:@"sex"]; 
-                    if ([result objectForKey:@"locale"])
-                    [[PFUser currentUser] setObject:[result objectForKey:@"locale"] forKey:@"locale"];
-                    if ([result objectForKey:@"about_me"])                    
-                    [[PFUser currentUser] setObject:[result objectForKey:@"about_me"] forKey:@"about_me"];
-                    
-                   
-//                   [FlurryAnalytics setUserID:[[PFUser currentUser] objectForKey:@"name"]];
-//                           if ([[[PFUser currentUser] objectForKey:@"sex"] isEqualToString:@"male"]) {
-//                               [FlurryAnalytics setGender:@"m"];
-//                            }else{
-//                               [FlurryAnalytics setGender:@"f"];
-//                           }
-//                    [FlurryAnalytics setAge:age];
-//                  NSDictionary *dictionary =
-//                    [NSDictionary dictionaryWithObjectsAndKeys:[result objectForKey:@"email"],@"email",[result objectForKey:@"birthday"],@"birthday",[result objectForKey:@"name"],@"name",[result objectForKey:@"sex"],@"sex",[result objectForKey:@"uid"],@"uid",[result objectForKey:@"about_me"],@"about_me", nil];
-//                    
-//                    [FlurryAnalytics logEvent:@"NEW_USER_LOGIN" withParameters:dictionary timed:YES];
-                    
-         
-                    NSLog(@"saving user");
-                    [[PFUser currentUser] saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
-                        [PFPush subscribeToChannelInBackground:[NSString stringWithFormat:@"channel%@",[[PFUser currentUser] objectForKey:@"facebookid"]]block:^(BOOL succeeded, NSError *error) {
+          if ([result objectForKey:@"email"])
+            [[PFUser currentUser] setObject:[result objectForKey:@"email"] forKey:@"email"];
 
-                            [JHNotificationManager notificationWithMessage:[NSString stringWithFormat:@"Logged in as %@",[result objectForKey:@"name"]]];
-                            InstagramViewController* viewController = [[InstagramViewController alloc]initWithNibName:@"InstagramViewController" bundle:nil];
-                            viewController.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
-                            ParseStarterProjectAppDelegate* applicationDelegate = ((ParseStarterProjectAppDelegate*)[[UIApplication sharedApplication]delegate]);
-                            applicationDelegate.window.rootViewController = viewController;
-                            [viewController release];
+          if ([result objectForKey:@"pic"])
+            [[PFUser currentUser] setObject:[result objectForKey:@"pic"] forKey:@"profilepicture"];
 
-                        }];
-                        
-                    }];
-                    
-                    
-                }
-            }
+          if ([result objectForKey:@"name"])
+            [[PFUser currentUser] setObject:[result objectForKey:@"name"] forKey:@"name"];
+          if ([result objectForKey:@"uid"])
+            [[PFUser currentUser] setObject:[result objectForKey:@"uid"] forKey:@"facebookid"];
+
+          if ([result objectForKey:@"birthday_date"]){
+            [[PFUser currentUser] setObject:[result objectForKey:@"birthday_date"] forKey:@"birthday_date"];
+            NSString *trimmedString=[((NSString*)[result objectForKey:@"birthday_date"]) substringFromIndex:[((NSString*)[result objectForKey:@"birthday_date"]) length]-4];
+            NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
+            [formatter setDateFormat:@"YYYY"];
+            NSString *yearString = [formatter stringFromDate:[NSDate date]];
+            [formatter release];
+            int age = [yearString intValue]-[trimmedString intValue];
+            [[PFUser currentUser] setObject:[NSNumber numberWithInt:age] forKey:@"age"];
+          }
+          if ([result objectForKey:@"sex"])
+            [[PFUser currentUser] setObject:[result objectForKey:@"sex"] forKey:@"sex"];
+          if ([result objectForKey:@"locale"])
+            [[PFUser currentUser] setObject:[result objectForKey:@"locale"] forKey:@"locale"];
+          if ([result objectForKey:@"about_me"])
+            [[PFUser currentUser] setObject:[result objectForKey:@"about_me"] forKey:@"about_me"];
+
+          NSLog(@"saving user");
+          [[PFUser currentUser] saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+            [PFPush subscribeToChannelInBackground:[NSString stringWithFormat:@"channel%@",[[PFUser currentUser] objectForKey:@"facebookid"]]block:^(BOOL succeeded, NSError *error) {
+
+              [JHNotificationManager notificationWithMessage:[NSString stringWithFormat:@"Logged in as %@",[result objectForKey:@"name"]]];
+              InstagramViewController* viewController = [[InstagramViewController alloc]initWithNibName:@"InstagramViewController" bundle:nil];
+              viewController.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
+              ParseStarterProjectAppDelegate* applicationDelegate = ((ParseStarterProjectAppDelegate*)[[UIApplication sharedApplication]delegate]);
+              applicationDelegate.window.rootViewController = viewController;
+              [viewController release];
+
+            }];
+
+          }];
+
+
         }
-    }];
-    [fqlRequest setFailedBlock:^{
-        NSLog(@"fql req failed");
-    }];
-    [fqlRequest startAsynchronous];
+      }
+    }
+  } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+    NSLog(@"fql req failed");
+    NSLog(@"Error: %@", error);
+  }];
 }
 
 

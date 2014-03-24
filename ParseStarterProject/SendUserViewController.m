@@ -9,7 +9,8 @@
 #import "SendUserViewController.h"
 #import "SearchUserCell.h"
 #import <Parse/Parse.h>
-#import "ASIHTTPRequest.h"
+#import "AFNetworking.h"
+#import "UIImageView+AFNetworking.h"
 @implementation SendUserViewController
 @synthesize searchBar;
 @synthesize searchTable;
@@ -166,44 +167,13 @@
                 NSLog(@"is not following %@",cell.nameLabel.text);
                 [cell.followButton setBackgroundImage:[UIImage imageNamed:@"follow_text.png"] forState:UIControlStateNormal];
             }
-        
-        ASIHTTPRequest* request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:urlstring]];
-        [request setCompletionBlock:^{
-            
-            cell.userImageView.image = [UIImage imageWithData:[request responseData]];
-        }];
-        [request setFailedBlock:^{}];
-        [request startAsynchronous];
-        
+      [cell.userImageView setImageWithURL:[NSURL URLWithString:urlstring] placeholderImage:nil];
     }
     
     
     return cell;
 }
-//-(void)searchBarSearchButtonClicked:(UISearchBar *)_searchBar
-//{
-//    [_searchBar resignFirstResponder];
-//}
-//
-//-(void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText
-//{
-//    [searchArray removeAllObjects];
-//    NSRange textRange;
-//    for (PFUser* user in tempArray) {
-//        
-//        textRange =[[[user objectForKey:@"name"] lowercaseString] rangeOfString:[searchText lowercaseString]];
-//        if(textRange.location != NSNotFound)
-//        {
-//            [searchArray addObject:user];
-//        }
-//        
-//    }
-//    if ([searchText isEqualToString:@""]) {
-//        [searchArray addObjectsFromArray:tempArray];
-//        // [searchBar resignFirstResponder];
-//    }
-//    [searchTable reloadData]; 
-//}
+
 
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {

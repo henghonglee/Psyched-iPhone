@@ -9,9 +9,9 @@
 #import "MyRoutesViewController.h"
 #import "SpecialTableCell.h"
 #import "RouteCell.h"
-
-#import "ASIHTTPRequest.h"
 #import "JMTabView/Classes/Subviews/JMTabView.h"
+#import "AFNetworking.h"
+#import "UIImageView+AFNetworking.h"
 @implementation MyRoutesViewController
 @synthesize routeTableView;
 @synthesize selectedSegment;
@@ -222,27 +222,7 @@
                 if (((RouteObject*)[self.flashArray objectAtIndex:indexPath.row]).ownerImage) {
                     cell.ownerImage.image = ((RouteObject*)[self.flashArray objectAtIndex:indexPath.row]).ownerImage;
                 }else{
-                    ASIHTTPRequest* request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:imagelink]];
-                    [request setCompletionBlock:^{
-                        UIImage* ownerImage = [UIImage imageWithData:[request responseData]];
-                        if (ownerImage == nil) {
-                            ownerImage = [UIImage imageNamed:@"placeholder_user.png"];
-                        }
-                        cell.ownerImage.image = ownerImage;
-                        ((RouteObject*)[self.flashArray objectAtIndex:indexPath.row]).ownerImage= ownerImage;
-                     cell.ownerImage.alpha =0.0;
-                        [UIView animateWithDuration:0.3
-                                              delay:0.0
-                                            options: UIViewAnimationCurveEaseOut
-                                         animations:^{
-                                             cell.ownerImage.alpha = 1.0;
-                                         } 
-                                         completion:^(BOOL finished){
-                                             // NSLog(@"Done!");
-                                         }];
-                    }];
-                    [request setFailedBlock:^{}];
-                    [request startAsynchronous];
+                  [cell.ownerImage setImageWithURL:[NSURL URLWithString:imagelink] placeholderImage:[UIImage imageNamed:@"placeholder_user.png"]];
                 }
                 if (!((RouteObject*)[self.flashArray objectAtIndex:indexPath.row]).retrievedImage) {
                     
@@ -328,7 +308,6 @@
                 
                 
                 PFObject* object = ((RouteObject*)[self.sentArray objectAtIndex:indexPath.row]).pfobj;
-  //              NSLog(@"showing sent array");
                 cell.commentcount.text = [NSString stringWithFormat:@"%@",[[object objectForKey:@"commentcount"]stringValue]];
                 cell.likecount.text = [NSString stringWithFormat:@"%@",[[object objectForKey:@"likecount"]stringValue ]];
                 cell.viewcount.text = [NSString stringWithFormat:@"%@",[[object objectForKey:@"viewcount"]stringValue ]];
@@ -350,28 +329,7 @@
                 if (((RouteObject*)[self.sentArray objectAtIndex:indexPath.row]).ownerImage) {
                     cell.ownerImage.image = ((RouteObject*)[self.sentArray objectAtIndex:indexPath.row]).ownerImage;
                 }else{
-                    ASIHTTPRequest* request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:imagelink]];
-                    [request setCompletionBlock:^{
-                        UIImage* ownerImage = [UIImage imageWithData:[request responseData]];
-                        if (ownerImage == nil) {
-                            ownerImage = [UIImage imageNamed:@"placeholder_user.png"];
-                        }
-                        cell.ownerImage.image = ownerImage;
-                        ((RouteObject*)[self.sentArray objectAtIndex:indexPath.row]).ownerImage= ownerImage;
-                        cell.ownerImage.alpha =0.0;
-                        [UIView animateWithDuration:0.3
-                                              delay:0.0
-                                            options: UIViewAnimationCurveEaseOut
-                                         animations:^{
-                                             cell.ownerImage.alpha = 1.0;
-                                         } 
-                                         completion:^(BOOL finished){
-                                             // NSLog(@"Done!");
-                                         }];
-
-                    }];
-                    [request setFailedBlock:^{}];
-                    [request startAsynchronous];
+                  [cell.ownerImage setImageWithURL:imagelink placeholderImage:[UIImage imageNamed:@"placeholder_user.png"]];
                 }
                 if (!((RouteObject*)[self.sentArray objectAtIndex:indexPath.row]).retrievedImage) {
                     
@@ -465,28 +423,7 @@
                     if (((RouteObject*)[self.projectArray objectAtIndex:indexPath.row]).ownerImage) {
                         cell.ownerImage.image = ((RouteObject*)[self.projectArray objectAtIndex:indexPath.row]).ownerImage;
                     }else{
-                        ASIHTTPRequest* request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:imagelink]];
-                        [request setCompletionBlock:^{
-                            UIImage* ownerImage = [UIImage imageWithData:[request responseData]];
-                            if (ownerImage == nil) {
-                                ownerImage = [UIImage imageNamed:@"placeholder_user.png"];
-                            }
-                            cell.ownerImage.image = ownerImage;
-                            ((RouteObject*)[self.projectArray objectAtIndex:indexPath.row]).ownerImage= ownerImage;
-                            cell.ownerImage.alpha =0.0;
-                            [UIView animateWithDuration:0.3
-                                                  delay:0.0
-                                                options: UIViewAnimationCurveEaseOut
-                                             animations:^{
-                                                 cell.ownerImage.alpha = 1.0;
-                                             } 
-                                             completion:^(BOOL finished){
-                                                 // NSLog(@"Done!");
-                                             }];
-                            
-                        }];
-                        [request setFailedBlock:^{}];
-                        [request startAsynchronous];
+                      [cell.ownerImage setImageWithURL:[NSURL URLWithString:imagelink] placeholderImage:[UIImage imageNamed:@"placeholder_user.png"]];
                     }
                 }else{
                     imagelink = [object objectForKey:@"userimage"];
@@ -494,28 +431,7 @@
                     if (((RouteObject*)[self.projectArray objectAtIndex:indexPath.row]).ownerImage) {
                         cell.ownerImage.image = ((RouteObject*)[self.projectArray objectAtIndex:indexPath.row]).ownerImage;
                     }else{
-                        ASIHTTPRequest* request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:imagelink]];
-                        [request setCompletionBlock:^{
-                            UIImage* ownerImage = [UIImage imageWithData:[request responseData]];
-                            if (ownerImage == nil) {
-                                ownerImage = [UIImage imageNamed:@"placeholder_user.png"];
-                            }
-                            cell.ownerImage.image = ownerImage;
-                            ((RouteObject*)[self.projectArray objectAtIndex:indexPath.row]).ownerImage= ownerImage;
-                            cell.ownerImage.alpha =0.0;
-                            [UIView animateWithDuration:0.3
-                                                  delay:0.0
-                                                options: UIViewAnimationCurveEaseOut
-                                             animations:^{
-                                                 cell.ownerImage.alpha = 1.0;
-                                             } 
-                                             completion:^(BOOL finished){
-                                                 // NSLog(@"Done!");
-                                             }];
-                            
-                        }];
-                        [request setFailedBlock:^{}];
-                        [request startAsynchronous];
+                      [cell.ownerImage setImageWithURL:[NSURL URLWithString:imagelink] placeholderImage:[UIImage imageNamed:@"placeholder_user.png"]];
                     }
                 }
 
@@ -620,30 +536,8 @@
                         if (((RouteObject*)[self.likedArray objectAtIndex:indexPath.row]).ownerImage) {
                             cell.ownerImage.image = ((RouteObject*)[self.likedArray objectAtIndex:indexPath.row]).ownerImage;
                         }else{
-                            ASIHTTPRequest* request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:imagelink]];
-                            [request setCompletionBlock:^{
-                                UIImage* ownerImage = [UIImage imageWithData:[request responseData]];
-                                if (ownerImage == nil) {
-                                    ownerImage = [UIImage imageNamed:@"placeholder_user.png"];
-                                }
-                                cell.ownerImage.image = ownerImage;
-                                ((RouteObject*)[self.likedArray objectAtIndex:indexPath.row]).ownerImage= ownerImage;
-                                cell.ownerImage.alpha =0.0;
-                                [UIView animateWithDuration:0.3
-                                                      delay:0.0
-                                                    options: UIViewAnimationCurveEaseOut
-                                                 animations:^{
-                                                     cell.ownerImage.alpha = 1.0;
-                                                 } 
-                                                 completion:^(BOOL finished){
-                                                     // NSLog(@"Done!");
-                                                 }];
-                                
-                            }];
-                            [request setFailedBlock:^{}];
-                            [request startAsynchronous];
+                          [cell.ownerImage setImageWithURL:[NSURL URLWithString:imagelink] placeholderImage:[UIImage imageNamed:@"placeholder_user.png"]];
                         }
-
                     }];
                     
                 }else{
@@ -652,30 +546,8 @@
                     if (((RouteObject*)[self.likedArray objectAtIndex:indexPath.row]).ownerImage) {
                         cell.ownerImage.image = ((RouteObject*)[self.likedArray objectAtIndex:indexPath.row]).ownerImage;
                     }else{
-                        ASIHTTPRequest* request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:imagelink]];
-                        [request setCompletionBlock:^{
-                            UIImage* ownerImage = [UIImage imageWithData:[request responseData]];
-                            if (ownerImage == nil) {
-                                ownerImage = [UIImage imageNamed:@"placeholder_user.png"];
-                            }
-                            cell.ownerImage.image = ownerImage;
-                            ((RouteObject*)[self.likedArray objectAtIndex:indexPath.row]).ownerImage= ownerImage;
-                            cell.ownerImage.alpha =0.0;
-                            [UIView animateWithDuration:0.3
-                                                  delay:0.0
-                                                options: UIViewAnimationCurveEaseOut
-                                             animations:^{
-                                                 cell.ownerImage.alpha = 1.0;
-                                             } 
-                                             completion:^(BOOL finished){
-                                                 // NSLog(@"Done!");
-                                             }];
-                            
-                        }];
-                        [request setFailedBlock:^{}];
-                        [request startAsynchronous];
+                      [cell.ownerImage setImageWithURL:[NSURL URLWithString:imagelink] placeholderImage:[UIImage imageNamed:@"placeholder_user.png"]];
                     }
-
                 }
 
             if (!((RouteObject*)[self.likedArray objectAtIndex:indexPath.row]).retrievedImage) {

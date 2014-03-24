@@ -3,7 +3,8 @@
 #import "SearchFriendsViewController.h"
 #import "SearchUserCell.h"
 #import <Parse/Parse.h>
-#import "ASIHTTPRequest.h"
+#import "AFNetworking.h"
+#import "UIImageView+AFNetworking.h"
 typedef enum apiCall {
 kAPIGetAppUsersFriendsUsing,
 kAPIGraphUserFriends,
@@ -50,76 +51,59 @@ kAPIGraphUserPhotosPost,
     [self apiGraphFriends];
         
     }];
-//    UIBarButtonItem *anotherButton = [[UIBarButtonItem alloc] initWithTitle:@"Follow All" style:UIBarButtonItemStylePlain target:self action:@selector(followAll:)];          
-//    self.navigationItem.rightBarButtonItem = anotherButton;
-//    [anotherButton release];
 }
 -(void)apiGraphFriends
 { 
     currentAPIcall = kAPIGetAppUsersFriendsUsing;
     NSLog(@"access token = %@",[PFFacebookUtils session].accessToken);
-//    self.myRequest = [[PFFacebookUtils facebook] requestWithGraphPath:@"me/friends?fields=installed" andDelegate:self];
     MBProgressHUD* hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     hud.labelText = @"Finding friends on Psyched!...";
-    
-    ASIHTTPRequest* accountRequest = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"https://graph.facebook.com/me/friends?fields=installed&access_token=%@",[PFFacebookUtils session].accessToken]]];
+    AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
+    [manager GET:[NSString stringWithFormat:@"https://graph.facebook.com/me/friends?fields=installed&access_token=%@",[PFFacebookUtils session].accessToken] parameters:nil success:^(AFHTTPRequestOperation *operation, id responseObject) {
+      NSLog(@"JSON: %@", responseObject);
+      SBJsonParser *jsonParser = [[SBJsonParser alloc] init];
+      id jsonObject = [jsonParser objectWithString:[responseObject responseString]];
+      [jsonParser release], jsonParser = nil;
+      NSArray* fbfriends = [jsonObject objectForKey:@"data"];
+      if ([fbfriends count]==0) {
+        hud.labelText = @"Couldn't find any friends =(";
+        [hud hide:YES afterDelay:1];
 
-    [accountRequest setCompletionBlock:^{
-        
-        
-        SBJsonParser *jsonParser = [[SBJsonParser alloc] init];
-        id jsonObject = [jsonParser objectWithString:[accountRequest responseString]];
-                [jsonParser release], jsonParser = nil;
-            NSArray* fbfriends = [jsonObject objectForKey:@"data"];
-        if ([fbfriends count]==0) {
-            hud.labelText = @"Couldn't find any friends =(";
-            [hud hide:YES afterDelay:1];
-            
-            return;
+        return;
+      }
+      [searchArray removeAllObjects];
+      [tempArray removeAllObjects];
+      NSMutableArray* fbidArray = [[NSMutableArray alloc]init];
+      for (NSDictionary* obj in fbfriends) {
+        if ([obj objectForKey:@"installed"]) {
+
+          [fbidArray addObject:[NSNumber numberWithInt:[[obj objectForKey:@"id"]intValue]]];
+
         }
-            [searchArray removeAllObjects];
-            [tempArray removeAllObjects];
-            //[FBfriendsArray removeAllObjects];
-            NSMutableArray* fbidArray = [[NSMutableArray alloc]init];
-            for (NSDictionary* obj in fbfriends) {
-                if ([obj objectForKey:@"installed"]) {
-                    
-                    [fbidArray addObject:[NSNumber numberWithInt:[[obj objectForKey:@"id"]intValue]]];
-                    
-                }
-            }
-            if ([fbidArray count]==0) {
-                
-            }else{
-                PFQuery* userquery = [PFUser query];
-                [userquery whereKey:@"facebookid" containedIn:fbidArray];
-                [userquery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
-                    for (PFUser* user in objects) {
-                        UserObject* userObj = [[UserObject alloc]init];
-                        userObj.user = user;
-                        [searchArray addObject:userObj];  
-                        [tempArray addObject:userObj];
-                        [userObj release];
-                    }
-                    
-                    
-                    [searchTable reloadData];
-                    [MBProgressHUD hideHUDForView:self.view animated:YES];
-                }];
-            }      
-            //[FBfriendsArray addObject:newFBfriend];
-            
-            [fbidArray release];  
-        
+      }
+      if ([fbidArray count]==0) {
 
-    }];
-    [accountRequest setFailedBlock:^{
-        
-    }];
-    [accountRequest startAsynchronous];
+      }else{
+        PFQuery* userquery = [PFUser query];
+        [userquery whereKey:@"facebookid" containedIn:fbidArray];
+        [userquery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+          for (PFUser* user in objects) {
+            UserObject* userObj = [[UserObject alloc]init];
+            userObj.user = user;
+            [searchArray addObject:userObj];
+            [tempArray addObject:userObj];
+            [userObj release];
+          }
 
-    
-    
+
+          [searchTable reloadData];
+          [MBProgressHUD hideHUDForView:self.view animated:YES];
+        }];
+      }
+      [fbidArray release];
+    } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+      NSLog(@"Error: %@", error);
+    }];
 }
 -(void)followAll:(id)sender
 {
@@ -228,17 +212,7 @@ NSLog(@" result = %@",result);
                 cell.userImageView.image = [UIImage imageNamed:@"placeholder_user.png"];
             }
         }else{
-        ASIHTTPRequest* request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:urlstring]];
-        [request setCompletionBlock:^{
-        
-            userObjForRow.userImage = [UIImage imageWithData:[request responseData]];
-                        cell.userImageView.image =userObjForRow.userImage;
-            if (cell.userImageView.image == nil) {
-                cell.userImageView.image = [UIImage imageNamed:@"placeholder_user.png"];
-            }
-        }];
-        [request setFailedBlock:^{}];
-        [request startAsynchronous];
+          [cell.userImageView setImageWithURL:urlstring placeholderImage:[UIImage imageNamed:@"placeholder_user.png"]];
         }
     }
     

@@ -9,7 +9,7 @@
 #import "FollowFriendsViewController.h"
 #import "SearchUserCell.h"
 #import <Parse/Parse.h>
-#import "ASIHTTPRequest.h"
+#import "AFNetworking.h"
 @implementation FollowFriendsViewController
 @synthesize searchBar;
 @synthesize searchTable;
@@ -213,17 +213,17 @@ if (cell == nil) {
                 cell.userImageView.image = [UIImage imageNamed:@"placeholder_user.png"];
             }
         }else{
-        ASIHTTPRequest* request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:urlstring]];
-        [request setCompletionBlock:^{
-            
-           cell.userImageView.image = [UIImage imageWithData:[request responseData]];
-            ((UserObject*)[searchArray objectAtIndex:indexPath.row]).userImage = [UIImage imageWithData:[request responseData]];
+          AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
+          [manager GET:urlstring parameters:nil success:^(AFHTTPRequestOperation *operation, id responseObject) {
+            NSLog(@"JSON: %@", responseObject);
+            cell.userImageView.image = [UIImage imageWithData:[responseObject responseData]];
+            ((UserObject*)[searchArray objectAtIndex:indexPath.row]).userImage = [UIImage imageWithData:[responseObject responseData]];
             if (cell.userImageView.image == nil) {
-                cell.userImageView.image = [UIImage imageNamed:@"placeholder_user.png"];
+              cell.userImageView.image = [UIImage imageNamed:@"placeholder_user.png"];
             }
-        }];
-        [request setFailedBlock:^{}];
-        [request startAsynchronous];
+          } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+            NSLog(@"Error: %@", error);
+          }];
         }
     }
 
