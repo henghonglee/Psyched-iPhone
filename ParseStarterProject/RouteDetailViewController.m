@@ -78,60 +78,7 @@ kAPIGraphCommentPhoto,
 }
 
 #pragma mark - View lifecycle
-/*
-- (IBAction)didFlagAsOutdated:(id)sender {
-    if ([self.routeObject.pfobj objectForKey:@"outdated"]==[NSNumber numberWithBool:true]) {
-        // if user is the owner of the route , show the not outdated button
-        
-    }else{
-        flagalert = [[UIAlertView alloc]initWithTitle:@"Flag as outdated" message:@"Are you sure?" delegate:self cancelButtonTitle:@"Yes" otherButtonTitles:@"No",nil];
-    [flagalert show];
-    [flagalert release];
-    }
-    
-}
 
-- (IBAction)unoutdate:(id)sender {
-    [self.routeObject.pfobj setObject:[NSNumber numberWithBool:false]forKey:@"outdated"];
-    [self.routeObject.pfobj saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
-    outdateButton.hidden = NO;
-        unoutdateButton.hidden =YES;
-    }];
-    
-
-}
-- (IBAction)approveOutdate:(id)sender {
-    [approveButton setUserInteractionEnabled:NO];
-    [self.routeObject.pfobj setObject:@"approved" forKey:@"approvalstatus"];
-    [self.routeObject.pfobj setObject:[NSNumber numberWithBool:YES] forKey:@"outdated"];
-    [self.routeObject.pfobj saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
-            approvalView.hidden = YES;
-         [approveButton setUserInteractionEnabled:YES];
-        if ([self.routeObject.pfobj objectForKey:@"approvalreqFBid"]) {
-         
-        if (![[NSString stringWithFormat:@"%@",[[PFUser currentUser] objectForKey:@"facebookid"]]isEqualToString:[self.routeObject.pfobj objectForKey:@"approvalreqFBid"]]) {
-            NSMutableDictionary *data = [NSMutableDictionary dictionary];
-            [data setObject:self.routeObject.pfobj.objectId forKey:@"linkedroute"];
-            [data setObject:[NSNumber numberWithInt:1] forKey:@"badge"];
-            [data setObject:[NSString stringWithFormat:@"%@ approved your outdate request",[[PFUser currentUser] objectForKey:@"name"]] forKey:@"alert"];
-            [data setObject:[NSString stringWithFormat:@"%@",[[PFUser currentUser] objectForKey:@"name"]] forKey:@"sender"];
-            [PFPush sendPushDataToChannelInBackground:[NSString stringWithFormat:@"channel%@",[self.routeObject.pfobj objectForKey:@"approvalreqFBid"]] withData:data];
-        }
-        }
-    }];
-
-}
-- (IBAction)disapproveOutdate:(id)sender {
-    [disapproveButton setUserInteractionEnabled:NO];
-    [self.routeObject.pfobj setObject:@"disapproved" forKey:@"approvalstatus"];
-    [self.routeObject.pfobj setObject:[NSNumber numberWithBool:NO] forKey:@"outdated"];
-    [self.routeObject.pfobj saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
-    approvalView.hidden = YES;    
-        [disapproveButton setUserInteractionEnabled:YES];
-    }];
-
-}
- */
 -(void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex
 {
     if (flagalert) {
@@ -179,7 +126,6 @@ kAPIGraphCommentPhoto,
 {
     [super viewDidLoad];
 
-//    NSString* currentUser = [NSString stringWithFormat:@"%@",[[PFUser currentUser]objectForKey:@"name"]];
     commentsArray = [[NSMutableArray alloc]init];
     queryArray = [[NSMutableArray alloc]init];
     savedArray = [[NSMutableArray alloc]init];
@@ -187,19 +133,7 @@ kAPIGraphCommentPhoto,
     [unavailableLabel setFont:[UIFont fontWithName:@"Old Stamper" size:20.0]];
     unavailableLabel.textColor = [UIColor redColor];
     [likeButton setUserInteractionEnabled:NO];
- /*   approveButton = [[[GradientButton alloc]initWithFrame:CGRectMake(195, 6, 100, 40)]autorelease];
-    [approveButton setTitle:@"Approve" forState:UIControlStateNormal];
-    [approveButton useGreenConfirmStyle];
-    [approveButton addTarget:self action:@selector(approveOutdate:) forControlEvents:UIControlEventTouchUpInside];
-    [approvalView addSubview:approveButton];
 
-    
-    disapproveButton = [[[GradientButton alloc]initWithFrame:CGRectMake(195, 51, 100, 40)] autorelease];
-    [disapproveButton setTitle:@"Disapprove" forState:UIControlStateNormal];
-    [disapproveButton addTarget:self action:@selector(disapproveOutdate:) forControlEvents:UIControlEventTouchUpInside];
-    [disapproveButton useRedDeleteStyle];
-    [approvalView addSubview:disapproveButton];
-*/
     
     difficultyLabel.text = [routeObject.pfobj objectForKey:@"difficultydescription"];
     NSString *foo = [routeObject.pfobj objectForKey:@"description"];
@@ -226,20 +160,7 @@ kAPIGraphCommentPhoto,
         unavailableLabel.hidden=NO;
         pinImageView.hidden=YES;
     }
-    
-    
-    //if user is owner and is route is outdated, show unoutdate button
-    //elseif route is outdated ,hide outdatebutton
 
-   /* if ([routeObject.pfobj objectForKey:@"outdated"]==[NSNumber numberWithBool:true]) {
-        outdateButton.hidden = YES;
-    }else{
-        outdateButton.hidden = NO;
-    }
-    */
-    //if route object is near admin geopoint , add ability to delete
-    
-    
 
     if ([[routeObject.pfobj objectForKey:@"username"] isEqualToString:[[PFUser currentUser]objectForKey:@"name"]]) {
         //add delete button if user is owner
@@ -247,9 +168,6 @@ kAPIGraphCommentPhoto,
         self.navigationItem.rightBarButtonItem = anotherButton;
         [anotherButton release];
             [self checksendstatus];
-   //     if ([routeObject.pfobj objectForKey:@"outdated"]==[NSNumber numberWithBool:true]) {
-    //        unoutdateButton.hidden = NO;
-    //    }
     }else{
         __block BOOL isNear=NO;
         PFGeoPoint* routeGP = [routeObject.pfobj objectForKey:@"routelocation"];
@@ -284,14 +202,7 @@ kAPIGraphCommentPhoto,
             }
         }];
     }
-  /*  if ([[self.routeObject.pfobj objectForKey:@"approvalstatus"]isEqualToString:@"pending"] && [[self.routeObject.pfobj objectForKey:@"username"]isEqualToString:[[PFUser currentUser]objectForKey:@"name"]]) {
-        approvalView.hidden=NO;
-        
-        
-    }else{
-        approvalView.hidden=YES;
-    }
-    */
+
     
     UserImageView.layer.shadowPath = [self renderPaperCurlProfileImage:UserImageView];
     UserImageView.layer.borderColor = [UIColor whiteColor].CGColor;
@@ -305,7 +216,7 @@ kAPIGraphCommentPhoto,
     [routeObject.pfobj saveEventually];
     
     if (routeObject.retrievedImage) {
-    routeImageView.image = routeObject.retrievedImage;
+      routeImageView.image = routeObject.retrievedImage;
     }else if(routeimage){
         routeImageView.image = routeimage;
     }
@@ -346,10 +257,9 @@ kAPIGraphCommentPhoto,
     usernameLabel.text= [routeObject.pfobj objectForKey:@"username"];
     }
     
-    UserImageView.image = routeObject.ownerImage;
-    
+    [UserImageView setImageWithURL:[NSURL URLWithString:[routeObject.pfobj objectForKey:@"userimage"]] placeholderImage:[UIImage imageNamed:@"placeholder_user.png"]];
+    [UserImageView setContentMode:UIViewContentModeScaleAspectFill];
     [self arrangeSubViewsaftercomments];
-   NSLog(@"arranging subviews... done");
       if ([routeObject.pfobj objectForKey:@"photoid"]) {   
           NSLog(@"getting fb route detail");
          [self getFacebookRouteDetails];
@@ -369,10 +279,6 @@ kAPIGraphCommentPhoto,
                [self arrangeSubViewsaftercomments];
              }];
       }
-   
-  
-    
-    // Do any additional setup after loading the view from its nib.
 }
 
 - (CGRect)zoomRectForScale:(float)scale withCenter:(CGPoint)center {
@@ -2454,7 +2360,7 @@ if (cell == nil) {
     cell.commentLabel.text = [[commentsArray objectAtIndex:indexPath.row] objectForKey:@"text"];
     cell.commenterNameLabel.text = [[commentsArray objectAtIndex:indexPath.row] objectForKey:@"commentername"];
     [cell.commenterImageView setImageWithURL:[NSURL URLWithString:
-                                              [[commentsArray objectAtIndex:indexPath.row] objectForKey:@"commenterimage"]] placeholderImage:nil];
+                                              [[commentsArray objectAtIndex:indexPath.row] objectForKey:@"commenterimage"]] placeholderImage:[UIImage imageNamed:@"placeholder_user.png"]];
     return cell;  
 }
 - (IBAction)recommendButton:(id)sender {
