@@ -212,7 +212,7 @@
   AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
   [manager GET:[reqURL absoluteString] parameters:nil success:^(AFHTTPRequestOperation *operation, id responseObject) {
     SBJsonParser *jsonParser = [[SBJsonParser alloc] init];
-    NSArray *jsonObjects = [[jsonParser objectWithString:[responseObject responseString]] objectForKey:@"data"];
+    NSArray *jsonObjects = responseObject[@"data"];
     [jsonParser release];
     jsonParser = nil;
 
