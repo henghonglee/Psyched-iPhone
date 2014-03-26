@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="5053" systemVersion="13C64" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="5053" systemVersion="13C64" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none">
     <dependencies>
         <deployment defaultVersion="1536" identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="3733"/>
@@ -38,102 +38,69 @@
             <rect key="frame" x="0.0" y="0.0" width="320" height="480"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
             <subviews>
-                <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" image="step3.png" translatesAutoresizingMaskIntoConstraints="NO" id="22">
+                <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" image="step3.png" id="22">
                     <rect key="frame" x="0.0" y="0.0" width="320" height="480"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                 </imageView>
-                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="48">
+                <view contentMode="scaleToFill" id="48">
                     <rect key="frame" x="96" y="143" width="133" height="175"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                     <color key="backgroundColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
                 </view>
-                <scrollView autoresizesSubviews="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" translatesAutoresizingMaskIntoConstraints="NO" id="43">
+                <scrollView autoresizesSubviews="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" id="43">
                     <rect key="frame" x="96" y="143" width="133" height="175"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <subviews>
-                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" fixedFrame="YES" image="screenimage.png" translatesAutoresizingMaskIntoConstraints="NO" id="44">
+                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" image="screenimage.png" id="44">
                             <rect key="frame" x="0.0" y="0.0" width="133" height="365"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         </imageView>
                     </subviews>
                 </scrollView>
-                <imageView opaque="NO" userInteractionEnabled="NO" alpha="0.0" contentMode="scaleAspectFill" image="2195-500x500.png" translatesAutoresizingMaskIntoConstraints="NO" id="52">
+                <imageView opaque="NO" userInteractionEnabled="NO" alpha="0.0" contentMode="scaleAspectFill" image="2195-500x500.png" id="52">
                     <rect key="frame" x="137" y="152" width="46" height="166"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                     <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.0" colorSpace="calibratedRGB"/>
-                    <constraints>
-                        <constraint firstAttribute="height" constant="166" id="3ag-Sw-ZXe"/>
-                        <constraint firstAttribute="width" constant="46" id="rUC-uD-rOD"/>
-                    </constraints>
                 </imageView>
             </subviews>
             <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.0" colorSpace="calibratedRGB"/>
-            <constraints>
-                <constraint firstItem="52" firstAttribute="bottom" secondItem="43" secondAttribute="bottom" id="65q-EE-i1I"/>
-                <constraint firstItem="22" firstAttribute="leading" secondItem="42" secondAttribute="leading" id="8Mh-Kd-eb0"/>
-                <constraint firstItem="52" firstAttribute="centerX" secondItem="22" secondAttribute="centerX" id="B91-fD-Rhs"/>
-                <constraint firstAttribute="trailing" secondItem="22" secondAttribute="trailing" id="C78-Is-lZY"/>
-                <constraint firstItem="48" firstAttribute="top" secondItem="43" secondAttribute="top" id="D9h-Ev-iu6"/>
-                <constraint firstItem="22" firstAttribute="top" secondItem="42" secondAttribute="top" id="Emg-iA-a8u"/>
-                <constraint firstItem="48" firstAttribute="leading" secondItem="43" secondAttribute="leading" id="GLw-X9-bpl"/>
-                <constraint firstAttribute="bottom" secondItem="48" secondAttribute="bottom" constant="162" id="Gq3-46-EJ4"/>
-                <constraint firstAttribute="bottom" secondItem="22" secondAttribute="bottom" id="IC5-h1-WSI"/>
-                <constraint firstItem="48" firstAttribute="top" secondItem="42" secondAttribute="top" constant="143" id="Zdc-IW-Yl1"/>
-                <constraint firstItem="48" firstAttribute="trailing" secondItem="43" secondAttribute="trailing" id="feC-cD-q49"/>
-                <constraint firstAttribute="trailing" secondItem="48" secondAttribute="trailing" constant="91" id="k7a-Jr-Wex"/>
-                <constraint firstItem="48" firstAttribute="bottom" secondItem="43" secondAttribute="bottom" id="y6c-HO-UlI"/>
-                <constraint firstItem="48" firstAttribute="leading" secondItem="42" secondAttribute="leading" constant="96" id="yfy-wI-8A3"/>
-            </constraints>
         </view>
         <view contentMode="scaleToFill" id="219">
             <rect key="frame" x="0.0" y="0.0" width="320" height="480"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
             <subviews>
-                <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" fixedFrame="YES" image="profilebg.jpg" translatesAutoresizingMaskIntoConstraints="NO" id="11">
+                <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" image="profilebg.jpg" id="11">
                     <rect key="frame" x="-290" y="-82" width="900" height="563"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" heightSizable="YES" flexibleMaxY="YES"/>
                 </imageView>
-                <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="PSYCHED!" textAlignment="center" lineBreakMode="tailTruncation" minimumFontSize="10" translatesAutoresizingMaskIntoConstraints="NO" id="9">
+                <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="PSYCHED!" textAlignment="center" lineBreakMode="tailTruncation" minimumFontSize="10" id="9">
                     <rect key="frame" x="-2" y="9" width="320" height="77"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                    <constraints>
-                        <constraint firstAttribute="height" constant="77" id="5xc-lS-hjD"/>
-                    </constraints>
                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                     <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                     <nil key="highlightedColor"/>
                 </label>
-                <pageControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" numberOfPages="3" translatesAutoresizingMaskIntoConstraints="NO" id="13">
+                <pageControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" numberOfPages="3" id="13">
                     <rect key="frame" x="7" y="431" width="63" height="37"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                    <constraints>
-                        <constraint firstAttribute="width" constant="63" id="IwK-Wx-euz"/>
-                    </constraints>
                     <connections>
                         <action selector="changePage" destination="-1" eventType="valueChanged" id="17"/>
                     </connections>
                 </pageControl>
-                <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" alpha="0.0" contentMode="left" text="route sharing , made social" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" translatesAutoresizingMaskIntoConstraints="NO" id="12">
+                <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" alpha="0.0" contentMode="left" text="route sharing , made social" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" id="12">
                     <rect key="frame" x="52" y="306" width="213" height="38"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                    <constraints>
-                        <constraint firstAttribute="height" constant="38" id="AuM-dM-E7Q"/>
-                    </constraints>
                     <fontDescription key="fontDescription" name="Futura-CondensedMedium" family="Futura" pointSize="17"/>
                     <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                     <nil key="highlightedColor"/>
                 </label>
-                <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" pagingEnabled="YES" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" translatesAutoresizingMaskIntoConstraints="NO" id="14">
+                <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" pagingEnabled="YES" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" id="14">
                     <rect key="frame" x="-2" y="0.0" width="332" height="480"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <subviews>
-                        <button opaque="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="4">
+                        <button opaque="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="4">
                             <rect key="frame" x="76" y="433" width="236" height="40"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                            <constraints>
-                                <constraint firstAttribute="width" constant="236" id="NPA-4R-8Ta"/>
-                                <constraint firstAttribute="height" constant="40" id="gNw-j8-E9A"/>
-                            </constraints>
                             <fontDescription key="fontDescription" type="boldSystem" pointSize="15"/>
                             <state key="normal" image="fb-connect-large 2.png">
                                 <color key="titleColor" red="0.19607843459999999" green="0.30980393290000002" blue="0.52156865600000002" alpha="1" colorSpace="calibratedRGB"/>
@@ -147,32 +114,12 @@
                             </connections>
                         </button>
                     </subviews>
-                    <constraints>
-                        <constraint firstItem="4" firstAttribute="top" secondItem="14" secondAttribute="top" constant="433" id="IV3-U8-mqW"/>
-                        <constraint firstItem="4" firstAttribute="leading" secondItem="14" secondAttribute="leading" constant="76" id="ZT6-mg-6Wr"/>
-                        <constraint firstAttribute="trailing" secondItem="4" secondAttribute="trailing" constant="20" symbolic="YES" id="mBD-Nw-UOT"/>
-                        <constraint firstAttribute="bottom" secondItem="4" secondAttribute="bottom" constant="7" id="pmj-JN-Nxg"/>
-                    </constraints>
                     <connections>
                         <outlet property="delegate" destination="-1" id="15"/>
                     </connections>
                 </scrollView>
             </subviews>
             <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
-            <constraints>
-                <constraint firstItem="13" firstAttribute="top" secondItem="12" secondAttribute="bottom" constant="87" id="2J9-9M-4sa"/>
-                <constraint firstItem="14" firstAttribute="leading" secondItem="9" secondAttribute="leading" id="EWF-oL-7kb"/>
-                <constraint firstAttribute="trailing" secondItem="14" secondAttribute="trailing" constant="-10" id="J1r-a5-GY7"/>
-                <constraint firstItem="12" firstAttribute="centerX" secondItem="9" secondAttribute="centerX" id="Lep-gD-qkl"/>
-                <constraint firstAttribute="bottom" secondItem="14" secondAttribute="bottom" id="SAQ-t3-nbS"/>
-                <constraint firstAttribute="trailing" secondItem="12" secondAttribute="trailing" constant="55" id="TUx-8s-gub"/>
-                <constraint firstItem="9" firstAttribute="top" secondItem="219" secondAttribute="top" constant="9" id="V7u-JL-2Ef"/>
-                <constraint firstItem="12" firstAttribute="leading" secondItem="219" secondAttribute="leading" constant="52" id="Zaq-hg-SJP"/>
-                <constraint firstItem="14" firstAttribute="top" secondItem="219" secondAttribute="top" id="dxT-GW-dYi"/>
-                <constraint firstItem="9" firstAttribute="leading" secondItem="219" secondAttribute="leading" constant="-2" id="kAZ-oI-SNU"/>
-                <constraint firstAttribute="bottom" secondItem="13" secondAttribute="bottom" constant="12" id="rGg-mN-fS8"/>
-                <constraint firstItem="13" firstAttribute="leading" secondItem="219" secondAttribute="leading" constant="7" id="sXo-ti-REa"/>
-            </constraints>
             <simulatedScreenMetrics key="simulatedDestinationMetrics"/>
         </view>
     </objects>
